@@ -1,0 +1,2111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Algoritmos y Complejidad · INF-221 · Certamen 1</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']], tags:'none' },
+    svg: { fontCache: 'global' },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4; --codeink:#1f2330;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:300px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733; --codeink:#e8eaf0;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733; --codeink:#e8eaf0;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62;font-size:16.5px;-webkit-font-smoothing:antialiased}
+  .layout{display:flex;align-items:flex-start}
+  .sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;
+    overflow-y:auto;background:var(--panel);border-right:1px solid var(--line);padding:22px 16px 60px}
+  .content{flex:1 1 auto;min-width:0;padding:38px clamp(18px,4vw,64px) 120px;max-width:1060px;margin:0 auto}
+  .brand{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+  .brand .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--ex));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;flex:0 0 auto}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:6px 10px;border-radius:7px;
+    font-size:13.5px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:26px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20px;margin:30px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:20px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:46px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);color:var(--codeink);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);color:var(--codeink);border:1px solid var(--line);border-radius:10px;
+    padding:13px 15px;overflow-x:auto;font-size:13.6px;line-height:1.5;
+    font-family:"SF Mono",Menlo,Consolas,monospace;margin:14px 0}
+  pre code{background:none;padding:0;font-size:inherit}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:16px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  .steps{counter-reset:st;padding-left:0;list-style:none}
+  .steps>li{counter-increment:st;position:relative;padding-left:38px;margin:12px 0}
+  .steps>li::before{content:counter(st);position:absolute;left:0;top:1px;width:26px;height:26px;
+    border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;
+    font-size:13px;font-weight:700}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">221</div>
+    <div><h1>Algoritmos y Complejidad</h1><small>INF-221 · Certamen 1 · 26 sep 2026</small></div>
+  </div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Tema claro/oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav">
+    <div class="grp">Antes de empezar</div>
+    <a href="#certamen">El certamen: qué y cómo</a>
+    <a href="#previo">Qué necesitas saber antes</a>
+    <a href="#mapa">Mapa de la materia</a>
+    <div class="grp">La materia</div>
+    <a href="#alg">1 · Algoritmos y problemas</a>
+    <a href="#correctitud">2 · Correctitud: invariantes</a>
+    <a href="#asintotico">3 · Análisis asintótico</a>
+    <a href="#tdas">4 · TDAs y costo amortizado</a>
+    <a href="#dyc">5 · Dividir y conquistar</a>
+    <a href="#multiplicacion">6 · Multiplicación de enteros y matrices</a>
+    <a href="#maestro">7 · Recurrencias y Teorema Maestro</a>
+    <a href="#closest">8 · Par de puntos más cercanos</a>
+    <a href="#qspromedio">9 · Caso promedio de QuickSort</a>
+    <a href="#cotas">10 · Cotas inferiores</a>
+    <div class="grp">Para rendir</div>
+    <a href="#plantillas">Las 4 plantillas del certamen</a>
+    <a href="#errores">Errores típicos</a>
+    <a href="#chuleta">Chuleta</a>
+    <a href="#plan">Plan de 16 días</a>
+  </nav>
+</aside>
+<main class="content">
+
+<h2>Algoritmos y Complejidad · INF-221 · Certamen 1</h2>
+<p class="lead">Todo lo que entra en el C1 del 2° semestre 2026, explicado desde cero: las clases 02 a 12 de la profesora Raquel Pezoa, las 5 ayudantías, los 4 certámenes anteriores y la guía de repaso.</p>
+
+<div class="box def">
+  <div class="bt">Cómo leer las cajitas</div>
+  <p><span class="pill">Definición</span> lo que hay que poder escribir casi textual: son las definiciones formales que se piden en la pregunta 1.</p>
+  <p><span class="pill a">Truco</span> técnicas de resolución, frases que suman puntos y atajos de cálculo.</p>
+  <p><span class="pill w">Ojo</span> trampas, errores típicos y erratas del propio material del curso.</p>
+  <p><span class="pill e">Ejercicio</span> desplegables: intenta resolverlo antes de abrir.</p>
+  <p><span class="pill l">Analogía</span> la versión intuitiva. Sirve para entender, <b>no</b> para escribirla en el certamen.</p>
+</div>
+
+<section id="certamen">
+<h2>El certamen: qué y cómo</h2>
+
+<div class="box def">
+  <div class="bt">Datos duros</div>
+  <p><b>Sábado 26 de septiembre de 2026, 09:00 a 11:00.</b> Escrito, en sala, sin computador.</p>
+  <p><b>Peso:</b> 30% de la nota final (C2 = 35%, promedio tareas = 20%, promedio listados = 10%, ayudantías = 5%).</p>
+  <p><b>Requisito de aprobación:</b> el promedio de C1 y C2 debe ser ≥ 55; si no, la nota final es <code>min(promedio general, 50)</code>. O sea: no se aprueba con puros listados y tareas.</p>
+  <p><b>Bono:</b> 5 puntos adicionales por certamen ordenado y con letra clara. Es puntaje gratis — deja márgenes, numera las preguntas, no rayes.</p>
+  <p><b>Recuperativo:</b> jueves 3 de diciembre, reemplaza la nota más baja.</p>
+</div>
+
+<h3>El formato: cuatro preguntas, siempre las mismas cuatro</h3>
+<p>Los certámenes 1 de 2024-2, 2025-1, 2025-2 y 2026-1 tienen estructura idéntica, incluido el puntaje. No es casualidad: es el molde del ramo.</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>Pregunta</th><th>Pts</th><th>Qué pide siempre</th><th>Dónde estudiarla</th></tr></thead>
+<tbody>
+<tr><td><b>P1 · Definiciones y conceptos básicos</b></td><td>20</td>
+  <td>Dos o tres preguntas cortas: una <b>demostración formal</b> con la definición de $O$ u $\Omega$ (con constantes $c$ y $n_0$; en 2026-1 dice explícitamente "no puede usar límites"), más preguntas conceptuales: qué significa cota inferior, qué mejora hace ClosestPair, peor caso vs. promedio vs. amortizado, logaritmos en distintas bases.</td>
+  <td><a class="inl" href="#asintotico">§3</a>, <a class="inl" href="#cotas">§10</a>, <a class="inl" href="#tdas">§4</a></td></tr>
+<tr><td><b>P2 · Correctitud</b></td><td>25</td>
+  <td>Te dan un código corto (C++ o Python) y pides demostrar que es correcto <b>por invariante de ciclo</b>: enunciar el invariante + inicialización + mantenimiento (con hipótesis inductiva y paso inductivo) + finalización.</td>
+  <td><a class="inl" href="#correctitud">§2</a></td></tr>
+<tr><td><b>P3 · Dividir y conquistar</b></td><td>30</td>
+  <td>Un algoritmo recursivo (fractal, teselado en L, filtro de imágenes, máxima suma de subarreglo). Hay que <b>plantear la recurrencia</b>, identificar $a$, $b$, $d$, aplicar el <b>Teorema Maestro</b> y dar además la <b>complejidad espacial</b> (pila de recursión).</td>
+  <td><a class="inl" href="#maestro">§7</a>, <a class="inl" href="#dyc">§5</a></td></tr>
+<tr><td><b>P4 · Análisis de código con TDAs</b></td><td>25</td>
+  <td>Código C++ dividido en bloques marcados con comentarios. (a) complejidad de cada bloque <b>con justificación</b>, (b) complejidad total, (c) complejidad espacial adicional. Aquí se evalúa si sabes el costo de <code>map</code>, <code>set</code>, <code>priority_queue</code>, <code>unordered_map</code>.</td>
+  <td><a class="inl" href="#tdas">§4</a></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · "complejidad temporal sin justificación no tiene puntaje"</div>
+  <p>Está escrito literalmente en la P4 del certamen 2026-1. Poner "$O(n^2)$" y nada más vale <b>cero</b>. Siempre hay que decir <i>por qué</i>: "el ciclo externo corre $n$ veces, el interno $n-i$, y cada <code>insert</code> en un <code>set</code> cuesta $O(\log n)$ porque internamente es un árbol balanceado".</p>
+</div>
+
+<h3>Qué entra exactamente</h3>
+<p>Según la planificación oficial del semestre, el C1 cubre las clases desde la semana 1 hasta la semana anterior al certamen:</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>#</th><th>Clase</th><th>Archivo</th><th>¿Ha caído en certamen?</th></tr></thead>
+<tbody>
+<tr><td>02</td><td>Propiedades de algoritmos y análisis de eficiencia</td><td><code>02-Alg-Problemas.pdf</code></td><td>Sí — P1 conceptual (peor / promedio / amortizado)</td></tr>
+<tr><td>03</td><td>Correctitud 1: invariantes, algoritmo naive, Russian Peasant</td><td><code>03-Inv-Ciclos.pdf</code></td><td><b>Sí — P2, siempre</b></td></tr>
+<tr><td>04</td><td>Correctitud 2: Selection Sort completo</td><td><code>04-Inv-Selection-updated.pdf</code></td><td><b>Sí — P2, siempre</b></td></tr>
+<tr><td>05</td><td>Análisis asintótico: $O,\Omega,\Theta,o,\omega$</td><td><code>05-Asintotic-Analysis.pdf</code> + <code>Propiedades_Notacion_Asintotica.pdf</code></td><td><b>Sí — P1, siempre</b></td></tr>
+<tr><td>06</td><td>TDAs, sus costos y costo amortizado</td><td><code>06-TDAs-updated.pdf</code></td><td><b>Sí — P4, siempre</b></td></tr>
+<tr><td>07</td><td>Dividir y conquistar: búsqueda binaria, MergeSort, QuickSort</td><td><code>07-Divid-Conq.pdf</code></td><td>Sí — P3</td></tr>
+<tr><td>08</td><td>Multiplicación de enteros y matrices: Karatsuba, Strassen</td><td><code>08-Multi-Updated.pdf</code></td><td>Sí — como ejemplo de recurrencias</td></tr>
+<tr><td>09</td><td>Teorema Maestro</td><td><code>09-Teorema-Maestro-Updated.pdf</code></td><td><b>Sí — P3, siempre</b></td></tr>
+<tr><td>10</td><td>Par de puntos más cercanos</td><td><code>10-ClosestPair.pdf</code></td><td>Sí — P1 de 2026-1</td></tr>
+<tr><td>11</td><td>Caso promedio de QuickSort</td><td><code>11-Promedio-QS.pdf</code></td><td>Sí — P1 conceptual</td></tr>
+<tr><td>12</td><td>Cotas inferiores del ordenamiento por comparación</td><td><b>PPT aún no publicado</b></td><td>Sí — P1 de 2025-1 y de 2024-2</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · la clase que falta sí entra</div>
+  <p>La clase de <b>cotas inferiores</b> ("ordenar comparando no se puede hacer en menos de $\Omega(n\log n)$") está agendada para la semana del <b>21 al 26 de septiembre</b>, o sea los días previos al certamen, y aparece en la planificación justo antes del C1. Ya cayó en la P1 de 2025-1 y de 2024-2, así que da por hecho que entra. La <a class="inl" href="#cotas">§10</a> la cubre completa con lo que se pregunta en esos certámenes; cuando suban el PPT, contrástalo.</p>
+</div>
+
+<h3>Cómo repartir las dos horas</h3>
+<div class="box tip">
+  <div class="bt">Truco · el orden en que conviene atacar</div>
+  <p>Las instrucciones del propio certamen dicen: <i>"comenzar por aquellas que le parezcan más fáciles"</i>. En la práctica el orden de menor a mayor esfuerzo suele ser <b>P1 → P4 → P3 → P2</b>.</p>
+  <p>La P2 (correctitud) es la que más se alarga porque hay que redactar mucho; déjala cuando ya tengas puntos en el bolsillo, pero <b>resérvale 35 minutos de verdad</b>. Reparto sugerido: P1 20 min · P4 25 min · P3 30 min · P2 35 min · 10 min de revisión.</p>
+</div>
+</section>
+
+<section id="previo">
+<h2>Qué necesitas saber antes</h2>
+<p>Este certamen es <b>matemática aplicada a código</b>. No hay que programar nada: hay que contar operaciones, demostrar y justificar. Estas son las herramientas previas que el curso da por sabidas. Si alguna te suena lejana, es media hora de repaso que se paga sola.</p>
+
+<h3>Logaritmos (aparecen en todas las preguntas)</h3>
+<div class="box def">
+  <div class="bt">Definición · qué es un logaritmo</div>
+  <p>$\log_b(x) = y$ significa exactamente $b^y = x$. Traducido a este ramo: <b>¿cuántas veces puedo dividir $x$ entre $b$ hasta llegar a 1?</b> Esa es la pregunta que uno se hace todo el semestre, porque es la altura de un árbol de recursión.</p>
+</div>
+<p>Las propiedades que se usan sin avisar:</p>
+<div class="tw">
+<table>
+<thead><tr><th>Propiedad</th><th>Fórmula</th><th>Dónde aparece en el ramo</th></tr></thead>
+<tbody>
+<tr><td>Producto</td><td>$\log(xy)=\log x+\log y$</td><td>Simplificar sumatorias de costos</td></tr>
+<tr><td>Potencia</td><td>$\log(x^k)=k\log x$</td><td>P1 de 2025-1: $\log_2(n^{100})=100\log_2 n$</td></tr>
+<tr><td><b>Cambio de base</b></td><td>$\log_a n=\dfrac{\log_2 n}{\log_2 a}$</td><td><b>Clave:</b> la base solo cambia una constante</td></tr>
+<tr><td>Identidad útil</td><td>$a^{\log_b n}=n^{\log_b a}$</td><td>El caso 3 del Teorema Maestro sale de aquí</td></tr>
+<tr><td>Valores</td><td>$\log_2 1024=10$, $\log_2 10\approx3{,}32$, $\log_2 3\approx1{,}58$, $\log_2 7\approx2{,}81$</td><td>Karatsuba y Strassen</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · por eso $O(\log n)$ se escribe sin base</div>
+  <p>Como $\log_a n = \frac{1}{\log_2 a}\cdot\log_2 n$ y $\frac{1}{\log_2 a}$ es una constante, todos los logaritmos de base constante $>1$ son <b>iguales asintóticamente</b>: $\log_a n \in \Theta(\log_2 n)$. Por eso nadie escribe la base dentro de un $O(\cdot)$.</p>
+  <p>Esa idea, dicha con esas palabras, es la respuesta completa a la P1(b) de 2025-2 y a la P1(b) de 2024-2. Vale 5 puntos regalados si sabes decirla.</p>
+</div>
+
+<h3>Sumatorias que hay que tener de memoria</h3>
+<div class="form">
+  $\displaystyle\sum_{i=1}^{n} i = \frac{n(n+1)}{2} \in \Theta(n^2)$ &nbsp;&nbsp;·&nbsp;&nbsp;
+  $\displaystyle\sum_{i=0}^{k} 2^i = 2^{k+1}-1$ &nbsp;&nbsp;·&nbsp;&nbsp;
+  $\displaystyle\sum_{i=0}^{k} r^i = \frac{r^{k+1}-1}{r-1}$ &nbsp;&nbsp;·&nbsp;&nbsp;
+  $\displaystyle H_n=\sum_{k=1}^{n}\frac{1}{k} \in \Theta(\log n)$
+  <span class="n">La primera sale en Selection Sort y en todo doble ciclo triangular. La segunda, en el costo amortizado del <code>vector</code>. La tercera, en el Teorema Maestro. La cuarta (armónica), en el caso promedio de QuickSort.</span>
+</div>
+
+<div class="box libro">
+  <div class="bt">Analogía · por qué la suma armónica crece como $\log n$</div>
+  <p>Imagina que cada término $\frac{1}{k}$ es un rectángulo de ancho 1 y altura $\frac{1}{k}$. Todos esos rectángulos caben debajo de la curva $f(x)=1/x$. Y el área bajo esa curva entre 1 y $n$ es exactamente $\ln n$. Por eso $\sum_{k=2}^{n}\frac 1k \le \ln n$. Es el argumento completo que usa la profesora en la clase 11.</p>
+</div>
+
+<h3>Inducción matemática (el motor de la P2)</h3>
+<p>Demostrar por inducción que una propiedad $P(k)$ vale para todo $k$:</p>
+<ol class="steps">
+  <li><b>Caso base:</b> demostrar $P(0)$ (o $P(1)$).</li>
+  <li><b>Hipótesis inductiva (H.I.):</b> suponer que $P(k)$ es verdadera.</li>
+  <li><b>Paso inductivo:</b> usando la H.I., demostrar $P(k+1)$.</li>
+</ol>
+<p>Un invariante de ciclo <b>es</b> una inducción disfrazada: inicialización = caso base, mantenimiento = paso inductivo, finalización = la conclusión que sacas cuando el ciclo para. Si te acuerdas de esta equivalencia, la P2 deja de dar miedo.</p>
+
+<h3>Repaso rápido de estructuras de datos</h3>
+<p>El ramo asume que ya cursaste Estructuras de Datos. Lo que hay que recuperar no es cómo implementarlas, sino <b>por qué cuestan lo que cuestan</b>:</p>
+<div class="tw">
+<table>
+<thead><tr><th>Estructura</th><th>Idea en una línea</th><th>Por qué su costo es ese</th></tr></thead>
+<tbody>
+<tr><td><b>Arreglo / vector</b></td><td>Bloque contiguo de memoria</td><td>Acceso $O(1)$ porque la dirección se calcula con aritmética: <code>base + i·tamaño</code>. Insertar en el medio es $O(n)$ porque hay que correr todo lo que viene después.</td></tr>
+<tr><td><b>Lista enlazada</b></td><td>Nodos con punteros</td><td>Insertar es $O(1)$ (se reconectan dos punteros) pero <i>acceder</i> al elemento $i$ es $O(n)$: hay que caminar la cadena.</td></tr>
+<tr><td><b>Árbol binario de búsqueda balanceado</b></td><td>Todo lo menor a la izquierda, lo mayor a la derecha, y el árbol se reequilibra solo</td><td>Como la altura se mantiene en $\log n$ y cada comparación baja un nivel, buscar/insertar/borrar es $O(\log n)$. Es lo que hay debajo de <code>set</code> y <code>map</code>.</td></tr>
+<tr><td><b>Tabla hash</b></td><td>Una función convierte la clave en un índice de arreglo</td><td>Ir directo a la casilla es $O(1)$ <b>en promedio</b>; si todas las claves colisionan en el mismo <i>bucket</i> degenera a una lista y queda $O(n)$ en el peor caso. Es lo que hay debajo de <code>unordered_set</code> y <code>unordered_map</code>.</td></tr>
+<tr><td><b>Heap (montículo)</b></td><td>Árbol binario casi completo donde el padre siempre gana al hijo</td><td>El máximo está en la raíz, así que mirarlo es $O(1)$. Insertar o sacar obliga a "flotar" o "hundir" un elemento por la altura del árbol: $O(\log n)$. Es lo que hay debajo de <code>priority_queue</code>.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · la trampa favorita de la P4</div>
+  <p>Un ciclo que corre $n$ veces y hace <b>una operación de <code>map</code> adentro</b> no es $O(n)$: es $O(n\log n)$. En 2025-1 la P4 llevaba esto al extremo: doble ciclo triangular ($\Theta(n^2)$) con un <code>map</code> adentro cuyo tamaño llega a $\Theta(n^2)$ ⇒ $\Theta(n^2\log n)$. Nunca analices el ciclo sin mirar qué estructura se toca adentro.</p>
+</div>
+
+<h3>Probabilidad básica (solo para la §9)</h3>
+<p>Para el caso promedio de QuickSort se necesitan tres cosas y nada más:</p>
+<ul>
+  <li><b>Variable aleatoria:</b> una función que asigna un número a cada resultado posible de un experimento.</li>
+  <li><b>Variable indicatriz:</b> una que solo vale 0 o 1. Su gracia: $E[X] = \Pr(X=1)$, porque $E[X]=0\cdot\Pr(X{=}0)+1\cdot\Pr(X{=}1)$.</li>
+  <li><b>Linealidad de la esperanza:</b> $E[X+Y]=E[X]+E[Y]$, <i>siempre</i>, aunque $X$ e $Y$ estén relacionadas. Este es el truco que hace que la demostración funcione.</li>
+</ul>
+</section>
+
+<section id="mapa">
+<h2>Mapa de la materia</h2>
+<p>Las diez clases del C1 no son diez temas sueltos. Son <b>una sola pregunta repetida</b>: dado un algoritmo, ¿es correcto y cuánto cuesta? Y luego una segunda: <b>¿se puede hacer mejor?</b> — que la profesora llama "nuestro lema" en la clase 02.</p>
+
+<figure>
+<svg viewBox="0 0 860 400" role="img" aria-label="Mapa conceptual del certamen 1">
+  <defs>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="currentColor"/>
+    </marker>
+  </defs>
+  <g font-family="system-ui,sans-serif" font-size="13" color="#5b6172">
+    <rect x="300" y="10" width="250" height="46" rx="10" fill="#e4f0f8" stroke="#1d6fa5"/>
+    <text x="425" y="30" text-anchor="middle" font-weight="700" fill="#1d6fa5">Problema computacional</text>
+    <text x="425" y="47" text-anchor="middle" font-size="12" fill="#5b6172">entrada → salida esperada</text>
+
+    <rect x="300" y="92" width="250" height="46" rx="10" fill="#e4f0f8" stroke="#1d6fa5"/>
+    <text x="425" y="112" text-anchor="middle" font-weight="700" fill="#1d6fa5">Algoritmo</text>
+    <text x="425" y="129" text-anchor="middle" font-size="12" fill="#5b6172">una receta concreta (hay muchas)</text>
+    <line x1="425" y1="56" x2="425" y2="88" stroke="#5b6172" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <rect x="40" y="180" width="230" height="80" rx="10" fill="#e3f4ee" stroke="#0e7a5f"/>
+    <text x="155" y="202" text-anchor="middle" font-weight="700" fill="#0e7a5f">¿Es CORRECTO?</text>
+    <text x="155" y="222" text-anchor="middle" font-size="12" fill="#5b6172">Invariantes de ciclo</text>
+    <text x="155" y="240" text-anchor="middle" font-size="12" fill="#5b6172">(inducción) · clases 03-04</text>
+    <text x="155" y="256" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0e7a5f">→ Pregunta 2</text>
+    <line x1="360" y1="140" x2="200" y2="176" stroke="#5b6172" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <rect x="315" y="180" width="230" height="80" rx="10" fill="#f1eafe" stroke="#7c3aed"/>
+    <text x="430" y="202" text-anchor="middle" font-weight="700" fill="#7c3aed">¿Cuánto CUESTA?</text>
+    <text x="430" y="222" text-anchor="middle" font-size="12" fill="#5b6172">T(n) y E(n) · asintótica</text>
+    <text x="430" y="240" text-anchor="middle" font-size="12" fill="#5b6172">TDAs · clases 05-06</text>
+    <text x="430" y="256" text-anchor="middle" font-size="11.5" font-weight="700" fill="#7c3aed">→ Preguntas 1 y 4</text>
+    <line x1="425" y1="140" x2="428" y2="176" stroke="#5b6172" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <rect x="590" y="180" width="230" height="80" rx="10" fill="#fdecdf" stroke="#c2410c"/>
+    <text x="705" y="202" text-anchor="middle" font-weight="700" fill="#c2410c">¿Se puede MEJOR?</text>
+    <text x="705" y="222" text-anchor="middle" font-size="12" fill="#5b6172">Dividir y conquistar</text>
+    <text x="705" y="240" text-anchor="middle" font-size="12" fill="#5b6172">Teorema Maestro · clases 07-11</text>
+    <text x="705" y="256" text-anchor="middle" font-size="11.5" font-weight="700" fill="#c2410c">→ Pregunta 3</text>
+    <line x1="495" y1="140" x2="660" y2="176" stroke="#5b6172" stroke-width="1.5" marker-end="url(#ar)"/>
+
+    <rect x="285" y="310" width="290" height="62" rx="10" fill="#fce8f1" stroke="#b4306e"/>
+    <text x="430" y="332" text-anchor="middle" font-weight="700" fill="#b4306e">¿Hasta dónde se puede mejorar?</text>
+    <text x="430" y="352" text-anchor="middle" font-size="12" fill="#5b6172">Cotas inferiores: árbol de decisión</text>
+    <text x="430" y="367" text-anchor="middle" font-size="11.5" fill="#5b6172">Ω(n log n) · clase 12</text>
+    <line x1="705" y1="260" x2="560" y2="306" stroke="#5b6172" stroke-width="1.5" marker-end="url(#ar)"/>
+  </g>
+</svg>
+<figcaption>El hilo del certamen 1: un problema admite muchos algoritmos; de cada uno preguntamos si es correcto, cuánto cuesta y si existe algo mejor. La última pregunta —¿cuál es el límite teórico?— cierra la unidad.</figcaption>
+</figure>
+
+<div class="box tip">
+  <div class="bt">Truco · la frase que ordena todo el ramo</div>
+  <p>"<b>¿Se puede hacer mejor?</b>" La profesora la repite clase a clase y estructura el semestre entero: multiplicación del colegio $O(n^2)$ → ¿mejor? → Karatsuba $O(n^{1{,}58})$. Selection Sort $O(n^2)$ → ¿mejor? → MergeSort $O(n\log n)$ → ¿mejor? → <b>no</b>, y eso se <i>demuestra</i> con cotas inferiores. Búsqueda secuencial $O(n)$ → ¿mejor? → binaria $O(\log n)$. Fuerza bruta del par más cercano $\Theta(n^2)$ → ¿mejor? → D&amp;C $O(n\log n)$.</p>
+</div>
+</section>
+
+<section id="alg">
+<h2>1 · Algoritmos, problemas y cómo se mide un algoritmo</h2>
+
+<h3>Problema vs. algoritmo</h3>
+<div class="box def">
+  <div class="bt">Definición · las dos que se piden textuales</div>
+  <p><b>Problema computacional:</b> una tarea que puede ser resuelta por un computador. Define <i>en términos generales</i> la relación entre la entrada y la salida, de manera que se pueda diseñar un algoritmo para resolverlo.</p>
+  <p><b>Algoritmo:</b> un procedimiento computacional bien definido que toma valores de entrada y produce uno o más valores de salida <b>de forma correcta</b>. Es una secuencia de pasos, una "receta".</p>
+  <p><b>La relación entre ambos:</b> un mismo problema admite <b>muchos</b> algoritmos. "Ordenar un conjunto de números" es el problema; Selection Sort, MergeSort y HeapSort son tres algoritmos que lo resuelven, con costos $O(n^2)$, $O(n\log n)$ y $O(n\log n)$.</p>
+</div>
+
+<p>La forma canónica de especificar un problema en este curso son tres líneas:</p>
+<pre><code>Problema: Ordenamiento
+Entrada:  Conjunto de enteros a₁, a₂, ..., aₙ
+Salida:   Una permutación a'₁, a'₂, ..., a'ₙ tal que a'₁ ≤ a'₂ ≤ ... ≤ a'ₙ</code></pre>
+
+<h3>Las cinco propiedades de un algoritmo</h3>
+<div class="tw">
+<table>
+<thead><tr><th>Propiedad</th><th>Qué significa</th></tr></thead>
+<tbody>
+<tr><td><b>Correcto</b></td><td>Dada una entrada válida, calcula una salida válida que cumple lo que el problema especifica. Es lo que se demuestra con invariantes de ciclo.</td></tr>
+<tr><td><b>Tener término</b></td><td>Dada una entrada válida, el algoritmo <i>siempre</i> termina. Ojo: son dos cosas distintas — un algoritmo puede terminar y dar la respuesta equivocada, o ser correcto en teoría y no terminar nunca.</td></tr>
+<tr><td><b>Eficiente</b></td><td>Consume la menor cantidad posible de recursos: CPU (tiempo, $T(n)$) y RAM (espacio, $E(n)$).</td></tr>
+<tr><td><b>Exacto</b> (numéricamente)</td><td>Cuando se usan reales hay error de representación y de redondeo; se espera que sea el mínimo posible. (Es materia de Computación Científica, no de este certamen.)</td></tr>
+<tr><td><b>Elegante</b></td><td>No está definida formalmente: tiene que ver con la simpleza y con una apreciación estética que se desarrolla con el tiempo.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Qué es "el tamaño de la entrada" — y la trampa clásica</h3>
+<p>Toda la asignatura mide el costo en función de $n$ = <b>tamaño de la entrada</b>. Y "tamaño" significa <b>cuántos bits (o dígitos) ocupa la entrada</b>, no cuánto vale el número. Esa distinción parece un tecnicismo y es, en realidad, el corazón de la clase 03.</p>
+
+<div class="box def">
+  <div class="bt">Definición · $T(n)$ y $E(n)$</div>
+  <p>$T(n)$: función que predice el <b>número de operaciones elementales</b> que ejecuta el algoritmo para una entrada de tamaño $n$.</p>
+  <p>$E(n)$: función que predice la <b>cantidad de memoria</b> usada, en función de $n$.</p>
+  <p><b>Operación elemental:</b> cualquier instrucción cuyo tiempo de ejecución se puede acotar por un número constante de ciclos de reloj (una suma, una comparación, una asignación, un acceso a un arreglo).</p>
+</div>
+
+<details class="ex">
+<summary>Ejercicio · el algoritmo naive de multiplicación<span class="tag">clase 03</span></summary>
+<div class="body">
+<p>Este algoritmo calcula $a\cdot b$ sumando $b$ consigo mismo $a$ veces (versión con acumulador):</p>
+<pre><code>x = a; y = b; z = 0
+while x &gt; 0:
+    z = z + y
+    x = x - 1
+return z</code></pre>
+<p><b>¿Cuánto cuesta?</b> El ciclo se ejecuta $x = a$ veces, y cada iteración hace ~5 operaciones elementales (una comparación, dos asignaciones, una suma, una resta). Entonces $T = 5x$ operaciones… <b>pero eso está en función del valor de $x$, no del tamaño de la entrada.</b></p>
+<p>Si $x$ se representa con $n$ dígitos decimales, entonces $x \le 10^n$, y por lo tanto:</p>
+<div class="form">$T(n) \le 5\cdot 10^{n}$ &nbsp;&nbsp;&nbsp; (o $T(n)\le 5\cdot 2^n$ si $n$ son bits)</div>
+<p><b>Conclusión:</b> el algoritmo es <b>lineal respecto del valor numérico</b> de $a$, pero <b>exponencial respecto de la cantidad de bits</b> usados para representarlo. Y como el tamaño de la entrada se mide en bits, el algoritmo es exponencial. Eso es catastrófico: multiplicar dos números de 64 bits tomaría $2^{64}$ pasos.</p>
+<p><b>Costo espacial:</b> $a, b$ ocupan $n$ bits cada uno, $x, y$ otros $n$ bits cada uno, y el acumulador $z$ a lo más $2n$ bits ⇒ total $\approx 6n$ bits, o sea $E(n)\in O(n)$.</p>
+</div>
+</details>
+
+<div class="box warn">
+  <div class="bt">Ojo · esta distinción vale puntos</div>
+  <p>Cuando un problema recibe <b>un número</b> (no una lista), pregúntate siempre si el costo está en función del <i>valor</i> o del <i>tamaño</i>. Un algoritmo que hace $a$ iteraciones es exponencial en el tamaño de la entrada. Un algoritmo que hace $\log_2 a$ iteraciones es lineal en el tamaño de la entrada. Esa es exactamente la diferencia entre el naive y Russian Peasant.</p>
+</div>
+
+<h3>Russian Peasant: la versión eficiente</h3>
+<p>La idea: en vez de sumar $b$ una vez por cada unidad de $a$, se usa la <b>representación binaria</b>. Como todo número se descompone en potencias de 2 —por ejemplo $13 = 2^3+2^2+2^0 = 8+4+1$—, se tiene:</p>
+<div class="form">$a\cdot b=\displaystyle\sum_{i=0}^{n-1} a_i\,2^i\,b$ <span class="n">donde $a_i$ es el $i$-ésimo bit de $a$</span></div>
+<pre><code>x = a; y = b; z = 0
+while x &gt; 0:
+    if x es impar:      # equivale a: si el bit menos significativo de x es 1
+        z = z + y
+    y = y &lt;&lt; 1          # y = y * 2   (shift a la izquierda)
+    x = x &gt;&gt; 1          # x = x / 2   (división entera, shift a la derecha)
+return z</code></pre>
+<p>El algoritmo va leyendo los bits de $x$ del menos al más significativo: si el bit es 1 suma la potencia correspondiente de $y$, y mientras tanto va generando esas potencias duplicando $y$.</p>
+<p><b>Costo:</b> el ciclo ya no corre $x$ veces sino $\log_2 x$ veces (cada iteración parte $x$ por la mitad). Con ~8 operaciones por iteración: $T(x)\le 8\log_2 x$. Pasando a tamaño de entrada, con $x\le 10^n$:</p>
+<div class="form">$T(n)\le 8\log_2(10^n)=8n\log_2 10 \in O(n)$</div>
+<p>O sea: <b>logarítmico en el valor del número, lineal en el tamaño de la entrada</b> —asumiendo que cada suma cuesta $O(1)$ porque los números caben en un registro del procesador. Si los números son gigantes y la suma cuesta $O(n)$, queda cuadrático.</p>
+
+<div class="box tip">
+  <div class="bt">Truco · ¿hasta qué número puedo trabajar?</div>
+  <p>Dato de la clase 03 que sirve para las tareas y para el C2: <code>int</code> son 32 bits ($\approx 2\times10^9$), <code>long long</code> son 64 bits ($\approx 9\times 10^{18}$). Referencias: la población mundial es $\approx 8\times10^9$ (no cabe en <code>int</code>) y la edad del universo en segundos es $\approx 4\times10^{17}$ (sí cabe en <code>long long</code>). Declarar <code>int</code> donde iba <code>long long</code> es una de las causas más comunes de perder un problema en el juez.</p>
+</div>
+
+<h3>Los cuatro tipos de análisis</h3>
+<p>Esta es la P1(a) del certamen 2025-2, que valía 15 puntos. Hay que saber los tres primeros con definición, característica y ejemplo:</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>Análisis</th><th>Qué es</th><th>Característica</th><th>Ejemplo canónico</th></tr></thead>
+<tbody>
+<tr><td><b>Peor caso</b></td><td>Cota superior del tiempo: garantiza que para <i>cualquier</i> entrada de tamaño $n$ el algoritmo no tardará más que eso.</td><td>Visión pesimista: se enfoca en la entrada más costosa, sin importar qué tan improbable sea. Es la medida más común y segura porque da una garantía.</td><td>QuickSort es $O(n^2)$ si el pivote es siempre el menor o el mayor elemento.</td></tr>
+<tr><td><b>Mejor caso</b></td><td>La menor cantidad de operaciones posible.</td><td>Casi nunca sirve para decidir: es demasiado optimista.</td><td>Búsqueda binaria $O(1)$ si el elemento buscado es justo el del medio.</td></tr>
+<tr><td><b>Caso promedio</b></td><td>Tiempo esperado, promediado sobre todas las entradas posibles de tamaño $n$. <b>Exige suponer una distribución de probabilidad</b> sobre las entradas (normalmente uniforme).</td><td>Más realista en la práctica, pero no da garantías para una entrada concreta y matemáticamente puede ser difícil.</td><td>QuickSort con pivote aleatorio: $O(n\log n)$ en promedio aunque su peor caso sea $O(n^2)$.</td></tr>
+<tr><td><b>Costo amortizado</b></td><td>Costo promedio por operación <b>a lo largo de una secuencia larga de operaciones</b>.</td><td><b>No</b> es un promedio sobre entradas y <b>no</b> requiere hipótesis probabilística: es un promedio sobre una secuencia de ejecuciones. Sirve cuando casi todas las operaciones son baratas y unas pocas son caras.</td><td><code>push_back</code> de un <code>vector</code> que duplica su capacidad: $O(1)$ amortizado, aunque una inserción puntual cueste $O(n)$.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · promedio ≠ amortizado</div>
+  <p>Es la confusión más penalizada del ramo. La diferencia en una frase: el <b>caso promedio</b> promedia sobre <i>entradas</i> y necesita una hipótesis probabilística; el <b>costo amortizado</b> promedia sobre <i>una secuencia de operaciones</i> y no necesita ninguna hipótesis probabilística — es una garantía determinista sobre el total.</p>
+</div>
+
+<div class="box ana">
+  <div class="bt">Analogía · promedio vs. amortizado</div>
+  <p><b>Promedio</b> es "¿cuánto me demoro en llegar a la universidad un día cualquiera?": depende de qué tan probable sea cada escenario de tráfico. Necesitas saber la distribución.</p>
+  <p><b>Amortizado</b> es el pase de micro mensual: un día pagas $\$30.000$ de una y los otros 29 días no pagas nada. Nadie diría "viajar cuesta $\$30.000$"; el costo por viaje es el total dividido por los viajes. Y eso no depende de ninguna probabilidad: es aritmética sobre lo que efectivamente pasó.</p>
+</div>
+</section>
+
+<section id="correctitud">
+<h2>2 · Correctitud: invariantes de ciclo</h2>
+<p class="lead">Vale 25 puntos y aparece en los cuatro certámenes revisados. Es la pregunta más mecánica del certamen: si te sabes la estructura, la mitad del puntaje está asegurado antes de pensar.</p>
+
+<h3>El problema que resuelve</h3>
+<p>¿Cómo sabemos que un algoritmo es correcto? Probarlo con ejemplos no basta: que funcione para 20 arreglos no demuestra nada sobre el arreglo 21. Hace falta una <b>demostración formal</b>.</p>
+<div class="box def">
+  <div class="bt">Definición · correctitud</div>
+  <p>Un algoritmo es <b>correcto</b> si, para toda entrada válida, <b>termina</b> y produce una salida que satisface las condiciones definidas por el problema computacional.</p>
+</div>
+<p>Fíjate en el detalle "para toda entrada <i>válida</i>": el ejemplo de la clase 03 es el algoritmo naive con $a<0$ — el <code>while x > 0</code> nunca se ejecuta y devuelve 0 en vez de $a\cdot b$. No es correcto para enteros arbitrarios, sí lo es para $a,b \in \mathbb{N}$.</p>
+
+<div class="box def">
+  <div class="bt">Definición · invariante de ciclo</div>
+  <p><b>Invariante:</b> un predicado o afirmación sobre un conjunto de variables que permanece verdadero bajo ciertas transformaciones.</p>
+  <p><b>Invariante de ciclo:</b> una propiedad que es verdadera <b>antes de la primera iteración</b> y permanece verdadera <b>antes de cada nueva iteración</b> del ciclo.</p>
+</div>
+
+<div class="box ana">
+  <div class="bt">Analogía · el invariante es una promesa</div>
+  <p>Piensa en un ciclo como alguien ordenando una mano de cartas. El invariante es la promesa que hace: <i>"las cartas que ya tomé están ordenadas"</i>. Antes de empezar la promesa se cumple trivialmente (no tiene ninguna carta). Cada vez que toma una carta nueva y la inserta en su lugar, la promesa se sigue cumpliendo. Cuando ya no quedan cartas, la promesa se cumple sobre <i>todas</i> las cartas — que es exactamente lo que queríamos demostrar.</p>
+  <p>Toda la demostración es: (1) la promesa parte cumplida, (2) cada iteración la conserva, (3) cuando el ciclo termina, la promesa dice lo que necesitábamos.</p>
+</div>
+
+<h3>Las tres etapas — la estructura que hay que copiar siempre</h3>
+<div class="tw">
+<table>
+<thead><tr><th>Etapa</th><th>Qué hay que demostrar</th><th>Equivalente en inducción</th></tr></thead>
+<tbody>
+<tr><td><b>1. Inicialización</b></td><td>El invariante es verdadero <b>antes</b> de la primera iteración del ciclo.</td><td>Caso base ($i=0$), cuando aún no se ha ejecutado ninguna iteración.</td></tr>
+<tr><td><b>2. Mantenimiento</b></td><td>Si el invariante es verdadero antes de una iteración, sigue siendo verdadero antes de la siguiente. Se escribe en dos partes: <b>Hipótesis inductiva</b> (suponer que vale antes de la iteración $i$) y <b>paso inductivo</b> (demostrar que vale antes de la iteración $i+1$).</td><td>Paso inductivo.</td></tr>
+<tr><td><b>3. Finalización</b></td><td>Al terminar el ciclo el invariante sigue siendo verdadero y, <b>combinado con la condición de término</b>, permite concluir que la salida es la correcta.</td><td>La conclusión.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · el reparto de puntos (pautas reales)</div>
+  <p>Del certamen 2026-1 (25 pts): enunciar el invariante <b>5 pts</b>, inicialización <b>5 pts</b>, mantenimiento <b>10 pts</b>, finalización <b>5 pts</b>. Del 2025-1: 8 / 5 / 7 / 5.</p>
+  <p>Lectura práctica: <b>escribir bien el invariante y la inicialización ya son 10 de 25 puntos</b>, y la inicialización casi siempre es trivial ("el subarreglo está vacío, se cumple por vacuidad"). Aunque no logres armar el paso inductivo completo, <b>escribe las tres etapas con sus nombres</b> y todo lo que sepas de cada una.</p>
+</div>
+
+<h3>Cómo encontrar el invariante (la parte difícil)</h3>
+<p>El truco no es adivinar: es <b>ejecutar el algoritmo a mano dos o tres iteraciones y preguntarse qué se mantuvo verdadero</b>. Las preguntas guía que da la profesora:</p>
+<ol class="steps">
+  <li><b>¿Cuál es el objetivo del algoritmo?</b> ("dejar el arreglo ordenado", "encontrar el máximo", "invertir el arreglo").</li>
+  <li><b>¿Qué variables cambian y cuáles se mantienen?</b> Identifica el índice de iteración.</li>
+  <li><b>¿Qué subarreglo tiene la propiedad que quiero preservar, expresado en términos del índice?</b> Casi siempre es <code>A[0..i-1]</code>, <code>A[i..j-1]</code>, <code>A[j+1..n-1]</code>: un prefijo, un sufijo o un tramo procesado.</li>
+  <li><b>¿Qué propiedad concreta cumple ese subarreglo?</b> ("está ordenado", "contiene los $i$ menores", "guarda el índice del mínimo").</li>
+</ol>
+
+<div class="box def">
+  <div class="bt">Definición · la plantilla del enunciado</div>
+  <p>Un invariante bien escrito tiene siempre esta forma:</p>
+  <p style="text-align:center"><i>"<b>Antes de cada iteración con índice $i$</b>, [<b>la variable / el subarreglo</b>] <b>cumple que</b> [<b>propiedad, expresada en función de $i$</b>]."</i></p>
+  <p>Si tu invariante no menciona el índice del ciclo, casi seguro está mal: no podrás hacer el paso inductivo.</p>
+</div>
+
+<h3>Ejemplo 1 · Un ciclo simple (el patrón base)</h3>
+<details class="ex" open>
+<summary>maxPrefijos — certamen 2026-1, pregunta 2 (25 pts) resuelta completa<span class="tag">certamen real</span></summary>
+<div class="body">
+<pre><code>vector&lt;int&gt; maxPrefijos(const vector&lt;int&gt;&amp; A) {
+    int n = A.size();
+    vector&lt;int&gt; B(n);
+    B[0] = A[0];
+    for (int i = 1; i &lt; n; i++) {
+        B[i] = max(B[i-1], A[i]);
+    }
+    return B;
+}</code></pre>
+<p><b>Qué hace:</b> <code>B[i]</code> guarda el máximo de <code>A[0..i]</code>.</p>
+
+<p><b>Invariante (5 pts).</b> Al comienzo de cada iteración del ciclo <code>for</code>, con índice $i$, el valor $B[i-1]$ corresponde al máximo de los elementos del subarreglo $A[0\ldots i-1]$.</p>
+
+<p><b>1. Inicialización (5 pts).</b> Antes de la primera iteración se tiene $i=1$. En ese momento ya se ejecutó <code>B[0] = A[0]</code>. El subarreglo $A[0\ldots 0]$ contiene un solo elemento, por lo que su máximo es $A[0]$. Por lo tanto $B[0]$ es el máximo de $A[0\ldots 0]$ y el invariante se cumple.</p>
+
+<p><b>2. Mantenimiento (10 pts).</b></p>
+<p><i>Hipótesis inductiva:</i> supongamos que al comienzo de la iteración con índice $i$ se cumple el invariante, es decir, $B[i-1]$ es el máximo de $A[0\ldots i-1]$.</p>
+<p><i>Paso inductivo:</i> hay que demostrar que al comienzo de la iteración $i+1$ el invariante también vale, o sea que $B[i]$ es el máximo de $A[0\ldots i]$.</p>
+<p>Durante la iteración el algoritmo calcula $B[i]=\max(B[i-1], A[i])$. Por hipótesis inductiva $B[i-1]$ es el máximo de $A[0\ldots i-1]$; al compararlo con $A[i]$, el resultado es el máximo de $A[0\ldots i-1]\cup\{A[i]\} = A[0\ldots i]$. Por lo tanto el invariante se cumple para la siguiente iteración.</p>
+
+<p><b>3. Finalización (5 pts).</b> El ciclo termina cuando $i=n$. En ese momento el último valor calculado es $B[n-1]$, que por el invariante corresponde al máximo de $A[0\ldots n-1]$. Como en cada iteración se construyó correctamente $B[i]$, se concluye que para todo índice $i$ con $0 \le i &lt; n$, $B[i]$ es el máximo de $A[0\ldots i]$, que es exactamente lo que el algoritmo debía calcular. $\blacksquare$</p>
+</div>
+</details>
+
+<div class="box tip">
+  <div class="bt">Truco · las frases que se repiten palabra por palabra</div>
+  <p>Estas cuatro frases aparecen en casi todas las pautas. Apréndetelas como fórmulas y solo cambia lo que va entre corchetes:</p>
+  <ul>
+    <li>"El subarreglo <code>A[0..-1]</code> es vacío, por lo tanto <b>el invariante se cumple trivialmente / por vacuidad</b>."</li>
+    <li>"Un subarreglo de un solo elemento está <b>trivialmente ordenado</b> y su mínimo es ese mismo elemento."</li>
+    <li>"<b>Por hipótesis inductiva</b>, [lo que sabíamos]. Analizamos el nuevo elemento $A[j]$ <b>por casos</b>."</li>
+    <li>"<b>En ambos casos</b> se cumple [el invariante con $j+1$]. Por lo tanto, antes de la iteración $j+1$, el invariante se mantiene."</li>
+  </ul>
+</div>
+
+<h3>Ejemplo 2 · Dos ciclos anidados (Selection Sort)</h3>
+<p>Cuando hay dos ciclos, hay <b>dos invariantes</b>, y el orden importa: primero se demuestra el interno, y <b>la finalización del ciclo interno se usa como herramienta</b> en el paso inductivo del externo.</p>
+
+<pre><code>for i = 0 to n-2:          # ciclo externo: construye el arreglo ordenado
+    m = i
+    for j = i+1 to n-1:    # ciclo interno: busca el mínimo
+        if A[j] &lt; A[m]:
+            m = j
+    swap(A[i], A[m])</code></pre>
+
+<div class="cols">
+  <div class="card">
+    <h5>Invariante del ciclo INTERNO</h5>
+    <p>$P(j)$: antes de cada iteración con índice $j$, con $j\in\{i+1,\ldots,n-1\}$, <b>$m$ almacena el índice del menor elemento de $A[i..j-1]$</b>.</p>
+    <p style="color:var(--muted)">Por qué: después de revisar cada nuevo elemento, seguimos sabiendo cuál es el menor visto hasta ahora.</p>
+  </div>
+  <div class="card">
+    <h5>Invariante del ciclo EXTERNO</h5>
+    <p>$P(i)$: antes de la $i$-ésima iteración, el prefijo $A[0..i-1]$ <b>contiene los $i$ elementos más pequeños del arreglo, ordenados de forma creciente</b>.</p>
+    <p style="color:var(--muted)">Por qué: la parte izquierda está ordenada <i>y además</i> son los menores. Las dos cosas hacen falta.</p>
+  </div>
+</div>
+
+<details class="ex">
+<summary>Demostración completa de Selection Sort<span class="tag">clase 04</span></summary>
+<div class="body">
+<p><b>CICLO INTERNO — $P(j)$: $m$ tiene el índice del menor de $A[i..j-1]$.</b></p>
+<p><i>Inicialización.</i> Antes de la primera iteración solo se asignó $m=i$, y $j=i+1$, así que el subarreglo es $A[i..j-1]=A[i..i]=A[i]$: un solo elemento. Como $m=i$ es el índice de ese único elemento, es trivialmente el mínimo.</p>
+<p><i>Mantenimiento.</i> H.I.: supongamos que antes de la iteración $j$ se cumple que $m$ es el índice del menor de $A[i..j-1]$. Ejecutamos la iteración $j$, que revisa el elemento $A[j]$:</p>
+<ul>
+  <li><b>Caso 1: $A[j] &lt; A[m]$.</b> Entonces $A[j]$ es menor que todos los de $A[i..j-1]$ (porque por H.I. $A[m]$ era el menor de ellos). El algoritmo actualiza $m=j$, y el nuevo $m$ pasa a ser el índice del mínimo de $A[i..j]$.</li>
+  <li><b>Caso 2: $A[j] \ge A[m]$.</b> No se actualiza $m$. Por H.I. $m$ ya era el índice del menor de $A[i..j-1]$, y el nuevo elemento no lo mejora, así que $m$ sigue siendo el índice del mínimo de $A[i..j]$.</li>
+</ul>
+<p>En ambos casos $m$ = índice del mínimo de $A[i..j]$, o sea el invariante vale antes de la iteración $j+1$.</p>
+<p><i>Finalización.</i> El ciclo interno termina con $j=n$: se recorrió todo el rango, y <b>$m$ tiene el índice del menor elemento de $A[i..n-1]$</b>. ← Esta conclusión es la que se usa abajo.</p>
+
+<hr>
+
+<p><b>CICLO EXTERNO — $P(i)$: $A[0..i-1]$ contiene los $i$ menores, ordenados.</b></p>
+<p><i>Inicialización.</i> Antes de la primera iteración, $i=0$ y el prefijo $A[0..-1]$ es vacío ⇒ el invariante se cumple trivialmente.</p>
+<p><i>Mantenimiento.</i> H.I.: antes de la iteración $i$, $A[0..i-1]$ tiene los $i$ elementos más pequeños ordenados crecientemente. Por demostrar: antes de la iteración $i+1$, $A[0..i]$ tiene los $i+1$ menores ordenados. Ejecutamos la iteración $i$:</p>
+<ol>
+  <li>Por la <b>finalización del ciclo interno</b>, $m$ es el índice del menor elemento de $A[i..n-1]$.</li>
+  <li>El <code>swap(A[i], A[m])</code> deja ese mínimo en la posición $i$.</li>
+  <li>Por H.I., $A[0..i-1]$ son los $i$ menores del arreglo original, ordenados.</li>
+  <li>El nuevo $A[i]$ es el menor de lo que quedaba, por lo tanto es $\ge$ que todos los de $A[0..i-1]$ y $\le$ que todos los de $A[i+1..n-1]$.</li>
+  <li>Entonces $A[0..i]$ queda en orden creciente y contiene los $i+1$ menores. $P(i+1)$ se cumple.</li>
+</ol>
+<p><i>Finalización.</i> Cuando el ciclo externo termina, $i=n-1$: ya está establecido el prefijo $A[0..n-2]$ con los $n-1$ menores en orden creciente. El único elemento restante, $A[n-1]$, debe ser el mayor. Por lo tanto todo $A[0..n-1]$ está ordenado crecientemente y Selection Sort es correcto. $\blacksquare$</p>
+</div>
+</details>
+
+<div class="box warn">
+  <div class="bt">Ojo · el detalle del "hasta $n-2$"</div>
+  <p>En el mantenimiento, la profesora escribe que se supone el invariante para $j\in\{i+1,\ldots,n-2\}$, no hasta $n-1$. La razón: se quiere demostrar el invariante <b>para la siguiente iteración $j+1$</b>, así que $j+1$ debe seguir siendo un índice válido. Es un detalle de rigor; si lo escribes, suma.</p>
+</div>
+
+<h3>Ejemplo 3 · Los tres invariantes clásicos que hay que reconocer</h3>
+<p>Casi todos los ejercicios de invariantes del curso caen en uno de estos moldes. Reconocer el molde te ahorra la mitad del tiempo:</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>Molde</th><th>Forma del invariante</th><th>Ejemplos donde aparece</th></tr></thead>
+<tbody>
+<tr><td><b>Acumulador</b></td><td>"Antes de la iteración $i$, la variable <code>s</code> contiene [la suma / el máximo / el producto] de $A[0..i-1]$"</td><td>Suma de un arreglo (guía de repaso ej. 3), máximo (ej. 4), <code>maxPrefijos</code> (C1 2026-1), <code>IndiceMaximo</code> (C1 2025-2)</td></tr>
+<tr><td><b>Prefijo/sufijo construido</b></td><td>"Antes de la iteración $i$, el subarreglo $A[0..i-1]$ ya está [ordenado / invertido / procesado] y además [es el conjunto correcto de elementos]"</td><td>Selection Sort (clase 04), Bubble Sort (ayudantía 1), <code>reverseVector</code> (C1 2025-1)</td></tr>
+<tr><td><b>Particionado en zonas</b></td><td>"Antes de la iteración $j$: $A[\ell..i-1]$ contiene los menores que $p$, $A[i..j-1]$ los mayores o iguales, y $A[j..r]$ los no procesados"</td><td><code>Partition</code> de QuickSort (C1 2024-2, clase 11), <code>merge</code> de MergeSort (ayudantía D&amp;C)</td></tr>
+<tr><td><b>Relación algebraica</b></td><td>"Antes de cada iteración se cumple la ecuación [ej. $ab = xy+z$, o $x=\lfloor a/2^c\rfloor$]"</td><td>Algoritmo naive y Russian Peasant (clase 03), <code>contador</code> de divisiones sucesivas (guía de repaso ej. 2)</td></tr>
+</tbody>
+</table>
+</div>
+
+<details class="ex">
+<summary>Ejercicio · reverseVector (certamen 2025-1) — el molde "prefijo/sufijo"<span class="tag">certamen real</span></summary>
+<div class="body">
+<pre><code>void reverseVector(vector&lt;int&gt; &amp;A) {
+    int i = 0;
+    int j = A.size() - 1;
+    while (i &lt; j) {
+        int temp = A[i];  A[i] = A[j];  A[j] = temp;
+        ++i;  --j;
+    }
+}</code></pre>
+<p><b>Invariante:</b> los subarreglos $A[0..i-1]$ y $A[j+1..n-1]$ ya contienen los elementos correctamente invertidos.</p>
+<p><b>Inicialización:</b> $i=0$ y $j=n-1$, de modo que $A[0..-1]$ y $A[n..n-1]$ son ambos vacíos ⇒ trivial.</p>
+<p><b>Mantenimiento:</b> H.I. — $A[0..i-1]$ tiene sus $i$ elementos invertidos y $A[j+1..n-1]$ sus $n-1-j$ elementos invertidos; $A[i..j]$ es la parte no procesada. El swap toma el primero y el último de la parte no procesada y los intercambia, que es exactamente lo que hay que hacer para invertir. Al incrementar $i$ y decrementar $j$, los subarreglos invertidos se expanden incluyendo esos dos extremos.</p>
+<p><b>Finalización:</b> el ciclo termina cuando $i\ge j$. Si $i=j$ ($n$ impar) queda un solo elemento central, que no necesita intercambio. Si $i>j$ ($n$ par) no quedan posiciones. En ambos casos $A[0..i-1]$ y $A[j+1..n-1]$ cubren todo el arreglo, que queda invertido. $\blacksquare$</p>
+<p style="color:var(--muted)"><b>Lo interesante de este ejemplo:</b> la finalización requiere analizar <b>dos casos</b> ($n$ par y $n$ impar). Cuando el ciclo no termina en un índice exacto sino en una condición (<code>i &lt; j</code>), casi siempre hay que abrir casos.</p>
+</div>
+</details>
+
+<details class="ex">
+<summary>Ejercicio · Partition de QuickSort (certamen 2024-2) — el molde "zonas"<span class="tag">certamen real</span></summary>
+<div class="body">
+<pre><code>Partition(A, ℓ, r)
+    p = A[ℓ]                    # el pivote está en la primera posición
+    i = ℓ + 1
+    for j = ℓ+1 to r:
+        if A[j] &lt; p:
+            swap(A[j], A[i])
+            i = i + 1
+    swap(A[ℓ], A[i-1])          # el pivote va a su lugar definitivo
+    return i - 1</code></pre>
+<p><b>Invariante (versión de la clase 11):</b> al comienzo de cada iteración,</p>
+<ul>
+  <li>$A[\ell]$ contiene el pivote $p$;</li>
+  <li>$A[\ell+1..i-1]$ contiene los elementos ya procesados <b>menores</b> que $p$;</li>
+  <li>$A[i..j-1]$ contiene los ya procesados <b>mayores o iguales</b> que $p$;</li>
+  <li>$A[j..r]$ contiene los <b>todavía no procesados</b>.</li>
+</ul>
+<pre><code>  ℓ            i            j            r
+[ p | &lt; p ... | ≥ p ...  | no procesados ]</code></pre>
+<p><b>Inicialización:</b> $i=j=\ell+1$, así que las zonas "menores" y "mayores" son vacías y toda la zona $A[\ell+1..r]$ está sin procesar. Trivial.</p>
+<p><b>Mantenimiento:</b> H.I. — se cumplen las cuatro condiciones antes de la iteración $j$. Casos:</p>
+<ul>
+  <li><b>$A[j] \ge p$:</b> no entra al <code>if</code>, solo avanza $j$. La zona de menores no cambia; la zona de mayores crece incorporando $A[j]$, que efectivamente es $\ge p$. El invariante se mantiene.</li>
+  <li><b>$A[j] &lt; p$:</b> se intercambia $A[j]$ con $A[i]$ (que por H.I. es el primer elemento $\ge p$) y se incrementa $i$. Resultado: $A[j]$ pasa al final de la zona de menores y el elemento $\ge p$ que estaba ahí pasa al final de la zona de mayores. Ambas zonas siguen bien definidas.</li>
+</ul>
+<p><b>Finalización:</b> el ciclo termina con $j=r+1$, así que no quedan elementos sin procesar: $A[\ell+1..i-1]$ son todos $&lt;p$ y $A[i..r]$ todos $\ge p$. El <code>swap(A[ℓ], A[i-1])</code> mueve el pivote a la posición $i-1$, justo a la derecha de todos los menores. Por lo tanto <code>A[i-1] = p</code>, todo lo de su izquierda es $&lt;p$ y todo lo de su derecha es $\ge p$, que es la postcondición de <code>Partition</code>. $\blacksquare$</p>
+</div>
+</details>
+
+<details class="ex">
+<summary>Ejercicio · Bubble Sort (ayudantía 1) — dos ciclos, para practicar el encadenado<span class="tag">ayudantía</span></summary>
+<div class="body">
+<pre><code>void bubbleSort(vector&lt;int&gt;&amp; a){
+    int n = a.size();
+    for(int i = 0; i &lt; n-1; i++){
+        for(int j = 0; j &lt; n-i-1; j++){
+            if(a[j] &gt; a[j+1]) swap(a[j], a[j+1]);
+        }
+    }
+}</code></pre>
+<p><b>Invariante interno:</b> antes de la iteración $j$, el mayor elemento del subarreglo $A[0..j]$ está en la posición $j$.</p>
+<p><b>Invariante externo:</b> antes de la iteración $i$, el subarreglo $A[n-i..n-1]$ está ordenado <b>y</b> todos sus elementos son mayores o iguales que los de $A[0..n-i-1]$.</p>
+<p><b>Mantenimiento del interno</b> (por casos): si $A[j]>A[j+1]$, por H.I. $A[j]$ era el mayor de $A[0..j]$, y el swap lo deja en la posición $j+1$. Si $A[j]\le A[j+1]$, por H.I. y transitividad $A[j+1]\ge A[j]\ge$ todos los de $A[0..j]$, así que $A[j+1]$ ya es el mayor de $A[0..j+1]$.</p>
+<p><b>Mantenimiento del externo:</b> por la finalización del interno, el mayor de $A[0..n-i-1]$ queda en la posición $n-i-1$, o sea $A[n-i-1]\ge A[0..n-i-2]$. Por H.I., $A[n-i..n-1]$ está ordenado y es $\ge A[0..n-i-1]$. Encadenando: $A[0..n-i-2] \le A[n-i-1] \le A[n-i..n-1]$, luego $A[n-i-1..n-1]$ está ordenado y sus elementos son $\ge$ que los de $A[0..n-i-2]$.</p>
+<p><b>Finalización del externo:</b> cuando $i=n$, el subarreglo $A[0..n-1]$ completo está ordenado. $\blacksquare$</p>
+<p style="color:var(--muted)"><b>Nota:</b> el orden de las zonas está invertido respecto de Selection Sort — aquí lo ordenado se acumula a la <b>derecha</b>, porque los grandes "burbujean" hacia el final. Fíjate en hacia dónde crece la zona ordenada antes de escribir el invariante.</p>
+</div>
+</details>
+
+<div class="box warn">
+  <div class="bt">Ojo · los tres errores que más cuestan puntos en la P2</div>
+  <ol>
+    <li><b>Escribir el invariante sin el índice.</b> "El arreglo está ordenado" no es un invariante: es la postcondición. Tiene que ser "antes de la iteración $i$, el subarreglo $A[0..i-1]$ está ordenado".</li>
+    <li><b>Saltarse la hipótesis inductiva.</b> El mantenimiento no es "y entonces el algoritmo hace tal cosa": hay que escribir explícitamente "<i>por hipótesis inductiva, supongamos que…</i>" y usarla. Es donde está el grueso del puntaje.</li>
+    <li><b>Olvidar la condición de término en la finalización.</b> No basta con decir "el invariante sigue valiendo". Hay que decir <b>con qué valor termina el índice</b> ($i=n$, $j=r+1$, $i\ge j$) y reemplazarlo en el invariante para obtener la conclusión sobre el arreglo completo.</li>
+  </ol>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · qué hacer si te dan un algoritmo recursivo en vez de un ciclo</div>
+  <p>Puede pasar (por ejemplo, demostrar MergeSort). Ahí <b>no hay invariante</b>: se usa <b>inducción fuerte</b> directamente sobre el tamaño del subproblema.</p>
+  <p><i>Hipótesis inductiva:</i> <code>mergeSort(v, left, right)</code> deja ordenado <code>v[left..right]</code> para todo subarreglo más chico que el actual. <i>Caso base:</i> si <code>left == right</code>, el subarreglo tiene un elemento y ya está ordenado. <i>Paso inductivo:</i> por H.I. las dos llamadas recursivas dejan ordenadas ambas mitades; y como <code>merge()</code> es correcta (eso se demuestra aparte, con invariante de ciclo), el resultado queda ordenado. Es la estructura que muestra la ayudantía de Dividir y Conquistar.</p>
+</div>
+</section>
+
+<section id="asintotico">
+<h2>3 · Análisis asintótico</h2>
+<p class="lead">La pregunta 1 del certamen es siempre, en parte, una demostración con estas definiciones. Son 20 puntos que se pueden asegurar completos porque las demostraciones son mecánicas.</p>
+
+<h3>Por qué existe</h3>
+<p>Comparar algoritmos midiendo segundos es un desastre: depende del hardware, del compilador, del lenguaje y de qué casos de prueba elegiste. Lo que queremos es una medida <b>independiente del computador</b>, que responda: cuando la entrada crece mucho, ¿cuál algoritmo escala mejor?</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>$n$</th><th>Algoritmo A: $T_A(n)=n^2$</th><th>Algoritmo B: $T_B(n)=100n$</th><th>¿Cuál gana?</th></tr></thead>
+<tbody>
+<tr><td>10</td><td>100 operaciones</td><td>1.000 operaciones</td><td>A</td></tr>
+<tr><td>100</td><td>10.000</td><td>10.000</td><td>empate</td></tr>
+<tr><td>1.000</td><td>1.000.000</td><td>100.000</td><td><b>B, por 10×</b></td></tr>
+</tbody>
+</table>
+</div>
+<p>Para entradas grandes importa <b>la tasa de crecimiento</b>, no las constantes. De ahí las dos reglas del análisis asintótico:</p>
+<div class="form"><b>1. Ignorar constantes:</b> $3n^2 \to O(n^2)$ &nbsp;&nbsp;·&nbsp;&nbsp; <b>2. Ignorar términos menores:</b> $4n^3+n+5 \to O(n^3)$
+<span class="n">Solo sobrevive el término dominante: $3n^2+10n+5 \to O(n^2)$</span></div>
+
+<div class="box tip">
+  <div class="bt">Truco · por qué esto importa de verdad</div>
+  <p>En un procesador de 1 GHz (≈$10^9$ operaciones por segundo), con $n=1000$: un algoritmo $O(n)$ tarda 1 μs, uno $O(n^2)$ tarda 1 ms, uno $O(n^3)$ tarda 1 segundo, uno $O(n^4)$ tarda 1000 segundos, y uno $O(2^n)$ tardaría $2^{1000}\approx 10^{301}$ operaciones — más que la edad del universo. La diferencia entre polinomial y exponencial es la diferencia entre "se puede" y "no se puede".</p>
+</div>
+
+<h3>Las cinco notaciones (con definición formal)</h3>
+<p>Estas cinco definiciones hay que saberlas <b>de memoria y con los cuantificadores correctos</b>. La estructura es siempre "existen/para toda constante $c>0$ y existe $n_0$ tal que [desigualdad] para todo $n\ge n_0$".</p>
+
+<div class="box def">
+  <div class="bt">Definición · Big-O (cota superior)</div>
+  <div class="form">$T(n)=O(f(n)) \iff \exists\, c>0,\ \exists\, n_0>0 \ :\ T(n)\le c\cdot f(n)\quad \forall n\ge n_0$</div>
+  <p>"$T$ no crece más rápido que $f$, salvo por una constante". A partir de cierto punto $n_0$, $T(n)$ crece a lo más como $c\cdot f(n)$. Es la cota que da <b>garantías de peor caso</b>.</p>
+  <p style="color:var(--muted)"><i>Nota de rigor:</i> escribir "$T(n)=O(f(n))$" es una convención informal; formalmente $O(f(n))$ es un <b>conjunto</b> de funciones y lo correcto es $T(n)\in O(f(n))$. Ambas se aceptan en el curso.</p>
+</div>
+
+<div class="box def">
+  <div class="bt">Definición · Big-Omega (cota inferior)</div>
+  <div class="form">$T(n)=\Omega(f(n)) \iff \exists\, c>0,\ \exists\, n_0>0 \ :\ T(n)\ge c\cdot f(n)\quad \forall n\ge n_0$</div>
+  <p>"$T$ crece al menos tan rápido como $f$". A partir de cierto $n_0$, $T(n)$ crece <b>al menos</b> como $c\cdot f(n)$.</p>
+</div>
+
+<div class="box def">
+  <div class="bt">Definición · Big-Theta (cota ajustada)</div>
+  <div class="form">$T(n)=\Theta(f(n)) \iff \exists\, c_1,c_2>0,\ \exists\, n_0 \ :\ c_1 f(n)\le T(n)\le c_2 f(n)\quad \forall n\ge n_0$</div>
+  <p>Equivalentemente: $T(n)=\Theta(f(n)) \iff T(n)=O(f(n))$ <b>y</b> $T(n)=\Omega(f(n))$. Significa que $T$ y $f$ tienen exactamente la misma tasa de crecimiento, ignorando constantes.</p>
+</div>
+
+<div class="box def">
+  <div class="bt">Definición · little-o y little-omega (cotas estrictas)</div>
+  <div class="form">$T(n)=o(f(n)) \iff \forall\, c>0,\ \exists\, n_0 \ :\ T(n) &lt; c\cdot f(n)\quad \forall n\ge n_0 \iff \lim_{n\to\infty}\frac{T(n)}{f(n)}=0$</div>
+  <div class="form">$T(n)=\omega(f(n)) \iff \forall\, c>0,\ \exists\, n_0 \ :\ T(n) > c\cdot f(n)\quad \forall n\ge n_0 \iff \lim_{n\to\infty}\frac{T(n)}{f(n)}=\infty$</div>
+  <p><b>La diferencia clave con $O$ y $\Omega$ está en el cuantificador:</b> en $O$ basta que <i>exista una</i> constante $c$; en $o$ tiene que funcionar <b>para toda</b> constante $c$, por chica que sea. Por eso $o$ dice que $T$ se vuelve <i>despreciable</i> frente a $f$, no solo "menor o igual".</p>
+</div>
+
+<h3>La analogía que ordena las cinco</h3>
+<div class="box ana">
+  <div class="bt">Analogía · comparar funciones es como comparar números</div>
+  <div class="tw">
+  <table>
+  <thead><tr><th>Comparación asintótica</th><th>Analogía numérica</th><th>Se lee</th></tr></thead>
+  <tbody>
+  <tr><td>$f(n)\in O(g(n))$</td><td>$a\le b$</td><td>$f$ crece a lo más como $g$</td></tr>
+  <tr><td>$f(n)\in \Omega(g(n))$</td><td>$a\ge b$</td><td>$f$ crece al menos como $g$</td></tr>
+  <tr><td>$f(n)\in \Theta(g(n))$</td><td>$a = b$</td><td>mismo orden de crecimiento</td></tr>
+  <tr><td>$f(n)\in o(g(n))$</td><td>$a &lt; b$</td><td>$f$ es asintóticamente <b>menor</b> que $g$</td></tr>
+  <tr><td>$f(n)\in \omega(g(n))$</td><td>$a > b$</td><td>$f$ es asintóticamente <b>mayor</b> que $g$</td></tr>
+  </tbody>
+  </table>
+  </div>
+</div>
+
+<h3>Cómo se demuestra formalmente (la receta que da 5 puntos)</h3>
+<div class="box tip">
+  <div class="bt">Truco · los cuatro pasos, siempre iguales</div>
+  <ol class="steps">
+    <li><b>Escribe la definición</b> con la desigualdad que hay que cumplir. ("Por definición, $T(n)\in O(f(n))$ si existen $c>0$ y $n_0>0$ tales que $T(n)\le c\cdot f(n)$ para todo $n\ge n_0$.")</li>
+    <li><b>Manipula algebraicamente $T(n)$</b> hasta que aparezca $f(n)$ multiplicado por algo. Aquí es donde se usan las propiedades de potencias y logaritmos.</li>
+    <li><b>Elige explícitamente $c$ y $n_0$.</b> No los dejes implícitos: escribe "tomando $c=32$ y $n_0=1$".</li>
+    <li><b>Concluye:</b> "por lo tanto $T(n)\in O(f(n))$".</li>
+  </ol>
+  <p>El paso 3 es el que la gente olvida y es donde está el puntaje. <b>Nunca uses límites</b> si el enunciado pide la definición formal: el certamen 2026-1 lo prohíbe explícitamente.</p>
+</div>
+
+<details class="ex" open>
+<summary>Ejercicio · demostrar que $T(n)=2^{n+5}$ es $O(2^n)$ — cayó en 2025-1 y en 2026-1<span class="tag">certamen real ×2</span></summary>
+<div class="body">
+<p><b>Paso 1.</b> Por definición de Big-O, hay que encontrar constantes positivas $c$ y $n_0$ tales que $T(n)\le c\cdot 2^n$ para todo $n\ge n_0$.</p>
+<p><b>Paso 2.</b> Aplicamos la propiedad de potencias $2^{a+b}=2^a 2^b$:</p>
+<div class="form">$2^{n+5} = 2^5\cdot 2^n = 32\cdot 2^n$</div>
+<p><b>Paso 3.</b> Tomando $c=32$ y $n_0=1$, se cumple $T(n)=32\cdot 2^n \le 32\cdot 2^n$ para todo $n\ge 1$.</p>
+<p><b>Paso 4.</b> Por lo tanto $T(n)=2^{n+5}\in O(2^n)$. $\blacksquare$</p>
+<p style="color:var(--muted)">Es literalmente el ejercicio más repetido del ramo: apareció idéntico en dos certámenes distintos. Que no te pille.</p>
+</div>
+</details>
+
+<details class="ex">
+<summary>Ejercicio · $T(n)=\log_2(n^{100})$, ¿es $\Omega(50\log_2 n)$? — certamen 2025-1<span class="tag">certamen real</span></summary>
+<div class="body">
+<p><b>Paso 1.</b> $T(n)\in\Omega(g(n))$ si existen $c,n_0>0$ tales que $T(n)\ge c\cdot g(n)$ para todo $n\ge n_0$, con $g(n)=50\log_2 n$.</p>
+<p><b>Paso 2.</b> Por la propiedad del exponente del logaritmo: $T(n)=\log_2(n^{100})=100\log_2 n$.</p>
+<p><b>Paso 3.</b> Queremos $100\log_2 n \ge c\cdot 50\log_2 n$. Basta $c=2$: se cumple con igualdad. Tomamos $c=2$ y $n_0=2$ (para $n\ge 2$ el logaritmo es positivo).</p>
+<p><b>Paso 4.</b> Por lo tanto sí, $T(n)\in\Omega(50\log_2 n)$. De hecho también es $\Theta$. $\blacksquare$</p>
+</div>
+</details>
+
+<details class="ex">
+<summary>Ejercicio · las tres demostraciones de la ayudantía 2<span class="tag">ayudantía</span></summary>
+<div class="body">
+<p><b>(a) $3n+5\in O(n^2)$.</b> Para $n\ge 1$ se tiene $3n+5 \le 3n^2+5n^2 = 8n^2$. Tomando $c=8$ y $n_0=1$, $3n+5\le 8n^2$ para todo $n\ge 1$. $\blacksquare$</p>
+<p style="color:var(--muted)">El truco: cuando quieras acotar por arriba, reemplaza cada término por algo más grande de la forma correcta. Como $n\le n^2$ y $1\le n^2$ para $n\ge1$, todo el polinomio queda acotado por (suma de coeficientes)$\cdot n^2$.</p>
+
+<p><b>(b) $2n^2+4n-7\in\Theta(n^2)$.</b> Hay que probar las dos cotas.</p>
+<p><i>Cota superior:</i> para $n\ge1$, $2n^2+4n-7 \le 2n^2+4n \le 2n^2+4n^2=6n^2$. Con $c_2=6$, $n_0=1$.</p>
+<p><i>Cota inferior:</i> para $n\ge 4$, $4n-7 > 0$, así que $2n^2+4n-7 \ge 2n^2 \ge 1\cdot n^2$. Con $c_1=1$, $n_0=4$.</p>
+<p>Tomando $n_0=\max\{1,4\}=4$, $c_1=1$, $c_2=6$: $1\cdot n^2 \le 2n^2+4n-7\le 6n^2$ para todo $n\ge 4$. Por lo tanto es $\Theta(n^2)$. $\blacksquare$</p>
+
+<p><b>(c) $n\log_{1000} n\in O(n\log_2 n)$.</b> Por cambio de base, $\log_{1000}n = \frac{\log_2 n}{\log_2 1000}$. Entonces $n\log_{1000}n = \frac{1}{\log_2 1000}\cdot n\log_2 n$. Tomando $c=\frac{1}{\log_2 1000}\approx 0{,}1$ (o cualquier $c\ge$ ese valor) y $n_0=1$, la desigualdad se cumple. $\blacksquare$</p>
+</div>
+</details>
+
+<h3>Cómo demostrar que algo NO es $O(\cdot)$</h3>
+<p>Cayó en 2024-2 y es lo que más cuesta. La técnica es <b>por contradicción</b>: suponer que existen $c$ y $n_0$ y llegar a un absurdo, normalmente porque la desigualdad obliga a que $n$ esté acotado.</p>
+<details class="ex">
+<summary>Ejercicio · demostrar que $n^k \notin O(n^{k-1})$<span class="tag">clase 05</span></summary>
+<div class="body">
+<p>Supongamos que sí, es decir, que existen $c>0$ y $n_0$ tales que $n^k \le c\cdot n^{k-1}$ para todo $n\ge n_0$.</p>
+<p>Dividiendo ambos lados por $n^{k-1}$ (que es positivo para $n\ge1$): $n \le c$ para todo $n\ge n_0$.</p>
+<p>Pero eso dice que <b>todos</b> los naturales mayores que $n_0$ son menores o iguales que la constante fija $c$, lo cual es falso: basta tomar $n=\max\{n_0, \lceil c\rceil+1\}$ para tener una contradicción. Por lo tanto $n^k\notin O(n^{k-1})$. $\blacksquare$</p>
+<p style="color:var(--muted)"><b>El patrón general:</b> divide por la función más chica; si te queda algo que crece sin cota acotado por una constante, ya tienes la contradicción.</p>
+</div>
+</details>
+
+<h3>Propiedades de la notación asintótica</h3>
+<p>Están en el apunte <code>Propiedades_Notacion_Asintotica.pdf</code> (basado en la sección 3.1 de Cormen). Hay que conocerlas porque permiten justificar en una línea lo que si no toma media página. Supuesto general: todas las funciones son <b>asintóticamente no negativas</b>.</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>Propiedad</th><th>Enunciado</th><th>Para qué sirve</th></tr></thead>
+<tbody>
+<tr><td><b>Transitividad</b><br><small>(vale para las cinco)</small></td><td>$f\in O(g)$ y $g\in O(h)$ $\Rightarrow$ $f\in O(h)$</td><td>Encadenar cotas: como $3n+7\in O(n)$ y $n\in O(n^2)$, entonces $3n+7\in O(n^2)$.</td></tr>
+<tr><td><b>Reflexividad</b><br><small>(solo $O,\Omega,\Theta$)</small></td><td>$f\in\Theta(f)$, $f\in O(f)$, $f\in\Omega(f)$ &nbsp;(basta $c=1$)</td><td>$o$ y $\omega$ <b>no</b> son reflexivas: una función no crece estrictamente más rápido que sí misma.</td></tr>
+<tr><td><b>Simetría de $\Theta$</b></td><td>$f\in\Theta(g) \iff g\in\Theta(f)$</td><td>$\Theta$ es la única simétrica; $O$ no lo es.</td></tr>
+<tr><td><b>Simetría transpuesta</b></td><td>$f\in O(g) \iff g\in\Omega(f)$ &nbsp;·&nbsp; $f\in o(g)\iff g\in\omega(f)$</td><td><b>Muy útil:</b> convierte una pregunta sobre $\Omega$ en una sobre $O$, que suele ser más fácil.</td></tr>
+<tr><td><b>Caracterización de $\Theta$</b></td><td>$f\in\Theta(g) \iff f\in O(g)$ y $f\in\Omega(g)$</td><td>La forma estándar de demostrar un $\Theta$: dos demostraciones.</td></tr>
+<tr><td><b>Constantes</b></td><td>$c\cdot f(n)\in\Theta(f(n))$ para $c>0$ constante</td><td>Justifica en una línea "las constantes no importan".</td></tr>
+<tr><td><b>Regla de la suma / máximo</b></td><td>$\max\{f,g\}\in\Theta(f+g)$ &nbsp; ⇒ &nbsp; $O(f)+O(g)=O(\max\{f,g\})$</td><td><b>La que más se usa en la P4:</b> al sumar bloques, gana el dominante. $O(n\log n)+O(n^2)=O(n^2)$.</td></tr>
+<tr><td><b>Regla del producto</b></td><td>$O(f)\cdot O(g)=O(f\cdot g)$</td><td>Ciclos anidados: $O(n)\cdot O(\log n)=O(n\log n)$.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · la tricotomía NO se conserva</div>
+  <p>Con números reales siempre pasa exactamente una de $a&lt;b$, $a=b$, $a>b$. Con funciones <b>no</b>: existen pares de funciones que no son comparables. El contraejemplo del apunte es $f(n)=n$ y $g(n)=n^{1+\sin n}$: como $\sin n$ oscila entre $-1$ y $1$, el exponente de $g$ oscila entre 0 y 2, de modo que $g$ a veces es mucho mayor y a veces mucho menor que $f$. Resultado: $f\notin O(g)$ <b>y</b> $f\notin\Omega(g)$.</p>
+  <p>Conclusión que puede pedirse textual: <b>la notación asintótica define un orden parcial entre funciones, no un orden total.</b></p>
+</div>
+
+<h3>La jerarquía de crecimiento (para memorizar)</h3>
+<div class="form">$1 \;&lt;\; \log n \;&lt;\; \sqrt{n} \;&lt;\; n \;&lt;\; n\log n \;&lt;\; n^2 \;&lt;\; n^3 \;&lt;\; 2^n \;&lt;\; n!$</div>
+<div class="tw">
+<table>
+<thead><tr><th>$n$</th><th>$\log_2 n$</th><th>$n\log_2 n$</th><th>$n^2$</th><th>$2^n$</th></tr></thead>
+<tbody>
+<tr><td>10</td><td>3,3</td><td>23</td><td>100</td><td>1.024</td></tr>
+<tr><td>100</td><td>6,6</td><td>461</td><td>10.000</td><td>$\approx 1{,}27\times10^{30}$</td></tr>
+<tr><td>1.000</td><td>10</td><td>6.908</td><td>1.000.000</td><td>$\approx 10^{301}$</td></tr>
+</tbody>
+</table>
+</div>
+<p>Todas parecen parecidas al inicio, pero cuando $n$ crece se separan brutalmente. Fíjate en $n\log n$ vs. $n^2$: para $n=1000$ la diferencia ya es de 145×. Esa es la diferencia entre MergeSort y Selection Sort.</p>
+
+<h3>Contar operaciones en código (la base de la P4)</h3>
+<p>Antes de escribir cualquier $O$, hay que contar. Los cuatro patrones del curso:</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>Patrón</th><th>Código</th><th>$T(n)$</th><th>Clase</th></tr></thead>
+<tbody>
+<tr><td>Ciclo simple</td><td><code>for i = 1 to n</code></td><td>$n$ iteraciones</td><td>$O(n)$ — lineal</td></tr>
+<tr><td>Dos ciclos <b>consecutivos</b></td><td><code>for i=1..n</code> <i>después</i> <code>for i=1..n</code></td><td>$n+n=2n$</td><td>$O(n)$ — <b>se suman</b>, no se multiplican</td></tr>
+<tr><td>Ciclos anidados completos</td><td><code>for i=1..n { for j=1..n }</code></td><td>$n\cdot n = n^2$</td><td>$O(n^2)$</td></tr>
+<tr><td>Ciclos anidados <b>triangulares</b></td><td><code>for i=1..n { for j=i+1..n }</code></td><td>$(n-1)+(n-2)+\cdots+1=\frac{n(n-1)}{2}$</td><td>$O(n^2)$ igual, pero la mitad de operaciones</td></tr>
+<tr><td>Ciclo que multiplica/divide</td><td><code>i=1; while i&lt;n: i = 2*i</code></td><td>$\log_2 n$ iteraciones</td><td>$O(\log n)$</td></tr>
+<tr><td>Ciclo lineal con uno logarítmico dentro</td><td><code>for i=1..n { j=1; while j&lt;n: j*=2 }</code></td><td>$n\log_2 n$</td><td>$O(n\log n)$</td></tr>
+<tr><td>Ciclo con cota <b>constante</b></td><td><code>s=5; for i=1..n { for j=1..s }</code></td><td>$5n$</td><td>$O(n)$ — <b>trampa clásica:</b> el ciclo interno no depende de $n$</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · un doble ciclo no implica $O(n^2)$</div>
+  <p>Es una advertencia textual de la clase 10. Dos ejemplos donde el doble ciclo <b>no</b> es cuadrático:</p>
+  <ul>
+    <li>El ciclo interno corre una cantidad <b>constante</b> de veces (como el ejercicio F de la guía de repaso: <code>for j in range(5)</code>) ⇒ $O(n)$.</li>
+    <li><code>ClosestSplitPair</code>: el ciclo externo corre $\ell$ veces y el interno <b>a lo más 7</b> ⇒ $7\ell \le 7n = O(n)$.</li>
+  </ul>
+  <p>La regla real es: <b>cuenta cuántas veces se ejecuta la instrucción del fondo</b>, no cuántos <code>for</code> ves.</p>
+</div>
+</section>
+
+<section id="tdas">
+<h2>4 · TDAs, sus costos y el costo amortizado</h2>
+<p class="lead">Es la pregunta 4 completa: 25 puntos. Y es la más "estudiable" del certamen, porque en el fondo es saberse una tabla y justificar bien.</p>
+
+<h3>Qué es un TDA</h3>
+<div class="box def">
+  <div class="bt">Definición · Tipo de Dato Abstracto</div>
+  <p>Un <b>TDA</b> es una colección de datos más un conjunto de operaciones bien definidas sobre ellos. Define <b>qué</b> operaciones están disponibles, pero <b>no cómo</b> se implementan.</p>
+  <p>Detrás de cada TDA hay una <b>estructura de datos</b> concreta, que se elige según qué operaciones se quieran optimizar. Esa separación es la que permite razonar sobre costos sin mirar el código de la librería.</p>
+</div>
+
+<p>La motivación de la clase 06: si tienes un millón de RUTs y hay que responder si un RUT existe, con un <code>vector</code> cada consulta cuesta $O(n)$. Con 10 millones de consultas diarias eso es inviable. Con un <code>unordered_set</code> cada consulta es $O(1)$ en promedio. <b>Mismo problema, misma respuesta, 6 órdenes de magnitud de diferencia</b> — solo por elegir bien la estructura.</p>
+
+<div class="box def">
+  <div class="bt">Definición · las tres razones por las que importan</div>
+  <p><b>Abstracción:</b> no importa la implementación interna ni cómo se guardan los datos en memoria.</p>
+  <p><b>Eficiencia:</b> elegir la estructura correcta optimiza el tiempo. La frase textual de la clase: <i>"la elección del TDA adecuado puede reducir el tiempo de ejecución de un algoritmo desde $O(n)$ hasta $O(1)$ o $O(\log n)$, sin cambiar el problema que se desea resolver"</i>.</p>
+  <p><b>Reuso:</b> facilitan la modularidad y la reutilización de código.</p>
+</div>
+
+<h3>La tabla maestra de la STL</h3>
+<p><b>Esto hay que sabérselo de memoria.</b> Es lo que se evalúa literalmente en la P4 de todos los certámenes.</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>Contenedor</th><th>Qué es por dentro</th><th>Acceso</th><th>Búsqueda</th><th>Inserción</th><th>Borrado</th><th>Espacio</th></tr></thead>
+<tbody>
+<tr><td colspan="7" style="background:var(--brand-soft);font-weight:700;color:var(--brand)">Secuenciales</td></tr>
+<tr><td><code>array</code></td><td>Arreglo de tamaño fijo, contiguo</td><td>$O(1)$</td><td>$O(n)$</td><td>—</td><td>—</td><td>$O(n)$</td></tr>
+<tr><td><code>vector</code></td><td>Arreglo dinámico (crece duplicando)</td><td>$O(1)$</td><td>$O(n)$</td><td>$O(1)$* al final<br>$O(n)$ en el medio</td><td>$O(1)$ al final<br>$O(n)$ en el medio</td><td>$O(n)$</td></tr>
+<tr><td><code>list</code></td><td>Lista doblemente enlazada</td><td>$O(1)$ solo a los extremos, $O(n)$ al resto</td><td>$O(n)$</td><td>$O(1)$ en los extremos o con iterador</td><td>$O(1)$ ídem</td><td>$O(n)$</td></tr>
+<tr><td><code>deque</code></td><td>Bloques contiguos, doble extremo</td><td>$O(1)$</td><td>$O(n)$</td><td>$O(1)$ en ambos extremos</td><td>$O(1)$ ídem</td><td>$O(n)$</td></tr>
+<tr><td colspan="7" style="background:var(--brand-soft);font-weight:700;color:var(--brand)">Adaptadores</td></tr>
+<tr><td><code>stack</code></td><td>LIFO sobre <code>deque</code></td><td>$O(1)$ solo al tope</td><td>—</td><td>$O(1)$ <code>push</code></td><td>$O(1)$ <code>pop</code></td><td>$O(n)$</td></tr>
+<tr><td><code>queue</code></td><td>FIFO sobre <code>deque</code></td><td>$O(1)$ front/back</td><td>—</td><td>$O(1)$ al final</td><td>$O(1)$ al inicio</td><td>$O(n)$</td></tr>
+<tr><td><code>priority_queue</code></td><td><b>Heap</b> binario</td><td>$O(1)$ al <code>top</code> (mayor prioridad)</td><td>—</td><td><b>$O(\log n)$</b> <code>push</code></td><td><b>$O(\log n)$</b> <code>pop</code></td><td>$O(n)$</td></tr>
+<tr><td colspan="7" style="background:var(--brand-soft);font-weight:700;color:var(--brand)">Asociativos ordenados (árbol binario balanceado)</td></tr>
+<tr><td><code>set</code></td><td>Elementos únicos ordenados</td><td>—</td><td>$O(\log n)$</td><td>$O(\log n)$</td><td>$O(\log n)$</td><td>$O(n)$</td></tr>
+<tr><td><code>map</code></td><td>Pares clave→valor, ordenados por clave, clave única</td><td>$O(\log n)$ (<code>m[k]</code> inserta si no existe)</td><td>$O(\log n)$</td><td>$O(\log n)$</td><td>$O(\log n)$</td><td>$O(n)$</td></tr>
+<tr><td><code>multiset</code> / <code>multimap</code></td><td>Igual, pero permiten repetidos</td><td>—</td><td>$O(\log n)$</td><td>$O(\log n)$</td><td>$O(\log n)$</td><td>$O(n)$</td></tr>
+<tr><td colspan="7" style="background:var(--brand-soft);font-weight:700;color:var(--brand)">Asociativos desordenados (tabla hash)</td></tr>
+<tr><td><code>unordered_set</code><br><code>unordered_map</code></td><td>Tabla hash</td><td>$O(1)$ prom.<br><b>$O(n)$ peor caso</b></td><td>$O(1)$ prom.<br>$O(n)$ peor</td><td>$O(1)$ prom.<br>$O(n)$ peor</td><td>$O(1)$ prom.<br>$O(n)$ peor</td><td>$O(n)$</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · los dos asteriscos de esa tabla</div>
+  <p><b>1. <code>vector::push_back</code> es $O(1)$ <i>amortizado</i>, no $O(1)$ a secas.</b> Cuando el vector se llena hay que redimensionar y copiar todo, y eso cuesta $O(n)$. Si en el certamen te preguntan por una inserción puntual en el peor caso, la respuesta es $O(n)$; si preguntan por $n$ inserciones, el total es $O(n)$ y el costo por operación es $O(1)$ amortizado.</p>
+  <p><b>2. Las tablas hash son $O(1)$ <i>en promedio</i>, $O(n)$ en el peor caso.</b> El peor caso ocurre si todas las claves colisionan en el mismo <i>bucket</i>. Como el certamen casi siempre pide <b>peor caso</b>, hay que decir las dos cosas y explicitar cuál estás usando.</p>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · cómo elegir el TDA (y cómo responder si lo preguntan)</div>
+  <p>Las preguntas guía de la clase 06: ¿qué operaciones necesito? ¿cuáles deben ser rápidas? ¿necesito mantener un orden? ¿asociar claves con valores? ¿necesito prioridades?</p>
+  <div class="tw">
+  <table>
+  <thead><tr><th>Necesidad</th><th>TDA</th></tr></thead>
+  <tbody>
+  <tr><td>Lista de próximas canciones</td><td><code>queue</code> (FIFO)</td></tr>
+  <tr><td>Botón "atrás" / deshacer (undo)</td><td><code>stack</code> (LIFO)</td></tr>
+  <tr><td>Elegir el próximo nodo en Dijkstra</td><td><code>priority_queue</code></td></tr>
+  <tr><td>Saber rápido si un usuario existe</td><td><code>unordered_set</code> (hash)</td></tr>
+  <tr><td>Buscar contacto por nombre (clave→valor)</td><td><code>unordered_map</code>, o <code>map</code> si además hace falta el orden</td></tr>
+  <tr><td>Mantener datos siempre ordenados</td><td><code>set</code> / <code>multiset</code></td></tr>
+  </tbody>
+  </table>
+  </div>
+</div>
+
+<h3>Caso promedio de una búsqueda secuencial</h3>
+<p>Aparece en las clases 06 y 07, y es el ejemplo más simple de cálculo de esperanza del ramo. Vale la pena saber reproducirlo porque es exactamente el mismo mecanismo que se usa en QuickSort.</p>
+<p><b>Supuestos (el "modelo probabilístico"):</b> el elemento buscado siempre está presente, puede estar en cualquiera de las $n$ posiciones, y todas las posiciones tienen la misma probabilidad $\frac1n$.</p>
+<p>Si está en la posición $i$, se hacen $i$ comparaciones. Entonces:</p>
+<div class="form">$E[C]=\displaystyle\sum_{i=1}^{n} i\cdot \Pr(\text{está en la posición } i)=\sum_{i=1}^{n} i\cdot\frac{1}{n}=\frac{1}{n}\cdot\frac{n(n+1)}{2}=\frac{n+1}{2}\in\Theta(n)$</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · el caso promedio depende de los supuestos</div>
+  <p>Frase textual de la clase: <i>"el caso promedio depende de los supuestos distribucionales. Si cambia la distribución de las entradas, puede cambiar el costo promedio"</i>. Si te piden calcular un caso promedio, <b>lo primero que hay que escribir es el modelo probabilístico que estás asumiendo</b>. Sin eso, la respuesta no está justificada.</p>
+</div>
+
+<h3>Costo amortizado: por qué <code>push_back</code> es $O(1)$</h3>
+<p>Esta demostración cayó como concepto en 2025-2 y es el ejemplo canónico del ramo. Vale la pena entenderla, no memorizarla.</p>
+
+<div class="box def">
+  <div class="bt">Definición · costo amortizado</div>
+  <p>Cuando en una secuencia de operaciones la mayoría son baratas pero algunas poco frecuentes son caras, el análisis del peor caso es <b>demasiado pesimista</b> y no refleja el costo real. La idea del análisis amortizado es <b>distribuir (amortizar) el costo de las operaciones caras entre todas las operaciones</b>.</p>
+  <div class="form">$\text{costo amortizado por operación}=\dfrac{\text{costo total de la secuencia}}{\text{número de operaciones}}$</div>
+</div>
+
+<details class="ex" open>
+<summary>La demostración completa (suponiendo que la capacidad se duplica)<span class="tag">clase 06</span></summary>
+<div class="body">
+<p><b>Paso 1 · el costo de las inserciones.</b> Cada inserción, por sí sola, cuesta 1. Insertar $n$ elementos cuesta $n$.</p>
+<p><b>Paso 2 · el costo de las copias.</b> Cada vez que el vector se llena, hay que crear un arreglo del doble de tamaño y copiar todo. Si la capacidad se duplica, las copias ocurren cuando el vector tiene $1, 2, 4, 8, \ldots, 2^k$ elementos, y el costo total de todas las copias es:</p>
+<div class="form">$1+2+4+\cdots+2^k = 2^{k+1}-1$ <span class="n">(suma geométrica)</span></div>
+<p><b>Paso 3 · acotar $2^{k+1}$.</b> Como $2^k$ es el mayor número de elementos copiados en una expansión, se cumple $2^k &lt; n \le 2^{k+1}$. Multiplicando la desigualdad izquierda por 2: $2^{k+1} &lt; 2n$. Por lo tanto:</p>
+<div class="form">$1+2+4+\cdots+2^k = 2^{k+1}-1 &lt; 2n-1 &lt; 2n$</div>
+<p><b>Paso 4 · sumar todo.</b></p>
+<div class="form">$\text{Costo total} &lt; \underbrace{n}_{\text{inserciones}} + \underbrace{2n}_{\text{copias}} = 3n \in O(n)$</div>
+<p><b>Paso 5 · dividir.</b> El costo amortizado por operación es $\frac{O(n)}{n}=O(1)$. Por lo tanto <b><code>push_back</code> tiene costo amortizado $O(1)$</b>: aunque algunas inserciones sean caras, su costo se distribuye entre muchas baratas. $\blacksquare$</p>
+</div>
+</details>
+
+<div class="box ana">
+  <div class="bt">Analogía · por qué duplicar es la clave</div>
+  <p>Si el vector creciera de a uno (capacidad +1 cada vez), habría que copiar todo en <i>cada</i> inserción: $1+2+3+\cdots+n = \frac{n(n+1)}{2}=O(n^2)$ para $n$ inserciones, o sea $O(n)$ amortizado. Un desastre.</p>
+  <p>Al <b>duplicar</b>, las copias se vuelven cada vez más raras justo al mismo ritmo que se vuelven más caras, y las dos cosas se cancelan. Es como mudarse a una casa del doble de tamaño: la mudanza es más pesada cada vez, pero también pasa mucho más tiempo entre mudanzas.</p>
+</div>
+
+<h3>Cómo se responde la P4 (la plantilla completa)</h3>
+<div class="box tip">
+  <div class="bt">Truco · la receta bloque por bloque</div>
+  <ol class="steps">
+    <li><b>Para cada bloque marcado:</b> ¿cuántas veces se ejecuta el ciclo? × ¿qué cuesta cada operación de adentro? Nombra la estructura y por qué cuesta eso ("<code>set</code> es un árbol balanceado ⇒ <code>insert</code> es $O(\log n)$").</li>
+    <li><b>Cuidado con el tamaño de la estructura:</b> el $\log$ es del <b>número de elementos que tiene esa estructura</b>, no necesariamente de $n$. Si un <code>map</code> puede llegar a tener $n^2$ entradas, cada operación cuesta $O(\log n^2)=O(2\log n)=O(\log n)$; si tiene $m$ elementos, cuesta $O(\log m)$.</li>
+    <li><b>Suma los bloques</b> y aplica la regla del máximo: $O(f)+O(g)=O(\max\{f,g\})$. Dilo con esas palabras ("por la regla de la suma, el término dominante es…").</li>
+    <li><b>Espacio adicional:</b> suma el tamaño máximo de cada estructura auxiliar que se crea. <b>La entrada no cuenta</b> como espacio adicional (dilo explícitamente: "la matriz de entrada se asume preexistente y no se contabiliza como memoria extra"). Si hay recursión, agrega la profundidad de la pila.</li>
+  </ol>
+</div>
+
+<details class="ex">
+<summary>Ejercicio · ProcesarPrioridades — certamen 2026-1, pregunta 4 (25 pts)<span class="tag">certamen real</span></summary>
+<div class="body">
+<pre><code>std::vector&lt;int&gt; ProcesarPrioridades(const std::vector&lt;int&gt;&amp; A) {
+    int n = A.size();
+    // --- Bloque A ---
+    std::priority_queue&lt;int&gt; heap;
+    for (int x : A) { heap.push(x); }
+
+    // --- Bloque B ---
+    std::vector&lt;int&gt; resultado;
+    for (int i = 0; i &lt; n; ++i) {
+        for (int j = i; j &lt; n; ++j) {
+            if (A[i] + A[j] &gt; 100 &amp;&amp; A[i] % 2 == 0) {
+                resultado.push_back(A[i]);
+                break;
+            }
+        }
+    }
+    return resultado;
+}</code></pre>
+<p><b>(a) Bloque A (7 pts).</b> Se recorre el arreglo $A$: $n$ iteraciones. En cada paso se llama a <code>heap.push(x)</code>, que en una <code>priority_queue</code> (implementada con un heap binario) cuesta $O(\log k)$, donde $k$ es el tamaño actual del heap. Como $k\le n$, cada inserción es a lo más $O(\log n)$, y en total: <b>$O(n\log n)$</b>.</p>
+<p><b>(a) Bloque B (8 pts).</b> Ciclos anidados. El externo corre $n$ veces; el interno corre $n-i$ veces. En el <b>peor caso</b> la condición del <code>if</code> nunca se cumple, así que el <code>break</code> nunca se ejecuta y el ciclo interno se recorre completo. El total es</p>
+<div class="form">$\displaystyle\sum_{i=0}^{n-1}(n-i)=\frac{n(n+1)}{2}\in O(n^2)$</div>
+<p><b>(b) Total (5 pts).</b> $T(n)=O(n\log n)+O(n^2)$. Por la regla de la suma, domina el término cuadrático: <b>$T(n)=O(n^2)$</b>.</p>
+<p><b>(c) Espacio (5 pts).</b> El heap almacena $n$ elementos ⇒ $O(n)$. El vector <code>resultado</code> puede llegar a almacenar hasta $n$ elementos ⇒ $O(n)$. Total: <b>$E(n)=O(n)$</b> de espacio auxiliar.</p>
+</div>
+</details>
+
+<details class="ex">
+<summary>Ejercicio · paresConSumaX — certamen 2025-2, pregunta 4 (dos tamaños: $n$ y $m$)<span class="tag">certamen real</span></summary>
+<div class="body">
+<pre><code>vector&lt;pair&lt;int,int&gt;&gt; paresConSumaX(int x, const vector&lt;int&gt;&amp; a, const vector&lt;int&gt;&amp; b) {
+    // ----- Bloque A -----
+    set&lt;int&gt; en_b;
+    for (int y : b) en_b.insert(y);
+
+    // ----- Bloque B -----
+    set&lt;pair&lt;int,int&gt;&gt; pares_ordenados;
+    for (int u : a) {
+        int v = x - u;
+        if (en_b.find(v) != en_b.end())
+            pares_ordenados.insert(make_pair(u, v));
+    }
+
+    // ----- Bloque C -----
+    vector&lt;pair&lt;int,int&gt;&gt; resultado(pares_ordenados.begin(), pares_ordenados.end());
+    return resultado;
+}</code></pre>
+<p>Con $|a|=n$, $|b|=m$ y $m\le n$.</p>
+<p><b>Bloque A:</b> $m$ inserciones en un <code>set&lt;int&gt;</code> (árbol balanceado) ⇒ cada una $O(\log m)$ ⇒ <b>$O(m\log m)$</b>.</p>
+<p><b>Bloque B:</b> $n$ búsquedas en <code>en_b</code>, cada una $O(\log m)$, y a lo más $n$ inserciones en <code>pares_ordenados</code>, que puede crecer hasta $n$ ⇒ cada inserción $O(\log n)$. El término dominante es la construcción del set de pares: <b>$O(n\log n)$</b>.</p>
+<p><b>Bloque C:</b> copiar el set a un vector, elemento por elemento: <b>$O(n)$</b>.</p>
+<p><b>Total:</b> $T(n,m)=O(m\log m)+O(n\log n)+O(n) = \boldsymbol{O(n\log n)}$, ya que $m\le n$.</p>
+<p><b>Espacio:</b> el <code>set&lt;int&gt;</code> tiene a lo más $m$ claves ⇒ $O(m)$; el set de pares a lo más $n$ ⇒ $O(n)$; el vector de salida a lo más $n$ ⇒ $O(n)$. Total: <b>$E(n,m)=O(m+n)$</b>.</p>
+<p style="color:var(--muted)"><b>Lo que enseña este ejercicio:</b> cuando hay dos tamaños de entrada, hay que arrastrar los dos hasta el final y solo al concluir usar la relación entre ellos ($m\le n$). Escribir $O(n\log n)$ desde el principio pierde puntos de justificación.</p>
+</div>
+</details>
+
+<details class="ex">
+<summary>Ejercicio · mostFrequentSymmetric — certamen 2025-1, el caso del $\log$ traicionero<span class="tag">certamen real</span></summary>
+<div class="body">
+<pre><code>pair&lt;int,int&gt; mostFrequentSymmetric(int n, const vector&lt;vector&lt;int&gt;&gt;&amp; a) {
+    // ---------- Bloque A ----------
+    map&lt;int,int&gt; freq;
+    for (int i = 0; i &lt; n; ++i)
+        for (int j = i; j &lt; n; ++j) {
+            int val = a[i][j];
+            if (i == j) ++freq[val];
+            else        freq[val] += 2;
+        }
+    // ---------- Bloque B ----------
+    int bestVal = 0, bestCount = -1;
+    for (auto it = freq.begin(); it != freq.end(); ++it)
+        if (it-&gt;second &gt; bestCount) { bestVal = it-&gt;first; bestCount = it-&gt;second; }
+    return {bestVal, bestCount};
+}</code></pre>
+<p><b>Bloque A.</b> Los dos ciclos recorren solo la parte triangular superior de la matriz:</p>
+<div class="form">$\displaystyle\sum_{i=0}^{n-1}(n-i)=\frac{n(n+1)}{2}=\Theta(n^2)$</div>
+<p>Cada operación sobre el <code>map</code> cuesta $O(\log|\text{freq}|)$. <b>Aquí está la trampa:</b> en el peor caso todos los $\frac{n^2}{2}$ elementos son distintos, así que $|\text{freq}|=\Theta(n^2)$ y cada acceso cuesta $O(\log n^2)=O(2\log n)=O(\log n)$. Entonces el bloque A es $\Theta(n^2)\times O(\log n)=\boldsymbol{\Theta(n^2\log n)}$.</p>
+<p><b>Bloque B.</b> Recorre el mapa una vez: $O(|\text{freq}|)=\Theta(n^2)$, asintóticamente menor que $n^2\log n$.</p>
+<p><b>Total:</b> $T(n)=\Theta(n^2\log n)$. &nbsp;<b>Espacio:</b> el mapa puede tener una entrada por celda distinta ⇒ $E(n)=\Theta(n^2)$ de memoria adicional (la matriz de entrada se asume preexistente y no se cuenta).</p>
+<p style="color:var(--muted)"><b>La lección:</b> el $\log$ de un <code>map</code> es del <b>tamaño del map</b>, no de $n$. Aquí eso cambia el resultado de $\Theta(n^2)$ a $\Theta(n^2\log n)$.</p>
+</div>
+</details>
+</section>
+
+<section id="dyc">
+<h2>5 · Dividir y conquistar</h2>
+<p class="lead">El paradigma central del certamen. La pregunta 3 (30 puntos) siempre es un algoritmo D&amp;C que hay que analizar.</p>
+
+<div class="box def">
+  <div class="bt">Definición · los tres pasos</div>
+  <p><b>Dividir</b> el problema de tamaño $n$ en $a$ subproblemas de tamaño $n/b$. &nbsp;→&nbsp; <b>Conquistar</b>: resolver los subproblemas recursivamente hasta llegar a un caso base. &nbsp;→&nbsp; <b>Combinar</b>: unir las soluciones parciales para obtener la solución global.</p>
+  <p>El costo de un algoritmo D&amp;C se describe naturalmente con una <b>recurrencia</b>, y por eso el Teorema Maestro es su herramienta natural de análisis.</p>
+</div>
+
+<h3>Búsqueda binaria</h3>
+<p>El D&amp;C más simple: en cada paso <b>elimino la mitad del problema</b>. Requiere que el arreglo esté <b>ordenado</b>.</p>
+<pre><code>BinarySearch(A, key, low, high):
+  if low &gt; high:  return -1
+  mid = (low + high) / 2
+  if key == A[mid]:      return mid
+  else if key &lt; A[mid]:  return BinarySearch(A, key, low, mid-1)
+  else:                  return BinarySearch(A, key, mid+1, high)</code></pre>
+
+<div class="tw">
+<table>
+<thead><tr><th>Caso</th><th>Costo</th><th>Cuándo ocurre</th></tr></thead>
+<tbody>
+<tr><td>Mejor</td><td>$O(1)$</td><td>El primer elemento revisado (el del medio) es justo el buscado: una sola comparación.</td></tr>
+<tr><td>Peor</td><td>$O(\log_2 n)$</td><td>La clave está en un extremo o no está: hay que dividir sucesivamente hasta reducir el rango a un solo elemento. El número de divisiones es $\log_2 n$.</td></tr>
+<tr><td>Promedio</td><td>$O(\log_2 n)$</td><td>La estructura de llamadas es un árbol binario de $\log_2 n$ niveles y casi todos los elementos están en los niveles profundos.</td></tr>
+</tbody>
+</table>
+</div>
+<p><b>Recurrencia:</b> $T(n)\le T(n/2)+O(1)$ ⇒ $a=1$, $b=2$, $d=0$ ⇒ $a=1=2^0=b^d$ ⇒ $T(n)=O(n^0\log n)=O(\log n)$.</p>
+
+<div class="box tip">
+  <div class="bt">Truco · en C++ ya viene hecha</div>
+  <p><code>lower_bound(v.begin(), v.end(), x)</code> devuelve un iterador al <b>primer elemento $\ge x$</b>; <code>upper_bound</code> al <b>primer elemento $> x$</b>. Ambas $O(\log n)$ y ambas exigen el rango ordenado. Útiles para contar cuántas veces aparece un valor: <code>upper_bound - lower_bound</code>.</p>
+</div>
+
+<h3>MergeSort</h3>
+<p><b>Dividir:</b> partir el arreglo en dos mitades recursivamente hasta que cada subarreglo tenga un solo elemento (que está ordenado por sí mismo: ese es el caso base). <b>Conquistar:</b> ordenar cada mitad con llamadas recursivas. <b>Merge:</b> fusionar las dos mitades ordenadas comparando los elementos del frente de cada una.</p>
+
+<details class="ex" open>
+<summary>El análisis por niveles (el argumento de Roughgarden que usa la clase 07)<span class="tag">clase 07</span></summary>
+<div class="body">
+<p><b>Afirmación:</b> para cada arreglo de $n$ números, MergeSort genera un arreglo ordenado usando a lo más $6n\log_2 n + 6n$ operaciones.</p>
+<p><b>Paso 1 · el costo de un <code>merge</code>.</b> Fusionar dos mitades que suman $n$ elementos requiere 2 operaciones fuera del ciclo más 4 operaciones por iteración del ciclo, que corre $n$ veces:</p>
+<div class="form">$4n+2 \le 4n+2n = 6n$</div>
+<p><b>Paso 2 · el costo de un nivel completo.</b> Suponiendo $n$ potencia de 2, en el nivel $j$ hay $2^j$ subproblemas, cada uno de tamaño $\frac{n}{2^j}$. El costo total del nivel es:</p>
+<div class="form">$\underbrace{2^j}_{\text{subproblemas}} \times \underbrace{6\cdot\frac{n}{2^j}}_{\text{costo de cada uno}} = 6n$</div>
+<p><b>Cada nivel cuesta lo mismo: $6n$.</b> Los subproblemas se duplican pero cada uno es la mitad de grande, y las dos cosas se cancelan exactamente.</p>
+<p><b>Paso 3 · cuántos niveles hay.</b> Partiendo de $n$ y dividiendo por 2 hasta llegar a 1, hay $\log_2 n + 1$ niveles.</p>
+<p><b>Paso 4 · multiplicar.</b></p>
+<div class="form">$(\log_2 n + 1)\times 6n = 6n\log_2 n + 6n \in O(n\log n)$ $\blacksquare$</div>
+</div>
+</details>
+
+<div class="box def">
+  <div class="bt">Definición · complejidad espacial de MergeSort (se pregunta)</div>
+  <p><b>Memoria adicional (arreglo auxiliar del merge):</b> $O(n)$.</p>
+  <p><b>Recursión:</b> cada llamada reserva un <i>frame</i> en la pila; la profundidad máxima es $\log n$ ⇒ $O(\log n)$.</p>
+  <p><b>Total:</b> $O(n)+O(\log n)=O(n)$ — domina el arreglo auxiliar. La profesora lo marca con un "¡no olvidar!": mucha gente reporta solo uno de los dos términos.</p>
+</div>
+
+<h3>QuickSort</h3>
+<p>Inventado por Tony Hoare en 1961. Se construye sobre <code>Partition</code>: se elige un <b>pivote</b> y se reordena el arreglo de modo que todo lo menor que el pivote quede a su izquierda y todo lo mayor a su derecha. Después se aplica recursivamente a los dos lados. Nota clave: <b>el pivote queda en su posición definitiva</b> y no participa en las llamadas recursivas.</p>
+
+<div class="cols">
+  <div class="card"><h5>Mejor caso: $O(n\log_2 n)$</h5><p>El pivote parte el arreglo lo más uniformemente posible (sería la mediana). El árbol de recursión queda balanceado, con $\log_2 n$ niveles de $O(n)$ trabajo cada uno.</p></div>
+  <div class="card"><h5>Peor caso: $O(n^2)$</h5><p>El arreglo ya está ordenado y siempre se elige el primer elemento: el pivote es el mínimo, un subarreglo queda vacío y el otro con $n-1$ elementos. Son $n$ niveles con $(n-1)+(n-2)+\cdots+1=\frac{n(n-1)}{2}$ comparaciones.</p></div>
+  <div class="card"><h5>Promedio: $O(n\log_2 n)$</h5><p>Con elección aleatoria uniforme del pivote. La demostración completa está en la <a class="inl" href="#qspromedio">§9</a>.</p></div>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · la ironía de QuickSort</div>
+  <p>Su <b>peor caso es un arreglo ya ordenado</b> (si el pivote es el primer elemento). Es contra-intuitivo y se pregunta mucho: uno esperaría que un arreglo ordenado fuera el caso fácil. La solución práctica es elegir el pivote al azar, que es de lo que trata la clase 11.</p>
+</div>
+
+<h3>In-place y estable: dos propiedades que se preguntan</h3>
+<div class="box def">
+  <div class="bt">Definición · in-place</div>
+  <p>Un algoritmo de ordenamiento es <b>in-place</b> si requiere solo una cantidad <b>constante $O(1)$</b> de espacio extra durante el proceso: modifica el arreglo de entrada y no copia los datos a un arreglo nuevo.</p>
+</div>
+<div class="box def">
+  <div class="bt">Definición · estable</div>
+  <p>Un algoritmo de ordenamiento es <b>estable</b> si mantiene el <b>orden relativo</b> de los elementos con valores iguales.</p>
+  <p><i>Ejemplo:</i> con la entrada <code>[(10,"Messi"), (9,"Ronaldo"), (7,"CR7"), (10,"Sanchez")]</code> ordenada por el número:</p>
+  <p><b>estable</b> → <code>[(7,"CR7"), (9,"Ronaldo"), (10,"Messi"), (10,"Sanchez")]</code> &nbsp;(Messi antes que Sánchez, como en la entrada)<br>
+  <b>no estable</b> → <code>[(7,"CR7"), (9,"Ronaldo"), (10,"Sanchez"), (10,"Messi")]</code></p>
+</div>
+
+<h3>La tabla comparativa (memorizar)</h3>
+<div class="tw">
+<table>
+<thead><tr><th>Algoritmo</th><th>Mejor</th><th>Promedio</th><th>Peor</th><th>In-place</th><th>Estable</th><th>Espacio extra</th></tr></thead>
+<tbody>
+<tr><td><b>MergeSort</b></td><td>$n\log_2 n$</td><td>$n\log_2 n$</td><td>$n\log_2 n$</td><td><b>no</b></td><td><b>sí</b></td><td>$O(n)$</td></tr>
+<tr><td><b>QuickSort</b></td><td>$n\log_2 n$</td><td>$n\log_2 n$</td><td><b>$n^2$</b></td><td><b>sí</b></td><td><b>no</b></td><td>$O(\log n)$ (pila)</td></tr>
+<tr><td><b>SelectionSort</b></td><td>$n^2$</td><td>$n^2$</td><td>$n^2$</td><td><b>sí</b></td><td><b>no</b></td><td>$O(1)$</td></tr>
+<tr><td><b>Búsqueda secuencial</b></td><td>$O(1)$</td><td>$\frac{n+1}{2}\in O(n)$</td><td>$O(n)$</td><td>—</td><td>—</td><td>$O(1)$</td></tr>
+<tr><td><b>Búsqueda binaria</b></td><td>$O(1)$</td><td>$O(\log n)$</td><td>$O(\log n)$</td><td>—</td><td>—</td><td>$O(1)$ iterativa / $O(\log n)$ recursiva</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · cómo recordar la fila de SelectionSort</div>
+  <p>Selection Sort es $O(n^2)$ en <b>los tres casos</b> y eso lo hace especial: siempre hace exactamente las mismas $\frac{n(n-1)}{2}$ comparaciones, esté el arreglo ordenado, al revés o revuelto, <b>porque el algoritmo no sabe que ya está ordenado</b>. Lo único que cambia entre casos es el número de <i>intercambios</i>: $O(n)$ en el peor caso, $O(1)$ en el mejor si se detecta que no hace falta el swap.</p>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · errata en las slides de la clase 04</div>
+  <p>En el análisis del caso promedio de Selection Sort, la lámina dice que siempre se hacen $\frac{n(n+1)}{2}$ comparaciones. El número correcto es $\frac{n(n-1)}{2}$: el ciclo externo va de $i=0$ a $n-2$ y hace $(n-1)+(n-2)+\cdots+1$ comparaciones. Ambas expresiones son $\Theta(n^2)$, así que el resultado asintótico no cambia — pero si te piden el conteo exacto, usa $\frac{n(n-1)}{2}$.</p>
+</div>
+</section>
+
+<section id="multiplicacion">
+<h2>6 · Multiplicación de enteros y de matrices</h2>
+<p class="lead">Los dos casos de estudio que motivan el Teorema Maestro. Karatsuba y Strassen son las respuestas del ramo a "¿se puede hacer mejor?".</p>
+
+<h3>La escalera de la multiplicación de enteros</h3>
+<div class="tw">
+<table>
+<thead><tr><th>Algoritmo</th><th>Idea</th><th>Recurrencia</th><th>Costo</th></tr></thead>
+<tbody>
+<tr><td><b>Del colegio</b></td><td>Para cada dígito de $y$: multiplicar, desplazar y acumular.</td><td>—</td><td>$O(n^2)$</td></tr>
+<tr><td><b>Naive</b> (sumar $a$ veces)</td><td>Ciclo que suma $b$ una vez por cada unidad de $a$.</td><td>—</td><td>$O(2^n)$ en tamaño de entrada — <b>peor que el del colegio</b></td></tr>
+<tr><td><b>Russian Peasant</b></td><td>Descomposición binaria: duplicar y dividir por 2.</td><td>—</td><td>$O(n)$ si las sumas son $O(1)$; $O(n^2)$ si no</td></tr>
+<tr><td><b>RecIntMult</b> (D&amp;C ingenuo)</td><td>Partir cada número en dos mitades: <b>4 llamadas recursivas</b>.</td><td>$T(n)\le 4T(n/2)+O(n)$</td><td>$O(n^{\log_2 4})=O(n^2)$ — <b>no mejora nada</b></td></tr>
+<tr><td><b>Karatsuba</b></td><td>El mismo esquema, pero con un arreglo algebraico que reduce a <b>3 llamadas</b>.</td><td>$T(n)\le 3T(n/2)+O(n)$</td><td><b>$O(n^{\log_2 3})=O(n^{1{,}59})$</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<h4>De dónde sale la partición</h4>
+<p>Un número $x$ con una cantidad par de dígitos se puede escribir separando sus mitades. Por ejemplo, $x=1234$ con $n=4$: $x = 12\cdot 10^2 + 34$. En general:</p>
+<div class="form">$x=10^{n/2}a+b$, &nbsp; $y=10^{n/2}c+d$
+<span class="n">$a,b,c,d$ son números de $n/2$ dígitos</span></div>
+<p>Multiplicando y agrupando:</p>
+<div class="form">$x\cdot y = 10^{n}\,(a\cdot c) \;+\; 10^{n/2}\,(a\cdot d + b\cdot c) \;+\; b\cdot d$</div>
+<p>Eso requiere calcular <b>cuatro</b> productos de números de $n/2$ dígitos: $ac$, $ad$, $bc$, $bd$. Más operaciones de sumar y agregar ceros, que son $O(n)$.</p>
+
+<div class="box tip">
+  <div class="bt">Truco · el arreglo algebraico de Karatsuba</div>
+  <p>La observación de Karatsuba es que <b>no necesitamos $ad$ y $bc$ por separado, solo su suma</b>. Y esa suma se puede obtener de un tercer producto ya calculado:</p>
+  <div class="form">$p = (a+b)$, &nbsp; $q=(c+d)$, &nbsp; $p\cdot q = ac+ad+bc+bd$
+  <span class="n">por lo tanto: $\;ad+bc = p\cdot q - ac - bd$</span></div>
+  <p>Con solo <b>tres</b> multiplicaciones recursivas ($ac$, $bd$ y $pq$) se obtienen los tres términos que hacen falta. Bajar de $a=4$ a $a=3$ cambia el exponente de 2 a $\log_2 3 \approx 1{,}59$, y esa diferencia, en números grandes, es enorme.</p>
+</div>
+
+<details class="ex">
+<summary>Ejercicio · ¿por qué RecIntMult es $O(n^2)$ si "divide y conquista"?<span class="tag">clase 08</span></summary>
+<div class="body">
+<p>La intuición del árbol de recursión, sin usar el Teorema Maestro. En cada llamada con números de $n$ dígitos se hacen 4 llamadas de tamaño $n/2$, y el costo no recursivo es $O(n)$ (las sumas y los ceros):</p>
+<ul>
+  <li>Nivel 0: $4^0=1$ llamada de tamaño $n$ ⇒ trabajo $O(n)$.</li>
+  <li>Nivel 1: $4$ llamadas de tamaño $\frac n2$ ⇒ $4\cdot O(\frac n2)=O(2n)$.</li>
+  <li>Nivel 2: $16$ llamadas de tamaño $\frac n4$ ⇒ $16\cdot O(\frac n4)=O(4n)$.</li>
+  <li>Nivel $j$: $4^j$ llamadas de tamaño $\frac{n}{2^j}$ ⇒ $O(2^j n)$.</li>
+  <li>Nivel $\log_2 n$: $4^{\log_2 n}=n^2$ llamadas de tamaño 1 ⇒ $n^2\cdot O(1)=O(n^2)$.</li>
+</ul>
+<p>Sumando: $O(n)+O(2n)+O(4n)+\cdots+O(n\cdot n)$. Es una suma geométrica dominada por el último término ⇒ <b>$O(n^2)$</b>.</p>
+<p><b>La moraleja:</b> dividir el problema no sirve de nada si el número de subproblemas crece demasiado rápido. Aquí el trabajo <b>aumenta</b> nivel a nivel y todo el costo está en las hojas. Esa es exactamente la intuición del tercer caso del Teorema Maestro.</p>
+</div>
+</details>
+
+<h3>Multiplicación de matrices</h3>
+<p>Para $Z = X\cdot Y$ con matrices cuadradas $n\times n$, cada entrada $z_{ij}$ es el producto punto de la fila $i$ de $X$ con la columna $j$ de $Y$: $n$ multiplicaciones por entrada, $n^2$ entradas ⇒ <b>el algoritmo directo es $\Theta(n^3)$</b>.</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>Algoritmo</th><th>Llamadas recursivas</th><th>Recurrencia</th><th>Costo</th></tr></thead>
+<tbody>
+<tr><td>Cúbico directo</td><td>—</td><td>—</td><td>$\Theta(n^3)$</td></tr>
+<tr><td><b>RecMatMult</b> (D&amp;C ingenuo)</td><td>8 (cada submatriz $\frac n2\times\frac n2$)</td><td>$T(n)\le 8T(n/2)+O(n^2)$</td><td>$O(n^{\log_2 8})=O(n^3)$ — <b>no mejora</b></td></tr>
+<tr><td><b>Strassen</b></td><td><b>7</b></td><td>$T(n)\le 7T(n/2)+O(n^2)$</td><td><b>$O(n^{\log_2 7})=O(n^{2{,}81})$</b></td></tr>
+</tbody>
+</table>
+</div>
+<p>La idea de RecMatMult es partir cada matriz en cuatro bloques de $\frac n2\times\frac n2$; las submatrices se comportan igual que entradas individuales, así que el producto de bloques requiere 8 productos de submatrices más un número constante de sumas de matrices, que cuestan $O(n^2)$. Strassen usa siete productos ingeniosamente combinados en vez de ocho, y con eso baja el exponente.</p>
+
+<div class="box tip">
+  <div class="bt">Truco · el patrón Karatsuba–Strassen</div>
+  <p>Los dos son la <b>misma idea</b>: el esquema D&amp;C directo no mejora nada ($4\to n^2$, $8\to n^3$); lo que mejora es <b>reducir en uno el número de llamadas recursivas</b> mediante una identidad algebraica, pagando algunas sumas extra (que son baratas, $O(n)$ u $O(n^2)$). En el Teorema Maestro solo cambia $a$, y con eso cambia el exponente $\log_b a$.</p>
+</div>
+
+<h3>Jerarquía de memoria: el detalle práctico</h3>
+<div class="box def">
+  <div class="bt">Definición · por qué $A\cdot B^T$ es más rápido que $A\cdot B$</div>
+  <p>En C++ las matrices se almacenan en <b>row-major order</b> (por filas, contiguas en memoria). Acceder a una <b>fila</b> es rápido porque es un recorrido secuencial; acceder a una <b>columna</b> es lento porque implica saltos grandes en memoria y más fallos de caché.</p>
+  <p>La <b>caché</b> es una memoria pequeña y rápida que guarda datos usados frecuentemente para reducir el tiempo de acceso a la RAM. Como la multiplicación clásica recorre filas de $A$ pero columnas de $B$, transponer $B$ y calcular $A\cdot B^T$ permite recorrer <b>filas en ambas matrices</b>: mejor localidad, menos accesos lentos, y una multiplicación bastante más rápida en la práctica.</p>
+  <p><b>Ojo:</b> esto <b>no</b> cambia la complejidad asintótica — sigue siendo $\Theta(n^3)$. Es una mejora del factor constante. Y esa distinción entre "más rápido en la práctica" y "mejor complejidad" es justo el tipo de cosa que se pregunta como concepto.</p>
+</div>
+</section>
+
+<section id="maestro">
+<h2>7 · Recurrencias y Teorema Maestro</h2>
+<p class="lead">Los 30 puntos de la pregunta 3. Si te sabes esta sección y la de invariantes, ya son 55 de 100 puntos.</p>
+
+<div class="box def">
+  <div class="bt">Definición · recurrencia</div>
+  <p>Una <b>recurrencia</b> es una ecuación o desigualdad que describe una función en <b>términos recursivos</b> (una función que se define usándose a sí misma). En el paradigma D&amp;C son la forma natural de caracterizar el tiempo de ejecución.</p>
+  <p>No todas tienen la misma forma. Un algoritmo que divide en subproblemas de tamaños distintos, por ejemplo $\frac23$ y $\frac13$, con trabajo lineal, da $T(n)=T(\frac{2n}{3})+T(\frac n3)+\Theta(n)$ — y esa <b>no</b> se puede resolver con el Teorema Maestro.</p>
+</div>
+
+<h3>Los tres métodos para resolver recurrencias</h3>
+<div class="cols">
+  <div class="card"><h5>1. Sustitución</h5><p>"Adivinar" la solución $T(n)$ y luego demostrar por inducción que satisface la recurrencia. Es el más general y el más laborioso.</p></div>
+  <div class="card"><h5>2. Árbol de recursión</h5><p>Dibujar la recurrencia como un árbol donde cada nodo es el trabajo de ese nivel, sumar el trabajo de todos los niveles y estimar el total. <b>Es el método que hay que saber dibujar</b>: cayó explícitamente en la P1(c) de 2026-1.</p></div>
+  <div class="card"><h5>3. Teorema Maestro</h5><p>Una receta directa que da la cota superior para recurrencias de una forma específica. Es el que se usa en la P3.</p></div>
+</div>
+
+<h3>La forma estándar</h3>
+<div class="box def">
+  <div class="bt">Definición · recurrencia estándar</div>
+  <p><b>Caso base:</b> $T(n)$ es a lo más una constante para todo $n$ suficientemente pequeño.</p>
+  <p><b>Caso general:</b> para $n$ grande,</p>
+  <div class="form">$T(n)\;\le\; a\cdot T\!\left(\dfrac{n}{b}\right) + O(n^d)$, &nbsp;&nbsp; con $a\ge 1$, $b>1$, $d\ge 0$</div>
+  <p><b>$a$</b> = número de llamadas recursivas. &nbsp; <b>$b$</b> = factor de disminución del tamaño de la entrada. &nbsp; <b>$d$</b> = exponente del trabajo <b>no recursivo</b> (dividir + combinar).</p>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · cómo se identifican $a$, $b$ y $d$ en un código</div>
+  <ul>
+    <li><b>$a$: cuenta las llamadas recursivas <i>escritas en el código</i></b>, no las que "deberían" ser. En la P3 de 2026-1, el algoritmo se dividía en 4 cuadrantes pero solo llamaba a 3 ⇒ $a=3$, no 4.</li>
+    <li><b>$b$: mira el argumento de la llamada</b>. Si es <code>n//2</code> entonces $b=2$; si es <code>n/3</code> entonces $b=3$. En Stooge Sort las llamadas son sobre $\frac23$ del arreglo ⇒ $b=\frac{3}{2}$.</li>
+    <li><b>$d$: mira el trabajo fuera de las llamadas recursivas.</b> Un ciclo simple ⇒ $O(n)$ ⇒ $d=1$. Dos ciclos anidados ⇒ $O(n^2)$ ⇒ $d=2$. Solo comparaciones y asignaciones ⇒ $O(1)=O(n^0)$ ⇒ <b>$d=0$</b>. Este último es el que más se olvida.</li>
+  </ul>
+</div>
+
+<h3>El Teorema Maestro</h3>
+<div class="box def">
+  <div class="bt">Definición · los tres casos</div>
+  <p>Si $T(n)$ está definida como una recurrencia estándar con $a\ge1$, $b>1$, $d\ge0$, entonces:</p>
+  <div class="form">
+  $T(n)=\begin{cases}
+  O(n^d\log n) & \text{si } a = b^d \quad\text{(empate)}\\[6pt]
+  O(n^d) & \text{si } a &lt; b^d \quad\text{(gana el trabajo de la raíz)}\\[6pt]
+  O\!\left(n^{\log_b a}\right) & \text{si } a > b^d \quad\text{(ganan las hojas)}
+  \end{cases}$
+  </div>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · la numeración de los casos NO es consistente</div>
+  <p>Las slides de la clase 09 y la ayudantía 3 numeran así: <b>Caso 1</b> = $a=b^d$, <b>Caso 2</b> = $a&lt;b^d$, <b>Caso 3</b> = $a>b^d$. Pero la pauta oficial del certamen 2026-1 llama "Caso 1" a la situación $a>b^d$ (siguiendo la numeración de Cormen, que es distinta).</p>
+  <p><b>Solución:</b> nunca escribas solo "estamos en el caso 2". Escribe siempre la <b>comparación explícita</b>: "<i>como $a=3 > 2 = 2^1 = b^d$, el costo está dominado por las hojas y T(n) = O(n^(log_b a))</i>". Así no dependes de qué numeración esté usando quien corrige, y de paso demuestras que entendiste.</p>
+</div>
+
+<h3>De dónde salen los tres casos</h3>
+<p>Esto es lo que se pregunta cuando el certamen pide "analice el árbol de recursión". El razonamiento completo:</p>
+<ol class="steps">
+  <li><b>Trabajo de un subproblema del nivel $j$.</b> Su entrada tiene tamaño $\frac{n}{b^j}$, y el trabajo no recursivo es a lo más $c\left(\frac{n}{b^j}\right)^d$.</li>
+  <li><b>Trabajo de todo el nivel $j$.</b> Hay $a^j$ subproblemas en ese nivel:
+  $$\text{trabajo en el nivel } j \;\le\; a^j \cdot c\left(\frac{n}{b^j}\right)^{d} \;=\; c\,n^d\cdot\left(\frac{a}{b^d}\right)^{j}$$</li>
+  <li><b>Aparece la fracción clave $\frac{a}{b^d}$.</b> Todo lo que depende del nivel quedó dentro de esa potencia. Ella decide si el trabajo por nivel crece, decrece o se mantiene.</li>
+  <li><b>Trabajo total</b> = suma sobre los $\log_b n$ niveles:
+  $$T(n)\;\le\; c\,n^d\sum_{j=0}^{\log_b n}\left(\frac{a}{b^d}\right)^{j}$$</li>
+</ol>
+
+<div class="box ana">
+  <div class="bt">Analogía · el bien contra el mal (así lo explica la clase 09)</div>
+  <p><b>"$a$" es el mal</b> — la <i>tasa de proliferación de subproblemas</i>: en cada nivel el número de subproblemas se multiplica por $a$.</p>
+  <p><b>"$b^d$" es el bien</b> — la <i>tasa de disminución del trabajo</i>: en cada nivel el trabajo por subproblema se divide por $b^d$.</p>
+  <p>¿Quién gana? Los tres casos del Teorema Maestro son exactamente los tres resultados posibles del enfrentamiento:</p>
+  <div class="tw">
+  <table>
+  <thead><tr><th>Enfrentamiento</th><th>Trabajo por nivel</th><th>Quién domina el costo total</th><th>Resultado</th></tr></thead>
+  <tbody>
+  <tr><td>$a = b^d$ &nbsp;<i>empate</i></td><td>Igual en todos los niveles</td><td>Todos por igual: $O(n^d)$ por nivel × $O(\log n)$ niveles</td><td>$O(n^d\log n)$</td></tr>
+  <tr><td>$a &lt; b^d$ &nbsp;<i>gana el bien</i></td><td><b>Decrece</b> al bajar</td><td>La raíz (nivel 0), donde el trabajo es $O(n^d)$</td><td>$O(n^d)$</td></tr>
+  <tr><td>$a > b^d$ &nbsp;<i>gana el mal</i></td><td><b>Crece</b> al bajar</td><td>Las hojas: hay $a^{\log_b n}=n^{\log_b a}$ de ellas, cada una con $O(1)$ trabajo</td><td>$O(n^{\log_b a})$</td></tr>
+  </tbody>
+  </table>
+  </div>
+  <p>La identidad que cierra el tercer caso: $a^{\log_b n}=n^{\log_b a}$.</p>
+</div>
+
+<figure>
+<svg viewBox="0 0 820 300" role="img" aria-label="Los tres tipos de árbol de recursión">
+<g font-family="system-ui,sans-serif" font-size="12">
+  <text x="135" y="18" text-anchor="middle" font-weight="700" font-size="13" fill="#0e7a5f">a &lt; bᵈ · el trabajo decrece</text>
+  <rect x="60" y="34" width="150" height="20" fill="#0e7a5f" opacity=".85"/><text x="225" y="49" fill="#5b6172">nivel 0</text>
+  <rect x="85" y="62" width="100" height="20" fill="#0e7a5f" opacity=".6"/>
+  <rect x="100" y="90" width="70" height="20" fill="#0e7a5f" opacity=".45"/>
+  <rect x="112" y="118" width="46" height="20" fill="#0e7a5f" opacity=".3"/>
+  <rect x="122" y="146" width="26" height="20" fill="#0e7a5f" opacity=".2"/>
+  <text x="135" y="192" text-anchor="middle" fill="#5b6172">domina la RAÍZ</text>
+  <text x="135" y="210" text-anchor="middle" font-weight="700" fill="#0e7a5f">T(n) = O(nᵈ)</text>
+
+  <text x="410" y="18" text-anchor="middle" font-weight="700" font-size="13" fill="#1d6fa5">a = bᵈ · se mantiene</text>
+  <rect x="335" y="34" width="150" height="20" fill="#1d6fa5" opacity=".7"/>
+  <rect x="335" y="62" width="150" height="20" fill="#1d6fa5" opacity=".7"/>
+  <rect x="335" y="90" width="150" height="20" fill="#1d6fa5" opacity=".7"/>
+  <rect x="335" y="118" width="150" height="20" fill="#1d6fa5" opacity=".7"/>
+  <rect x="335" y="146" width="150" height="20" fill="#1d6fa5" opacity=".7"/>
+  <text x="410" y="192" text-anchor="middle" fill="#5b6172">todos los niveles igual</text>
+  <text x="410" y="210" text-anchor="middle" font-weight="700" fill="#1d6fa5">T(n) = O(nᵈ log n)</text>
+
+  <text x="685" y="18" text-anchor="middle" font-weight="700" font-size="13" fill="#c2410c">a &gt; bᵈ · el trabajo crece</text>
+  <rect x="672" y="34" width="26" height="20" fill="#c2410c" opacity=".25"/>
+  <rect x="662" y="62" width="46" height="20" fill="#c2410c" opacity=".4"/>
+  <rect x="650" y="90" width="70" height="20" fill="#c2410c" opacity=".55"/>
+  <rect x="635" y="118" width="100" height="20" fill="#c2410c" opacity=".7"/>
+  <rect x="610" y="146" width="150" height="20" fill="#c2410c" opacity=".9"/>
+  <text x="685" y="192" text-anchor="middle" fill="#5b6172">dominan las HOJAS</text>
+  <text x="685" y="210" text-anchor="middle" font-weight="700" fill="#c2410c">T(n) = O(n^(log_b a))</text>
+
+  <text x="410" y="252" text-anchor="middle" font-size="12.5" fill="#5b6172">El ancho de cada barra representa el trabajo total realizado en ese nivel del árbol de recursión.</text>
+  <text x="410" y="272" text-anchor="middle" font-size="12.5" fill="#5b6172">Los tres casos del Teorema Maestro son simplemente estas tres formas posibles de árbol.</text>
+</g>
+</svg>
+<figcaption>Los tres casos, visualmente. Identificar la forma del árbol es entender el teorema; la fórmula es solo el atajo.</figcaption>
+</figure>
+
+<h3>Todos los algoritmos del curso, resueltos</h3>
+<p>Esta tabla es oro para el certamen: son todos los ejemplos que la profesora usó, y sirve para verificar rápido si tu respuesta tiene sentido.</p>
+<div class="tw">
+<table>
+<thead><tr><th>Algoritmo</th><th>Recurrencia</th><th>$a$</th><th>$b$</th><th>$d$</th><th>Comparación</th><th>$T(n)$</th></tr></thead>
+<tbody>
+<tr><td>Búsqueda binaria</td><td>$T(n)\le T(\frac n2)+O(1)$</td><td>1</td><td>2</td><td>0</td><td>$1=2^0$ ⇒ empate</td><td>$O(\log n)$</td></tr>
+<tr><td><b>MergeSort</b></td><td>$T(n)\le 2T(\frac n2)+O(n)$</td><td>2</td><td>2</td><td>1</td><td>$2=2^1$ ⇒ empate</td><td>$O(n\log n)$</td></tr>
+<tr><td>Closest Pair</td><td>$T(n)= 2T(\frac n2)+O(n)$</td><td>2</td><td>2</td><td>1</td><td>$2=2^1$ ⇒ empate</td><td>$O(n\log n)$</td></tr>
+<tr><td>Max subarray (D&amp;C)</td><td>$T(n)= 2T(\frac n2)+O(n)$</td><td>2</td><td>2</td><td>1</td><td>$2=2^1$ ⇒ empate</td><td>$O(n\log n)$</td></tr>
+<tr><td>QuickSort (pivote mediana)</td><td>$T(n)=2T(\frac n2)+\Theta(n)$</td><td>2</td><td>2</td><td>1</td><td>$2=2^1$ ⇒ empate</td><td>$\Theta(n\log n)$</td></tr>
+<tr><td><b>RecIntMult</b></td><td>$T(n)\le 4T(\frac n2)+O(n)$</td><td>4</td><td>2</td><td>1</td><td>$4>2^1=2$ ⇒ hojas</td><td>$O(n^{\log_2 4})=O(n^2)$</td></tr>
+<tr><td><b>Karatsuba</b></td><td>$T(n)\le 3T(\frac n2)+O(n)$</td><td>3</td><td>2</td><td>1</td><td>$3>2^1=2$ ⇒ hojas</td><td>$O(n^{\log_2 3})=O(n^{1{,}59})$</td></tr>
+<tr><td><b>RecMatMult</b></td><td>$T(n)\le 8T(\frac n2)+O(n^2)$</td><td>8</td><td>2</td><td>2</td><td>$8>2^2=4$ ⇒ hojas</td><td>$O(n^{\log_2 8})=O(n^3)$</td></tr>
+<tr><td><b>Strassen</b></td><td>$T(n)\le 7T(\frac n2)+O(n^2)$</td><td>7</td><td>2</td><td>2</td><td>$7>2^2=4$ ⇒ hojas</td><td>$O(n^{\log_2 7})=O(n^{2{,}81})$</td></tr>
+<tr><td>Stooge Sort (ayudantía 3)</td><td>$T(n)=3T(\frac{2n}{3})+O(1)$</td><td>3</td><td>$3/2$</td><td>0</td><td>$3>(\frac32)^0=1$ ⇒ hojas</td><td>$O(n^{\log_{1,5}3})\approx O(n^{2,7})$</td></tr>
+<tr><td>Teselado en L (C1 2024-2)</td><td>$T(n)=4T(\frac n2)+O(1)$</td><td>4</td><td>2</td><td>0</td><td>$4>2^0=1$ ⇒ hojas</td><td>$O(n^{\log_2 4})=O(n^2)$</td></tr>
+<tr><td>Filtrado en L (C1 2026-1)</td><td>$T(n)=3T(\frac n2)+\Theta(n)$</td><td>3</td><td>2</td><td>1</td><td>$3>2^1=2$ ⇒ hojas</td><td>$\Theta(n^{\log_2 3})\approx\Theta(n^{1{,}58})$</td></tr>
+<tr><td>Fractal (C1 2025-2)</td><td>$T(n)=T(\frac n2)+\Theta(n^2)$</td><td>1</td><td>2</td><td>2</td><td>$1&lt;2^2=4$ ⇒ raíz</td><td>$\Theta(n^2)$</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · logaritmos que conviene llevar en la cabeza</div>
+  <p>$\log_2 3\approx 1{,}58$ &nbsp;·&nbsp; $\log_2 4=2$ &nbsp;·&nbsp; $\log_2 6\approx 2{,}58$ &nbsp;·&nbsp; $\log_2 7\approx 2{,}81$ &nbsp;·&nbsp; $\log_2 8=3$ &nbsp;·&nbsp; $\log_3 2\approx 0{,}63$ &nbsp;·&nbsp; $\log_3 4\approx 1{,}26$ &nbsp;·&nbsp; $\log_4 3\approx 0{,}79$</p>
+  <p>El certamen de 2026-1 traía justamente esa lista impresa en el enunciado — señal de que esperan que uses $n^{\log_b a}$ y lo evalúes numéricamente. Si te dan la tabla, <b>úsala y escribe el valor aproximado</b>: "$\Theta(n^{\log_2 3})\approx\Theta(n^{1,58})$".</p>
+</div>
+
+<h3>La complejidad espacial (los 5-10 puntos que todos olvidan)</h3>
+<div class="box def">
+  <div class="bt">Definición · las dos componentes del espacio</div>
+  <p><b>1. Espacio de la entrada.</b> Un arreglo de $n$ enteros ocupa $\Theta(n)$; una matriz $n\times n$ ocupa $\Theta(n^2)$.</p>
+  <p><b>2. Espacio auxiliar.</b> Todo lo que el algoritmo crea: arreglos temporales, estructuras de datos, y <b>la pila de recursión</b>.</p>
+  <p><b>La pila de recursión:</b> cada llamada recursiva reserva un <i>frame</i> con sus variables locales. Si cada frame es de tamaño constante, el costo es (tamaño del frame) × (<b>profundidad máxima</b> de la recursión). Si el problema se divide por $b$ en cada llamada, la profundidad es $\log_b n$ ⇒ <b>$O(\log n)$</b>.</p>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · "¿espacio total o espacio adicional?"</div>
+  <p>Las pautas oficiales son ambiguas y a veces piden una cosa y a veces la otra. La estrategia segura: <b>reporta las dos y di explícitamente cuál es cuál</b>. Ejemplo de respuesta completa (pauta de 2025-2):</p>
+  <p><i>"El espacio de almacenamiento de la matriz es $\Theta(n^2)$. La pila de recursión tiene profundidad $\log_2 n$, por lo que el espacio auxiliar es $O(\log n)$. Considerando ambos, $E(n)=O(n^2)$; si se considera solo el espacio adicional sin contar la entrada, $E(n)\in O(\log n)$."</i></p>
+  <p>Esa respuesta se lleva el puntaje completo en cualquiera de las dos interpretaciones.</p>
+</div>
+
+<h3>Cuando el Teorema Maestro no aplica</h3>
+<div class="box warn">
+  <div class="bt">Ojo · las tres situaciones donde no sirve</div>
+  <ol>
+    <li><b>Subproblemas de tamaños distintos:</b> $T(n)=T(\frac{2n}{3})+T(\frac n3)+\Theta(n)$. No tiene la forma $aT(n/b)$. Hay que usar árbol de recursión o sustitución.</li>
+    <li><b>El tamaño se reduce restando, no dividiendo:</b> $T(n)=T(n-1)+O(n)$ (esto es QuickSort en el peor caso). Tampoco es de la forma estándar; se resuelve expandiendo: $n+(n-1)+\cdots+1=\Theta(n^2)$.</li>
+    <li><b>El trabajo no recursivo no es un polinomio:</b> por ejemplo $f(n)=n\log n$, que no es $\Theta(n^d)$ para ningún $d$.</li>
+  </ol>
+  <p>Si en el certamen te toca una de estas, dilo explícitamente ("el Teorema Maestro no aplica porque…") y resuélvela con el árbol de recursión. Reconocer que no aplica ya es parte de la respuesta correcta.</p>
+</div>
+
+<details class="ex" open>
+<summary>Ejercicio · P1(c) del certamen 2026-1: analizar un árbol de recursión (10 pts)<span class="tag">certamen real</span></summary>
+<div class="body">
+<p><b>Enunciado:</b> considere $T_A(n)=2T_A(n/2)+O(1)$. Para un nivel arbitrario $i$, indique: número de subproblemas, tamaño de cada subproblema y trabajo total en el nivel. ¿Cómo se comporta el trabajo por nivel? Comparado con MergeSort, ¿cuál tiene mayor complejidad?</p>
+<hr>
+<p><b>En el nivel $i$:</b></p>
+<ul>
+  <li>Número de subproblemas: $2^i$</li>
+  <li>Tamaño de cada subproblema: $n/2^i$</li>
+  <li>Trabajo por subproblema: $O(1)$</li>
+  <li><b>Trabajo total en el nivel $i$: $2^i\cdot O(1)=O(2^i)$</b></li>
+</ul>
+<p><b>Comportamiento:</b> el trabajo por nivel <b>crece</b> a medida que $i$ aumenta (al descender en el árbol). Esto pasa porque el número de subproblemas se duplica pero el trabajo por subproblema es constante — no disminuye.</p>
+<p><b>Costo total:</b> la altura del árbol es $\log n$, y en el último nivel hay $2^{\log n}=n$ subproblemas, con trabajo $O(n)$. Sumando todos los niveles:</p>
+<div class="form">$O(1)+O(2)+O(2^2)+\cdots+O(2^{\log n}) = O(n)$ <span class="n">(suma geométrica: la domina el último término)</span></div>
+<p><b>Verificación con el Teorema Maestro:</b> $a=2$, $b=2$, $d=0$. Como $2 > 2^0=1$, dominan las hojas: $O(n^{\log_2 2})=O(n)$. ✓ Coincide.</p>
+<p><b>Comparación:</b> MergeSort satisface $T(n)=2T(n/2)+O(n)$ y su complejidad es $O(n\log n)$. Como $n \in o(n\log n)$, <b>MergeSort tiene mayor complejidad que el algoritmo A</b>.</p>
+<p style="color:var(--muted)"><b>Lo que enseña:</b> la única diferencia entre los dos algoritmos es el trabajo no recursivo ($O(1)$ vs $O(n)$), es decir $d=0$ vs $d=1$. Eso basta para cambiar de caso del teorema y de complejidad final.</p>
+</div>
+</details>
+
+<details class="ex">
+<summary>Ejercicio · P3 completa del certamen 2026-1: FiltradoEnL (30 pts)<span class="tag">certamen real</span></summary>
+<div class="body">
+<p><b>Enunciado resumido:</b> algoritmo sobre una matriz $n\times n$ ($n$ potencia de 2). Para una región de $k\times k$: (1) recorre los bordes externos con costo proporcional al perímetro, $\Theta(k)$; (2) divide en 4 cuadrantes de $\frac k2\times\frac k2$ pero se invoca recursivamente <b>solo en 3</b> de ellos; (3) caso base cuando la región es $1\times1$.</p>
+<hr>
+<p><b>Planteamiento de la recurrencia (10 pts):</b></p>
+<div class="form">$T(n)=3\,T(n/2)+\Theta(n)$</div>
+<p>donde el $3T(n/2)$ viene de las tres llamadas recursivas sobre cuadrantes de la mitad del tamaño, y el $\Theta(n)$ del ciclo que recorre los bordes (lineal en $n$).</p>
+<p><b>Aplicación del Teorema Maestro (10 pts):</b> $a=3$, $b=2$, $f(n)=\Theta(n^1)$ ⇒ $d=1$.</p>
+<p>Comparamos: $a=3$ y $b^d=2^1=2$. Como $\boldsymbol{a > b^d}$ (3 > 2), el costo está dominado por las llamadas recursivas, es decir, por el número de hojas del árbol.</p>
+<p><b>Resultado (5 pts):</b></p>
+<div class="form">$T(n)=\Theta\!\left(n^{\log_b a}\right)=\Theta\!\left(n^{\log_2 3}\right)\approx\Theta(n^{1{,}58})$</div>
+<p><b>Análisis de espacio (5 pts):</b> la profundidad del árbol de recursión es $\log_2 n$ y cada nivel usa espacio constante, por lo que la <b>pila de recursión es $O(\log n)$</b>. La matriz de entrada ocupa $\Theta(n^2)$, pero como se pide el espacio auxiliar, la respuesta es $O(\log n)$.</p>
+<p style="color:var(--muted)"><b>Trampa del enunciado:</b> "se divide en 4 cuadrantes" pero solo hay 3 llamadas ⇒ $a=3$. Cuenta las llamadas, no los cuadrantes.</p>
+</div>
+</details>
+
+<details class="ex">
+<summary>Ejercicio · P3 del certamen 2025-2: GenerarFractal (el caso $a &lt; b^d$)<span class="tag">certamen real</span></summary>
+<div class="body">
+<p><b>Enunciado resumido:</b> para una región $k\times k$, dos ciclos anidados calculan un valor para cada una de las $k^2$ celdas (cada cálculo $O(1)$), y después <b>una sola</b> llamada recursiva sobre el cuadrante superior izquierdo, de tamaño $\frac k2\times\frac k2$.</p>
+<hr>
+<p><b>Recurrencia:</b> $T(n)=T(n/2)+\Theta(n^2)$ &nbsp;⇒&nbsp; $a=1$, $b=2$, $d=2$.</p>
+<p><b>Comparación:</b> $a=1$ y $b^d=2^2=4$. Como $\boldsymbol{a &lt; b^d}$ ($1 &lt; 4$), el costo está dominado por el trabajo de la raíz, o sea por $f(n)$:</p>
+<div class="form">$T(n)=\Theta(f(n))=\Theta(n^2)$</div>
+<p><b>Espacio:</b> la matriz ocupa $O(n^2)$ (componente dominante). La pila de recursión tiene profundidad $\log_2 n$ ⇒ $O(\log n)$. Total: $E(n)=O(n^2)+O(\log n)=O(n^2)$. Si se pide solo el espacio adicional sin contar la entrada: $E(n)\in O(\log n)$.</p>
+<p style="color:var(--muted)"><b>Compara con el ejercicio anterior:</b> mismo tipo de problema, pero acá hay <b>una</b> llamada recursiva y trabajo cuadrático, y allá <b>tres</b> llamadas y trabajo lineal. Eso cambia de "dominan las hojas" a "domina la raíz". Este contraste es exactamente lo que el ramo quiere que entiendas.</p>
+</div>
+</details>
+</section>
+
+<section id="closest">
+<h2>8 · El par de puntos más cercanos</h2>
+<p class="lead">Ya cayó como pregunta conceptual de 5 puntos en 2026-1. Es la aplicación más elegante de D&amp;C del curso.</p>
+
+<div class="box def">
+  <div class="bt">Definición · el problema</div>
+  <p><b>Entrada:</b> un conjunto de $n$ puntos en el plano. <b>Salida:</b> el par cuya distancia euclidiana sea mínima.</p>
+  <p><b>Fuerza bruta:</b> comparar todos los pares. Son $\binom{n}{2}=\frac{n(n-1)}{2}=\Theta(n^2)$ comparaciones. Correcto y simple, pero se puede hacer mejor.</p>
+</div>
+
+<h3>La idea</h3>
+<p>Se parte el conjunto por una línea vertical $\bar x$ en dos mitades $L$ y $R$ con la misma cantidad de puntos. El par óptimo está en una de tres situaciones: <b>ambos puntos en $L$</b>, <b>ambos en $R$</b>, o <b>uno en cada mitad</b> (un "par separado"). Las dos primeras las resuelven las llamadas recursivas. El problema es la tercera: si hay que comparar cada punto de $L$ con cada punto de $R$, volvimos a $\Theta(n^2)$ y no ganamos nada.</p>
+
+<div class="box tip">
+  <div class="bt">Truco · la idea que hace que funcione (esta es la respuesta de 5 puntos)</div>
+  <p>Sea $\delta=\min\{\delta_L,\delta_R\}$ la menor distancia encontrada <b>dentro</b> de cada mitad. Si un par separado va a mejorar esa solución, es decir $d(p,q) &lt; \delta$, entonces necesariamente $|x_p-x_q| &lt; \delta$, o sea <b>ambos puntos tienen que estar en una franja vertical de ancho $2\delta$ centrada en $\bar x$</b>.</p>
+  <p>Y dentro de esa franja, ordenando por coordenada $y$, cada punto solo necesita compararse con sus <b>7 sucesores</b>. Eso convierte la fase de combinación en $O(n)$ por nivel, y el total en $O(n\log n)$.</p>
+</div>
+
+<div class="box def">
+  <div class="bt">Definición · la respuesta esperada en el certamen (2026-1, P1b)</div>
+  <p><i>"El algoritmo ClosestPair divide el conjunto de puntos en dos mitades y resuelve cada una recursivamente. Luego, considera únicamente los puntos cercanos a la línea de división, es decir, aquellos cuya distancia es menor que $\delta$ (la distancia mínima encontrada en cada mitad). En esta banda, en lugar de comparar todos los pares de puntos, cada punto se compara solo con un número constante de puntos. Esto reduce el costo de la fase de combinación a $O(n)$ por nivel, lo que da como resultado una complejidad total de $O(n\log n)$."</i></p>
+</div>
+
+<h3>El algoritmo</h3>
+<pre><code>ClosestPair(Px, Py)                                 # Px ordenado por x, Py por y
+  si n ≤ 3: retornar el mejor par por fuerza bruta          O(1)
+  Lx ← mitad izquierda de P, ordenada por x                 O(n)
+  Ly ← mitad izquierda de P, ordenada por y                 O(n)
+  Rx ← mitad derecha de P, ordenada por x                   O(n)
+  Ry ← mitad derecha de P, ordenada por y                   O(n)
+  (l1,l2) ← ClosestPair(Lx, Ly)                             T(n/2)
+  (r1,r2) ← ClosestPair(Rx, Ry)                             T(n/2)
+  δ ← min{ d(l1,l2), d(r1,r2) }                             O(1)
+  (s1,s2) ← ClosestSplitPair(Px, Py, δ)                     O(n)
+  retornar el mejor de los tres pares                       O(1)
+
+ClosestSplitPair(Px, Py, δ)
+  x̄ ← mayor coordenada x de la mitad izquierda              O(1)
+  Sy ← puntos de Py con  x̄-δ &lt; x &lt; x̄+δ                      O(n)
+  mejorDistancia ← δ
+  para i = 1 ... |Sy|-1:                                    O(n) iteraciones
+      para j = i+1 ... min{i+7, |Sy|}:                       ≤ 7 iteraciones
+          si d(Sy[i], Sy[j]) &lt; mejorDistancia:
+              actualizar mejorDistancia y mejorPar
+  retornar mejorPar</code></pre>
+
+<div class="box tip">
+  <div class="bt">Truco · el preprocesamiento se hace UNA sola vez</div>
+  <p>Las listas $P_x$ (ordenada por $x$) y $P_y$ (ordenada por $y$) se construyen <b>antes</b> de la recursión, con un costo de $O(n\log n)$. Dentro de la recursión, $L_y$ y $R_y$ se construyen <b>recorriendo $P_y$ una sola vez</b> y preguntando de qué lado está cada punto — eso es $O(n)$, no $O(n\log n)$. Si reordenaras en cada llamada, el trabajo no recursivo sería $O(n\log n)$ y el total subiría a $O(n\log^2 n)$.</p>
+</div>
+
+<h3>Por qué "7 sucesores": el lema geométrico</h3>
+<div class="box def">
+  <div class="bt">Definición · el lema</div>
+  <p>Si un par separado $p,q$ satisface $d(p,q)&lt;\delta$, entonces: <b>(a)</b> $p,q\in S_y$; <b>(b)</b> entre $p$ y $q$ hay como máximo <b>seis</b> puntos de $S_y$ en el orden por $y$ — lo que hace que $q$ aparezca a lo más entre los <b>siete sucesores</b> de $p$.</p>
+</div>
+
+<details class="ex">
+<summary>La demostración del lema (parte a: ambos están en la franja)<span class="tag">clase 10</span></summary>
+<div class="body">
+<p>Sea $p=(x_1,y_1)$ en la mitad izquierda y $q=(x_2,y_2)$ en la derecha, con $d(p,q)&lt;\delta$. Como están en lados distintos de la línea $\bar x$: $x_1\le\bar x &lt; x_2$.</p>
+<p>Si fuera $|x_1-x_2|\ge\delta$, entonces</p>
+<div class="form">$d(p,q)=\sqrt{(x_1-x_2)^2+(y_1-y_2)^2}\;\ge\;\sqrt{(x_1-x_2)^2}=|x_1-x_2|\ge\delta$</div>
+<p>lo que contradice $d(p,q)&lt;\delta$. Por lo tanto $|x_1-x_2|&lt;\delta$. Combinando con $x_1\le \bar x &lt; x_2$:</p>
+<div class="form">$\bar x-\delta &lt; x_1\le\bar x$ &nbsp;&nbsp;y&nbsp;&nbsp; $\bar x &lt; x_2 &lt; \bar x+\delta$</div>
+<p>Es decir, ambos están dentro de la franja, y por definición de $S_y$, $p,q\in S_y$. $\blacksquare$</p>
+</div>
+</details>
+
+<details class="ex">
+<summary>La demostración del lema (parte b: las ocho cajas)<span class="tag">clase 10 — la parte bonita</span></summary>
+<div class="body">
+<p>Supongamos sin pérdida de generalidad que $y_1\le y_2$. Como $d(p,q)&lt;\delta$, también $y_2-y_1&lt;\delta$. Entonces todos los puntos de $S_y$ cuya coordenada $y$ está entre $y_1$ e $y_2$ caben en un rectángulo de <b>$2\delta$ de ancho por $\delta$ de alto</b>, apoyado en $y_{\min}=\min\{y_1,y_2\}$.</p>
+<p><b>Dividimos ese rectángulo en ocho cuadrados de lado $\frac{\delta}{2}$</b> (cuatro a la izquierda de $\bar x$ y cuatro a la derecha).</p>
+<p><b>Afirmación: cada caja contiene a lo más un punto.</b> Supongamos por contradicción que una caja contiene dos puntos distintos $a$ y $b$. Como cada caja está completamente contenida en una de las dos mitades, $a$ y $b$ pertenecen ambos a $L$ o ambos a $R$. Pero $\delta=\min\{\delta_L,\delta_R\}$ es la menor distancia dentro de cada mitad, así que</p>
+<div class="form">$d(a,b)\ge\delta$</div>
+<p>Por otro lado, la mayor distancia posible dentro de una caja es su diagonal:</p>
+<div class="form">$d(a,b)\le\sqrt{\left(\tfrac{\delta}{2}\right)^2+\left(\tfrac{\delta}{2}\right)^2}=\frac{\delta}{\sqrt 2}&lt;\delta$</div>
+<p><b>Contradicción:</b> $d(a,b)\ge\delta$ y $d(a,b)&lt;\delta$ a la vez. Por lo tanto cada caja tiene a lo más un punto.</p>
+<p>Como hay 8 cajas y $p$ y $q$ ocupan dos de ellas, entre ambos puede haber a lo más <b>6</b> otros puntos. Por lo tanto, en el orden por $y$, $q$ está a lo más 7 posiciones después de $p$. $\blacksquare$</p>
+<p style="color:var(--muted)"><b>El corolario:</b> como <code>ClosestSplitPair</code> compara cada punto con sus 7 sucesores, necesariamente comparará el par $(p,q)$. Por lo tanto, si el par más cercano es un par separado, el algoritmo lo encontrará.</p>
+</div>
+</details>
+
+<h3>Complejidad</h3>
+<div class="form">$T(n)=2T(n/2)+O(n) \;\Rightarrow\; T(n)=O(n\log n)$ &nbsp;&nbsp;(Teorema Maestro, $a=b^d$)</div>
+<div class="form">$T_{\text{total}}(n)=\underbrace{O(n\log n)}_{\text{ordenar } P_x,P_y}+\underbrace{T(n)}_{\text{recursión}}=O(n\log n)$</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · un doble ciclo que NO es cuadrático</div>
+  <p>En <code>ClosestSplitPair</code> hay dos <code>for</code> anidados, pero el interno corre a lo más <b>7</b> veces (una constante). Si $\ell=|S_y|$, el trabajo total es $\ell\times 7 = 7\ell \le 7n = O(n)$. Este ejemplo es el que la clase usa para advertir: <i>"un doble ciclo no implica necesariamente $O(n^2)$"</i>.</p>
+</div>
+</section>
+
+<section id="qspromedio">
+<h2>9 · El caso promedio de QuickSort</h2>
+<p class="lead">La demostración más sofisticada del certamen. No suele pedirse completa, pero sí sus ideas y el resultado clave $\Pr = \frac{2}{j-i+1}$.</p>
+
+<h3>Qué significa "caso promedio" acá</h3>
+<div class="box def">
+  <div class="bt">Definición · de dónde viene la aleatoriedad</div>
+  <p>Se fija un arreglo $A$ de $n$ elementos distintos. <b>La entrada no se elige al azar</b>: la aleatoriedad viene de la <b>elección de los pivotes</b>, que se hace uniformemente al azar en cada llamada. Se promedia sobre todas las posibles secuencias de pivotes.</p>
+  <p>Por eso el resultado es más fuerte de lo que parece: vale <b>para cualquier arreglo fijo</b> de $n$ elementos distintos, no "en promedio sobre arreglos".</p>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · por qué un pivote al azar es casi siempre bueno</div>
+  <p>Para $n=100$, cualquier elemento entre las posiciones 26 y 75 del arreglo ordenado funciona como "mediana aproximada": deja al menos 25 elementos a cada lado, y ningún subarreglo se queda con más del 75% de los elementos. La probabilidad de caer en ese rango es $\frac{50}{100}=\frac12$. O sea: <b>la mitad de las veces el pivote es lo bastante bueno</b>, y eso basta para que el árbol tenga profundidad logarítmica en promedio.</p>
+</div>
+
+<h3>La estrategia de la demostración</h3>
+<p>El truco es <b>no</b> analizar directamente los tamaños aleatorios de las llamadas recursivas (eso sería un lío). En vez de eso se descompone el costo total en <b>comparaciones entre pares de elementos</b>:</p>
+<div class="form">tiempo de ejecución $\;\to\;$ número total de comparaciones $C$ $\;\to\;$ comparaciones entre pares $z_i,z_j$ $\;\to\;$ $E[C]$</div>
+
+<p>Notación: se renombran los elementos por su <b>rango</b>, no por su posición: $z_1$ es el menor, $z_2$ el segundo menor, …, $z_n$ el mayor. Y para cada par $i&lt;j$ se define la <b>variable indicatriz</b></p>
+<div class="form">$X_{ij}=\begin{cases}1 & \text{si } z_i \text{ y } z_j \text{ son comparados}\\ 0 & \text{si no}\end{cases}$</div>
+
+<div class="box def">
+  <div class="bt">Definición · un par se compara a lo más una vez</div>
+  <p>$z_i$ y $z_j$ se comparan <b>solo si uno de ellos actúa como pivote mientras ambos están en el mismo subarreglo</b>. Y después de actuar como pivote, un elemento queda en su posición definitiva y no participa en futuras llamadas. Por eso $X_{ij}\in\{0,1\}$: cero o una vez, nunca más.</p>
+</div>
+
+<h3>Los cinco pasos</h3>
+<ol class="steps">
+  <li><b>Escribir $C$ como suma de indicatrices y aplicar linealidad de la esperanza:</b>
+  $$C=\sum_{i=1}^{n-1}\sum_{j=i+1}^{n}X_{ij} \quad\Longrightarrow\quad E[C]=\sum_{i=1}^{n-1}\sum_{j=i+1}^{n}E[X_{ij}]$$</li>
+  <li><b>Usar que para una indicatriz $E[X_{ij}]=\Pr(X_{ij}=1)$</b>, porque $E[X]=0\cdot\Pr(X{=}0)+1\cdot\Pr(X{=}1)$.</li>
+  <li><b>Calcular esa probabilidad.</b> Considera el conjunto de elementos comprendidos entre ambos: $S_{ij}=\{z_i,z_{i+1},\ldots,z_j\}$, que tiene $j-i+1$ elementos. <b>Mientras ningún elemento de $S_{ij}$ haya sido pivote, $z_i$ y $z_j$ siguen en el mismo subarreglo.</b> Todo depende de cuál sea el <b>primer elemento de $S_{ij}$ elegido como pivote</b>:
+    <ul>
+      <li>Si es $z_i$ o $z_j$ ⇒ <b>se comparan</b> (el pivote se compara con todos los del subarreglo).</li>
+      <li>Si es un elemento intermedio $z_k$ con $i&lt;k&lt;j$ ⇒ el par queda separado en subarreglos distintos y <b>nunca se comparan</b>.</li>
+    </ul>
+    Como todos los elementos de $S_{ij}$ tienen la misma probabilidad de ser el primer pivote, y hay 2 casos favorables de $j-i+1$ posibles:
+    $$\boxed{\;\Pr(z_i \text{ y } z_j \text{ son comparados})=\frac{2}{j-i+1}\;}$$</li>
+  <li><b>Sustituir y acotar la suma.</b> Fijando $i$ y sustituyendo $k=j-i+1$:
+  $$\sum_{j=i+1}^{n}\frac{2}{j-i+1}=2\sum_{k=2}^{n-i+1}\frac1k\le 2\sum_{k=2}^{n}\frac1k$$
+  Como esto vale para cada uno de los $n-1&lt;n$ valores de $i$: $\;E[C] &lt; 2n\sum_{k=2}^{n}\frac1k$.</li>
+  <li><b>Acotar la suma armónica con la integral.</b> Cada término $\frac1k$ es un rectángulo de ancho 1 y altura $\frac1k$ que cabe bajo la curva $f(x)=1/x$, por lo que $\sum_{k=2}^{n}\frac1k \le \int_1^n \frac{1}{x}dx=\ln n$. Entonces:
+  $$E[C] &lt; 2n\sum_{k=2}^{n}\frac1k \le 2n\ln n = O(n\log n) \;\;\blacksquare$$</li>
+</ol>
+
+<div class="box def">
+  <div class="bt">Definición · la conclusión, en una frase</div>
+  <p><b>Para cualquier arreglo fijo de $n$ elementos distintos, QuickSort aleatorizado realiza $O(n\log n)$ comparaciones en promedio (en esperanza).</b></p>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · lo mínimo que hay que llevarse de esta sección</div>
+  <p>Si no alcanzas a memorizar la demostración completa, quédate con estas cuatro cosas, que son lo que se pregunta:</p>
+  <ol>
+    <li>La aleatoriedad está en la <b>elección de los pivotes</b>, no en la entrada.</li>
+    <li>El costo se descompone en <b>comparaciones entre pares</b>, usando variables indicatrices.</li>
+    <li>$\Pr(z_i \text{ y } z_j \text{ se comparan}) = \frac{2}{j-i+1}$, y <b>por qué</b>: depende de cuál de los $j-i+1$ elementos entre ellos sea el primer pivote; solo 2 de esos casos los ponen en contacto.</li>
+    <li>La suma resultante es armónica, y $H_n=\Theta(\log n)$, de donde sale el $n\log n$.</li>
+  </ol>
+</div>
+
+<h3>Por qué <code>Partition</code> se implementa in-place</h3>
+<p>La forma simple de particionar sería crear dos arreglos auxiliares (menores y mayores que el pivote). Funciona, pero usa $\Theta(n)$ de memoria adicional. La implementación in-place usa dos índices $i$ y $j$ para mantener tres zonas dentro del mismo arreglo y logra $\Theta(1)$ de memoria adicional. En un subarreglo de tamaño $m$, <code>Partition</code> hace exactamente $m-1$ comparaciones (cada elemento distinto del pivote se compara una vez con él), o sea $\Theta(m)$. El invariante de esa implementación está en la <a class="inl" href="#correctitud">§2</a>.</p>
+</section>
+
+<section id="cotas">
+<h2>10 · Cotas inferiores del ordenamiento</h2>
+<p class="lead">La clase de la que aún no hay PPT (semana del 21 al 26 de septiembre). Cayó en la P1 de 2025-1 (10 pts) y de 2024-2 (10 pts), así que conviene llevarla lista.</p>
+
+<h3>Es una pregunta distinta</h3>
+<p>Hasta ahora la pregunta era "¿cuánto cuesta <b>mi algoritmo</b>?". Ahora es: <b>"¿cuánto cuesta el mejor algoritmo posible para este problema?"</b>. Es una afirmación sobre el <i>problema</i>, no sobre un algoritmo particular.</p>
+
+<div class="box def">
+  <div class="bt">Definición · cota inferior de un problema (respuesta de 2024-2, P1a)</div>
+  <p>Sea $P$ un problema computacional bien definido y $f$ una función del tamaño de la entrada $n$. Decir que <b>$f$ es una cota inferior para $P$</b> significa que <b>para cada algoritmo $a$ que resuelve correctamente $P$, se cumple $T_a(n)\in\Omega(f(n))$</b>.</p>
+  <p>Es decir: el mejor tiempo de ejecución que podemos esperar de <b>cualquier</b> algoritmo para $P$ está acotado inferiormente por $f(n)$. No importa cuán ingenioso seas: no puedes bajar de ahí.</p>
+</div>
+
+<h3>La cota $\Omega(n\log n)$ para ordenamiento por comparación</h3>
+<div class="box def">
+  <div class="bt">Definición · la respuesta completa (2025-1, P1a — 10 pts)</div>
+  <p>Significa que $n\log n$ representa una <b>cota inferior</b>: cualquier algoritmo que ordene <b>mediante comparaciones</b> debe hacer al menos $n\log n$ comparaciones en el peor caso.</p>
+  <p><b>De dónde sale:</b> del <b>árbol de decisión</b>. Un algoritmo de ordenamiento por comparación se puede modelar como un árbol binario donde cada nodo interno es una comparación ("¿$a_i \le a_j$?") y cada rama es una de las dos respuestas posibles. Cada <b>hoja</b> corresponde a una de las salidas posibles, o sea a una permutación del arreglo.</p>
+  <p>El árbol debe poder distinguir entre las <b>$n!$ permutaciones</b> posibles, así que necesita al menos $n!$ hojas. Y un árbol binario de altura $h$ tiene a lo más $2^h$ hojas. Por lo tanto:</p>
+  <div class="form">$2^h \ge n! \;\;\Longrightarrow\;\; h \ge \log_2(n!) = \Omega(n\log n)$</div>
+  <p>La altura $h$ del árbol es el número de comparaciones en el peor caso. Conclusión: <b>ningún algoritmo de ordenamiento basado en comparaciones puede hacer menos de $\Omega(n\log n)$ comparaciones en el peor caso</b>.</p>
+</div>
+
+<details class="ex">
+<summary>Por qué $\log_2(n!)=\Omega(n\log n)$<span class="tag">el detalle que completa la demostración</span></summary>
+<div class="body">
+<p>Se puede ver con un argumento simple, sin usar la aproximación de Stirling. Como</p>
+<div class="form">$n! = n\cdot(n-1)\cdots 2\cdot 1 \;\ge\; n\cdot(n-1)\cdots\left\lceil\tfrac n2\right\rceil \;\ge\; \left(\frac n2\right)^{n/2}$</div>
+<p>(los $n/2$ factores más grandes son todos $\ge \frac n2$), tomando logaritmo:</p>
+<div class="form">$\log_2(n!)\;\ge\;\frac n2\log_2\frac n2 \;=\;\frac n2\log_2 n-\frac n2 \;=\;\Omega(n\log n)$</div>
+<p>Con Stirling se obtiene el resultado más fino $\log_2(n!)=n\log_2 n-n\log_2 e+O(\log n)=\Theta(n\log n)$, pero para la cota inferior basta lo de arriba. $\blacksquare$</p>
+</div>
+</details>
+
+<div class="box tip">
+  <div class="bt">Truco · las tres consecuencias que hay que poder nombrar</div>
+  <ol>
+    <li><b>MergeSort y HeapSort son asintóticamente óptimos</b> entre los algoritmos de comparación: alcanzan la cota inferior.</li>
+    <li><b>La cota vale solo para algoritmos basados en comparación.</b> Counting Sort y Radix Sort pueden ordenar en $O(n)$ porque <b>no comparan</b> elementos entre sí: usan los valores directamente como índices. No violan el teorema; simplemente no están en el modelo.</li>
+    <li><b>Buscar en un arreglo ordenado tiene cota inferior $\Omega(\log n)$</b> por el mismo argumento (el árbol de decisión debe distinguir $n+1$ resultados posibles), y la búsqueda binaria la alcanza, o sea también es óptima.</li>
+  </ol>
+</div>
+
+<div class="box ana">
+  <div class="bt">Analogía · el juego de las 20 preguntas</div>
+  <p>Ordenar comparando es como adivinar un número jugando a "¿es mayor que…?": cada pregunta tiene dos respuestas posibles, así que con $h$ preguntas puedes distinguir a lo más $2^h$ situaciones distintas. Si hay $n!$ ordenamientos posibles y cada comparación solo parte el espacio en dos, necesitas al menos $\log_2(n!)$ preguntas. No es un problema de ser hábil: es un límite de <b>información</b>.</p>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · cuando suban el PPT</div>
+  <p>Esta sección está armada con lo que se pregunta en los certámenes 2025-1 y 2024-2 y con el enunciado de la planificación. Cuando la profesora publique la clase 12, revisa dos cosas: (1) si además del ordenamiento cubre la cota inferior de la <b>búsqueda</b>, y (2) si menciona algoritmos que <b>no</b> usan comparación (counting sort, radix sort) — en algunos semestres se mencionan y en otros se dejan para el C2.</p>
+</div>
+</section>
+
+<section id="plantillas">
+<h2>Las 4 plantillas del certamen</h2>
+<p class="lead">Si te sabes estas cuatro estructuras, tienes la mitad del puntaje antes de leer el enunciado. Escríbelas de memoria en una hoja en blanco un par de veces antes del sábado.</p>
+
+<div class="box def">
+  <div class="bt">Plantilla P1 · demostración formal con $O$ / $\Omega$ / $\Theta$</div>
+  <pre><code>Por definición, T(n) ∈ O(f(n)) si existen constantes c &gt; 0 y n₀ &gt; 0
+tales que T(n) ≤ c·f(n) para todo n ≥ n₀.
+
+[Manipulación algebraica de T(n) hasta que aparezca f(n)]
+
+Tomando c = ___ y n₀ = ___, se cumple T(n) ≤ c·f(n) para todo n ≥ n₀.
+Por lo tanto, T(n) ∈ O(f(n)).  ∎</code></pre>
+  <p>Para $\Theta$ son dos demostraciones (una por cada cota) y al final se toma $n_0=\max\{n_{0,1},n_{0,2}\}$.</p>
+</div>
+
+<div class="box def">
+  <div class="bt">Plantilla P2 · correctitud por invariante de ciclo</div>
+  <pre><code>INVARIANTE: Antes de cada iteración con índice i, [variable/subarreglo]
+            cumple que [propiedad expresada en función de i].
+
+1. INICIALIZACIÓN
+   Antes de la primera iteración se tiene i = ___ y se ha ejecutado ___.
+   El subarreglo es [___], que es [vacío / de un solo elemento],
+   por lo tanto el invariante se cumple [por vacuidad / trivialmente].
+
+2. MANTENIMIENTO
+   Hipótesis inductiva: supongamos que antes de la iteración i se cumple
+   el invariante, es decir, [repetir el invariante con i].
+   Paso inductivo: por demostrar que antes de la iteración i+1 se cumple
+   [repetir el invariante con i+1].
+   Ejecutamos la iteración i. Analizamos por casos:
+     Caso 1: si [condición del if] ... por H.I. ... se cumple.
+     Caso 2: si [negación] ... por H.I. ... se cumple.
+   En ambos casos [el invariante con i+1] se mantiene.
+
+3. FINALIZACIÓN
+   El ciclo termina cuando i = ___. Reemplazando en el invariante:
+   [conclusión sobre el arreglo completo].
+   Esto es exactamente lo que el algoritmo debía calcular, por lo tanto
+   el algoritmo es correcto.  ∎</code></pre>
+</div>
+
+<div class="box def">
+  <div class="bt">Plantilla P3 · dividir y conquistar</div>
+  <pre><code>ECUACIÓN DE RECURRENCIA
+   El algoritmo realiza ___ llamadas recursivas sobre subproblemas de
+   tamaño n/___, y el trabajo no recursivo [describir: el ciclo que...]
+   tiene costo Θ(n^___). Por lo tanto:
+
+        T(n) = a·T(n/b) + Θ(n^d)   con  a = ___, b = ___, d = ___
+        Caso base: T(1) = Θ(1)
+
+TEOREMA MAESTRO
+   Comparamos a con b^d:   a = ___   y   b^d = ___
+   Como a [=/&lt;/&gt;] b^d, el costo está dominado por
+   [todos los niveles por igual / el trabajo de la raíz / las hojas],
+   por lo tanto:
+        T(n) = [ Θ(n^d log n) / Θ(n^d) / Θ(n^(log_b a)) ] = ___
+
+COMPLEJIDAD ESPACIAL
+   - Entrada: [arreglo Θ(n) / matriz Θ(n²)]
+   - Estructuras auxiliares: ___
+   - Pila de recursión: profundidad log_b n, cada frame O(1) ⇒ O(log n)
+   Espacio total: E(n) = ___.  Espacio adicional (sin la entrada): ___.</code></pre>
+</div>
+
+<div class="box def">
+  <div class="bt">Plantilla P4 · análisis de código con TDAs</div>
+  <pre><code>(a) POR BLOQUES
+Bloque A: el ciclo se ejecuta ___ veces. En cada iteración se llama a
+          ___ sobre un [nombre del TDA], que está implementado como
+          [árbol balanceado / heap / tabla hash], por lo que cada
+          operación cuesta O(___), donde ___ es el tamaño de la
+          estructura, que en el peor caso llega a ___.
+          Costo del bloque: O(___).
+Bloque B: [ídem]
+
+(b) TOTAL
+    T(n) = O(___) + O(___). Por la regla de la suma, el término
+    dominante es ___, por lo tanto T(n) = O(___).
+
+(c) ESPACIO ADICIONAL
+    [estructura 1]: a lo más ___ elementos ⇒ O(___)
+    [estructura 2]: a lo más ___ elementos ⇒ O(___)
+    E(n) = O(___). La entrada se asume preexistente y no se contabiliza
+    como memoria extra.</code></pre>
+</div>
+</section>
+
+<section id="errores">
+<h2>Errores típicos (los que cuestan puntos de verdad)</h2>
+
+<div class="tw">
+<table>
+<thead><tr><th>#</th><th>Error</th><th>Cómo evitarlo</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Escribir una complejidad <b>sin justificar</b>.</td><td>Los enunciados dicen literalmente que sin justificación no hay puntaje. Siempre: "el ciclo corre $n$ veces y cada operación cuesta X <b>porque</b> Y".</td></tr>
+<tr><td>2</td><td>No elegir $c$ y $n_0$ explícitamente en una demostración de $O$.</td><td>Escribe la frase completa: "tomando $c=32$ y $n_0=1$". Ahí está el punto.</td></tr>
+<tr><td>3</td><td>Usar límites cuando piden la definición formal.</td><td>El certamen 2026-1 lo prohíbe explícitamente. Usa desigualdades.</td></tr>
+<tr><td>4</td><td>Invariante sin índice ("el arreglo está ordenado").</td><td>Eso es la postcondición. El invariante habla de un <b>subarreglo en función del índice</b>.</td></tr>
+<tr><td>5</td><td>Omitir la hipótesis inductiva en el mantenimiento.</td><td>Es donde está el grueso de los 10 puntos. Escríbela con esas palabras y <b>úsala</b> en el argumento.</td></tr>
+<tr><td>6</td><td>Finalización sin decir con qué valor termina el índice.</td><td>"El ciclo termina cuando $i=n$; reemplazando en el invariante…"</td></tr>
+<tr><td>7</td><td><b>Olvidar la complejidad espacial</b> en la P3.</td><td>Vale entre 5 y 10 puntos y muchos la dejan en blanco. La pila de recursión es $O(\log n)$ si el problema se divide, $O(n)$ si se reduce de a uno.</td></tr>
+<tr><td>8</td><td>Contar mal $a$: usar el número de partes en que se divide en vez del número de <b>llamadas escritas</b>.</td><td>2026-1: "se divide en 4 cuadrantes… se invoca en solo 3" ⇒ $a=3$. Cuenta las líneas de llamada recursiva.</td></tr>
+<tr><td>9</td><td>Poner $d=1$ cuando el trabajo no recursivo es $O(1)$.</td><td>$O(1)=O(n^0)$ ⇒ <b>$d=0$</b>. Pasa en el teselado en L y en la búsqueda binaria.</td></tr>
+<tr><td>10</td><td>Decir "estamos en el caso 2 del Teorema Maestro" sin más.</td><td>La numeración de los casos difiere entre las slides y las pautas. Escribe la comparación: "$a=3>2=b^d$".</td></tr>
+<tr><td>11</td><td>Tratar el $\log$ de un <code>map</code> como $\log n$ cuando el map tiene otro tamaño.</td><td>Es $\log$ del <b>número de elementos de esa estructura</b>. Si el map llega a $n^2$ entradas, es $\log n^2 = 2\log n = O(\log n)$; si tiene $m$ elementos, es $\log m$.</td></tr>
+<tr><td>12</td><td>Decir que <code>unordered_map</code> es $O(1)$ a secas cuando piden peor caso.</td><td>Es $O(1)$ <b>en promedio</b> y $O(n)$ en el peor caso por colisiones. Menciona ambas y di cuál usas.</td></tr>
+<tr><td>13</td><td>Confundir caso promedio con costo amortizado.</td><td>Promedio: sobre <b>entradas</b>, requiere hipótesis probabilística. Amortizado: sobre una <b>secuencia de operaciones</b>, sin probabilidad.</td></tr>
+<tr><td>14</td><td>Asumir que dos <code>for</code> anidados son siempre $O(n^2)$.</td><td>Cuenta cuántas veces se ejecuta la instrucción del fondo. Si el interno corre una cantidad constante de veces, es $O(n)$.</td></tr>
+<tr><td>15</td><td>Sumar complejidades de bloques consecutivos multiplicándolas.</td><td>Bloques <b>consecutivos se suman</b> (y gana el máximo); ciclos <b>anidados se multiplican</b>.</td></tr>
+<tr><td>16</td><td>Medir el costo en función del <b>valor</b> del número en vez del tamaño de su representación.</td><td>Si la entrada es un número $a$ de $n$ bits, un ciclo que corre $a$ veces es $O(2^n)$, no $O(n)$.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="chuleta">
+<h2>Chuleta</h2>
+<p class="lead">Todo lo memorizable, en una página. La prueba de que estás listo es poder escribir esto de memoria en una hoja en blanco.</p>
+
+<h4>Definiciones formales</h4>
+<div class="form">
+$T(n)=O(f(n)) \iff \exists c,n_0>0: T(n)\le c f(n)\ \forall n\ge n_0$<br>
+$T(n)=\Omega(f(n)) \iff \exists c,n_0>0: T(n)\ge c f(n)\ \forall n\ge n_0$<br>
+$T(n)=\Theta(f(n)) \iff \exists c_1,c_2,n_0>0: c_1f(n)\le T(n)\le c_2f(n)\ \forall n\ge n_0$<br>
+$T(n)=o(f(n)) \iff \forall c>0\ \exists n_0: T(n) &lt; cf(n)\ \forall n\ge n_0 \iff \lim T/f = 0$<br>
+$T(n)=\omega(f(n)) \iff \forall c>0\ \exists n_0: T(n) > cf(n)\ \forall n\ge n_0 \iff \lim T/f = \infty$
+</div>
+
+<h4>Teorema Maestro</h4>
+<div class="form">
+Para $T(n)\le a\,T(n/b)+O(n^d)$, con $a\ge1$, $b>1$, $d\ge0$:<br><br>
+$a = b^d \Rightarrow T(n)=O(n^d\log n)$ &nbsp;&nbsp;·&nbsp;&nbsp;
+$a &lt; b^d \Rightarrow T(n)=O(n^d)$ &nbsp;&nbsp;·&nbsp;&nbsp;
+$a > b^d \Rightarrow T(n)=O(n^{\log_b a})$
+</div>
+
+<h4>Jerarquía y sumatorias</h4>
+<div class="form">
+$1 &lt; \log n &lt; \sqrt n &lt; n &lt; n\log n &lt; n^2 &lt; n^3 &lt; 2^n &lt; n!$<br><br>
+$\sum_{i=1}^n i=\frac{n(n+1)}{2}$ &nbsp;·&nbsp; $\sum_{i=0}^k 2^i=2^{k+1}-1$ &nbsp;·&nbsp; $H_n=\sum_{k=1}^n\frac1k=\Theta(\log n)$ &nbsp;·&nbsp; $\log_a n=\frac{\log_2 n}{\log_2 a}$ &nbsp;·&nbsp; $a^{\log_b n}=n^{\log_b a}$
+</div>
+
+<h4>Los algoritmos</h4>
+<div class="tw">
+<table>
+<thead><tr><th>Algoritmo</th><th>Recurrencia</th><th>Costo</th><th>Espacio extra</th></tr></thead>
+<tbody>
+<tr><td>Búsqueda secuencial</td><td>—</td><td>peor $O(n)$, prom. $\frac{n+1}{2}$</td><td>$O(1)$</td></tr>
+<tr><td>Búsqueda binaria</td><td>$T(n/2)+O(1)$</td><td>$O(\log n)$</td><td>$O(\log n)$ recursiva</td></tr>
+<tr><td>SelectionSort</td><td>—</td><td>$\Theta(n^2)$ en los 3 casos</td><td>$O(1)$, in-place, no estable</td></tr>
+<tr><td>MergeSort</td><td>$2T(n/2)+O(n)$</td><td>$\Theta(n\log n)$ en los 3 casos</td><td>$O(n)$, no in-place, estable</td></tr>
+<tr><td>QuickSort</td><td>mejor/prom. $2T(n/2)+\Theta(n)$</td><td>prom. $O(n\log n)$, peor $O(n^2)$</td><td>$O(\log n)$, in-place, no estable</td></tr>
+<tr><td>RecIntMult</td><td>$4T(n/2)+O(n)$</td><td>$O(n^2)$</td><td>—</td></tr>
+<tr><td>Karatsuba</td><td>$3T(n/2)+O(n)$</td><td>$O(n^{\log_2 3})\approx O(n^{1{,}59})$</td><td>—</td></tr>
+<tr><td>RecMatMult</td><td>$8T(n/2)+O(n^2)$</td><td>$O(n^3)$</td><td>—</td></tr>
+<tr><td>Strassen</td><td>$7T(n/2)+O(n^2)$</td><td>$O(n^{\log_2 7})\approx O(n^{2{,}81})$</td><td>—</td></tr>
+<tr><td>ClosestPair</td><td>$2T(n/2)+O(n)$</td><td>$O(n\log n)$</td><td>$O(n)$</td></tr>
+</tbody>
+</table>
+</div>
+
+<h4>Costos de la STL</h4>
+<div class="form">
+<code>vector</code>: acceso $O(1)$, <code>push_back</code> $O(1)$ amortizado, insertar/borrar en medio $O(n)$, buscar $O(n)$<br>
+<code>list</code>: acceso $O(n)$, insertar/borrar con iterador $O(1)$<br>
+<code>stack</code> / <code>queue</code> / <code>deque</code>: todas las operaciones propias $O(1)$<br>
+<code>priority_queue</code> (heap): <code>top</code> $O(1)$, <code>push</code>/<code>pop</code> $O(\log n)$<br>
+<code>set</code> / <code>map</code> (árbol balanceado): buscar/insertar/borrar $O(\log n)$<br>
+<code>unordered_set</code> / <code>unordered_map</code> (hash): $O(1)$ promedio, $O(n)$ peor caso<br>
+<code>sort</code>: $O(n\log n)$ &nbsp;·&nbsp; <code>lower_bound</code>/<code>upper_bound</code>: $O(\log n)$
+</div>
+
+<h4>Frases que suman puntos</h4>
+<ul>
+  <li>"…por lo tanto el invariante se cumple <b>por vacuidad</b>."</li>
+  <li>"<b>Por hipótesis inductiva</b>, … Analizamos <b>por casos</b>: … <b>En ambos casos</b>, el invariante se mantiene."</li>
+  <li>"Como $a > b^d$, el costo está <b>dominado por las hojas</b> del árbol de recursión."</li>
+  <li>"Por la <b>regla de la suma</b>, el término dominante es …"</li>
+  <li>"La <b>profundidad de la pila de recursión</b> es $\log_2 n$, cada frame es $O(1)$, por lo tanto el espacio auxiliar es $O(\log n)$."</li>
+  <li>"La entrada se asume preexistente y <b>no se contabiliza</b> como memoria adicional."</li>
+  <li>"Cada operación sobre el <code>map</code> cuesta $O(\log|\text{map}|)$, y en el peor caso $|\text{map}|=$ …"</li>
+  <li>"Todos los logaritmos de base constante mayor que 1 <b>difieren en un factor constante</b>, por lo que son asintóticamente equivalentes."</li>
+</ul>
+</section>
+
+<section id="plan">
+<h2>Plan de 16 días</h2>
+<p class="lead">De hoy (jueves 10 de septiembre) al certamen (sábado 26). Ojo con el calendario: la semana del <b>14 al 19</b> es semana de vacaciones estudiantiles y cae el 18. El plan lo asume — no intenta pelear contra el dieciocho.</p>
+
+<div class="cols">
+  <div class="card">
+    <h5>Fase 1 · Entender (jue 10 – dom 13)</h5>
+    <p>Leer este resumen completo, de corrido, sin memorizar. Sí hacer a mano: la <b>guía de repaso</b> de la profesora (ejercicios 1 a 4: son exactamente el nivel de la P1 y la P2). Al final de la fase deberías poder explicarle a alguien qué es un invariante y por qué el Teorema Maestro tiene tres casos.</p>
+  </div>
+  <div class="card">
+    <h5>Fase 2 · Dieciocho (lun 14 – sáb 19)</h5>
+    <p>Semana de vacaciones. Meta mínima realista: <b>30-40 minutos al día</b>, solo repaso ligero — leer la <a class="inl" href="#chuleta">chuleta</a> y hacer <b>una</b> demostración de invariante al día. Lo importante acá es no perder el hilo, no avanzar.</p>
+  </div>
+  <div class="card">
+    <h5>Fase 3 · Ejercitar (dom 20 – mié 23)</h5>
+    <p>El banco <code>Ejercicios-C1-AlgoCo.html</code>, <b>a mano y con cronómetro</b>. Regla de oro: <b>intentar 15 minutos antes de mirar la solución</b>. Prioridad: invariantes (P2) y Teorema Maestro (P3), que son 55 de los 100 puntos. <b>Ir a la clase de Repaso C1 del martes 22 y a la ayudantía de repaso.</b></p>
+  </div>
+  <div class="card">
+    <h5>Fase 4 · Simular (jue 24 – vie 25)</h5>
+    <p>Hacer el <b>certamen 2026-1 completo en 120 minutos cronometrados</b>, sin apuntes, en hojas sueltas como en la sala. Corregir con la pauta (viene con solución). Después, solo repasar lo que fallaste. El viernes en la noche: escribir la chuleta de memoria y dormir.</p>
+  </div>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · el orden de estudio, según cuánto puntaje rinde cada hora</div>
+  <ol>
+    <li><b>Invariantes de ciclo (25 pts).</b> Es lo más mecánico y lo más rentable: la estructura es siempre la misma. Haz 5 o 6 completos a mano y ya está.</li>
+    <li><b>Teorema Maestro (30 pts).</b> Es una receta. Practica identificar $a$, $b$, $d$ en código, que es la única parte que se puede fallar. No olvides el espacio.</li>
+    <li><b>Costos de TDAs (25 pts).</b> Es memoria pura + saber justificar. La tabla de la <a class="inl" href="#tdas">§4</a>, y listo.</li>
+    <li><b>Demostraciones de $O$ (parte de los 20 pts de P1).</b> Cuatro pasos fijos. El ejercicio $2^{n+5}$ ha caído dos veces.</li>
+    <li><b>Conceptual (el resto de P1).</b> Cotas inferiores, ClosestPair, peor/promedio/amortizado. Es lectura, no ejercicio.</li>
+  </ol>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · dos cosas que hacer esta semana</div>
+  <p><b>1.</b> Ir a la <b>clase de repaso del martes 22</b> y a la ayudantía de repaso. En este ramo el repaso suele indicar qué se pregunta y qué no.</p>
+  <p><b>2.</b> Estar atento a que suban el PPT de <b>cotas inferiores</b>. Es la única parte de la materia que todavía no está en tus manos.</p>
+</div>
+
+<h3>Los materiales, ordenados por utilidad</h3>
+<div class="vid"><div class="ic b">1</div><div>
+  <a href="../Certamenes 1 anteriores/2026_01_AlgoCo_Certamen_1-SOL.pdf">Certamen 2026-1 CON SOLUCIÓN</a>
+  <small>El más útil de todos: es el molde exacto del certamen y viene con pauta. Guárdalo para el simulacro cronometrado, no lo quemes antes.</small>
+</div></div>
+<div class="vid"><div class="ic b">2</div><div>
+  <a href="../Certamenes 1 anteriores/Guía_Repaso.pdf">Guía de Repaso de la profesora</a>
+  <small>Cuatro ejercicios de análisis temporal, tamaño de entrada e invariantes. Es lo más cercano a "lo que ella quiere ver" que existe. Hazla completa.</small>
+</div></div>
+<div class="vid"><div class="ic g">3</div><div>
+  <a href="../Certamenes 1 anteriores/">Certámenes 2025-2, 2025-1 y 2024-2</a>
+  <small>Sin pauta oficial adjunta salvo el de 2026, pero sus soluciones están desarrolladas en las secciones de este resumen. Sirven para ver la variedad de enunciados.</small>
+</div></div>
+<div class="vid"><div class="ic">4</div><div>
+  <a href="https://www.algorithmsilluminated.org/">Algorithms Illuminated — Tim Roughgarden</a>
+  <small>Las slides de la profesora están basadas en este libro (capítulos 1-5). El <a href="https://www.youtube.com/@stanfordalgorithms2264">canal de YouTube</a> es parte de las actividades del curso: los videos de "Asymptotic Notation", "Divide and Conquer", "Master Method" y "QuickSort" cubren exactamente lo que entra.</small>
+</div></div>
+<div class="vid"><div class="ic">5</div><div>
+  <a href="../libro-algoco.md">CLRS — Introduction to Algorithms</a>
+  <small>Libro guía oficial. Para este certamen: cap. 2 (invariantes, insertion sort y mergesort), cap. 3 (notación asintótica y sus propiedades), cap. 4 (recurrencias y teorema maestro), cap. 7 (quicksort y su análisis promedio), cap. 8.1 (cota inferior del ordenamiento). Es denso: úsalo para profundizar algo puntual, no para leer de corrido.</small>
+</div></div>
+</section>
+
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('algoco-c1-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('algoco-c1-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+})();
+</script>
+</body>
+</html>
