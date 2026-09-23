@@ -1,19 +1,9 @@
-// Referencias a elementos del DOM
-const btnHome = document.getElementById('btn-home');
-const homeView = document.getElementById('home-view');
-const apuntesView = document.getElementById('apuntes-view');
-const visorHtml = document.getElementById('visor-html');
-const listaArchivos = document.getElementById('lista-archivos-ramo');
-const tituloRamo = document.getElementById('titulo-ramo');
-
-// BASE DE DATOS DE TUS APUNTES (Edita esto para agregar más archivos en el futuro)
-const baseDeDatosApuntes = {
+// Base de datos de rutas (asegúrate de que estas rutas coincidan exactamente con tus carpetas)
+const baseDeDatos = {
     'inf221': {
         titulo: 'INF221 - Algoritmos y Complejidad',
         archivos: [
             { nombre: 'Resumen C1', ruta: 'inf221-algoco/Resumen-C1-AlgoCo.html' }
-            // Para agregar otro archivo de este ramo a futuro, solo pon una coma arriba y agrega:
-            // { nombre: 'Resumen C2', ruta: 'inf221-algoco/Resumen-C2.html' }
         ]
     },
     'inf236': {
@@ -24,46 +14,68 @@ const baseDeDatosApuntes = {
     }
 };
 
-// Vuelve a la página principal (Home)
-btnHome.addEventListener('click', () => {
-    apuntesView.style.display = 'none';
-    homeView.style.display = 'block';
-    visorHtml.src = ''; // Limpiamos el visor
+// Referencias a los contenedores principales
+const homeView = document.getElementById('home-view');
+const apuntesView = document.getElementById('apuntes-view');
+const visorHtml = document.getElementById('visor-html');
+const listaArchivos = document.getElementById('lista-archivos-ramo');
+const tituloRamo = document.getElementById('titulo-ramo');
+
+// Función para cambiar de pantalla
+function mostrarVista(vista) {
+    if (vista === 'home') {
+        homeView.classList.add('active');
+        apuntesView.classList.remove('active');
+        visorHtml.src = ''; // Detiene la carga del HTML anterior
+    } else {
+        homeView.classList.remove('active');
+        apuntesView.classList.add('active');
+    }
+}
+
+// Evento para el botón Home
+document.getElementById('btn-home').addEventListener('click', () => {
+    mostrarVista('home');
 });
 
-// Función central para cargar el contenido de un ramo
+// Función para cargar los apuntes de un ramo
 function cargarRamo(idRamo) {
-    const datosRamo = baseDeDatosApuntes[idRamo];
-    
-    // Si el ramo no existe en la base de datos, abortar
-    if (!datosRamo) return; 
+    const datos = baseDeDatos[idRamo];
+    if (!datos) return;
 
-    // Intercambiar vistas
-    homeView.style.display = 'none';
-    apuntesView.style.display = 'block';
-    
-    // Actualizar el título en pantalla
-    tituloRamo.textContent = datosRamo.titulo;
-    
-    // Limpiar los botones anteriores
-    listaArchivos.innerHTML = ''; 
-    
-    // Crear botones dinámicamente para cada archivo HTML de este ramo
-    datosRamo.archivos.forEach((archivo, index) => {
+    tituloRamo.textContent = datos.titulo;
+    listaArchivos.innerHTML = ''; // Limpiamos botones previos
+
+    // Crear los botones para cada HTML
+    datos.archivos.forEach((archivo, index) => {
         const btn = document.createElement('button');
-        btn.className = 'file-btn';
+        btn.className = 'btn-file';
         btn.textContent = archivo.nombre;
         
-        // Al hacer clic en un botón, cargar la ruta en el iframe
-        btn.onclick = () => {
+        btn.addEventListener('click', () => {
+            // Actualiza el iframe
             visorHtml.src = archivo.ruta;
-        };
-        
+            
+            // Efecto visual de botón activo
+            document.querySelectorAll('.btn-file').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        });
+
         listaArchivos.appendChild(btn);
 
-        // Opcional: Cargar automáticamente el primer archivo al abrir el ramo
+        // Auto-cargar el primer archivo de la lista
         if (index === 0) {
-            visorHtml.src = archivo.ruta;
+            btn.click();
         }
     });
+
+    mostrarVista('apuntes');
 }
+
+// Vincular los clics de las tarjetas y el menú lateral automáticamente
+document.querySelectorAll('[data-ramo]').forEach(elemento => {
+    elemento.addEventListener('click', function() {
+        const idRamo = this.getAttribute('data-ramo');
+        cargarRamo(idRamo);
+    });
+});

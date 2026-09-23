@@ -3,61 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Apuntes de Estudio</title>
+    <title>Mis Apuntes Universitarios</title>
+    <!-- Importamos una fuente moderna para mejorar la estética -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <!-- Barra lateral simplificada -->
+    
+    <!-- Barra Lateral -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <h2>📚 Mis Apuntes</h2>
         </div>
         
-        <!-- Botón Home Principal -->
-        <button id="btn-home" class="home-btn">🏠 Inicio</button>
+        <button id="btn-home" class="btn-home">
+            🏠 Volver al Inicio
+        </button>
         
-        <hr class="divider">
-        
-        <!-- Lista de ramos (sin desplegar los archivos) -->
-        <h3>Asignaturas</h3>
-        <ul class="subject-list">
-            <li class="subject-item" onclick="cargarRamo('inf221')">INF221 - Algoritmos</li>
-            <li class="subject-item" onclick="cargarRamo('inf236')">INF236 - ADS</li>
-        </ul>
+        <div class="sidebar-menu">
+            <h3>ASIGNATURAS</h3>
+            <ul class="subject-list">
+                <!-- Usamos data-ramo para conectar con JavaScript de forma segura -->
+                <li class="subject-item" data-ramo="inf221">INF221 - Algoritmos</li>
+                <li class="subject-item" data-ramo="inf236">INF236 - ADS</li>
+            </ul>
+        </div>
     </aside>
 
-    <!-- Área principal -->
-    <main class="content-area">
+    <!-- Área de Contenido Principal -->
+    <main class="content">
         
-        <!-- VISTA HOME (Tarjetas principales) -->
-        <div id="home-view" class="home-container">
-            <h1>Bienvenido a tus apuntes</h1>
-            <p>Selecciona una asignatura para comenzar a estudiar.</p>
+        <!-- Vista de Inicio (Home) -->
+        <section id="home-view" class="view-section active">
+            <header class="home-header">
+                <h1>Bienvenido a tu área de estudio</h1>
+                <p>Selecciona una asignatura para acceder a tus resúmenes y apuntes en HTML.</p>
+            </header>
             
             <div class="grid-ramos">
-                <button class="ramo-card" onclick="cargarRamo('inf221')">
+                <article class="card" data-ramo="inf221">
                     <h3>INF221</h3>
                     <p>Algoritmos y Complejidad</p>
-                </button>
-                <button class="ramo-card" onclick="cargarRamo('inf236')">
+                </article>
+                <article class="card" data-ramo="inf236">
                     <h3>INF236</h3>
                     <p>Análisis y Diseño de Software</p>
-                </button>
+                </article>
             </div>
-        </div>
+        </section>
 
-        <!-- VISTA DE APUNTES (Oculta al inicio) -->
-        <div id="apuntes-view" style="display: none;">
-            <div class="apuntes-header">
+        <!-- Vista del Visor de Apuntes -->
+        <section id="apuntes-view" class="view-section">
+            <header class="apuntes-header">
                 <h2 id="titulo-ramo">Título del Ramo</h2>
-                <!-- Aquí aparecerán dinámicamente los botones de los HTMLs de cada ramo -->
-                <div id="lista-archivos-ramo" class="botones-archivos"></div>
-            </div>
+                <div id="lista-archivos-ramo" class="file-buttons"></div>
+            </header>
             
-            <div class="iframe-container">
-                <iframe id="visor-html" src="" frameborder="0"></iframe>
+            <div class="iframe-wrapper">
+                <iframe id="visor-html" src="" title="Visor de apuntes"></iframe>
             </div>
-        </div>
+        </section>
         
     </main>
 
