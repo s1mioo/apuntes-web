@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ejercicios · Infosoc C1</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">EJ</div>
+    <div><h1>Ejercicios</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 1</small></div>
+  </div>
+  <div class="pages"><a href="0-Guia-de-estudio-C1.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 3</small></span></a><a href="1-Proyectos.html"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></a><a href="2-Definiciones.html"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></a><a href="3-Falacias.html"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></a><a href="4-Sesgos-cognitivos.html"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></a><a href="5-Pensamiento-critico.html"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></a><a href="6-Resolver-problemas.html"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></a><a href="7-Etica-y-moral.html"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></a><a href="8-Etica-antiguedad.html"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></a><a href="9-Etica-moderna.html"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></a><a href="10-Sociedades.html"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></a><a href="11-Metodo-cientifico.html"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></a><a href="12-Ingenieria.html"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></a><a href="13-Computacion.html"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></a><a href="14-Ejercicios.html" class="cur"><b>14</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Ejercicios</div><a href="#ej-inicio">Cómo está ordenado</a><a href="#nivel1">Nivel 1 · casi seguro</a><a href="#nivel2">Nivel 2 · muy probable</a><a href="#nivel3">Nivel 3 · probable</a><a href="#nivel4">Nivel 4 · posible</a><a href="#nivel5">Nivel 5 · poco probable</a></nav>
+</aside>
+<main class="content">
+<section id="ej-inicio">
+<h2>Ejercicios · ordenados por probabilidad</h2>
+<p class="lead">Todas las preguntas de los nueve certámenes que trae el zip (C1, C2 y recuperativo de 2025-1, 2025-2 y 2026-1) que tocan materia de este C1, más algunas inventadas al estilo del profe para las clases que nunca se han preguntado. Van de la más probable a la menos probable.</p>
+
+<div class="hero">
+  <div class="big">El profe repite preguntas casi textuales</div>
+  <div class="sub">“Defina falacia y explique tres” salió igual en 2025-1, 2025-2 y el recuperativo 2025-2. “Tres razones por las que fallan los proyectos” salió tres veces. Por eso este orden sirve: lo que más se repitió es lo que más conviene llevar listo. Cada pregunta trae el enunciado real, cómo la corrigió la pauta y una respuesta modelo del largo que se espera.</div>
+</div>
+
+<div class="box def"><div class="bt">Cómo se calculó el orden</div>
+<p>Para cada pregunta se contó en cuántos certámenes salió (pesando más los C1, que cubren la misma materia que éste) y se revisó que su clase esté en el zip de este semestre. Los niveles:</p>
+<p><span class="pill t1">Nivel 1 · casi seguro</span> salió en 2 de los 3 últimos C1 (o su familia de preguntas). <span class="pill t2">Nivel 2 · muy probable</span> salió en un C1 reciente o muchas veces en otros certámenes. <span class="pill t3">Nivel 3 · probable</span> salió una vez en un C1 o en recuperativos. <span class="pill t4">Nivel 4 · posible</span> clase del zip que nunca se ha preguntado. <span class="pill t5">Nivel 5 · poco probable</span> salió en un C1, pero su clase no está en el zip.</p></div>
+
+<div class="tw"><table class="rank mini">
+<thead><tr><th>#</th><th>Pregunta</th><th>Tema</th><th>Dónde salió</th><th>Pts</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><a class="inl" href="#e1">Falacias: definición y tres ejemplos</a></td><td>3</td><td>C1 25-1 · C1 25-2 · R 25-2</td><td>15-20</td></tr>
+<tr><td>2</td><td><a class="inl" href="#e2">Sesgos cognitivos: definición y tres</a></td><td>4</td><td>C1 25-2 · C2 25-1</td><td>15</td></tr>
+<tr><td>3</td><td><a class="inl" href="#e3">Disonancia cognitiva</a></td><td>4</td><td>C1 26-1</td><td>15-20</td></tr>
+<tr><td>4</td><td><a class="inl" href="#e4">Ciencia y método científico</a></td><td>11</td><td>C1 25-1 · R 25-1 · C2 25-2</td><td>15-20</td></tr>
+<tr><td>5</td><td><a class="inl" href="#e5">Ética antigua vs moderna</a></td><td>8-9</td><td>C1 25-1 · R 26-1</td><td>15-20</td></tr>
+<tr><td>6</td><td><a class="inl" href="#e6">Caso ético</a></td><td>7-9</td><td>C1 25-1 y 5 más</td><td>30</td></tr>
+<tr><td>7</td><td><a class="inl" href="#e7">Por qué fallan los proyectos</a></td><td>1</td><td>C1 25-2 · R 25-2 · C2 25-1</td><td>15-30</td></tr>
+<tr><td>8</td><td><a class="inl" href="#e8">Ciencia vs ingeniería; defina ingeniería</a></td><td>2, 12</td><td>C1 26-1 · R 25-2</td><td>15-20</td></tr>
+<tr><td>9</td><td><a class="inl" href="#e9">Ética vs moral (Grecia y Roma)</a></td><td>7</td><td>C1 26-1</td><td>15-20</td></tr>
+<tr><td>10</td><td><a class="inl" href="#e10">Habilidades del pensamiento crítico</a></td><td>5</td><td>C1 25-2</td><td>20</td></tr>
+<tr><td>11</td><td><a class="inl" href="#e11">Puntos de vista alternativos y suposiciones</a></td><td>5</td><td>C1 26-1</td><td>20</td></tr>
+<tr><td>12</td><td><a class="inl" href="#e12">Falacia vs sesgo cognitivo</a></td><td>3-4</td><td>R 25-1 · R 26-1</td><td>15-20</td></tr>
+<tr><td>13</td><td><a class="inl" href="#e13">La estrategia de Pólya</a></td><td>6</td><td>C1 25-2 · C2 25-1</td><td>20</td></tr>
+<tr><td>14</td><td><a class="inl" href="#e14">Criterios del objetivo de un proyecto</a></td><td>1</td><td>C1 25-2</td><td>25</td></tr>
+<tr><td>15</td><td><a class="inl" href="#e15">Historia de la ingeniería</a></td><td>12</td><td>C1 25-1</td><td>20</td></tr>
+<tr><td>16</td><td><a class="inl" href="#e16">Navaja de Ockham; teoría falseable</a></td><td>2, 11</td><td>R 26-1</td><td>10-15</td></tr>
+<tr><td>17</td><td><a class="inl" href="#e17">Historia de la computación</a></td><td>13</td><td>inventada</td><td>—</td></tr>
+<tr><td>18</td><td><a class="inl" href="#e18">TI: aspectos positivos y negativos</a></td><td>13</td><td>C1 25-1</td><td>20</td></tr>
+<tr><td>19</td><td><a class="inl" href="#e19">Tradiciones de la sociología</a></td><td>10</td><td>inventada</td><td>—</td></tr>
+<tr><td>20</td><td><a class="inl" href="#e20">Validez y solidez</a></td><td>3</td><td>inventada</td><td>—</td></tr>
+<tr><td>21</td><td><a class="inl" href="#e21">Kant y el utilitarismo</a></td><td>9</td><td>inventada</td><td>—</td></tr>
+<tr><td>22</td><td><a class="inl" href="#e22">Propiedad intelectual</a></td><td>fuera del zip</td><td>C1 26-1 · y 4 más</td><td>20-35</td></tr>
+<tr><td>23</td><td><a class="inl" href="#e23">Responsabilidades éticas del profesional</a></td><td>fuera del zip</td><td>C1 26-1</td><td>20</td></tr>
+<tr><td>24</td><td><a class="inl" href="#e24">Máximas y causas no técnicas de falla</a></td><td>fuera del zip</td><td>R 25-1 · C2 25-1</td><td>15</td></tr>
+<tr><td>25</td><td><a class="inl" href="#e25">Funciones de un buen ayudante</a></td><td>—</td><td>C1 25-1</td><td>0</td></tr>
+</tbody></table></div>
+<div class="box tip"><div class="bt">Cómo practicar con esta página</div>
+<p>Lee el enunciado, escribe tu respuesta en papel (con reloj: unos 6 minutos por cada 10 puntos) y recién ahí abre la respuesta modelo. Compara contra el desglose de puntos de la pauta, no contra el largo del texto.</p></div>
+</section>
+
+<section id="nivel1">
+<div class="tier"><span class="pill t1">Nivel 1</span><h3>Casi seguro que sale algo así</h3></div>
+
+<details class="ex" id="e1"><summary>1 · Falacias: definición y tres ejemplos <span class="tag">C1 25-1 · C1 25-2 · R 25-2 · 15-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-2 · P2 (15 pts)</div><p>Defina lo que se entienda por falacia. Explique brevemente tres tipos de falacias.</p></div>
+<p class="src">Variantes: C1 2025-1 P3 “Explique brevemente tres tipos de falacias” (15). Recuperativo 2025-2 P2 “Explique lo que se entiende por falacia. Dé tres ejemplos, e indique cómo satisface su definición para cada uno de ellos” (20).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>C1 2025-1: cada falacia</span><span>5</span><span>C1 2025-2: definición + cada falacia</span><span>3 + 4</span><span>R 2025-2: definición + cada falacia</span><span>5 + 5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>Una <b>falacia</b> es un paso ilógico en un argumento. En el discurso académico o profesional, un argumento es una conclusión o afirmación con supuestos o razones que la apoyan. Una falacia es una forma de razonar errónea, ya sea porque no es válida (las premisas no permiten concluir lo indicado) o porque no es sólida (se razona desde premisas falsas o no demostradas). Que un argumento sea falaz no prueba que su conclusión sea falsa.</p>
+<p><b>Ad hominem</b> (“al hombre”): desechar un argumento desacreditando a quien lo emite. “No consideren su propuesta de seguridad: ni terminó la carrera.” El error es que no se evalúa el argumento, sino a la persona.</p>
+<p><b>Post hoc, ergo propter hoc</b> (“después de ello, luego por ello”): confundir una relación temporal con una causal. “Instalé la actualización y al día siguiente falló el disco: la actualización lo rompió.” Que B ocurra después de A no prueba que A cause B.</p>
+<p><b>Hombre de paja</b> (<i>straw man</i>): caricaturizar la posición contraria para demoler la caricatura. A: “Deberíamos escribir más tests.” B: “¿O sea que quieres no entregar nada por escribir tests?”. Se refuta una posición que nadie sostuvo; las premisas se cambian por otras falsas.</p>
+</div>
+<div class="box tip"><div class="bt">Alternativas igual de seguras</div><p>Falso dilema (solo dos opciones cuando hay más), ad populum (es cierto porque es popular), ad verecundiam (autoridad fuera de su área), pendiente resbaladiza. Catálogo completo en la <a class="inl" href="3-Falacias.html#catalogo">página 3</a>.</p></div>
+</div></details>
+
+<details class="ex" id="e2"><summary>2 · Sesgos cognitivos: definición y tres <span class="tag">C1 25-2 · C2 25-1 · 15 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-2 · P3 (15 pts)</div><p>Defina lo que se entienda por sesgo cognitivo. Explique brevemente tres sesgos cognitivos.</p></div>
+<p class="src">Variante: C2 2025-1 P1 “Discuta brevemente tres sesgos cognitivos” (15, 5 por sesgo).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Definición</span><span>3</span><span>Cada sesgo</span><span>4</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>Un <b>sesgo cognitivo</b> es un patrón sistemático de desviarse de la norma o la racionalidad al momento de juzgar. Cada persona crea su propia realidad subjetiva, que dicta su comportamiento, lo que puede llevar a percepciones distorsionadas y juicios errados. No son siempre negativos: aceleran las decisiones cuando importa más la rapidez que la exactitud.</p>
+<p><b>Sesgo de confirmación:</b> buscar o interpretar la información de forma que confirme lo que ya creo, desacreditando lo que lo contradice. Ejemplo: un programador que solo corre los tests que sabe que pasan y concluye que su código funciona.</p>
+<p><b>Costo hundido:</b> asignar mayor valor a aquello en lo que ya invertimos recursos. Ejemplo: seguir con un framework inadecuado porque “ya le dedicamos tres meses”, aunque cambiar sea lo racional.</p>
+<p><b>Representatividad:</b> juzgar la probabilidad por cuánto algo se parece a un estereotipo. En el problema de Linda, descrita como preocupada por la justicia social, muchos creen más probable que sea “cajera y feminista” que “cajera”, aunque lo primero es un caso particular de lo segundo y no puede ser más probable.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e3"><summary>3 · Disonancia cognitiva <span class="tag">C1 26-1 · 15-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2026-1 · P2 (15 pts en el enunciado, 20 en la pauta)</div><p>Describa en qué consiste el estado psicológico de disonancia cognitiva. Describa dos técnicas que usan los afectados para evadir el problema.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Definición</span><span>6</span><span>Cada técnica (dos)</span><span>7</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>La <b>disonancia cognitiva</b> es un fenómeno psicológico que se presenta cuando una persona mantiene <b>dos creencias contradictorias a la vez</b>. Al ser un sentir interno, no muestra signos externos. Como es incómoda, las personas se ven motivadas a evitarla con mecanismos de defensa:</p>
+<p><b>Evitar:</b> ignorar la disonancia, evitando las situaciones que la recuerdan, desalentando las conversaciones del tema o distrayéndose con actividades absorbentes. Ejemplo: un fumador que sabe que fumar mata cambia de canal cuando aparece una campaña antitabaco.</p>
+<p><b>Deslegitimar:</b> desvirtuar la evidencia de la disonancia, desacreditando a la persona, grupo o situación que la resalta. Ejemplo: “esos estudios los hacen médicos exagerados”.</p>
+<p>(Tercera, si sobra tiempo: <b>limitar el impacto</b>, minimizando su importancia: “mi abuelo fumó y vivió 90 años”.) La salida correcta, aunque costosa emocionalmente, es resolver la inconsistencia cambiando el comportamiento o la creencia.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e4"><summary>4 · Ciencia y método científico <span class="tag">C1 25-1 · R 25-1 · C2 25-2 · 15-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-1 · P2 (20 pts)</div><p>Describa qué se entiende por método científico.</p></div>
+<p class="src">Variantes: R 2025-1 P2 “Defina lo que se entiende por ciencia” (15: definición 10, falsabilidad 5). C2 2025-2 P1 “Defina lo que se entiende hoy por ciencia. Términos importantes del área son hecho, hipótesis y teoría. Explíquelos” (20: 5 cada uno).</p>
+<h5>Cómo se corrige (C1 2025-1)</h5>
+<div class="pts"><span>Términos (hecho, hipótesis, teoría)</span><span>5</span><span>Observaciones, experimentos</span><span>5</span><span>Elaborar hipótesis</span><span>5</span><span>Buscar contradecir la hipótesis (falsabilidad)</span><span>5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>La <b>ciencia</b> es el estudio sistemático de la estructura y comportamiento del mundo físico y natural a través de observación, experimentación y la comprobación de teorías contra la evidencia. El método científico trabaja con <b>hechos</b> (datos verdaderos verificados por observación o medición repetida) e <b>hipótesis</b> (explicaciones propuestas con evidencia limitada, que deben poder comprobarse empíricamente). Una hipótesis ampliamente verificada pasa a llamarse <b>teoría</b>.</p>
+<div class="steps">
+<div class="step">Se coleccionan observaciones de un fenómeno.</div>
+<div class="step">Se construye una hipótesis de cómo opera, consistente con las observaciones.</div>
+<div class="step">Se deducen de ella observaciones adicionales y se diseñan experimentos cuyos resultados la contradirían si fuera falsa.</div>
+<div class="step">Se hacen los experimentos; si la contradicen, se enmienda o se rechaza la hipótesis.</div>
+</div>
+<p>La clave es la <b>falsabilidad</b> (Popper): se busca activamente <b>refutar</b> la hipótesis, no confirmarla, lo que protege contra el sesgo de confirmación. Es asimétrica: la evidencia puede refutar una teoría, pero nunca demostrarla definitivamente. Por eso toda teoría es <b>provisoria</b>; en la práctica, una teoría bien establecida rara vez se desecha: se enmienda o se delimita su ámbito (Newton sigue sirviendo en el sistema solar pese a la relatividad). La navaja de Ockham guía la elaboración de hipótesis: entre explicaciones completas, preferir la más simple.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e5"><summary>5 · Ética antigua vs moderna <span class="tag">C1 25-1 · R 26-1 · 15-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-1 · P1 (20 pts)</div><p>Discutimos varios sistemas éticos de la antigüedad clásica y esbozamos algunos modernos. ¿Cuál es la principal diferencia entre los dos enfoques?</p></div>
+<p class="src">Variante: R 2026-1 P4 “Describa las orientaciones generales de la ética como la entendía la antigüedad clásica y las líneas modernas” (15).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Descripción general de la ética de la antigüedad</span><span>10</span><span>Descripción general de la ética moderna</span><span>10</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>La principal diferencia es el foco. La <b>ética antigua</b> se centra en <b>la persona</b>: cómo vivir una buena vida y ser feliz, entendiendo la felicidad como estar conforme consigo mismo y tener buen carácter (<i>ēthikós</i> significa “carácter”). Las escuelas griegas iban desde el hedonismo de los <b>cirenaicos</b> (el placer del momento) y el hedonismo moderado de <b>Epicuro</b> (evitar el dolor, placeres duraderos), hasta la austeridad de <b>cínicos</b> y <b>estoicos</b> (solo la virtud es un bien; ataraxia). <b>Aristóteles</b> propone la ética de la virtud: la función del humano es razonar, y una acción es buena si la haría una persona virtuosa.</p>
+<p>La <b>ética moderna</b> se centra en <b>las relaciones entre personas</b>: cómo actuar, qué obligaciones tenemos con los demás y si lo que hago los daña. Sus líneas principales son la <b>deontología</b> de Kant, que define deberes del individuo mediante el imperativo categórico (actuar según máximas universalizables y tratar a las personas siempre como fines), y el <b>utilitarismo</b> de Bentham y Mill, que juzga las acciones por sus consecuencias: la máxima felicidad para el mayor número.</p>
+<p>La división no es tajante: Kant tiene raíces estoicas, el utilitarismo toma de cirenaicos y epicúreos la idea de una vida feliz, y la ética de la virtud sigue viva en los neoaristotélicos.</p>
+</div>
+</div></details>
+</section>
+
+<section id="nivel2">
+<div class="tier"><span class="pill t2">Nivel 2</span><h3>Muy probable</h3></div>
+
+<details class="ex" id="e6"><summary>6 · Caso ético (el de 30 puntos) <span class="tag">C1 25-1 · R 25-1 · R 25-2 · C2 25-1 · C2 26-1 · R 26-1 · 30 pts</span></summary>
+<div class="body">
+<p>Seis de los nueve certámenes traen un caso ético largo, aunque en los C1 solo apareció en 2025-1. Por puntaje vale la pena llevar un método. La pauta corrige cada letra por “explicación y expresión claras” y, cuando no hay letras, por <b>identificar el dilema</b> (10) y <b>discutir los puntos contravenidos</b> (20).</p>
+<div class="box def"><div class="bt">Método en 5 pasos</div>
+<p><b>1. El dilema:</b> “El dilema es entre X e Y”, nombrando los <b>valores en conflicto</b> (lealtad, honestidad, privacidad, legalidad, proteger a terceros). <b>2. Los afectados:</b> quién gana y quién pierde con cada opción. <b>3. Dos o tres lentes:</b> Kant (¿es universalizable?, ¿uso a alguien solo como medio?), utilitarismo (¿qué opción da el mejor resultado para todos?), virtud (¿qué haría un profesional íntegro?). <b>4. Posición justificada</b>, reconociendo costos personales. <b>5. Una respuesta por letra.</b></p></div>
+
+<div class="enun"><div class="et">C1 2025-1 · P5 (30 pts) · la colega</div><p>Usted es un gerente de nivel medio en su empresa. Está a punto de cerrar un contrato importante, pero requiere datos que tiene una colega que está de vacaciones. Como son amigos, conoce y usa su clave para ingresar a su computador y obtener los datos requeridos. Durante esto, nota que envió un correo con datos confidenciales a un alto ejecutivo de la competencia. a) ¿Debiera confrontarla cuando vuelva? b) ¿Debiera avisar a recursos humanos, que probablemente lleve a acción disciplinaria contra ella? c) Indicar cómo tuvo acceso a esa información puede meterlo en problemas. ¿Qué hace?</p></div>
+<div class="sol">
+<p><b>Dilema:</b> amistad y lealtad con la colega (y autoprotección, porque entré con su clave) frente a la honestidad y el deber con la empresa.</p>
+<p><b>a)</b> Sí, como mínimo. Enviar datos confidenciales a la competencia es una transgresión grave que no se puede dejar pasar; confrontarla le da la oportunidad de explicar, pero no reemplaza informar.</p>
+<p><b>b)</b> Sí. Es mi responsabilidad con la empresa, y según el reglamento interno puede corresponder a recursos humanos u otra instancia. Con Kant: si “callo las faltas graves de mis amigos” fuera ley universal, ninguna organización podría confiar en sus empleados. Con el utilitarismo: callar protege a dos personas pero daña a la empresa, a los demás trabajadores y a los clientes.</p>
+<p><b>c)</b> Acceder a su computador, aun con su clave, ya fue una falta; podría ser perdonable para los datos del contrato, pero leer su correo no (en Chile la inviolabilidad de las comunicaciones privadas está en la Constitución). Aun así, lo ético es transparentar cómo me enteré y asumir las consecuencias: ocultarlo sería otra falta de honestidad.</p>
+</div>
+
+<details class="ex"><summary>Caso de práctica · Jim Warren y el software sin licencia <span class="tag">R 2025-1 · P6 · 30 pts</span></summary><div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Jim Warren, ingeniero experimentado, es contratado por la startup NewSoft. Se entera de que el producto se basa en software propietario de otra empresa, usado sin licencia. Lo informa al presidente, que promete rectificar. En los meses siguientes aparecen situaciones similares y los reclamos no llevan a nada. Al amenazar con avisar a las empresas afectadas, Jim es despedido. ¿Qué dilema ético presenta? ¿Actuó Jim de acuerdo a los estándares éticos y profesionales?</p></div>
+<div class="pts"><span>Dilema ético que se plantea</span><span>10</span><span>Discusión de los puntos principales contravenidos</span><span>20</span></div>
+<div class="sol"><p><b>Dilema:</b> lealtad con la empresa que lo contrató frente a sus obligaciones profesionales con las empresas afectadas y con la ley. <b>Evaluación:</b> Jim actuó correctamente y en el orden adecuado: primero supuso un error y lo informó internamente; cuando vio que era sistemático, escaló. Usar software sin licencia vulnera los derechos de autor de terceros (es apropiarse del trabajo ajeno) y expone a la propia empresa. Con Kant, la máxima “uso software ajeno sin pagar si me conviene” no es universalizable. Jim cumplió cabalmente sus obligaciones, <b>a un costo personal sustancial</b> (fue despedido), que es justamente lo que distingue una conducta ética de una conveniente.</p></div>
+</div></details>
+
+<details class="ex"><summary>Caso de práctica · el operador que vende datos personales <span class="tag">R 25-2 (30) · R 26-1 (20)</span></summary><div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Un operador de servicios de red recolecta información personal de sus clientes (participación en foros, intereses y compras) y la vende a empresas de telemarketing sin consultarles. a) ¿Hasta qué punto es aceptable bajo la legislación y los códigos de ética actuales? b) ¿Es aceptable ofrecer recompensas (rebajas) por permitir compartir esta información? c) ¿Cómo debiera controlarse la distribución secundaria y terciaria? d) ¿Qué granularidad se debiera manejar (si fuma, participación en foros LGBT…)?</p></div>
+<div class="pts"><span>a) Legislación UE, ética ACM</span><span>5</span><span>b) Discusión</span><span>10</span><span>c) Manejo de redistribución</span><span>10</span><span>d) Manejo individual</span><span>5</span></div>
+<div class="sol"><p><b>a)</b> No es aceptable: contraviene la legislación de protección de datos personales de la Unión Europea, que sirve de modelo a la chilena (la nueva Ley 21.719 se inspira en ella), y el principio del código de ética de la ACM que exige respetar la privacidad. Además trata a los clientes solo como medio. <b>b)</b> Sí, siempre que sea un consentimiento informado y libre: se ofrece algo de valor a cambio. <b>c)</b> Asegurar que las empresas receptoras cumplan la ley, informar al usuario a quién se redistribuyen sus datos, y si pide retirarlos o corregirlos, gestionarlo a su nombre ante quienes los recibieron. <b>d)</b> La información debe manejarse en forma individual, con especial cuidado en datos de pertenencia a grupos sensibles (religión, orientación sexual, salud).</p></div>
+</div></details>
+
+<details class="ex"><summary>Caso de práctica · AllTogether y la accesibilidad <span class="tag">C2 25-1 · P5 · 30 pts</span></summary><div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>AllTogether mantiene un sistema colaborativo web usado por grupos comunitarios, ONG, escuelas, agencias y empresas. El equipo nota que omitió requerimientos clave de accesibilidad, con serios problemas, pero el responsable del producto es presionado a lanzar la nueva versión igual. Explique el dilema ético. ¿Qué comportamiento sugiere el código de ACM?</p></div>
+<div class="sol"><p><b>Dilema:</b> cumplir el plazo y la presión comercial frente al deber de no excluir ni dañar a los usuarios con discapacidad. Lanzar así discrimina a un grupo que ya depende del sistema. El código de la ACM pide ser justo y no discriminar (principio 1.4), evitar el daño (1.2), procurar alta calidad (2.1) y que el bien público sea la preocupación central (3.1). Lo sugerido: informar con claridad el riesgo a quien decide, proponer postergar o lanzar sin las funciones que rompen la accesibilidad, y no firmar algo que se sabe dañino.</p></div>
+</div></details>
+
+<details class="ex"><summary>Caso de práctica · David y la página anónima <span class="tag">C2 26-1 · P4 · 35 pts</span></summary><div class="body">
+<div class="enun"><div class="et">Enunciado (resumido)</div><p>David descubre que tres amigos son los autores de una página anónima que difama a profesores y estudiantes. Le hacen prometer no delatarlos. La universidad interroga a todos los que entraron al sitio, incluido David, que cree ser el único que sabe. a) ¿Qué dilema enfrenta y qué valores entran en conflicto? b) ¿Cuál es su responsabilidad? c) ¿Cambia su respuesta si un afectado es cercano?</p></div>
+<div class="sol"><p><b>a)</b> Lealtad con sus amigos y la promesa hecha frente a honestidad, justicia y protección de las víctimas. <b>b)</b> Con Kant, una promesa de encubrir un daño no obliga (no es universalizable que se protejan agresiones), y las víctimas están siendo usadas solo como medio de diversión; con el utilitarismo, el daño a muchas personas pesa más que la incomodidad de tres. Su responsabilidad es decir la verdad cuando la universidad lo interroga, idealmente después de pedir a sus amigos que se entreguen. <b>c)</b> No debería cambiar: si la respuesta depende de quién es la víctima, es un alegato especial. Que la víctima sea cercana solo hace más evidente un daño que ya existía.</p></div>
+</div></details>
+</div></details>
+
+<details class="ex" id="e7"><summary>7 · Por qué fallan los proyectos <span class="tag">C1 25-2 · R 25-2 · C2 25-1 · 15-30 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-2 · P1 (30 pts)</div><p>Discutimos varias razones por las que los proyectos fracasan. Discuta tres de ellas, explicando cómo hacen que el proyecto falle e indique posibles medidas para evitarlas.</p></div>
+<p class="src">Variantes: R 2025-2 P1 “Indique tres razones por las que los proyectos fracasan, explicando cómo afectan” (15, 5 cada una). C2 2025-1 P3 “Explique brevemente tres causas de la falla de proyectos, particularmente en el área de desarrollo de software” (15).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Cada razón</span><span>5</span><span>Cada solución propuesta</span><span>5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>Un proyecto se considera fallido si no cumple sus objetivos, no se obtiene el producto buscado o no se completa a tiempo.</p>
+<p><b>Ampliación del alcance</b> (<i>scope creep</i>): los entregables cambian a medida que avanza el proyecto. Como es lenta, es difícil de detectar, y termina en plazos sobrepasados y objetivos incumplidos (el 34 % de los proyectos de 2020 la sufrió). <b>Medida:</b> definir y circular un alcance documentado antes de partir, e instalar un proceso de control de cambios que evalúe cada extensión y pida recursos adicionales.</p>
+<p><b>Objetivos poco claros:</b> el grupo no está alineado y no hay cómo medir avance; cada uno trabaja hacia algo distinto. <b>Medida:</b> fijar en la planificación objetivos claros y medibles, SMART (específicos, medibles, alcanzables, realistas y con plazo).</p>
+<p><b>Comunicaciones pobres:</b> no está claro qué canal usar, cuándo ni quién comunica qué; con tantas aplicaciones la información se pierde, sobre todo en equipos distribuidos. <b>Medida:</b> un plan de comunicación con frecuencia, canales, audiencia y responsable, usando canales únicos que dejen registro.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e8"><summary>8 · Ciencia vs ingeniería; defina ingeniería <span class="tag">C1 26-1 · R 25-2 · 15-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2026-1 · P4 (20 pts)</div><p>Defina ciencia e ingeniería, explicando en qué se distinguen.</p></div>
+<p class="src">Variante: R 2025-2 P3 “Defina lo que se entiende por ingeniería” (15: definición 10, uso de la ciencia 3, soluciones efectivas 2).</p>
+<h5>Cómo se corrige (C1 2026-1)</h5>
+<div class="pts"><span>Definición de ciencia</span><span>8</span><span>Definición de ingeniería</span><span>8</span><span>Distinciones</span><span>4</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>Ciencia:</b> el estudio sistemático de la estructura y comportamiento del mundo físico y natural a través de observación, experimentación y la comprobación de teorías contra la evidencia obtenida.</p>
+<p><b>Ingeniería:</b> el conjunto de conocimientos orientados a la invención y utilización de técnicas para el aprovechamiento de los recursos naturales o para la actividad industrial (RAE); el diseño, prueba y construcción de máquinas, estructuras y procesos usando matemáticas y ciencias. Se basa en los resultados de la ciencia. En palabras de un profesor de Ingeniería Civil Química: “un ingeniero halla soluciones viables en plazo y a costo aceptables a problemas prácticos”.</p>
+<p><b>Distinción:</b> la ciencia busca <b>nuevo conocimiento</b> (cómo funciona el mundo) y su producto son teorías; la ingeniería <b>resuelve problemas concretos</b> usando el conocimiento acopiado, bajo restricciones de tiempo y recursos, y su producto son soluciones que funcionan.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e9"><summary>9 · Ética vs moral (Grecia y Roma) <span class="tag">C1 26-1 · 15-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2026-1 · P1 (20 pts en el enunciado, 15 en la pauta)</div><p>En la antigüedad, en Grecia se hablaba de “ética”, mientras luego en Roma se usó el término “moral”. Hoy se consideran sinónimos, pero tenían significados diferentes. Explique cuáles eran.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Origen de “ética”</span><span>6</span><span>Origen de “moral”</span><span>6</span><span>Por qué son sinónimos hoy</span><span>3</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>El término griego <b><i>ēthikós</i></b> puede traducirse como <b>carácter</b>. La filosofía griega, en particular Aristóteles, ponía el énfasis en el carácter de la persona: que fuera virtuosa y feliz, entendiendo la felicidad como estar conforme consigo misma, no como placer.</p>
+<p>El término latino <b><i>morālis</i></b> significa <b>costumbre, usanza</b>. Lo usó el filósofo romano <b>Cicerón</b> para traducir el término griego.</p>
+<p>Esa <b>traducción imprecisa</b> unió las dos palabras, y al integrarse al vocabulario actual terminaron considerándose sinónimos. Hoy la ética se centra en la relación de la persona con la sociedad.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e10"><summary>10 · Habilidades del pensamiento crítico <span class="tag">C1 25-2 · 20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-2 · P5 (20 pts)</div><p>¿Cuáles son las habilidades centrales del pensamiento crítico?</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Clarificar el ámbito</span><span>5</span><span>Cuestionar / evaluar fuentes</span><span>5</span><span>Identificar argumentos</span><span>2</span><span>Evaluar argumentos</span><span>3</span><span>Crear / sintetizar argumentos</span><span>5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>El pensamiento crítico consiste en cuestionar, analizar, interpretar, evaluar y juzgar: juzgar en forma confiable basado en información fidedigna. Requiere aprender a:</p>
+<p><b>1. Clarificar el propósito y contexto:</b> saber para qué y en qué situación se razona. <b>2. Cuestionar las fuentes de información:</b> quién lo dice, con qué evidencia e interés. <b>3. Identificar argumentos:</b> separar conclusiones de razones. <b>4. Analizar fuentes y argumentos:</b> ver si las razones sostienen la conclusión y detectar falacias. <b>5. Evaluar argumentos ajenos:</b> juzgar su validez y solidez. <b>6. Crear o sintetizar argumentos propios:</b> construir una posición bien fundada.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e11"><summary>11 · Puntos de vista alternativos y suposiciones propias <span class="tag">C1 26-1 · 20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2026-1 · P3 (20 pts)</div><p>Explique por qué “considerar puntos de vista alternativos” y “cuestionar las suposiciones propias” son pasos esenciales al extraer conclusiones lógicas.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Razón de considerar puntos de vista alternativos</span><span>10</span><span>Razón de cuestionar suposiciones propias</span><span>10</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>Pensar críticamente es juzgar en forma confiable con información fidedigna. Una conclusión lógica es tan buena como sus premisas: un argumento puede ser válido, pero si sus premisas son incompletas o falsas no será sólido.</p>
+<p><b>Considerar puntos de vista alternativos</b> es esencial porque obliga a tomar en cuenta <b>toda la información disponible</b>, no solo la que coincide con lo que uno ya cree. Muestra variables y perspectivas omitidas y las debilidades del propio argumento. Sin ese paso, la conclusión queda determinada por la selección parcial de información.</p>
+<p><b>Cuestionar las suposiciones propias</b> es necesario para <b>evitar los sesgos cognitivos</b>. Todos tenemos sesgos (atajos mentales útiles, pero que distorsionan): el más peligroso aquí es el <b>sesgo de confirmación</b>, que nos lleva a buscar y valorar solo lo que confirma lo que pensamos. Preguntarse “¿qué estoy suponiendo?, ¿qué no he considerado?” permite detectarlos antes de concluir.</p>
+</div>
+</div></details>
+</section>
+
+<section id="nivel3">
+<div class="tier"><span class="pill t3">Nivel 3</span><h3>Probable</h3></div>
+
+<details class="ex" id="e12"><summary>12 · Falacia vs sesgo cognitivo <span class="tag">R 25-1 · R 26-1 · 15-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Recuperativo 2025-1 · P1 (20 pts)</div><p>Distinga entre falacias y sesgos cognitivos. ¿Qué tienen en común?</p></div>
+<p class="src">Variante: R 2026-1 P1 “Defina y distinga entre falacia y sesgo cognitivo. Ambas afectan el razonamiento. ¿En qué difieren sus efectos?” (15).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Definir falacia</span><span>5</span><span>Definir sesgo cognitivo</span><span>5</span><span>Discutir la relación entre ambos</span><span>10</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>Una <b>falacia</b> es un paso ilógico en un argumento: una forma de razonamiento erróneo. Un <b>sesgo cognitivo</b> es un patrón sistemático de desviarse de la racionalidad al juzgar: el impulso a decidir sin analizar con cuidado, dejándose llevar por emociones o prejuicios.</p>
+<p><b>En común:</b> ambas llevan a conclusiones erróneas, y muchas falacias funcionan precisamente porque apelan a un sesgo. El <i>ad populum</i> convence por nuestro anhelo de pertenecer al grupo y vernos respaldados por la mayoría (sesgo de causa popular).</p>
+<p><b>Diferencia:</b> la falacia se <b>disfraza de razonamiento lógico</b> y está en el argumento, así que se puede detectar revisándolo; el sesgo opera en quien juzga y muchas veces <b>ni siquiera se plantea como razonamiento</b>, por lo que es más difícil de notar. Por eso se combaten distinto: las falacias revisando la lógica y la evidencia del argumento; los sesgos con hábitos (considerar puntos de vista alternativos, buscar contraejemplos, humildad epistémica).</p>
+</div>
+</div></details>
+
+<details class="ex" id="e13"><summary>13 · La estrategia de Pólya <span class="tag">C1 25-2 · C2 25-1 · 20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-2 · P6 (20 pts)</div><p>Esboce la estrategia de Pólya para resolver problemas.</p></div>
+<p class="src">Variante: C2 2025-1 P6 “Indique los pasos de la estrategia de Pólya para resolver problemas” (20).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Entender el problema</span><span>5</span><span>Armar un plan</span><span>5</span><span>Ejecutar el plan</span><span>5</span><span>Reflexionar sobre lo hecho</span><span>5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>George Pólya, matemático húngaro, propuso en “How to Solve It” (1945) una estrategia centrada en la enseñanza de la matemática, con cuatro principios:</p>
+<p><b>1. Entender el problema:</b> si no tenemos claro qué buscamos, difícilmente lo encontraremos. Leer con cuidado, identificar la incógnita, los datos y las técnicas disponibles, y nombrarlos.</p>
+<p><b>2. Armar un plan:</b> atacar el problema en forma organizada, de datos a resultados o de resultados a datos, con estrategias como buscar un patrón, hacer un dibujo, resolver un problema más simple o trabajar en reversa, y heurísticas como la analogía o la generalización.</p>
+<p><b>3. Ejecutar el plan:</b> llevar a cabo los pasos y verificar que se obtiene lo buscado. Si el plan resulta inviable, entender por qué falló, enmendarlo o plantear otro.</p>
+<p><b>4. Reflexionar sobre lo hecho:</b> revisar si la respuesta tiene sentido y usa todos los datos, y qué funcionó y qué no, para aplicarlo a problemas futuros. Ejemplo de clase: en el embaldosado con losas en L, la inducción solo cerró al demostrar algo más general (la paradoja del inventor).</p>
+</div>
+</div></details>
+
+<details class="ex" id="e14"><summary>14 · Criterios del objetivo de un proyecto <span class="tag">C1 25-2 · 25 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-2 · P4 (25 pts)</div><p>¿Qué criterios debe cumplir el objetivo de un proyecto? Explique.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Tres características, 7 puntos cada una</span><span>20</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>El objetivo es lo que se quiere obtener al final del proyecto. Debe ser:</p>
+<p><b>Claro y preciso:</b> todos los involucrados deben saber qué se quiere obtener y cómo evaluar si se logró. Si no, el grupo no está alineado.</p>
+<p><b>Medible:</b> se acuerdan criterios objetivos de medición, para poder seguir el avance y decidir al final si se cumplió.</p>
+<p><b>Realista:</b> debe poder lograrse en el plazo convenido con los recursos disponibles; metas imposibles estresan al equipo y llevan a plazos incumplidos.</p>
+<p><b>Fijo:</b> hay que resistir la tentación de extender o redefinir los objetivos durante el proyecto (la ampliación del alcance).</p>
+<p>La forma estándar de escribirlos es <b>SMART</b>: específico, medible, alcanzable, realista y con plazo.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e15"><summary>15 · Historia de la ingeniería <span class="tag">C1 25-1 · 20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-1 · P4 (20 pts)</div><p>Esboce la historia de la ingeniería.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Inicios, ingeniería militar</span><span>5</span><span>Ingeniería civil</span><span>5</span><span>Ingeniería mecánica</span><span>5</span><span>Diversificación en los siglos XVIII a XX</span><span>5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>Inicios:</b> la ingeniería tiene bases muy antiguas: las máquinas simples (palanca, rueda y eje, polea, plano inclinado, cuña, tornillo) y obras como pirámides, canales y terrazas de cultivo. Como profesión nace con la construcción de <b>máquinas militares</b> (catapultas, ballestas), formalizada en el imperio romano; en inglés, <i>engineer</i> aparece hacia 1325 como “constructor de máquinas” de guerra.</p>
+<p><b>Ingeniería civil:</b> cuando el diseño y construcción de obras civiles (puentes, edificios) maduró técnicamente, se distinguió la ingeniería civil de la militar. Hoy “ingeniería militar” casi no se usa.</p>
+<p><b>Ingeniería mecánica:</b> con la máquina a vapor de Newcomen y las mejoras de Watt, en el siglo XVIII, comienza la revolución industrial y la fabricación en serie; “ingeniería” pasa a nombrar una profesión que aplica matemáticas y ciencia a la producción.</p>
+<p><b>Diversificación:</b> los fenómenos y teorías de los siglos XVIII y XIX dan lugar a la ingeniería eléctrica (Volta, Faraday, Ohm, el telégrafo) y química (producción de compuestos a gran escala). En el siglo XX aparecen la aeronáutica y la electrónica (tubos de vacío, transistor, circuitos integrados) y, últimamente, la informática.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e16"><summary>16 · Navaja de Ockham; teoría científica falseable <span class="tag">R 26-1 · 10 + 15 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Recuperativo 2026-1 · P2 (10 pts) y P3 (15 pts)</div><p>P2: Describa lo que se entiende por navaja de Ockham. ¿Por qué es relevante en la ciencia? P3: Defina lo que se entiende por teoría científica. Explique la importancia de que sea falseable.</p></div>
+<p class="src">Este recuperativo no trae pauta en el zip; la respuesta sigue las diapositivas.</p>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>Navaja de Ockham</b> (<i>pluralitas non est ponenda sine necessitate</i>): cuando hay dos o más explicaciones de un fenómeno, es preferible la explicación <b>completa más simple</b>; no deben multiplicarse las entidades sin necesidad. Es relevante porque la ciencia busca describir el mundo, y una descripción simple es preferible a una compleja: la navaja guía la elaboración de hipótesis y evita agregar supuestos que no explican nada nuevo. Ojo: la explicación debe ser completa; una más simple que deja fenómenos sin explicar no sirve.</p>
+<p><b>Teoría científica:</b> una explicación de un aspecto del mundo natural que puede ser o ha sido comprobada repetidas veces y es corroborada por evidencia. Que sea <b>falseable</b> (Popper) significa que existe evidencia posible que la refutaría. Es lo que distingue la ciencia: una afirmación que ninguna observación podría contradecir no dice nada sobre el mundo. Además, buscar activamente evidencia que la refute combate el sesgo de confirmación y permite corregir errores, delimitar su ámbito o reemplazarla por una mejor. La asimetría: la evidencia puede refutarla, pero nunca demostrarla de forma definitiva.</p>
+</div>
+</div></details>
+</section>
+
+<section id="nivel4">
+<div class="tier"><span class="pill t4">Nivel 4</span><h3>Posible: clases del zip que nunca se han preguntado</h3></div>
+<p>Las preguntas marcadas “inventada” no salieron en ningún certamen; están redactadas como las del profe para practicar las clases nuevas.</p>
+
+<details class="ex" id="e17"><summary>17 · Historia de la computación <span class="tag">inventada · tema 13</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica</div><p>Esboce la historia de la computación electrónica, indicando qué caracteriza a cada generación.</p></div>
+<div class="sol">
+<p><b>Antecedentes:</b> el ábaco sumerio, el mecanismo de Anticitera, las calculadoras mecánicas de Pascal y Leibniz, y Babbage, que introdujo la idea de computadora digital programable. Los primeros computadores automáticos fueron el Z3 de Zuse (1941, no electrónico), Colossus (1943) y el Mark I de Harvard (1944, con relés).</p>
+<p><b>1ª generación (1945–1955), tubos de vacío:</b> ENIAC (1946), primer computador electrónico de propósito general; EDVAC, con el diseño de von Neumann de guardar programa y datos en memoria; UNIVAC I (1951), el primero comercial. Se programaban en lenguaje de máquina.</p>
+<p><b>2ª (1955–1965), transistores y núcleos magnéticos:</b> máquinas más rápidas, pequeñas y confiables (IBM 7090, DEC PDP-1, que inicia los minicomputadores). Lenguaje ensamblador, primeros sistemas operativos y primeros lenguajes de alto nivel: FORTRAN, COBOL, LISP.</p>
+<p><b>3ª (1965–1974), circuitos integrados:</b> minicomputadores (PDP-8, PDP-11) y el IBM 360 en los mainframes, con compatibilidad entre modelos. Unix (1969), escrito en C y licenciado barato a universidades.</p>
+<p><b>4ª (1974–1989), LSI/VLSI y el microprocesador:</b> microcomputadores en todas partes, el Altair 8800, el IBM PC y el ascenso de Microsoft, supercomputadores Cray, redes locales Ethernet y sistemas de ventanas.</p>
+<p><b>5ª (1990–hoy), ULSI:</b> procesadores superescalares y multihebras, portátiles y teléfonos inteligentes, supercomputadores hechos de muchos computadores con tarjetas gráficas, la web y la nube. En estudio: computación óptica, neuronal y cuántica.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e18"><summary>18 · Tecnología de información: positivo y negativo <span class="tag">C1 25-1 · 20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-1 · P6 (20 pts)</div><p>Discuta aspectos positivos y negativos de la tecnología de información.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Aspectos positivos</span><span>10</span><span>Aspectos negativos</span><span>10</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>Positivos.</b> <b>Comunicación:</b> como antes la escritura y la imprenta, Internet cambió radicalmente cómo nos comunicamos; las redes sociales unen a grupos con intereses comunes aunque estén lejos. <b>Acceso a información:</b> hoy es prácticamente universal e instantáneo. <b>Colaboración:</b> las organizaciones son más eficientes y es posible trabajar en conjunto a escala internacional.</p>
+<p><b>Negativos.</b> <b>Distracciones</b> y tiempo frente a la pantalla sin resultados útiles. <b>Salud:</b> alteración del sueño, problemas oculares y sedentarismo. <b>Psicológicos:</b> compararse con muchísima gente genera inseguridad e inferioridad. <b>No desconectarse:</b> se borra la frontera entre vida personal y laboral. <b>Privacidad:</b> compras, comunicaciones y actividad en línea quedan registradas y sujetas a minería de datos. <b>Vulneración de datos:</b> los grandes volúmenes almacenados son blanco de criminales.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e19"><summary>19 · Tradiciones de la sociología <span class="tag">inventada · tema 10</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica</div><p>La sociología contemporánea es multiparadigmática. Describa las cuatro tradiciones clásicas. ¿Por qué la sociología, como ciencia, debe ser objetiva?</p></div>
+<div class="sol">
+<p>La sociología es la ciencia que trata de la estructura y funcionamiento de las sociedades humanas. Sus tradiciones clásicas son: el <b>funcionalismo</b>, que mira la sociedad como un todo cuyas partes cumplen funciones necesarias, con analogías biológicas y evolutivas; la <b>teoría del conflicto</b>, que critica el sistema como un todo o enfatiza las desigualdades entre grupos; el <b>interaccionismo simbólico</b>, que estudia con micro análisis los significados subjetivos y ve la sociedad como producto de múltiples interacciones; y el <b>utilitarismo</b> o teoría de la elección racional, que supone actores racionales que maximizan su interés propio (conocen las alternativas y sus consecuencias, tienen preferencias y una regla de decisión).</p>
+<p>Debe ser <b>objetiva</b> porque, como ciencia, describe cómo funciona la sociedad y no cómo nos gustaría que funcionara; no puede suponer, por ejemplo, que las interacciones siguen siempre una norma ética. Y ninguna formulación simple basta: los humanos en grupos que se traslapan son extremadamente complejos.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e20"><summary>20 · Validez y solidez <span class="tag">inventada · tema 3</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica</div><p>Distinga entre argumentos válidos y sólidos. Dé un ejemplo de argumento válido pero no sólido, y explique por qué la inducción no es deductivamente válida.</p></div>
+<div class="sol">
+<p>Un argumento es <b>válido</b> si las premisas implican la conclusión (la conclusión es consecuencia lógica de las premisas). Es <b>sólido</b> si además es válido y sus premisas son verdaderas. Ejemplo válido no sólido: “Los aviones supersónicos vuelan más rápido que el sonido; el Subaru Impreza es un avión supersónico; luego, el Subaru vuela más rápido que el sonido”. La forma lógica es correcta, pero la segunda premisa es falsa.</p>
+<p>La <b>inducción</b> deduce una regla general desde casos particulares; no es deductivamente válida porque siempre puede aparecer un caso que la contradiga: “todos los cisnes observados son blancos, luego todos los cisnes son blancos” falló al descubrirse cisnes negros en Australia (1697). Aun así es la única herramienta con que contamos para generalizar desde la experiencia, y por eso la ciencia trata sus conclusiones como provisorias.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e21"><summary>21 · Kant y el utilitarismo <span class="tag">inventada · tema 9</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica</div><p>Explique el imperativo categórico de Kant y contrástelo con el utilitarismo. ¿Cómo juzgaría cada uno el mentir para obtener un beneficio?</p></div>
+<div class="sol">
+<p>Kant propone una ética <b>deontológica</b> (de deberes): lo único intrínsecamente bueno es una buena voluntad, y una acción es moral si su máxima obedece a la ley moral. Distingue imperativos <b>hipotéticos</b> (obligan si quiero algo) de <b>categóricos</b> (obligan siempre, por ser seres racionales). Sus formulaciones: actuar solo según máximas que puedan ser <b>ley universal</b>; tratar a la humanidad <b>siempre como fin y nunca solo como medio</b>; la <b>autonomía</b> de la voluntad racional; y actuar como legislador de un <b>reino de los fines</b>.</p>
+<p>El <b>utilitarismo</b> (Bentham, Mill) es consecuencialista: lo correcto es lo que produce la <b>máxima felicidad para el mayor número</b>. Bentham propone medir placer y dolor (hedonismo cuantitativo); Mill distingue placeres superiores (mentales) e inferiores (cualitativo).</p>
+<p><b>Mentir para beneficiarse:</b> para Kant es inmoral siempre: “mentir cuando me conviene”, universalizado, destruye la confianza que hace posible mentir, y además usa al otro como medio. Para el utilitarismo depende de las consecuencias totales: si el daño a los engañados y a la confianza general supera el beneficio, es incorrecto; en general lo es.</p>
+</div>
+</div></details>
+</section>
+
+<section id="nivel5">
+<div class="tier"><span class="pill t5">Nivel 5</span><h3>Poco probable: su clase no está en el zip</h3></div>
+<div class="box warn"><div class="bt">Por qué están aquí</div>
+<p>El <b>C1 2026-1</b> preguntó por propiedad intelectual (30 pts) y responsabilidades éticas del profesional (20 pts). Este semestre esas clases no vienen en el zip, así que lo más probable es que se vean después del C1. Pero si el profe alcanzó a pasarlas en clases, pueden caer. Si te sobra tiempo, léelas una vez.</p></div>
+
+<details class="ex" id="e22"><summary>22 · Propiedad intelectual <span class="tag">C1 26-1 · C2 25-1 · C2 25-2 · R 25-1 · R 25-2 · 20-35 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2026-1 · P5 (30 pts)</div><p>Defina las áreas que cubre la propiedad intelectual. Esboce la legislación aplicable a cada una de ellas.</p></div>
+<div class="pts"><span>Derecho de autor</span><span>8</span><span>Patentes</span><span>8</span><span>Marcas registradas</span><span>8</span><span>Secretos industriales</span><span>6</span></div>
+<div class="sol">
+<p>La propiedad intelectual trata de <b>bienes intangibles</b> y cubre cuatro áreas de tratamiento legal muy distinto:</p>
+<p><b>Derecho de autor</b> (<i>copyright</i>): derechos reservados al autor de una obra plasmada en una representación concreta: copiar, distribuir y crear obras derivadas. Algunas legislaciones reconocen derechos morales (ser reconocido como autor, oponerse a mutilaciones). Dura la vida del autor más un plazo (50 a 70 años según el país; en Chile, 70). Internacionalmente lo coordina el <b>Convenio de Berna</b>: el derecho se reconoce automáticamente, sin registro. El software se protege como obra literaria.</p>
+<p><b>Patentes:</b> derecho del inventor de un proceso, máquina, artículo o composición <b>nuevo, útil y no obvio</b> a explotarlo comercialmente por un período (generalmente <b>20 años</b>) a cambio de <b>publicar</b> el invento. Se ha extendido a algoritmos y formas de programar, de manera controvertida.</p>
+<p><b>Marcas registradas</b> (<i>trademark</i>): palabra, frase, símbolo o diseño que identifica el origen de un producto o servicio. Se obtienen por registro, no caducan si se renuevan y se usan; acuerdos como la Convención de París, el Protocolo de Madrid y TRIPS facilitan la protección internacional.</p>
+<p><b>Secretos industriales:</b> información confidencial con valor económico por mantenerse en reserva. No requieren registro y se protegen indefinidamente mientras no se divulguen; no se persigue a quien los descubra en forma independiente o por ingeniería reversa. El código fuente suele tratarse así.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e23"><summary>23 · Responsabilidades éticas del profesional <span class="tag">C1 26-1 · 20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2026-1 · P6 (20 pts)</div><p>Esboce las responsabilidades éticas de un profesional en nuestra área.</p></div>
+<div class="pts"><span>Contar con las competencias</span><span>5</span><span>Trato de colegas y otras personas</span><span>4</span><span>Uso debido de recursos del cargo</span><span>5</span><span>Evitar perjuicio a terceros o al ambiente</span><span>3</span><span>Problemas de privacidad y seguridad</span><span>3</span></div>
+<div class="sol">
+<p><b>Competencia:</b> no postular ni aceptar encargos para los que no se tiene conocimiento, experiencia o preparación. <b>Discreción:</b> la información a la que se accede por el cargo se maneja con suma reserva, dentro y fuera de la organización (salvo cuando la ley exige reportar delitos). <b>Respeto:</b> no desacreditar, insultar ni engañar a colegas; tratar a todas las personas sin prejuicios de origen, edad, creencias u opciones personales. <b>Uso de recursos:</b> no aprovechar información, contactos, influencias o recursos del cargo para beneficio propio (corrupción, uso de información privilegiada, falsear datos financieros). <b>Evitar perjuicios:</b> rechazar trabajos que se sabe dañarán a personas, grupos o comunidades, y minimizar el impacto ambiental. <b>Nuevos desafíos:</b> la tecnología avanza más rápido que los códigos y las leyes; en informática, privacidad, seguridad de datos, minería de datos e inteligencia artificial.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e24"><summary>24 · Máximas y causas no técnicas de falla <span class="tag">R 25-1 · C2 25-1 · 15 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Recuperativo 2025-1 · P4 (15 pts)</div><p>Explique brevemente tres máximas a ser aplicadas en un proyecto, particularmente en el área de desarrollo de software.</p></div>
+<div class="pts"><span>Cada máxima y su explicación</span><span>5</span></div>
+<div class="sol">
+<p>Máximas de la pauta (de una clase que no está en el zip de este semestre):</p>
+<p><b>La comodidad de desarrollo es más importante de lo que cree:</b> el costo es casi todo de personal; facilite su trabajo. <b>No hay balas de plata:</b> ningún lenguaje, herramienta o proceso es perfecto; todos tienen limitaciones y serán reemplazados. <b>Toda decisión es un balance</b> (<i>trade-off</i>). <b>Evite la deuda técnica:</b> el costo del retrabajo futuro por elegir una salida fácil en vez de resolver la raíz. <b>Las fallas tienen causas no técnicas:</b> políticas, interpersonales, sociológicas y falta de competencias. <b>La causa principal de fracaso es el exceso de ambición</b> (el síndrome del segundo sistema). <b>Lo más importante es la gente:</b> el mejor predictor de éxito es la calidad de desarrolladores y gestión. <b>La única forma de manejar la agenda es eliminar o simplificar funcionalidades</b>, no trasnochar.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e25"><summary>25 · Funciones de un buen ayudante <span class="tag">C1 25-1 · 0 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-1 · P7 (0 pts)</div><p>¿Cuáles son las funciones de un buen ayudante, según lo discutido en clases?</p></div>
+<div class="sol"><p>La pauta, textual: la instrucción que recibió el profe cuando empezó como ayudante fue “profundizar dudas, enredar conceptos y, en general, perjudicar al estudiante. Desde aquel lejano evento se ha esforzado en cumplir al dedillo e ir perfeccionándose. Vaya a clases. Puede aprender algo.” Es una broma que vale 0 puntos; si aparece algo así, no le dediques tiempo.</p></div>
+</div></details>
+</section>
+
+<div class="pnav"><a href="13-Computacion.html"><small>← Anterior</small>Computación</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c1-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c1-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c1-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>

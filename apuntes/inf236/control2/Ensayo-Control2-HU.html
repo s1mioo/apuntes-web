@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ensayo Control 2 · Historias de Usuario · INF-236</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --code:#f0f1f4;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:290px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --code:#232733;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --code:#232733;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62;font-size:16.5px;-webkit-font-smoothing:antialiased}
+  .layout{display:flex;align-items:flex-start}
+  .sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;
+    overflow-y:auto;background:var(--panel);border-right:1px solid var(--line);padding:22px 16px 60px}
+  .content{flex:1 1 auto;min-width:0;padding:38px clamp(18px,4vw,64px) 120px;max-width:1000px;margin:0 auto}
+  .brand{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+  .brand .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--ex));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;flex:0 0 auto}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:6px 10px;border-radius:7px;
+    font-size:13.5px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:26px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:19px;margin:28px 0 6px;scroll-margin-top:20px}
+  h4{font-size:15.5px;margin:18px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:46px}
+  section:first-of-type{border-top:0;margin-top:0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14.5px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-size:13px}
+  .tw{overflow-x:auto}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;margin-bottom:2px}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)}
+  .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)}
+  .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+  .box.warn .bt{color:var(--warn)}
+  .caso{border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:var(--panel);
+    box-shadow:var(--shadow);margin:18px 0}
+  .caso h4{margin-top:0;color:var(--ana)}
+  .caso p{font-size:15.5px}
+  .q{border-left:3px solid var(--brand);padding:2px 0 2px 14px;margin:22px 0 8px}
+  .q b{color:var(--brand)}
+  details.sol{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:14px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.sol>summary{cursor:pointer;padding:11px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);font-size:14px}
+  details.sol>summary::-webkit-details-marker{display:none}
+  details.sol>summary::before{content:"\25B8";font-size:11px;margin-right:8px;display:inline-block;transition:transform .15s}
+  details.sol[open]>summary::before{transform:rotate(90deg)}
+  details.sol .body{padding:6px 18px 16px}
+  .hu{border:1px dashed var(--line);border-radius:10px;padding:12px 14px;margin:12px 0;background:var(--bg)}
+  .hu .t{font-weight:700;color:var(--ana);font-size:14px;margin-bottom:4px;margin-top:10px}
+  .hu .t:first-child{margin-top:0}
+  .gwt b{color:var(--accent)}
+  .meta{color:var(--muted);font-size:13.5px}
+  .tiempo{display:inline-block;background:var(--warn-soft);color:var(--warn);border-radius:6px;
+    padding:1px 8px;font-size:12.5px;font-weight:600}
+  @media (max-width:900px){
+    .sidebar{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">HU</div>
+    <div><h1>Ensayo Control 2</h1><small>INF-236 · Historias de Usuario</small></div>
+  </div>
+  <div class="toolbar">
+    <button class="btn" onclick="tema()">Claro / oscuro</button>
+    <button class="btn" onclick="abrir(true)">Abrir pautas</button>
+    <button class="btn" onclick="abrir(false)">Cerrar pautas</button>
+  </div>
+  <nav>
+    <div class="grp">Antes de partir</div>
+    <a href="#uso">Cómo usar esta guía</a>
+    <a href="#chuleta">Chuleta de 5 minutos</a>
+    <div class="grp">Ensayos completos</div>
+    <a href="#e1">Ensayo 1 · BiciUSM</a>
+    <a href="#e2">Ensayo 2 · Farmacia comunal</a>
+    <a href="#e3">Ensayo 3 · Flota de buses</a>
+    <a href="#e4">Ensayo 4 · SGM (tu proyecto)</a>
+    <div class="grp">Entrenamiento rápido</div>
+    <a href="#banco">Banco: 10 HU malas</a>
+    <a href="#rubrica">Rúbrica de autocorrección</a>
+    <a href="#errores">Errores que cuestan puntos</a>
+  </nav>
+</aside>
+<main class="content">
+
+<section id="uso">
+<h2>Ensayo para el Control 2 · Historias de Usuario</h2>
+<p class="lead">Cuatro controles completos con el formato real: un texto de contexto, cuatro preguntas de análisis y una parte de desarrollo donde escribes tu propia historia de usuario.</p>
+
+<div class="box tip">
+  <div class="bt">Cómo usar esto para que sirva de verdad</div>
+  <ol>
+    <li><b>Cierra los apuntes.</b> Cada ensayo está pensado para 35–40 minutos: unos 10 leyendo el texto y 25–30 respondiendo. Si abres la pauta antes de escribir, el ejercicio no mide nada.</li>
+    <li><b>Escribe a mano</b>, en hoja. La plantilla <i>Como… Yo quiero… Para…</i> y el <i>Dado–Cuando–Entonces</i> hay que tenerlos en los dedos, no en la cabeza.</li>
+    <li><b>Después</b> abre la pauta y corrige con la rúbrica del final. Anota qué criterio INVEST fallaste: casi siempre se repite el mismo.</li>
+    <li>El <b>Ensayo 4 usa el dominio de tu proyecto (SGM, gestión de memorias)</b>. Déjalo para el final: te sirve doble, para el control y para el Hito.</li>
+  </ol>
+</div>
+
+<div class="box warn">
+  <div class="bt">Qué evalúa realmente este control</div>
+  <p>Las preguntas sobre el texto suelen ser de tres tipos: <b>discriminar</b> (¿esto es HU, caso de uso o requisito clásico?), <b>diagnosticar</b> (¿qué criterio INVEST viola y por qué?) y <b>corregir</b> (reescríbala bien). La parte de desarrollo evalúa que la HU tenga <b>descripción con los tres campos</b> y <b>criterios de aceptación en Dado–Cuando–Entonces</b>. Sin criterio de aceptación la HU está incompleta, aunque la redacción sea impecable.</p>
+</div>
+</section>
+
+<section id="chuleta">
+<h2>Chuleta de 5 minutos</h2>
+<p>Casi todo lo que se pregunta sale de estas cinco cosas.</p>
+
+<h3>1. Qué es una HU y qué no es</h3>
+<div class="box def">
+  <div class="bt">Definición del curso</div>
+  <p>Descripción <b>concisa y escrita</b> de un <b>requisito funcional</b>, que <b>proporciona valor a un usuario</b> y se basa en sus <b>objetivos</b> (de ahí el nombre: los usuarios interactúan con el sistema para lograrlos). Es de alto nivel: contiene la información precisa para que el equipo pueda producir una <b>estimación razonable del esfuerzo</b> de implementarla. Nace en XP (1998) y es el artefacto de desarrollo principal en Scrum y XP.</p>
+</div>
+<div class="tw"><table>
+<tr><th>Artefacto</th><th>Qué describe</th><th>Tamaño y lector</th><th>Marca típica</th></tr>
+<tr><td><b>Requisito funcional clásico</b></td><td>Lo que el <i>sistema debe hacer</i>, en lenguaje natural</td><td>Frase suelta, centrada en el sistema</td><td>«El sistema debe permitir…»</td></tr>
+<tr><td><b>Caso de uso</b></td><td>El <i>comportamiento</i>: la interacción completa entre el software y los usuarios u otros sistemas</td><td>Documento largo, tiende al detalle</td><td>Pasos numerados actor ↔ sistema</td></tr>
+<tr><td><b>Historia de usuario</b></td><td>La <i>necesidad</i>: algo que el usuario debe hacer en su trabajo cotidiano</td><td>Cabe en una tarjeta; la lee el propio usuario</td><td>«Como… yo quiero… para…»</td></tr>
+</table></div>
+<p class="meta">Frase para memorizar: <b>la HU es la necesidad, el caso de uso es el comportamiento</b>. La HU no dice <i>cómo</i> se implementa: describe una característica (feature), no una tarea.</p>
+
+<h3>2. Estructura tipo de una HU</h3>
+<div class="hu">
+  <div class="t">Título (+ identificador)</div>
+  <p class="meta">Oración breve que resume la necesidad y es lo bastante específica para diferenciarla de otras HU. El ID (HU-01, HU-02…) permite <b>trazabilidad</b> entre la HU y el resto de los artefactos de software.</p>
+  <div class="t">Descripción</div>
+  <p><b>Como</b> [tipo de usuario: ¿para quién se desarrolla?] · <b>Yo quiero</b> [objetivo: ¿qué se desarrolla, cuál es la intención?] · <b>Para</b> [valor: ¿para qué, qué beneficio obtiene el usuario?]</p>
+  <div class="t">Criterios de aceptación</div>
+  <p class="gwt"><b>Dado</b> [condición bajo la que se valida] <b>cuando</b> [situación que gatilla la validación] <b>entonces</b> [qué debe ocurrir].</p>
+  <p class="meta">Permiten validar que lo diseñado o construido está conforme con lo que desea el cliente. Una HU puede tener <b>más de uno</b>: lo habitual es uno para el flujo normal y al menos uno para la excepción.</p>
+  <div class="t">Conversación</div>
+  <p class="meta">Los detalles nacen de conversar con quienes toman decisiones. Queda como antecedente que justifica la descripción y los criterios de validación: reglas de negocio, plazos, excepciones acordadas, quién lo dijo y cuándo.</p>
+</div>
+<p>Complementos que la clase recomienda anotar en la tarjeta: <b>estimación</b> del esfuerzo (story points: complejidad, tamaño, nivel de incertidumbre y riesgos) y <b>prioridad</b>.</p>
+
+<h3>3. INVEST</h3>
+<div class="tw"><table>
+<tr><th>Letra</th><th>Criterio</th><th>Se viola cuando…</th></tr>
+<tr><td><b>I</b></td><td>Independiente entre sí, o débilmente acoplada</td><td>La HU no se puede construir ni probar si antes no se hace otra.</td></tr>
+<tr><td><b>N</b></td><td>Negociable: no es un contrato ni una especificación, sino una referencia que el equipo debe discutir y clarificar</td><td>Llega con la solución técnica cerrada y no deja nada que conversar.</td></tr>
+<tr><td><b>V</b></td><td>Valiosa: entrega valor al usuario y describe características del sistema, no tareas</td><td>«Crear la tabla en la BD», «configurar el servidor»: valor para el equipo, no para el usuario.</td></tr>
+<tr><td><b>E</b></td><td>Estimable: el esfuerzo de desarrollo debe poder estimarse</td><td>Es tan grande o tan vaga que nadie puede decir cuánto cuesta.</td></tr>
+<tr><td><b>S</b></td><td>Pequeña: su tamaño permite implementarla en una iteración</td><td>Es una épica: «gestionar todo el proceso de…».</td></tr>
+<tr><td><b>T</b></td><td>Testeable: comprobable mediante pruebas</td><td>No hay forma objetiva de decir si está lista: «amigable», «rápido», «intuitivo».</td></tr>
+</table></div>
+
+<h3>4. El criterio de calidad visto en clases</h3>
+<div class="box def">
+  <div class="bt">La prueba de la prioridad</div>
+  <p>Si el <b>cliente no puede establecer la prioridad</b> de una HU, probablemente está mal hecha. El razonamiento: si no puede priorizarla es porque no percibe su valor, y si no hay valor para el cliente no debería existir esa HU. Ocurre casi siempre cuando la historia está escrita en lenguaje técnico o cuando es una tarea del equipo disfrazada de historia.</p>
+</div>
+
+<h3>5. Dos cosas más que aparecen en preguntas cortas</h3>
+<ul>
+  <li><b>Quién las escribe:</b> los <i>stakeholders</i>, no los desarrolladores. Son simples justamente para que el cliente aprenda a escribirlas en minutos, y se usan herramientas simples: tarjetas de papel (index cards).</li>
+  <li><b>User Story Mapping:</b> técnica de refinamiento y organización <b>temporal</b> de las HU, ordenadas en secuencia por orden de realización. Sirve para provocar conversaciones, tomar decisiones y no perder el horizonte sobre lo que se pretende construir.</li>
+</ul>
+</section>
+
+<section id="e1">
+<h2>Ensayo 1 · Préstamo de bicicletas del campus (BiciUSM)</h2>
+<p><span class="tiempo">40 minutos</span> <span class="pill">Texto + 4 preguntas</span> <span class="pill a">Desarrollo</span></p>
+
+<div class="caso">
+<h4>Texto de contexto</h4>
+<p>La Dirección de Asuntos Estudiantiles (DAE) de un campus universitario administra un sistema de préstamo gratuito de 40 bicicletas para desplazarse entre sedes. Hoy todo el proceso es manual y funciona así.</p>
+<p>El estudiante llega a la portería del edificio F, entrega su credencial y el portero anota en un cuaderno el nombre, el rol del estudiante, el número de la bicicleta y la hora de salida. Cuando la bicicleta vuelve, el portero anota la hora de llegada. El préstamo dura como máximo cuatro horas: si el estudiante devuelve fuera de ese plazo queda sancionado y no puede pedir otra bicicleta durante siete días. El problema es que el portero no tiene forma práctica de saber si quien está frente a él está sancionado, porque tendría que revisar hoja por hoja las semanas anteriores; en la práctica, casi nunca lo hace y la sanción no se aplica. Tampoco puede detectar que un estudiante tiene dos bicicletas prestadas al mismo tiempo, cosa que el reglamento prohíbe: solo se permite un préstamo activo por persona.</p>
+<p>Los viernes, el encargado de mantención revisa las bicicletas y saca de circulación las que tienen fallas (frenos gastados, neumático en mal estado). El aviso se lo da verbalmente al portero de turno, y como los turnos rotan, la información se pierde: es frecuente que el lunes se preste una bicicleta que estaba marcada como fuera de servicio, con el riesgo de accidente que eso implica.</p>
+<p>Los estudiantes se quejan de otra cosa: caminan quince minutos hasta la portería y muchas veces no queda ninguna bicicleta disponible. Varios han pedido poder saber la disponibilidad antes de salir. También han pedido que se les avise antes de que se les venza el plazo, porque nadie lleva la cuenta exacta de las cuatro horas y las sanciones les parecen injustas.</p>
+<p>La jefa de la DAE tiene un objetivo distinto: cada noviembre debe presentar a la Dirección de Presupuesto una solicitud para comprar más bicicletas, y hoy no tiene ningún dato con qué respaldarla. Necesita saber cuántos préstamos hubo por mes, en qué horarios se concentra la demanda y cuántas veces un estudiante llegó y no había bicicletas disponibles.</p>
+<p>El equipo de desarrollo escribió estos tres enunciados a partir de la reunión con la DAE:</p>
+<div class="hu">
+<p><b>(a)</b> «El sistema debe permitir registrar la entrega y la devolución de una bicicleta, validando previamente el estado de sanción del estudiante.»</p>
+<p><b>(b)</b> «Como estudiante, yo quiero consultar cuántas bicicletas hay disponibles en la portería antes de ir hasta allá, para no perder el viaje cuando no queda ninguna.»</p>
+<p><b>(c)</b> «<b>Préstamo de bicicleta.</b> Actor principal: portero. Precondición: el estudiante presenta su credencial. Flujo principal: 1) el portero ingresa el rol del estudiante; 2) el sistema verifica que no tenga sanciones vigentes ni préstamos activos; 3) el sistema muestra las bicicletas operativas; 4) el portero selecciona una y confirma; 5) el sistema registra la salida con la hora. Flujo alternativo 2a: si el estudiante está sancionado, el sistema informa la fecha de término de la sanción y el caso de uso termina.»</p>
+</div>
+</div>
+
+<h3>Preguntas sobre el texto</h3>
+
+<div class="q"><b>Pregunta 1.</b> Clasifique cada uno de los enunciados (a), (b) y (c) indicando a qué técnica de especificación de requisitos corresponde. Para el que sea una historia de usuario, identifique explícitamente sus tres campos. Luego explique, en no más de tres líneas, cuál es la diferencia esencial entre una historia de usuario y un caso de uso.</div>
+
+<div class="q"><b>Pregunta 2.</b> Un integrante del equipo agregó esta historia: <i>«Como sistema, yo quiero guardar cada préstamo en la base de datos para mantener la trazabilidad histórica.»</i> Identifique al menos dos criterios de INVEST que se incumplen, explique por qué en cada caso, y reescriba el enunciado como una historia de usuario válida basada en el texto.</div>
+
+<div class="q"><b>Pregunta 3.</b> Para la necesidad «el portero necesita entregar una bicicleta sin arriesgarse a pasarle una a un estudiante sancionado», escriba <b>dos</b> criterios de aceptación en formato Dado–Cuando–Entonces: uno para el flujo normal y otro para el caso en que el estudiante está sancionado. Para el primero de ellos, señale qué parte responde a la condición de validación, cuál a la situación que la gatilla y cuál al resultado esperado.</div>
+
+<div class="q"><b>Pregunta 4.</b> El equipo le presenta a la jefa de la DAE la historia <i>«Como jefa de la DAE, yo quiero que el sistema se implemente con arquitectura de microservicios y base de datos PostgreSQL, para asegurar la escalabilidad futura.»</i> La clienta no logra decidir qué prioridad darle frente a las otras historias. ¿Qué indica esa dificultad respecto de la calidad de la historia? Fundamente con el criterio visto en clases, indique qué criterios de INVEST se violan y proponga qué hacer con ese enunciado.</div>
+
+<h3>Parte de desarrollo</h3>
+<div class="box tip">
+  <div class="bt">Escriba usted la historia de usuario</div>
+  <p>Redacte <b>dos historias de usuario completas</b> a partir del texto, con la estructura tipo vista en clases: <b>título con identificador, descripción, criterios de aceptación</b> (mínimo dos por historia, y al menos uno debe cubrir una excepción o caso alternativo) y <b>conversación</b>. Agregue prioridad y una estimación relativa.</p>
+  <p>Restricciones: las dos historias deben corresponder a <b>roles distintos entre sí</b> y ninguna puede ser la del estudiante que consulta disponibilidad (ya está escrita en el enunciado (b)). Al menos una debe atacar el problema de las bicicletas retiradas por mantención. Termine justificando en tres líneas por qué su primera historia cumple los criterios <b>Valiosa</b> y <b>Pequeña</b>.</p>
+</div>
+
+<details class="sol"><summary>Pauta de corrección · Ensayo 1</summary>
+<div class="body">
+
+<h4>Pregunta 1</h4>
+<p><b>(a) Requisito funcional clásico.</b> Especifica en lenguaje natural lo que <i>el sistema debe hacer</i>, con la marca típica «el sistema debe permitir». Está centrado en el sistema, no en un usuario, y no expresa el valor que alguien obtiene.</p>
+<p><b>(b) Historia de usuario.</b> Sus tres campos son:</p>
+<ul>
+  <li><b>Como</b> estudiante → el tipo de usuario, para quién se desarrolla.</li>
+  <li><b>Yo quiero</b> consultar cuántas bicicletas hay disponibles antes de ir → el objetivo, qué se desarrolla.</li>
+  <li><b>Para</b> no perder el viaje cuando no queda ninguna → el valor o beneficio, para qué se desarrolla.</li>
+</ul>
+<p><b>(c) Caso de uso.</b> Describe la interacción completa entre el actor y el software: actor principal, precondición, flujo principal con pasos numerados y flujo alternativo. Es documentación detallada del comportamiento.</p>
+<p><b>Diferencia esencial:</b> la historia de usuario describe una <b>necesidad</b> del usuario (algo que necesita hacer en su trabajo cotidiano) y es fácil de leer para él; el caso de uso describe el <b>comportamiento</b>, es decir, lo que hará el software para satisfacer esa necesidad, incluyendo toda la interacción con los usuarios u otros sistemas. La HU es breve y cabe en una tarjeta; el caso de uso tiende al detalle.</p>
+
+<h4>Pregunta 2</h4>
+<p>Defectos (bastaba con dos bien argumentados):</p>
+<ul>
+  <li><b>Valiosa:</b> el enunciado describe una <b>tarea técnica</b> del equipo, no una característica que entregue valor a un usuario. Guardar registros en la base de datos es un medio, no un fin para nadie del negocio.</li>
+  <li><b>Negociable:</b> viene con la solución ya cerrada («guardar en la base de datos»). No deja nada que conversar con el cliente; una HU debe ser una referencia a discutir, no una especificación de implementación.</li>
+  <li><b>Rol inválido:</b> el «como sistema» rompe la definición misma de historia de usuario, que exige la perspectiva de un usuario con objetivos. Si el rol es el sistema, no hay usuario ni valor de negocio.</li>
+  <li><b>Testeable (parcial):</b> «mantener la trazabilidad histórica» no define ningún resultado observable que se pueda comprobar.</li>
+</ul>
+<p><b>Reescritura válida</b> (se le devuelve el valor real que está escondido en el texto, que es el reporte anual de la jefa de la DAE):</p>
+<div class="hu">
+<p><b>Como</b> jefa de la DAE, <b>yo quiero</b> obtener el detalle de los préstamos realizados en un período que yo indique, <b>para</b> respaldar con datos la solicitud de compra de bicicletas que presento cada noviembre.</p>
+</div>
+<p class="meta">También se acepta una reescritura desde el portero (consultar el historial de préstamos de un estudiante para verificar su comportamiento previo), siempre que el rol sea una persona y el «para» exprese un beneficio del negocio.</p>
+
+<h4>Pregunta 3</h4>
+<div class="hu">
+<p class="gwt"><b>Dado</b> un portero en la pantalla de entrega de bicicletas con un estudiante sin sanciones vigentes y sin préstamos activos, <b>cuando</b> registra la entrega de una bicicleta operativa, <b>entonces</b> el sistema registra el préstamo con su hora de salida y muestra la hora límite de devolución.</p>
+<p class="gwt"><b>Dado</b> un portero en la pantalla de entrega de bicicletas con un estudiante que tiene una sanción vigente, <b>cuando</b> intenta registrar la entrega, <b>entonces</b> el sistema bloquea la operación e informa la fecha en que termina la sanción.</p>
+</div>
+<p>Identificación de las partes en el primer criterio:</p>
+<ul>
+  <li><b>Condición</b> (¿bajo qué condición se está validando?): «un portero en la pantalla de entrega con un estudiante sin sanciones ni préstamos activos». Es el estado previo del mundo.</li>
+  <li><b>Situación que gatilla</b> (¿qué dispara la validación?): «cuando registra la entrega de una bicicleta operativa». Es la acción concreta.</li>
+  <li><b>Resultado esperado</b> (¿qué debe ocurrir?): «el sistema registra el préstamo con su hora de salida y muestra la hora límite». Es lo verificable.</li>
+</ul>
+<p class="meta">Error frecuente: escribir el «Dado» como si fuera la acción («Dado que el portero presiona el botón…»). El Dado es el <i>estado</i>; el Cuando es la <i>acción</i>.</p>
+
+<h4>Pregunta 4</h4>
+<p>Según el criterio de calidad visto en clases, <b>si el cliente no puede establecer la prioridad de una historia, probablemente está mal hecha</b>: la imposibilidad de priorizar es la señal de que el cliente no percibe valor en ella. Y no lo percibe porque el enunciado no habla de su negocio, sino de decisiones técnicas del equipo, que ella no está en condiciones de evaluar ni de comparar contra «avisar al estudiante antes de que venza el plazo».</p>
+<p>Criterios de INVEST violados:</p>
+<ul>
+  <li><b>Valiosa:</b> describe una decisión de arquitectura, no una característica con valor para el usuario. Además el «para» es falso: la escalabilidad no es un beneficio que la jefa de la DAE persiga en su trabajo cotidiano.</li>
+  <li><b>Negociable:</b> impone la tecnología (microservicios, PostgreSQL) y no deja espacio para que el equipo discuta la solución. Una HU es una referencia a clarificar, no un contrato técnico.</li>
+  <li><b>Testeable:</b> «asegurar la escalabilidad futura» no se puede comprobar con una prueba de aceptación; no hay resultado observable.</li>
+</ul>
+<p><b>Qué hacer:</b> no se descarta la preocupación, se <b>reclasifica</b>. La escalabilidad es un requisito no funcional o una restricción técnica, y como tal se documenta aparte del backlog de historias (o se convierte en una decisión de diseño del equipo). Si la preocupación real es soportar la demanda en horario punta, puede transformarse en una historia con valor de negocio y criterio verificable, por ejemplo: <i>como jefa de la DAE quiero que la consulta de disponibilidad siga respondiendo en el peak de las 13:00 para que los estudiantes confíen en la información</i>, con un criterio de aceptación que fije un umbral medible.</p>
+
+<h4>Parte de desarrollo · solución de referencia</h4>
+<div class="hu">
+<div class="t">HU-04 · Bloqueo automático de bicicletas fuera de servicio</div>
+<p><b>Descripción.</b> Como encargado de mantención, yo quiero marcar una bicicleta como fuera de servicio indicando la falla detectada, para que ninguna portería la entregue mientras no esté reparada.</p>
+<p><b>Criterios de aceptación.</b></p>
+<p class="gwt"><b>Dado</b> un encargado de mantención en la ficha de una bicicleta operativa, <b>cuando</b> la marca como fuera de servicio indicando la falla, <b>entonces</b> la bicicleta deja de aparecer entre las disponibles para préstamo en todas las porterías.</p>
+<p class="gwt"><b>Dado</b> un portero intentando entregar una bicicleta que fue marcada fuera de servicio, <b>cuando</b> confirma la entrega, <b>entonces</b> el sistema impide el préstamo e informa la falla registrada y su fecha.</p>
+<p class="gwt"><b>Dado</b> una bicicleta fuera de servicio que ya fue reparada, <b>cuando</b> el encargado registra el término de la reparación, <b>entonces</b> la bicicleta vuelve a estar disponible para préstamo.</p>
+<p><b>Conversación.</b> Hoy el aviso es verbal y se pierde al rotar los turnos de portería, por lo que se han prestado bicicletas con frenos malos. Se acordó con la DAE que el bloqueo sea inmediato y visible en todas las porterías, y que solo el encargado de mantención pueda levantarlo, no el portero.</p>
+<p class="meta"><b>Prioridad:</b> alta (hay riesgo de accidente). <b>Estimación:</b> 3 puntos.</p>
+</div>
+
+<div class="hu">
+<div class="t">HU-05 · Aviso de vencimiento del plazo de devolución</div>
+<p><b>Descripción.</b> Como estudiante con una bicicleta prestada, yo quiero recibir un aviso antes de que se cumpla el plazo de devolución, para alcanzar a devolverla a tiempo y no quedar sancionado siete días.</p>
+<p><b>Criterios de aceptación.</b></p>
+<p class="gwt"><b>Dado</b> un estudiante con un préstamo activo, <b>cuando</b> faltan treinta minutos para que se cumplan las cuatro horas, <b>entonces</b> el sistema le envía un aviso indicando la hora límite de devolución.</p>
+<p class="gwt"><b>Dado</b> un estudiante que ya devolvió la bicicleta antes del plazo, <b>cuando</b> llega el momento en que correspondería el aviso, <b>entonces</b> el sistema no le envía ninguna notificación.</p>
+<p><b>Conversación.</b> Los estudiantes consideran injusta la sanción porque nadie lleva la cuenta exacta de las cuatro horas. La DAE aceptó el aviso, pero dejó claro que no cambia el reglamento: el aviso no extiende el plazo ni excusa el atraso.</p>
+<p class="meta"><b>Prioridad:</b> media. <b>Estimación:</b> 2 puntos.</p>
+</div>
+<p><b>Justificación pedida (ejemplo para HU-04).</b> Es <i>valiosa</i> porque el beneficiario es una persona del negocio y el beneficio es concreto y del dominio: evitar que se preste una bicicleta insegura, no «guardar un estado en la base de datos». Es <i>pequeña</i> porque cubre una sola necesidad acotada (marcar y desmarcar una bicicleta y su efecto en el préstamo), se puede construir y probar dentro de una iteración y no arrastra consigo el resto del proceso de mantención, como la planificación de las revisiones de los viernes o el inventario de repuestos.</p>
+
+<div class="box warn">
+  <div class="bt">Cómo se corrige esto</div>
+  <ul>
+    <li>Si escribió «Como portero quiero un formulario con un botón para…», perdió puntos: eso es el <b>cómo</b> (la interfaz), no la necesidad.</li>
+    <li>Si sus dos historias son del mismo rol o si ninguna cubre una excepción, no cumplió el enunciado.</li>
+    <li>Si algún «para» repite el «quiero» con otras palabras («para poder marcarla como fuera de servicio»), el campo de valor está vacío: ahí es donde más se descuenta.</li>
+  </ul>
+</div>
+</div>
+</details>
+</section>
+
+<section id="e2">
+<h2>Ensayo 2 · Farmacia comunal y retiro de medicamentos crónicos</h2>
+<p><span class="tiempo">40 minutos</span> <span class="pill">Texto + 4 preguntas</span> <span class="pill a">Desarrollo</span></p>
+
+<div class="caso">
+<h4>Texto de contexto</h4>
+<p>La Farmacia Comunal de una municipalidad entrega medicamentos a precio de costo a unos 4.000 pacientes crónicos inscritos (hipertensión, diabetes, epilepsia). El proceso actual es el siguiente.</p>
+<p>El paciente se inscribe una vez presentando su receta médica. Las recetas de tratamientos crónicos tienen vigencia de seis meses y autorizan un retiro mensual; pasado ese plazo, el paciente debe volver al consultorio por una receta nueva. Cada mes el paciente llega a la farmacia, hace la fila, y en el mesón el químico farmacéutico busca su ficha en una carpeta, verifica que la receta siga vigente, que no haya retirado ya ese mes, y entrega los medicamentos. El retiro queda anotado en la ficha de papel.</p>
+<p>Buena parte de los inscritos son adultos mayores, y muchos no pueden ir personalmente. En esos casos va un familiar con la cédula del paciente y una autorización escrita a mano. El químico farmacéutico no tiene forma de verificar esa autorización: la acepta o la rechaza a criterio, lo que genera discusiones frecuentes en el mesón. Hace dos meses se detectó que una persona retiró durante medio año medicamentos de un paciente que ya había fallecido.</p>
+<p>El mayor motivo de reclamos es otro: los pacientes hacen fila desde las siete de la mañana y, al llegar al mesón, se enteran de que el medicamento que necesitan está agotado. No hay ninguna forma de saberlo antes de ir. Cuando hay quiebre de stock, el químico anota el nombre del paciente en un cuaderno y le dice que vuelva «la próxima semana a ver si llegó», sin ningún compromiso.</p>
+<p>La jefa de bodega tiene su propio problema: compra por estimación gruesa y periódicamente descubre cajas vencidas en las repisas, medicamentos que se compraron y nadie retiró. Necesita saber con anticipación qué lotes están próximos a vencer y cuánto se consume realmente de cada fármaco al mes, para ajustar la compra siguiente.</p>
+<p>El director de salud municipal exige, además, que todo retiro quede registrado con la identidad de quien lo recibe, porque la farmacia es auditada una vez al año por la Contraloría.</p>
+</div>
+
+<h3>Preguntas sobre el texto</h3>
+
+<div class="q"><b>Pregunta 1.</b> Identifique tres tipos de usuario distintos presentes en el texto y enuncie, para cada uno, un objetivo concreto que perseguiría en el sistema. Luego responda: el paciente adulto mayor y el familiar que retira por él, ¿son el mismo rol o roles distintos? Justifique a partir de la definición de historia de usuario.</div>
+
+<div class="q"><b>Pregunta 2.</b> El equipo escribió la siguiente historia: <i>«Como paciente crónico, yo quiero gestionar completamente mis medicamentos en la farmacia comunal, para no tener problemas con mi tratamiento.»</i> Explique qué criterios de INVEST incumple y por qué, y divídala en tres historias de usuario que sí los cumplan (basta la descripción de cada una, sin criterios de aceptación).</div>
+
+<div class="q"><b>Pregunta 3.</b> Para la historia <i>«Como paciente crónico, yo quiero consultar si mi medicamento está disponible antes de ir a la farmacia, para no perder la mañana en la fila si está agotado»</i>, el equipo redactó estos tres criterios de aceptación. Indique qué está mal en cada uno y reescríbalo correctamente.</div>
+<div class="hu">
+<p><b>CA1:</b> «El paciente entra a la aplicación, hace clic en el menú lateral, selecciona <i>Mis recetas</i> y presiona el botón azul <i>Ver stock</i>.»</p>
+<p><b>CA2:</b> «El sistema debe ser rápido y fácil de usar para los adultos mayores.»</p>
+<p><b>CA3:</b> «Dado que el paciente quiere retirar su medicamento, cuando no hay stock, entonces se maneja el error.»</p>
+</div>
+
+<div class="q"><b>Pregunta 4.</b> ¿Qué función cumple la sección <b>Conversación</b> en la estructura de una historia de usuario? Redacte la conversación que correspondería a la historia de la pregunta 3, incluyendo al menos tres elementos tomados del texto. Explique además por qué la metodología sostiene que las historias las deben escribir los <i>stakeholders</i> y no los desarrolladores, y qué riesgo concreto se corre en este caso si las escribe solo el equipo.</div>
+
+<h3>Parte de desarrollo</h3>
+<div class="box tip">
+  <div class="bt">Escriba usted la historia de usuario</div>
+  <p>Redacte <b>dos historias de usuario completas</b> (título con identificador, descripción, criterios de aceptación y conversación), con estas condiciones:</p>
+  <ul>
+    <li>La primera debe ser del <b>químico farmacéutico</b> y debe incorporar en sus criterios de aceptación las dos reglas de negocio del texto: la receta vigente por seis meses y el máximo de un retiro mensual.</li>
+    <li>La segunda debe resolver el problema del <b>retiro por un tercero</b>, atacando lo que ocurrió con el paciente fallecido.</li>
+    <li>Cada historia debe tener al menos <b>tres criterios de aceptación</b>, y al menos uno de ellos debe cubrir un caso de excepción.</li>
+  </ul>
+</div>
+
+<details class="sol"><summary>Pauta de corrección · Ensayo 2</summary>
+<div class="body">
+
+<h4>Pregunta 1</h4>
+<p>Tres usuarios con su objetivo (cualquier trío correcto vale):</p>
+<div class="tw"><table>
+<tr><th>Tipo de usuario</th><th>Objetivo en el sistema</th></tr>
+<tr><td>Paciente crónico inscrito</td><td>Saber si su medicamento está disponible y cuándo le corresponde retirar, sin perder la mañana en la fila.</td></tr>
+<tr><td>Familiar autorizado</td><td>Retirar el medicamento en nombre del paciente sin que se lo rechacen por una autorización a mano.</td></tr>
+<tr><td>Químico farmacéutico</td><td>Verificar en el mesón si el retiro corresponde (receta vigente, retiro del mes no usado, persona autorizada) y dejarlo registrado.</td></tr>
+<tr><td>Jefa de bodega</td><td>Anticipar los lotes por vencer y conocer el consumo real mensual para ajustar la compra.</td></tr>
+<tr><td>Director de salud municipal</td><td>Disponer del registro completo de retiros con identidad de quien recibe, para responder a la auditoría de Contraloría.</td></tr>
+</table></div>
+<p><b>¿Paciente y familiar son el mismo rol?</b> Son <b>roles distintos</b>. En una historia de usuario el rol no se define por la pantalla que se toca, sino por <b>quién es el usuario y qué objetivo persigue</b>. El paciente persigue su tratamiento y es el titular del derecho a retirar; el familiar persigue completar un trámite en nombre de otro y necesita, además, demostrar que está autorizado, necesidad que el paciente no tiene. Sus criterios de aceptación son distintos —al familiar hay que validarle la autorización— y por lo tanto sus historias también.</p>
+<p class="meta">Observación que suele dar puntos: el paciente adulto mayor podría ni siquiera usar el sistema directamente y, aun así, seguir siendo el usuario cuyo objetivo se satisface. Usuario no es lo mismo que operador del teclado.</p>
+
+<h4>Pregunta 2</h4>
+<p>Criterios incumplidos:</p>
+<ul>
+  <li><b>Pequeña:</b> «gestionar completamente mis medicamentos» abarca inscripción, consulta de stock, aviso de retiro, renovación de receta y reclamos. Es una épica; no cabe en una iteración.</li>
+  <li><b>Estimable:</b> justamente por ser tan amplia, nadie puede dar una estimación razonable del esfuerzo. Y ese era el propósito declarado de una HU: contener la información precisa para poder estimar.</li>
+  <li><b>Testeable:</b> «no tener problemas con mi tratamiento» no se puede comprobar con ninguna prueba de aceptación; no define un resultado observable.</li>
+  <li><b>Valiosa (parcialmente):</b> el valor está enunciado en términos tan genéricos que no permite priorizar frente a otras historias.</li>
+</ul>
+<p>División en tres historias pequeñas e independientes entre sí:</p>
+<div class="hu">
+<p><b>HU-a.</b> Como paciente crónico, yo quiero consultar la disponibilidad de mi medicamento antes de ir a la farmacia, para no perder la mañana en la fila si está agotado.</p>
+<p><b>HU-b.</b> Como paciente crónico, yo quiero que me avisen cuando se acerque la fecha de vencimiento de mi receta, para pedir hora en el consultorio antes de quedarme sin tratamiento.</p>
+<p><b>HU-c.</b> Como paciente crónico al que no le alcanzaron los medicamentos, yo quiero quedar en una lista de espera del fármaco agotado, para que me avisen cuando llegue en vez de volver a preguntar cada semana.</p>
+</div>
+<p class="meta">Cada una entrega valor por sí sola, se puede probar sola y se estima sola: ahí está la diferencia con la épica original.</p>
+
+<h4>Pregunta 3</h4>
+<p><b>CA1 — describe el «cómo», no el «qué».</b> Detalla la navegación y hasta el color del botón, es decir, la interfaz. Los criterios de aceptación validan que el resultado sea el que el cliente desea, no la ruta de clics; si mañana cambia la interfaz, el criterio quedaría inválido sin que la necesidad haya cambiado. Además no tiene la estructura Dado–Cuando–Entonces.</p>
+<p class="gwt">Corregido: <b>Dado</b> un paciente inscrito con receta vigente, <b>cuando</b> consulta la disponibilidad de su medicamento, <b>entonces</b> el sistema le muestra si hay stock en la farmacia y la fecha de esa información.</p>
+<p><b>CA2 — no es testeable.</b> «Rápido» y «fácil de usar» son juicios subjetivos, sin resultado observable ni umbral. No permiten decidir objetivamente si la historia está terminada. Además apuntan a atributos de calidad (requisitos no funcionales), no al comportamiento esperado de esta historia.</p>
+<p class="gwt">Corregido: <b>Dado</b> un paciente que consulta la disponibilidad, <b>cuando</b> envía la consulta, <b>entonces</b> el sistema muestra el resultado en menos de tres segundos y sin exigirle más de un dato de identificación.</p>
+<p><b>CA3 — el resultado esperado no dice nada.</b> «Se maneja el error» no describe qué debe ocurrir, así que no se puede probar. El «Dado» también está mal usado: expresa una intención («quiere retirar») en vez de una condición o estado previo verificable.</p>
+<p class="gwt">Corregido: <b>Dado</b> un paciente inscrito cuyo medicamento está agotado en la farmacia, <b>cuando</b> consulta su disponibilidad, <b>entonces</b> el sistema le informa que no hay stock y le ofrece inscribirse en la lista de espera para ser avisado cuando llegue.</p>
+
+<h4>Pregunta 4</h4>
+<p><b>Función de la Conversación.</b> Los detalles de una historia no se escriben de una vez: nacen de las conversaciones con quienes toman las decisiones, y esa sección deja registro del acuerdo. Sirve de <b>antecedente que justifica la descripción y los criterios de aceptación</b>: por qué se decidió eso, qué regla de negocio lo obliga, qué se dejó fuera. Es lo que evita que meses después nadie recuerde de dónde salió una restricción, y refuerza el propósito de la técnica, que es fomentar la comunicación y lograr consenso, no producir documentación.</p>
+<p><b>Conversación de ejemplo:</b> «Los pacientes hacen fila desde las 07:00 y recién en el mesón se enteran de que el medicamento está agotado; es el principal motivo de reclamos. El químico farmacéutico advirtió que el stock cambia durante la jornada, así que se acordó mostrar junto al dato la hora de última actualización y no comprometer reserva. Se acordó con el director de salud que la consulta no exponga el detalle del tratamiento, solo la disponibilidad del fármaco recetado, por tratarse de datos sensibles de salud.»</p>
+<p><b>Por qué las escriben los stakeholders.</b> Porque la historia debe expresar la <b>necesidad del negocio</b> y su valor, y quien conoce eso es el cliente, no el desarrollador. La técnica está diseñada para eso: son tan simples que un stakeholder aprende a escribirlas en minutos. Cuando las escribe solo el equipo, aparece el problema que la clase describe como «desarrolladores dominantes»: se deja de escuchar al cliente y predomina el lenguaje técnico.</p>
+<p><b>Riesgo concreto en este caso:</b> el equipo escribiría historias sobre lo que es fácil de programar —mostrar el stock de la bodega— y no sobre lo que le duele a la farmacia, que es la validación del retiro por terceros; ese detalle, que costó seis meses de medicamentos entregados en nombre de un paciente fallecido, no aparece en ninguna base de datos y solo lo aporta el químico farmacéutico al conversarlo.</p>
+
+<h4>Parte de desarrollo · solución de referencia</h4>
+<div class="hu">
+<div class="t">HU-07 · Validación del retiro mensual en el mesón</div>
+<p><b>Descripción.</b> Como químico farmacéutico, yo quiero verificar en el momento de la atención si al paciente le corresponde retirar, para entregar los medicamentos sin revisar carpetas de papel y sin arriesgar una entrega indebida.</p>
+<p><b>Criterios de aceptación.</b></p>
+<p class="gwt"><b>Dado</b> un paciente inscrito con receta vigente y sin retiros registrados en el mes en curso, <b>cuando</b> el químico farmacéutico consulta su ficha, <b>entonces</b> el sistema habilita la entrega e indica los medicamentos y cantidades que le corresponden.</p>
+<p class="gwt"><b>Dado</b> un paciente cuya receta superó los seis meses de vigencia, <b>cuando</b> el químico farmacéutico consulta su ficha, <b>entonces</b> el sistema bloquea la entrega e informa que debe renovar la receta en el consultorio.</p>
+<p class="gwt"><b>Dado</b> un paciente que ya registró su retiro del mes en curso, <b>cuando</b> el químico farmacéutico intenta registrar un segundo retiro, <b>entonces</b> el sistema lo impide e informa la fecha del retiro anterior y la del próximo retiro habilitado.</p>
+<p class="gwt"><b>Dado</b> un retiro habilitado y entregado, <b>cuando</b> el químico farmacéutico lo confirma, <b>entonces</b> el sistema deja registrado el medicamento, la fecha y la identidad de quien recibe.</p>
+<p><b>Conversación.</b> Las reglas las fijó el consultorio: receta crónica vigente seis meses y un retiro por mes. El registro de identidad de quien recibe lo exige el director de salud municipal porque la farmacia es auditada anualmente por Contraloría. Se acordó que el bloqueo por receta vencida sea duro, sin opción de que el químico lo salte, para terminar con las decisiones a criterio en el mesón.</p>
+<p class="meta"><b>Prioridad:</b> alta. <b>Estimación:</b> 5 puntos.</p>
+</div>
+
+<div class="hu">
+<div class="t">HU-08 · Retiro por un tercero autorizado</div>
+<p><b>Descripción.</b> Como familiar de un paciente que no puede desplazarse, yo quiero quedar registrado previamente como retirante autorizado, para retirar sus medicamentos sin que la autorización quede al criterio de quien atiende.</p>
+<p><b>Criterios de aceptación.</b></p>
+<p class="gwt"><b>Dado</b> un paciente que designó a un familiar como retirante autorizado, <b>cuando</b> ese familiar se identifica en el mesón, <b>entonces</b> el sistema lo reconoce como autorizado y permite continuar con el retiro.</p>
+<p class="gwt"><b>Dado</b> una persona que no figura como retirante autorizado del paciente, <b>cuando</b> intenta retirar en su nombre, <b>entonces</b> el sistema rechaza la operación e indica cómo registrar la autorización.</p>
+<p class="gwt"><b>Dado</b> un paciente cuya inscripción fue dada de baja por fallecimiento, <b>cuando</b> cualquier persona intenta retirar en su nombre, <b>entonces</b> el sistema rechaza el retiro y deja registrado el intento.</p>
+<p><b>Conversación.</b> Muchos inscritos son adultos mayores que no pueden ir; hoy se acepta una autorización escrita a mano que nadie puede verificar. Se detectó un caso de retiros durante seis meses a nombre de un paciente fallecido, por lo que el director de salud pidió que la baja del paciente bloquee el retiro de inmediato. Queda pendiente conversar cuántos retirantes puede designar un paciente y si la designación caduca junto con la receta.</p>
+<p class="meta"><b>Prioridad:</b> alta. <b>Estimación:</b> 3 puntos.</p>
+</div>
+
+<div class="box warn">
+  <div class="bt">Cómo se corrige esto</div>
+  <ul>
+    <li>Si sus criterios de aceptación no tienen las tres partes explícitas (Dado / Cuando / Entonces), se descuenta aunque la idea sea correcta.</li>
+    <li>Las dos reglas de negocio pedidas (seis meses, un retiro mensual) debían aparecer <b>dentro de los criterios</b>, no como comentario aparte: son justamente lo que hace testeable la historia.</li>
+    <li>Si escribió «Como químico farmacéutico quiero que el sistema tenga una tabla de retiros…», volvió a caer en la tarea técnica.</li>
+  </ul>
+</div>
+</div>
+</details>
+</section>
+
+<section id="e3">
+<h2>Ensayo 3 · Mantención de una flota de buses interurbanos</h2>
+<p><span class="tiempo">40 minutos</span> <span class="pill">Texto + 4 preguntas</span> <span class="pill a">Desarrollo</span></p>
+
+<div class="caso">
+<h4>Texto de contexto</h4>
+<p>Una empresa de transporte interurbano opera 120 buses desde tres terminales y mantiene un taller propio en el terminal principal. La operación diaria funciona así.</p>
+<p>Cada mañana el jefe de operaciones asigna buses a los servicios del día en una planilla Excel. Al terminar su turno, el conductor informa las fallas que detectó: a veces las anota en una hoja que deja en la garita, a veces las manda por un grupo de WhatsApp, y a veces solo se lo comenta al mecánico de turno. Cuando el reporte se pierde —que es lo habitual— el bus sale a ruta al día siguiente con la falla pendiente. El año pasado hubo dos servicios cancelados en carretera por fallas que un conductor había reportado por WhatsApp una semana antes; cada cancelación implica devolver pasajes, trasladar pasajeros en otro bus y pagar una multa contractual a la empresa mandante.</p>
+<p>El taller trabaja con dos tipos de mantención. La <b>preventiva</b> se hace cada 15.000 kilómetros recorridos, y hoy el jefe de taller la calcula a mano leyendo los odómetros cuando se acuerda, por lo que hay buses que llegan a los 19.000 kilómetros sin pasar por el taller. La <b>correctiva</b> nace de las fallas reportadas y depende de que haya repuestos: el jefe de taller no sabe qué hay en la bodega sin bajar a contarlo, y si el repuesto no está, el bus queda inmovilizado un tiempo que nadie puede estimar.</p>
+<p>Hay además una restricción legal: cada bus tiene revisión técnica con fecha de vencimiento, y circular con la revisión vencida expone a la empresa a multas y a la retención del vehículo. Hoy las fechas están en una carpeta en la oficina del jefe de taller, y el jefe de operaciones no las consulta al armar la planilla.</p>
+<p>El gerente de operaciones quiere, para el próximo directorio, saber cuántos días al mes estuvo cada bus fuera de servicio y por qué causa, para decidir si conviene renovar parte de la flota o ampliar el taller.</p>
+</div>
+
+<h3>Preguntas sobre el texto</h3>
+
+<div class="q"><b>Pregunta 1.</b> Tome la necesidad «el jefe de operaciones no debe poder asignar a un servicio un bus con la revisión técnica vencida» y expréselas en las <b>tres</b> técnicas de especificación vistas en clases: como requisito funcional clásico, como esbozo de caso de uso (bastan actor, precondición y tres o cuatro pasos) y como historia de usuario. Luego indique qué información aporta la historia de usuario que las otras dos no entregan.</div>
+
+<div class="q"><b>Pregunta 2.</b> El equipo redactó estas cuatro historias:</div>
+<div class="hu">
+<p><b>H1.</b> Como conductor, yo quiero reportar una falla del bus al terminar mi turno, para que quede constancia y no salga a ruta sin revisar.</p>
+<p><b>H2.</b> Como jefe de taller, yo quiero ver las fallas reportadas ordenadas por gravedad, para decidir qué bus entra primero al taller.</p>
+<p><b>H3.</b> Como jefe de taller, yo quiero saber el stock de repuestos disponible, para comprometer una fecha de salida realista al inmovilizar un bus.</p>
+<p><b>H4.</b> Como gerente de operaciones, yo quiero un informe mensual de días fuera de servicio por bus y por causa, para decidir la renovación de la flota.</p>
+</div>
+<div class="q">Señale cuál par de historias está más fuertemente acoplado y explique en qué consiste el acoplamiento. ¿Significa el criterio <b>Independiente</b> de INVEST que las historias no pueden tener ninguna relación entre sí? Justifique y proponga qué haría el equipo para trabajar con ese par.</div>
+
+<div class="q"><b>Pregunta 3.</b> Explique qué son los <b>story points</b> y sobre qué se basan. Luego, entre H3 y H4, indique cuál es más difícil de estimar y por qué, y proponga una modificación concreta al enunciado que la haga estimable.</div>
+
+<div class="q"><b>Pregunta 4.</b> El equipo decide aplicar <b>User Story Mapping</b> con las historias H1 a H4 más la historia <i>H5: como jefe de operaciones, yo quiero asignar los buses del día verificando su disponibilidad, para no programar un bus que no puede salir</i>. Ordene las cinco historias según la técnica y explique qué es el User Story Mapping y para qué le sirve al equipo durante el resto del proyecto.</div>
+
+<h3>Parte de desarrollo</h3>
+<div class="box tip">
+  <div class="bt">Escriba usted la historia de usuario</div>
+  <p>Redacte <b>dos historias de usuario completas</b> (título con identificador, descripción, criterios de aceptación y conversación):</p>
+  <ul>
+    <li>La primera, sobre la <b>mantención preventiva</b>, debe incorporar en sus criterios la regla de los 15.000 kilómetros y contemplar qué ocurre con un bus que ya superó ese umbral.</li>
+    <li>La segunda debe ser del <b>conductor</b> y resolver el problema del reporte de fallas que hoy se pierde.</li>
+    <li>Al menos una de las dos debe tener un criterio de aceptación que cubra la interacción con la asignación diaria de servicios.</li>
+  </ul>
+</div>
+
+<details class="sol"><summary>Pauta de corrección · Ensayo 3</summary>
+<div class="body">
+
+<h4>Pregunta 1</h4>
+<p><b>Requisito funcional clásico:</b> «El sistema debe impedir la asignación de un bus a un servicio cuando su revisión técnica se encuentre vencida a la fecha del servicio.» Dice qué hace el sistema, en lenguaje natural, sin decir para quién ni por qué.</p>
+<p><b>Caso de uso (esbozo):</b></p>
+<div class="hu">
+<p><b>Asignar bus a servicio.</b> Actor principal: jefe de operaciones. Precondición: existen servicios programados para el día. <br>
+1) El jefe de operaciones selecciona un servicio del día. <br>
+2) El sistema muestra los buses del terminal con su estado. <br>
+3) El jefe de operaciones selecciona un bus y confirma la asignación. <br>
+4) El sistema valida la vigencia de la revisión técnica y registra la asignación. <br>
+Flujo alternativo 4a: si la revisión técnica está vencida, el sistema rechaza la asignación, informa la fecha de vencimiento y vuelve al paso 2.</p>
+</div>
+<p><b>Historia de usuario:</b> «Como jefe de operaciones, yo quiero que el sistema me impida asignar a un servicio un bus con la revisión técnica vencida, para no exponer a la empresa a multas y a la retención del vehículo en carretera.»</p>
+<p><b>Qué aporta la HU:</b> aporta el <b>quién</b> y sobre todo el <b>para qué</b>, es decir, el valor de negocio, que es lo que permite priorizar y negociar. El requisito clásico y el caso de uso describen el comportamiento del sistema, pero ninguno dice por qué esa validación importa más o menos que otra funcionalidad. Además, la HU está en un lenguaje que el propio cliente puede leer y corregir, mientras que el caso de uso tiende a documentación detallada. La contrapartida es que la HU no describe la interacción completa: por eso son técnicas complementarias, no excluyentes.</p>
+
+<h4>Pregunta 2</h4>
+<p><b>Par más acoplado: H1 y H2.</b> H2 muestra las fallas reportadas ordenadas por gravedad, pero <b>no existe nada que mostrar mientras no exista el reporte de fallas de H1</b>. No se puede construir ni, sobre todo, <b>probar</b> H2 de forma aislada: sus criterios de aceptación necesitan datos que solo produce H1. El acoplamiento es de dependencia de datos y de orden obligatorio de implementación.</p>
+<p><b>¿Independiente significa sin relación?</b> No. El criterio pide que las historias sean independientes <b>o estén débilmente acopladas</b>. Es normal que compartan dominio y que una use lo que otra produce; lo que se busca evitar es la dependencia dura que obliga a un orden rígido, impide estimarlas por separado y hace que ninguna entregue valor sola.</p>
+<p><b>Qué hacer:</b> planificar H1 y H2 en la misma iteración, dejando explícita la dependencia, o reescribir H2 de modo que entregue valor por sí sola —por ejemplo, que el jefe de taller pueda priorizar cualquier bus del taller, tenga o no fallas reportadas por conductores, incluyendo las que él mismo detecta en la revisión—. Así H2 se puede probar con datos propios y H1 la enriquece después.</p>
+<p class="meta">H3 y H4, en cambio, son razonablemente independientes: cada una tiene valor propia y un usuario distinto.</p>
+
+<h4>Pregunta 3</h4>
+<p><b>Story points:</b> son una medida del <b>esfuerzo</b> requerido para realizar una historia de usuario, basada en su <b>complejidad, tamaño, nivel de incertidumbre y riesgos asociados</b>. No son horas: son una medida relativa que sirve para comparar historias entre sí y para que el equipo estime su capacidad por iteración.</p>
+<p><b>Más difícil de estimar: H4.</b> El informe mensual de días fuera de servicio «por causa» exige que exista una clasificación de causas que hoy no está definida en ninguna parte —el texto solo dice que hay preventivas, correctivas y esperas de repuesto—, y depende de datos que se generan en varias otras historias. La incertidumbre es alta y el alcance es difuso, así que el equipo no puede acotar el esfuerzo. H3, en cambio, tiene un alcance claro: consultar stock de repuestos.</p>
+<p><b>Cómo hacerla estimable:</b> acotarla y separarla. Por ejemplo: «Como gerente de operaciones, yo quiero ver, para un mes que yo indique, los días fuera de servicio de cada bus clasificados en las tres causas ya definidas por el taller (mantención preventiva, mantención correctiva y espera de repuestos), para preparar la presentación al directorio.» Con la lista de causas fijada y el período acotado, la incertidumbre baja y la historia se puede estimar; si además se necesita comparar años o exportar, eso va en otra historia.</p>
+
+<h4>Pregunta 4</h4>
+<p><b>Orden según el flujo de realización del proceso:</b></p>
+<ol>
+  <li><b>H1</b> · el conductor reporta la falla al terminar el turno (entrada del proceso).</li>
+  <li><b>H2</b> · el jefe de taller prioriza las fallas reportadas y decide qué bus entra al taller.</li>
+  <li><b>H3</b> · el jefe de taller verifica el stock de repuestos y compromete la fecha de salida.</li>
+  <li><b>H5</b> · el jefe de operaciones asigna los buses del día verificando su disponibilidad real.</li>
+  <li><b>H4</b> · el gerente revisa mensualmente los días fuera de servicio y decide sobre la flota.</li>
+</ol>
+<p><b>Qué es:</b> el User Story Mapping es una técnica de <b>refinamiento y organización temporal</b> de las historias de usuario, que se ordenan en secuencia según el orden en que se realizan en el proceso del negocio.</p>
+<p><b>Para qué sirve:</b> primero, para <b>provocar conversaciones y tomar decisiones</b> que aparecen recién cuando se ve el proceso completo —por ejemplo, aquí salta a la vista que H5 no tiene sentido sin que el estado del bus se actualice en H2 y H3—; y segundo, durante el resto del proyecto sirve para <b>no perder el horizonte</b> de lo que se pretende construir: mirando el mapa se ve qué parte del flujo ya está cubierta y cuál quedó con huecos.</p>
+
+<h4>Parte de desarrollo · solución de referencia</h4>
+<div class="hu">
+<div class="t">HU-11 · Alerta de mantención preventiva por kilometraje</div>
+<p><b>Descripción.</b> Como jefe de taller, yo quiero que el sistema me avise qué buses están próximos a cumplir el ciclo de mantención preventiva, para programar su ingreso al taller antes de que superen el umbral y no depender de revisar los odómetros a mano.</p>
+<p><b>Criterios de aceptación.</b></p>
+<p class="gwt"><b>Dado</b> un bus cuyo kilometraje se acerca a los 15.000 kilómetros desde su última mantención preventiva, <b>cuando</b> el jefe de taller revisa la programación del taller, <b>entonces</b> el sistema lo muestra en la lista de buses por ingresar, indicando cuántos kilómetros le faltan.</p>
+<p class="gwt"><b>Dado</b> un bus que ya superó los 15.000 kilómetros sin mantención preventiva, <b>cuando</b> el jefe de operaciones intenta asignarlo a un servicio, <b>entonces</b> el sistema advierte la condición y exige una autorización explícita del jefe de taller para asignarlo.</p>
+<p class="gwt"><b>Dado</b> un bus que sale del taller con la mantención preventiva realizada, <b>cuando</b> el jefe de taller registra el cierre, <b>entonces</b> el sistema reinicia el conteo de kilómetros del ciclo y lo saca de la lista de pendientes.</p>
+<p><b>Conversación.</b> Hoy el cálculo es manual y hay buses que llegan a los 19.000 kilómetros sin pasar por el taller. Se conversó si el bloqueo debía ser total: el jefe de operaciones advirtió que en temporada alta cancelar un servicio cuesta multa contractual, por lo que se acordó una advertencia con autorización registrada en vez de un bloqueo duro. La revisión técnica vencida, en cambio, sí bloquea sin excepción, porque ahí hay riesgo legal.</p>
+<p class="meta"><b>Prioridad:</b> alta. <b>Estimación:</b> 5 puntos.</p>
+</div>
+
+<div class="hu">
+<div class="t">HU-12 · Reporte de falla al cierre del turno</div>
+<p><b>Descripción.</b> Como conductor, yo quiero registrar la falla que detecté al terminar mi turno indicando su gravedad, para que quede constancia formal y el bus no salga a ruta al día siguiente sin que alguien la haya visto.</p>
+<p><b>Criterios de aceptación.</b></p>
+<p class="gwt"><b>Dado</b> un conductor que termina su turno en un bus asignado, <b>cuando</b> registra una falla indicando su descripción y gravedad, <b>entonces</b> el sistema la deja asociada a ese bus y a ese turno, y la muestra al jefe de taller entre las fallas pendientes.</p>
+<p class="gwt"><b>Dado</b> un bus con una falla pendiente calificada como grave, <b>cuando</b> el jefe de operaciones intenta asignarlo a un servicio del día siguiente, <b>entonces</b> el sistema impide la asignación mientras el taller no cierre esa falla.</p>
+<p class="gwt"><b>Dado</b> un conductor sin conexión en un terminal apartado, <b>cuando</b> registra una falla, <b>entonces</b> el sistema conserva el reporte y lo envía en cuanto haya conexión, informándole que quedó pendiente de envío.</p>
+<p><b>Conversación.</b> Hoy el reporte se hace en papel, por WhatsApp o de palabra, y se pierde: hubo dos servicios cancelados en carretera por fallas reportadas una semana antes, con devolución de pasajes y multa contractual. El jefe de operaciones pidió que solo las fallas graves bloqueen la asignación, para no inmovilizar la flota por detalles menores; la definición de las categorías de gravedad la entregará el jefe de taller.</p>
+<p class="meta"><b>Prioridad:</b> alta. <b>Estimación:</b> 3 puntos.</p>
+</div>
+
+<div class="box warn">
+  <div class="bt">Cómo se corrige esto</div>
+  <ul>
+    <li>El criterio pedido sobre la asignación diaria debía aparecer como un <b>Dado–Cuando–Entonces</b> en alguna de las dos historias: es lo que conecta la historia con el proceso real.</li>
+    <li>Si su historia dice «para tener un registro digital de las fallas», el valor está mal expresado: registrar es el medio, el valor es que el bus no salga a ruta con la falla.</li>
+    <li>Ojo con inventar reglas que el texto no da (por ejemplo, plazos de reparación). Si necesita una, decláresela en la <b>Conversación</b> como acuerdo pendiente de confirmar con el cliente: eso suma, no resta.</li>
+  </ul>
+</div>
+</div>
+</details>
+</section>
+
+<section id="e4">
+<h2>Ensayo 4 · Sistema de Gestión de Memorias (tu propio proyecto)</h2>
+<p><span class="tiempo">45 minutos</span> <span class="pill">Texto + 4 preguntas</span> <span class="pill a">Desarrollo</span></p>
+<div class="box tip">
+  <div class="bt">Por qué este ensayo es distinto</div>
+  <p>El texto de abajo está armado con el dominio real que expuso el cliente en la reunión inicial del proyecto. Sirve para el control, pero además lo que escribas aquí es material aprovechable para el Hito: si te sale una historia decente, guárdala.</p>
+</div>
+
+<div class="caso">
+<h4>Texto de contexto</h4>
+<p>El proceso de titulación del Departamento de Informática se compone de dos asignaturas anuales, Trabajo de Título 1 (TT1) e Trabajo de Título 2 (TT2), más un examen final. Hoy se administra con planillas, correos y carpetas de papel, y el profesor a cargo lleva el control en su computador personal.</p>
+<p>Los actores del proceso son varios. El estudiante se llama <b>prememorista</b> mientras cursa TT1 y pasa a llamarse <b>memorista</b> en TT2. Lo dirige un <b>profesor guía</b>, que debe ser profesor de jornada completa del departamento; si no lo es, se le llama <b>coguía</b> o <b>colaborador</b>, y cuando quien dirige viene de una empresa externa se le llama <b>mentor</b>. Cuando el trabajo dirigido por un mentor comienza, o cuando el memorista entrega su informe escrito y se prepara para la defensa, el departamento asigna un <b>correferente</b>, que es un segundo profesor que revisa. Existe además el <b>jefe de carrera</b>, que supervisa que los procesos se inicien y se terminen, pero no lo que ocurre en el medio, y las <b>secretarias</b>, que manejan la información y los registros. La <b>Dirección de Estudios</b> es quien autoriza formalmente la inscripción de asignaturas y la rendición del examen, pero para efectos de este proyecto se trata como una caja negra: se le envían requerimientos y ella responde.</p>
+<p>El proceso comienza cuando el prememorista propone un <b>tema</b>, con un nombre que debe ser comprensible internacionalmente, y formula los <b>objetivos específicos</b> del trabajo, que son el criterio con que después se decide si aprueba. Esos objetivos se presentan al profesor guía y a una comisión que determina si están correctamente formulados. La propuesta se formaliza en un registro que debe llevar la firma del memorista y la del profesor guía; la firma se entiende como un compromiso formal.</p>
+<p>El trabajo se estima en unas 600 horas, pero no está controlado por hora: el proceso es fuertemente <b>asincrónico</b>. Un memorista puede empezar en agosto y otro en octubre; uno quiere terminar rápido y otro extenderse. Como TT2 tiene 20 créditos y no tiene clases, la universidad permite extender el plazo hasta por dos semestres adicionales sin pagar un semestre extra.</p>
+<p>Al final, el memorista entrega el informe escrito y lo defiende ante una comisión. La <b>nota mínima de aprobación es 70</b>, no 55, y se compone del <b>informe final con un 60% y la defensa con un 40%</b>. Si reprueba, tiene seis meses para terminar con el mismo tema.</p>
+<p>Para autorizar el examen de título deben cumplirse cuatro condiciones: que el profesor guía apruebe, que el correferente esté de acuerdo, que la verificación de antecedentes académicos confirme que el estudiante está en condiciones, y que el jefe de carrera firme. El profesor a cargo señaló que hoy pierde mucho tiempo persiguiendo por correo esas cuatro confirmaciones, y que la última rara vez detecta problemas porque el expediente le llega ya depurado. También advirtió que espera un diseño sobre <b>ciertas características</b> del sistema, no el sistema completo.</p>
+</div>
+
+<h3>Preguntas sobre el texto</h3>
+
+<div class="q"><b>Pregunta 1.</b> Identifique cuatro tipos de usuario del sistema y enuncie un objetivo para cada uno. Luego responda: ¿tiene sentido escribir una historia de usuario cuyo rol sea la Dirección de Estudios? Justifique a partir de lo que dice el texto y de lo que exige la definición de historia de usuario.</div>
+
+<div class="q"><b>Pregunta 2.</b> Un compañero de su grupo escribió: <i>«Como memorista y profesor guía, yo quiero registrar y aprobar los avances del trabajo de título en el sistema, para que la memoria avance según lo planificado y quede todo documentado en la base de datos.»</i> Identifique todos los defectos que encuentre —son al menos tres— indicando el criterio que se viola en cada caso, y reescriba el enunciado como las historias de usuario que correspondan.</div>
+
+<div class="q"><b>Pregunta 3.</b> Escriba los criterios de aceptación, en formato Dado–Cuando–Entonces, de la historia <i>«Como profesor a cargo del proceso de titulación, yo quiero que el sistema calcule y registre la nota final del memorista, para cerrar el proceso sin errores de cálculo ni reclamos posteriores»</i>. Debe incorporar la ponderación y la nota mínima que aparecen en el texto, y cubrir el caso de reprobación.</div>
+
+<div class="q"><b>Pregunta 4.</b> El texto dice que el proceso es asincrónico —cada memorista tiene su propio calendario— y que TT2 puede extenderse hasta por dos semestres. Explique qué problema genera esto al redactar criterios de aceptación que hablen de plazos, y cómo lo resolvería. Indique además si la posibilidad de extender el plazo debería escribirse como una historia de usuario o tratarse de otra forma, y por qué.</div>
+
+<h3>Parte de desarrollo</h3>
+<div class="box tip">
+  <div class="bt">Escriba usted la historia de usuario</div>
+  <p>El cliente dijo que espera un diseño sobre <b>ciertas características</b>, no sobre el sistema completo. Escoja el problema de las <b>cuatro confirmaciones necesarias para autorizar el examen de título</b> y redacte <b>tres historias de usuario completas</b> (título con identificador, descripción, criterios de aceptación y conversación) que cubran esa característica desde tres roles distintos.</p>
+  <p>Requisitos: cada historia debe tener al menos dos criterios de aceptación, al menos una debe cubrir un caso de excepción, y debe explicar en dos líneas por qué el conjunto de las tres es <b>Independiente</b> (o débilmente acoplado) en el sentido de INVEST. Justifique también qué prioridad le daría a cada una y por qué el cliente podría priorizarlas.</p>
+</div>
+
+<details class="sol"><summary>Pauta de corrección · Ensayo 4</summary>
+<div class="body">
+
+<h4>Pregunta 1</h4>
+<div class="tw"><table>
+<tr><th>Tipo de usuario</th><th>Objetivo</th></tr>
+<tr><td>Prememorista / memorista</td><td>Saber en qué etapa del proceso está, qué le falta y qué plazos tiene, sin depender de escribirle un correo al profesor a cargo.</td></tr>
+<tr><td>Profesor guía</td><td>Revisar y aprobar formalmente los hitos de su dirigido dejando registro de su compromiso.</td></tr>
+<tr><td>Correferente</td><td>Recibir el informe a revisar y emitir su acuerdo o sus observaciones antes de la defensa.</td></tr>
+<tr><td>Profesor a cargo del proceso</td><td>Ver el estado de todos los procesos en curso y reunir las autorizaciones sin perseguirlas por correo.</td></tr>
+<tr><td>Jefe de carrera</td><td>Verificar y firmar el inicio y el término de cada proceso.</td></tr>
+<tr><td>Secretaria</td><td>Mantener los registros y responder consultas de estado sin revisar carpetas de papel.</td></tr>
+</table></div>
+<p><b>Sobre la Dirección de Estudios:</b> no corresponde escribir historias de usuario para ella. El propio cliente la delimitó como <b>caja negra</b>: está fuera del alcance del sistema, se le envían requerimientos y ella responde. Una historia de usuario exige un <b>usuario con objetivos que interactúa con el sistema</b> y un valor que el equipo pueda construir y probar; aquí no hay ninguna de las dos cosas, porque el equipo no puede modificar el comportamiento de la Dirección de Estudios ni verificar sus criterios de aceptación. La Dirección de Estudios aparece en el diagrama de contexto como una entidad externa, y en las historias solo entra como parte del resultado esperado de otro rol.</p>
+<p class="meta">Ejemplo aceptable de cómo sí puede aparecer: «Como profesor a cargo, yo quiero enviar a la Dirección de Estudios el requerimiento de examen con los antecedentes completos, para no tener que rehacerlo cuando lo devuelven por falta de información». El rol sigue siendo un usuario interno.</p>
+
+<h4>Pregunta 2</h4>
+<ul>
+  <li><b>Dos roles en una misma historia.</b> Rompe la estructura: el campo «Como» identifica <b>un</b> tipo de usuario. Memorista y profesor guía tienen necesidades y criterios de aceptación distintos (uno registra su avance, el otro lo aprueba con valor formal de compromiso). Con dos roles, no se puede saber para quién es el valor.</li>
+  <li><b>Dos necesidades distintas (Pequeña / Estimable).</b> «Registrar» y «aprobar» son dos funcionalidades diferentes, con reglas y flujos propios; juntas no caben razonablemente en una iteración y no se pueden estimar por separado.</li>
+  <li><b>El valor está mal expresado (Valiosa).</b> «Que la memoria avance según lo planificado» no es un beneficio que produzca esta funcionalidad —el avance depende del trabajo del memorista, no del registro— y «quede documentado en la base de datos» es lenguaje técnico: valor para el equipo, no para el usuario.</li>
+  <li><b>Testeable.</b> «Avance según lo planificado» no es comprobable con una prueba de aceptación; no hay resultado observable.</li>
+</ul>
+<p>Reescritura:</p>
+<div class="hu">
+<p><b>HU-x.</b> Como memorista, yo quiero registrar el avance comprometido en cada hito con la documentación que lo respalda, para dejar constancia de mi trabajo y no depender de que mi profesor guía recuerde lo que le mostré.</p>
+<p><b>HU-y.</b> Como profesor guía, yo quiero aprobar o rechazar con observaciones el avance que registró mi dirigido, para dejar formalizado mi visto bueno y que quede claro qué debe corregir.</p>
+</div>
+
+<h4>Pregunta 3</h4>
+<div class="hu">
+<p class="gwt"><b>Dado</b> un memorista con la nota del informe final y la nota de la defensa ya registradas, <b>cuando</b> el profesor a cargo cierra el proceso, <b>entonces</b> el sistema calcula la nota final ponderando el informe en un 60% y la defensa en un 40%, y la deja registrada junto a las dos notas que la componen.</p>
+<p class="gwt"><b>Dado</b> un memorista cuya nota final ponderada es igual o superior a 70, <b>cuando</b> el sistema cierra el cálculo, <b>entonces</b> registra el trabajo de título como aprobado.</p>
+<p class="gwt"><b>Dado</b> un memorista cuya nota final ponderada es inferior a 70, <b>cuando</b> el sistema cierra el cálculo, <b>entonces</b> registra el trabajo como reprobado e informa la fecha límite de los seis meses que tiene para terminar con el mismo tema.</p>
+<p class="gwt"><b>Dado</b> un memorista al que le falta registrar alguna de las dos notas, <b>cuando</b> el profesor a cargo intenta cerrar el proceso, <b>entonces</b> el sistema impide el cierre e indica cuál de las dos notas falta.</p>
+</div>
+<p class="meta">Fíjate en que la regla de negocio (60/40 y el 70) va <b>dentro</b> del criterio: eso es lo que lo hace verificable. Un criterio que dijera «entonces el sistema calcula correctamente la nota» no prueba nada.</p>
+
+<h4>Pregunta 4</h4>
+<p><b>El problema.</b> Si los criterios de aceptación se escriben contra fechas de calendario («entonces el sistema avisa el 30 de junio»), quedan mal para la mayoría de los memoristas, porque cada uno empezó en un momento distinto y puede extenderse hasta dos semestres más. El criterio se volvería falso para casi todos los casos y, en la práctica, no sería testeable de forma general: dependería del estudiante que se use para probarlo.</p>
+<p><b>Cómo se resuelve.</b> Los plazos se expresan <b>relativos al hito del propio proceso</b>, no al calendario académico: «a los N meses desde la inscripción de TT2 del memorista», «treinta días antes de su fecha límite vigente», «desde la fecha de su última prórroga aprobada». Así el criterio vale para cualquier memorista, sin importar cuándo empezó, y sigue siendo comprobable con una prueba.</p>
+<p><b>¿La extensión de plazo es una historia de usuario?</b> La posibilidad de extender el plazo es una <b>regla de negocio</b> de la universidad, no una necesidad de un usuario: nadie «quiere que exista la regla», la regla ya existe. Por lo tanto no se escribe como historia, sino que se documenta como regla y aparece <b>dentro de los criterios de aceptación</b> de las historias afectadas y en la sección de Conversación. Lo que sí es una historia es la necesidad que se apoya en esa regla, por ejemplo: «Como memorista, yo quiero solicitar la extensión de mi plazo de TT2 indicando el motivo, para no arriesgar la caducidad de mi proceso mientras termino»; o, desde el otro lado, «Como profesor a cargo, yo quiero ver qué memoristas están próximos a su fecha límite vigente, para intervenir antes de que caduquen».</p>
+
+<h4>Parte de desarrollo · solución de referencia</h4>
+<div class="hu">
+<div class="t">HU-21 · Solicitud de las autorizaciones para el examen de título</div>
+<p><b>Descripción.</b> Como profesor a cargo del proceso de titulación, yo quiero solicitar en un solo paso las cuatro autorizaciones necesarias para el examen de título, para no perseguirlas por correo una por una.</p>
+<p class="gwt"><b>Dado</b> un memorista que entregó su informe final, <b>cuando</b> el profesor a cargo inicia la solicitud de autorización de examen, <b>entonces</b> el sistema notifica al profesor guía, al correferente y al jefe de carrera, y solicita la verificación de antecedentes académicos, dejando registrado el envío.</p>
+<p class="gwt"><b>Dado</b> una solicitud de autorización en curso, <b>cuando</b> el profesor a cargo la consulta, <b>entonces</b> el sistema muestra cuáles de las cuatro condiciones están cumplidas, cuáles pendientes y desde cuándo.</p>
+<p class="gwt"><b>Dado</b> una condición pendiente por más del plazo acordado, <b>cuando</b> se cumple ese plazo, <b>entonces</b> el sistema envía un recordatorio a quien corresponda e informa al profesor a cargo.</p>
+<p><b>Conversación.</b> El cliente señaló que hoy pierde mucho tiempo persiguiendo estas confirmaciones por correo. Las cuatro condiciones son: aprobación del profesor guía, acuerdo del correferente, verificación de antecedentes académicos y firma del jefe de carrera. Queda pendiente definir con el cliente el plazo de recordatorio y si el orden entre las cuatro importa; en la reunión no se mencionó ningún orden obligatorio.</p>
+<p class="meta"><b>Prioridad:</b> alta, es el dolor declarado del cliente. <b>Estimación:</b> 5 puntos.</p>
+</div>
+
+<div class="hu">
+<div class="t">HU-22 · Acuerdo del correferente sobre el informe final</div>
+<p><b>Descripción.</b> Como correferente, yo quiero registrar mi acuerdo u observaciones sobre el informe final que recibí, para dejar constancia de mi revisión sin tener que responder cadenas de correos.</p>
+<p class="gwt"><b>Dado</b> un correferente con un informe final asignado para revisión, <b>cuando</b> registra su acuerdo, <b>entonces</b> el sistema marca esa condición como cumplida en el expediente del memorista y lo informa al profesor a cargo.</p>
+<p class="gwt"><b>Dado</b> un correferente que no está de acuerdo con el informe, <b>cuando</b> registra sus observaciones, <b>entonces</b> el sistema deja la condición como no cumplida, conserva las observaciones en el expediente y las hace visibles para el profesor guía y el memorista.</p>
+<p class="gwt"><b>Dado</b> un memorista al que aún no se le ha asignado correferente, <b>cuando</b> se solicita la autorización de examen, <b>entonces</b> el sistema advierte que falta la asignación y no permite marcar esa condición como cumplida.</p>
+<p><b>Conversación.</b> El correferente se asigna al final del proceso, cuando el memorista entrega el escrito y se prepara para la defensa, salvo cuando quien dirige es un mentor externo, caso en el que se asigna antes. Por eso hay memoristas sin correferente asignado y el sistema debe contemplarlo como estado válido, no como error.</p>
+<p class="meta"><b>Prioridad:</b> alta. <b>Estimación:</b> 3 puntos.</p>
+</div>
+
+<div class="hu">
+<div class="t">HU-23 · Estado del expediente para el memorista</div>
+<p><b>Descripción.</b> Como memorista que solicitó su examen de título, yo quiero ver qué autorizaciones ya están cumplidas y cuáles faltan, para saber si puedo planificar mi examen sin tener que preguntarle al profesor a cargo.</p>
+<p class="gwt"><b>Dado</b> un memorista con su solicitud de examen en curso, <b>cuando</b> consulta el estado de su proceso, <b>entonces</b> el sistema le muestra cuáles de las condiciones están cumplidas y cuáles pendientes.</p>
+<p class="gwt"><b>Dado</b> un memorista con observaciones registradas por el correferente, <b>cuando</b> consulta su estado, <b>entonces</b> el sistema le muestra las observaciones que debe subsanar.</p>
+<p><b>Conversación.</b> Se conversó si el memorista debía ver la identidad de quién tiene pendiente su autorización. Se acordó mostrar la condición pendiente pero no presionar directamente al profesor: la gestión de los atrasos la mantiene el profesor a cargo.</p>
+<p class="meta"><b>Prioridad:</b> media. <b>Estimación:</b> 2 puntos.</p>
+</div>
+<p><b>Justificación de independencia.</b> Las tres se pueden construir y probar por separado: HU-22 se prueba con un correferente y un informe asignado, sin que exista la solicitud completa de HU-21; HU-23 se prueba con cualquier expediente que tenga condiciones en algún estado. El acoplamiento existe —comparten el expediente del memorista— pero es débil: ninguna necesita que otra esté terminada para entregar valor.</p>
+<p><b>Por qué el cliente puede priorizarlas.</b> Las tres están escritas en el lenguaje del proceso de titulación y no en el del equipo, así que el profesor a cargo puede compararlas: HU-21 y HU-22 atacan directamente el tiempo que hoy pierde persiguiendo autorizaciones, y HU-23 reduce las consultas de los memoristas, que es una molestia menor. Que se puedan ordenar así es precisamente la señal de que están bien hechas.</p>
+
+<div class="box warn">
+  <div class="bt">Cómo se corrige esto</div>
+  <ul>
+    <li>Si alguna de sus historias tiene como rol a la Dirección de Estudios, al sistema, o a «el usuario» a secas, se descuenta.</li>
+    <li>Los identificadores no son decoración: son lo que permite la <b>trazabilidad</b> entre la historia y los demás artefactos. Si sus tres historias no tienen ID, falta un elemento de la estructura tipo.</li>
+    <li>Cuidado con el rol de «profesor guía» versus «coguía», «colaborador» y «mentor». Si su historia vale igual para los cuatro, use el término genérico y déjelo dicho en la Conversación; si su criterio depende de que sea jornada completa, entonces el rol importa y hay que precisarlo.</li>
+  </ul>
+</div>
+</div>
+</details>
+</section>
+
+<section id="banco">
+<h2>Banco rápido · 10 historias para diagnosticar</h2>
+<p class="lead">Cinco minutos. Para cada una, diga qué criterio se viola y reescríbala. Una de las diez está bien escrita: encuéntrela.</p>
+
+<div class="hu">
+<p><b>1.</b> Como usuario, yo quiero un botón para exportar a Excel, para poder exportar a Excel.</p>
+<p><b>2.</b> Como administrador, yo quiero que el sistema sea seguro, para evitar problemas.</p>
+<p><b>3.</b> Como desarrollador, yo quiero refactorizar el módulo de reportes, para reducir la deuda técnica.</p>
+<p><b>4.</b> Como jefe de bodega, yo quiero gestionar completamente el inventario, para tener todo bajo control.</p>
+<p><b>5.</b> Como secretaria, yo quiero abrir la pantalla 3, llenar el formulario y presionar Guardar, para guardar los datos del estudiante.</p>
+<p><b>6.</b> Como estudiante, yo quiero inscribir mis ramos, pagar el arancel y descargar el certificado de alumno regular, para completar mi matrícula.</p>
+<p><b>7.</b> Como sistema, yo quiero enviar un correo cada noche con los pedidos del día, para informar a los usuarios.</p>
+<p><b>8.</b> Como jefe de proyecto, yo quiero que la aplicación se desarrolle en React con base de datos MongoDB, para que sea moderna y escalable.</p>
+<p><b>9.</b> Como jefe de carrera, yo quiero aprobar la solicitud del estudiante, para que quede aprobada.</p>
+<p><b>10.</b> Como encargada de admisión, yo quiero ver las postulaciones que llevan más de cinco días sin revisar, para responderlas antes de que venza el plazo legal.</p>
+</div>
+
+<details class="sol"><summary>Diagnóstico de las diez</summary>
+<div class="body">
+<div class="tw"><table>
+<tr><th>#</th><th>Problema</th><th>Corrección</th></tr>
+<tr><td>1</td><td><b>Valiosa</b> y <b>Negociable</b>: «un botón» es la solución (el cómo), y el «para» repite el «quiero» sin aportar beneficio. Además el rol «usuario» es genérico: no dice para quién se desarrolla.</td><td>Como encargada de remuneraciones, yo quiero llevarme el detalle de las horas del mes en un archivo, para cruzarlo con la planilla de sueldos que preparo aparte.</td></tr>
+<tr><td>2</td><td><b>Testeable</b> y <b>Estimable</b>: «seguro» y «evitar problemas» no se pueden comprobar ni acotar. Es un requisito no funcional disfrazado.</td><td>Se documenta como requisito no funcional. Si hay una necesidad concreta detrás: como administrador, yo quiero que se registre quién modificó cada ficha, para poder responder ante una auditoría.</td></tr>
+<tr><td>3</td><td><b>Valiosa</b>: el rol es del equipo y el beneficio es del equipo. Es una tarea técnica, no una característica del sistema con valor para el negocio.</td><td>No es historia de usuario. Se gestiona como tarea técnica o deuda del equipo dentro de la iteración.</td></tr>
+<tr><td>4</td><td><b>Pequeña</b> y <b>Estimable</b>: es una épica. «Todo bajo control» tampoco es testeable.</td><td>Dividir: consultar stock por producto; registrar la recepción de un lote; alertar lotes próximos a vencer. Cada una con valor propio.</td></tr>
+<tr><td>5</td><td>Describe el <b>cómo</b>: pantallas, formulario y botón. Y el valor es circular («guardar para guardar»).</td><td>Como secretaria, yo quiero registrar los datos de un estudiante nuevo en una sola atención, para no pedirle que vuelva otro día con documentos que ya trajo.</td></tr>
+<tr><td>6</td><td><b>Pequeña</b> e <b>Independiente</b>: son tres necesidades distintas, con reglas y actores distintos, encadenadas en una sola historia.</td><td>Tres historias separadas, una por necesidad. Si el orden importa, se refleja en el User Story Mapping, no metiéndolas en la misma tarjeta.</td></tr>
+<tr><td>7</td><td>El rol es el <b>sistema</b>: no hay usuario ni objetivo de negocio. Además «informar a los usuarios» no dice a quién ni para qué le sirve.</td><td>Como jefe de despacho, yo quiero recibir cada mañana el resumen de los pedidos del día anterior, para organizar las rutas de reparto antes de que lleguen los conductores.</td></tr>
+<tr><td>8</td><td><b>Negociable</b>, <b>Valiosa</b> y <b>Testeable</b>: impone la tecnología, no entrega valor de negocio y «moderna» no se puede probar. Es el caso clásico del cliente que no puede priorizarla.</td><td>Se saca del backlog de historias: es una restricción técnica o una decisión de arquitectura del equipo.</td></tr>
+<tr><td>9</td><td>Valor circular: el «para» repite el «quiero». Sin beneficio no se puede priorizar ni justificar.</td><td>Como jefe de carrera, yo quiero aprobar la solicitud dejando registrada mi firma, para que el estudiante pueda inscribir la asignatura sin esperar el correo de confirmación.</td></tr>
+<tr><td>10</td><td><b>Está bien escrita.</b> Rol específico, objetivo concreto, valor real y externo a la funcionalidad (el plazo legal), acotada y testeable.</td><td>Sin cambios. Solo faltaría agregarle criterios de aceptación, la conversación y su identificador.</td></tr>
+</table></div>
+</div>
+</details>
+</section>
+
+<section id="rubrica">
+<h2>Rúbrica de autocorrección</h2>
+<p>Úsela después de escribir, no antes. Si un ítem no está, no se descuenta «un poquito»: normalmente se pierde el punto completo.</p>
+<div class="tw"><table>
+<tr><th>Ítem</th><th>Qué se revisa</th><th>Puntaje sugerido</th></tr>
+<tr><td>Título e identificador</td><td>Resume la necesidad, es específico y se distingue de otras historias. Lleva ID para trazabilidad.</td><td>1</td></tr>
+<tr><td>Campo «Como»</td><td>Es un tipo de usuario concreto del texto. No es «el usuario», no es «el sistema», no son dos roles juntos.</td><td>1</td></tr>
+<tr><td>Campo «Yo quiero»</td><td>Es una necesidad u objetivo, no una pantalla, un botón ni una tabla. No describe el cómo.</td><td>1,5</td></tr>
+<tr><td>Campo «Para»</td><td>Expresa un beneficio real y externo a la funcionalidad. No repite el «quiero» con otras palabras.</td><td>1,5</td></tr>
+<tr><td>Criterio de aceptación, flujo normal</td><td>Tiene las tres partes explícitas. El «Dado» es un estado, el «Cuando» una acción, el «Entonces» un resultado observable.</td><td>2</td></tr>
+<tr><td>Criterio de aceptación, excepción</td><td>Cubre al menos un caso alternativo o de error del propio texto.</td><td>1,5</td></tr>
+<tr><td>Reglas de negocio incorporadas</td><td>Los números y reglas del texto (plazos, topes, ponderaciones) aparecen dentro de los criterios, no como comentario.</td><td>1</td></tr>
+<tr><td>Conversación</td><td>Registra de dónde salió la decisión, qué se acordó y qué quedó pendiente.</td><td>0,5</td></tr>
+<tr><td><b>Total</b></td><td></td><td><b>10</b></td></tr>
+</table></div>
+<div class="box tip">
+  <div class="bt">Prueba de humo antes de entregar</div>
+  <ol>
+    <li>Tape el «para» y pregúntese: ¿podría el cliente decidir si esto es más importante que lo otro? Si no, el valor está mal.</li>
+    <li>Lea el «Entonces» de cada criterio: ¿podría alguien sentarse frente al sistema y verificar eso sin opinar? Si no, no es testeable.</li>
+    <li>Cuente las necesidades del «yo quiero»: si hay una «y», probablemente son dos historias.</li>
+    <li>Busque nombres de tecnologías, tablas, pantallas o botones. Si aparecen, está describiendo el cómo.</li>
+  </ol>
+</div>
+</section>
+
+<section id="errores">
+<h2>Los ocho errores que más cuestan puntos</h2>
+<ol>
+  <li><b>Rol genérico o inválido.</b> «Como usuario», «como sistema», «como administrador» cuando el texto habla de un portero, un químico farmacéutico o un correferente. El rol específico es lo que hace útil la historia.</li>
+  <li><b>Valor circular.</b> «Quiero registrar el préstamo para que quede registrado». El «para» debe responder qué gana esa persona en su trabajo, no qué hace el sistema.</li>
+  <li><b>Describir el cómo.</b> Botones, pantallas, tablas, frameworks. La historia describe la necesidad; la solución es del equipo y es negociable.</li>
+  <li><b>Criterios sin las tres partes.</b> Escribir «el sistema no debe dejar prestar a un sancionado» en vez del Dado–Cuando–Entonces completo. La estructura se pide explícitamente.</li>
+  <li><b>El «Dado» usado como acción.</b> «Dado que el usuario presiona…» El Dado es el estado previo; la acción va en el Cuando.</li>
+  <li><b>Un solo criterio de aceptación.</b> Casi siempre falta la excepción, que es justamente donde está la regla de negocio interesante del texto.</li>
+  <li><b>Épicas disfrazadas.</b> «Gestionar completamente», «administrar todo el proceso». Si no cabe en una iteración, no es una historia: es un conjunto de historias.</li>
+  <li><b>Requisitos no funcionales colados como historias.</b> Rendimiento, seguridad, escalabilidad, tecnología. Se documentan aparte; en la historia solo entran como umbral verificable dentro de un criterio.</li>
+</ol>
+
+<h3>Plantilla en blanco (para copiar en la hoja)</h3>
+<div class="hu">
+<p><b>HU-__ · Título:</b> ______________________________________</p>
+<p><b>Descripción:</b> Como ______________, yo quiero ______________, para ______________.</p>
+<p><b>CA1 (normal):</b> Dado ______________, cuando ______________, entonces ______________.</p>
+<p><b>CA2 (excepción):</b> Dado ______________, cuando ______________, entonces ______________.</p>
+<p><b>Conversación:</b> ______________________________________</p>
+<p><b>Prioridad:</b> ______  <b>Estimación:</b> ______ puntos</p>
+</div>
+<p class="meta">Fuente de la materia: presentación 004 HU del curso INF-236 (prof. Wladimir Ormazábal), basada en Cohn, <i>User Stories Applied</i> (2004). Los cuatro casos son ficticios salvo el Ensayo 4, construido con el dominio expuesto por el cliente en la reunión inicial del proyecto.</p>
+</section>
+
+</main>
+</div>
+<script>
+function tema(){
+  var r=document.documentElement;
+  var actual=r.getAttribute("data-theme");
+  if(!actual){
+    var oscuro=window.matchMedia("(prefers-color-scheme: dark)").matches;
+    actual=oscuro?"dark":"light";
+  }
+  r.setAttribute("data-theme", actual==="dark"?"light":"dark");
+}
+function abrir(v){
+  var ds=document.querySelectorAll("details.sol");
+  for(var i=0;i<ds.length;i++){ ds[i].open=v; }
+}
+</script>
+</body>
+</html>

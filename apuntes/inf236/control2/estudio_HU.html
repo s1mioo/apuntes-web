@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+  <meta charset="UTF-8">
+  <title>Guía de Estudio: Historias de Usuario - INF236</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #0d1117;
+      color: #c9d1d9;
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    h1 {
+      border-bottom: 2px solid #21262d;
+      padding-bottom: 0.3em;
+      color: #58a6ff;
+    }
+    h2 {
+      border-bottom: 1px solid #21262d;
+      padding-bottom: 0.3em;
+      margin-top: 28px;
+      color: #79c0ff;
+    }
+    h3 {
+      margin-top: 22px;
+      color: #f0f6fc;
+    }
+    code, pre {
+      font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+      background-color: #161b22;
+      border-radius: 6px;
+      color: #e6edf3;
+    }
+    code {
+      padding: 0.2em 0.4em;
+      font-size: 90%;
+      border: 1px solid #30363d;
+    }
+    pre {
+      padding: 16px;
+      overflow: auto;
+      border: 1px solid #30363d;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+    }
+    table, th, td {
+      border: 1px solid #30363d;
+    }
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+    }
+    th {
+      background-color: #161b22;
+      color: #f0f6fc;
+    }
+    blockquote {
+      margin: 16px 0;
+      padding: 0 1em;
+      color: #8b949e;
+      border-left: 0.25em solid #388bfd;
+      background-color: #161b22;
+      border-radius: 0 6px 6px 0;
+    }
+    .card {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    .card hr {
+      border: 0;
+      border-top: 1px solid #30363d;
+      margin: 14px 0;
+    }
+    .warning {
+      background-color: #272115;
+      border-left: 4px solid #d29922;
+      padding: 14px 18px;
+      margin: 18px 0;
+      color: #e3b341;
+      border-radius: 0 6px 6px 0;
+    }
+    .warning strong {
+      color: #f0883e;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 14px;
+      border-radius: 4px;
+      color: #ffffff;
+      background-color: #1f6feb;
+    }
+    strong {
+      color: #f0f6fc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Guía de Estudio Completa: Historias de Usuario (INF236)</h1>
+
+  <h2>1. Contexto, Motivación y el Problema de la Comunicación</h2>
+  <p>En el desarrollo de software, comunicar los requerimientos de manera efectiva es uno de los desafíos más críticos.</p>
+  <ul>
+    <li><strong>Naturaleza de los requerimientos:</strong> Existen diversas formas de comunicar requerimientos, tales como especificaciones funcionales puras, casos de uso e historias de usuario.</li>
+    <li><strong>Falta de entendimiento común:</strong> Las metodologías ágiles incorporan las Historias de Usuario (HU) como un medio para fomentar la comunicación y lograr consenso entre los participantes.</li>
+    <li><strong>Rol de las HU:</strong> Las Historias de Usuario <em>no son la solución definitiva a todos los problemas de comunicación</em>, pero ayudan sustancialmente al actuar como un punto de partida para la conversación y discusión continua entre clientes y desarrolladores.</li>
+  </ul>
+
+  <h2>2. ¿Qué es una Historia de Usuario? (Definición y Origen)</h2>
+  <ul>
+    <li><strong>Definición:</strong> Es una descripción concisa por escrito de un requisito funcional que proporciona valor directo para un usuario final.</li>
+    <li><strong>Enfoque en objetivos:</strong> Están basadas en los objetivos del usuario (el motivo por el cual interactúa con el sistema).</li>
+    <li><strong>Artefacto principal:</strong> Constituyen el artefacto de desarrollo central en metodologías como <em>Scrum</em> y <em>Extreme Programming (XP)</em>. Datan formalmente de 1998 (con XP) y fueron formalizadas por Mike Cohn (2004).</li>
+    <li><strong>Nivel de detalle:</strong> Es una definición de <strong>alto nivel</strong> que recopila la información necesaria para que el equipo logre estimar de manera razonable el esfuerzo requerido.</li>
+    <li><strong>Autoría y soporte:</strong> Deben ser escritas por los <em>stakeholders</em> / clientes (no por desarrolladores). Se diseñan para ser simples, redactándose en pocos minutos en fichas o tarjetas de papel (<em>index cards</em>).</li>
+  </ul>
+
+  <h2>3. Comparativa: HU vs. Casos de Uso vs. Requisitos Funcionales</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Artefacto / Técnica</th>
+        <th>¿En qué se centra?</th>
+        <th>Nivel de Detalle</th>
+        <th>Perspectiva</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Requisito Funcional Clásico</strong></td>
+        <td>Indica una operación del sistema (requisitos puros).</td>
+        <td>Tiende a una documentación altamente detallada y rígida.</td>
+        <td>Del sistema.</td>
+      </tr>
+      <tr>
+        <td><strong>Caso de Uso (CU)</strong></td>
+        <td>Describe el <strong>comportamiento</strong> y la interacción completa entre el software y los usuarios u otros sistemas.</td>
+        <td>Documentación detallada paso a paso (curso normal y alternativo).</td>
+        <td>Interacción usuario-sistema.</td>
+      </tr>
+      <tr>
+        <td><strong>Historia de Usuario (HU)</strong></td>
+        <td>Describe una <strong>necesidad</strong> del usuario: algo que requiere realizar en su cotidianidad.</td>
+        <td>Pequeña, concisa, no estructurada al inicio; invita al diálogo.</td>
+        <td><strong>Valor y objetivos del usuario</strong> (no describe el cómo se implementará, describe <em>features</em>).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>4. Estructura Formal de una Historia de Usuario</h2>
+  <div class="card">
+    <p><strong>Identificador + Título:</strong> Breve y específico para diferenciar la HU de otras. Facilita la trazabilidad hacia artefactos de software y el seguimiento en plataformas de gestión (como issues en GitLab).</p>
+    <hr>
+    <p><strong>Descripción (Plantilla Estándar):</strong></p>
+    <pre>Como   [Tipo de usuario / Rol de negocio]      -> ¿Quién es el usuario?
+Quiero [Objetivo o característica funcional]   -> ¿Qué se está desarrollando? / Intención
+Para   [Valor o beneficio recibido]           -> ¿Cuál es el valor para el usuario?</pre>
+    <hr>
+    <p><strong>Criterios de Aceptación:</strong></p>
+    <p>Permiten validar si lo construido está en conformidad con lo que desea el cliente. Una HU puede tener más de un criterio. Estructura común: <em>Given-When-Then (Dado-Cuando-Entonces)</em>:</p>
+    <pre>Dado     [Situación / Contexto inicial]
+Cuando   [Acción / Evento que gatilla la validación]
+Entonces [Resultado observable / Qué debe ocurrir]</pre>
+    <hr>
+    <p><strong>Conversación:</strong></p>
+    <p>Detalles acordados, especificaciones de campos, reglas de negocio y referencias analíticas que surgen entre los tomadores de decisiones y desarrolladores.</p>
+  </div>
+
+  <h2>5. El Criterio INVEST</h2>
+  <p>Toda HU de calidad debe cumplir con las seis propiedades del acrónimo <strong>INVEST</strong>:</p>
+  <ul>
+    <li><strong>I - Independiente (Independent):</strong> Deben ser independientes entre sí o estar débilmente acopladas para poder desarrollarse por separado.</li>
+    <li><strong>N - Negociable (Negotiable):</strong> No son un contrato cerrado ni una especificación definitiva, sino una referencia a una característica que el equipo debe discutir y clarificar.</li>
+    <li><strong>V - Valiosa (Valuable):</strong> Deben entregar valor tangible al usuario o negocio; describen características del sistema y no tareas técnicas.</li>
+    <li><strong>E - Estimable (Estimable):</strong> Su definición debe permitir estimar el esfuerzo requerido para completarla.</li>
+    <li><strong>S - Pequeña (Small):</strong> Su tamaño debe permitir su implementación en una iteración de trabajo.</li>
+    <li><strong>T - Testeable (Testable):</strong> Deben ser comprobables mediante pruebas a través de sus criterios de aceptación.</li>
+  </ul>
+  <blockquote>
+    <strong>Criterio de Calidad Rápido:</strong> Si el cliente o Product Owner no puede establecer la prioridad de una HU, probablemente está mal hecha porque no existe valor identificable para él.
+  </blockquote>
+
+  <h2>6. Estimación y User Story Mapping</h2>
+  <ul>
+    <li><strong>Story Points:</strong> Medida del esfuerzo requerido para realizar una historia de usuario. Se estiman considerando de forma conjunta:
+      <ul>
+        <li>Complejidad técnica.</li>
+        <li>Tamaño del trabajo.</li>
+        <li>Nivel de incertidumbre.</li>
+        <li>Riesgos asociados.</li>
+      </ul>
+    </li>
+    <li><strong>User Story Mapping:</strong> Técnica de refinamiento y organización temporal en dos dimensiones:
+      <ul>
+        <li><em>Eje Horizontal:</em> Secuencia de actividades y tareas ordenadas según la interacción cronológica del usuario.</li>
+        <li><em>Eje Vertical:</em> Desglose de características priorizadas en entregas incrementales (Release 1 / MVP, Release 2, etc.).</li>
+        <li><em>Propósito:</em> Facilita la toma de decisiones, promueve conversaciones durante la construcción y evita perder el horizonte del producto.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2>7. Las HU en la Cadena Metodológica (INF236)</h2>
+  <p>En el flujo formativo de INF236, los artefactos no operan de forma aislada:</p>
+  <pre>Contexto -> Dominio -> Historias de Usuario -> Secuencia -> Diseño (MVC / Patrones)</pre>
+  <ul>
+    <li><strong>Conexión con Diagrama de Contexto y Dominio:</strong> El <em>Rol</em> de la HU debe ser un actor coherente identificado en el Diagrama de Contexto. Los conceptos manipulados en el objetivo deben alinearse con las entidades y relaciones del Modelo de Dominio.</li>
+    <li><strong>Conexión con Diagrama de Secuencia y MVC:</strong> Cada Diagrama de Secuencia ejemplifica un escenario particular asociado a una Historia de Usuario.
+      <ul>
+        <li>El actor que gatilla el escenario debe ser coherente con la HU.</li>
+        <li>El actor interactúa a través de la Vista.</li>
+        <li>El Controlador resuelve las peticiones y media entre la Vista y el Modelo.</li>
+        <li>La lógica del negocio se resuelve dentro del Modelo.</li>
+      </ul>
+    </li>
+    <li><strong>Gestión y Trazabilidad en Repositorios (GitLab):</strong> En las entregas de proyecto se exige documentar las HU como <em>issues</em> individuales vinculados a ramas cortas de desarrollo (ejemplo: <code>feature/HU-03-registro</code>) que parten desde <code>develop</code> y se integran una vez completadas.</li>
+  </ul>
+
+  <h2>8. Errores Críticos y Preguntas Tipo Certamen</h2>
+
+  <div class="warning">
+    <strong>⚠️ Errores Frecuentes Penalizados en Evaluaciones:</strong>
+    <ul>
+      <li><strong>Definir roles tecnológicos:</strong> Redactar <em>«Como Sistema»</em> o <em>«Como Aplicación»</em> en vez de un usuario de negocio real.</li>
+      <li><strong>Confundir objetivos con tareas técnicas:</strong> Colocar en el «Quiero» acciones internas (ej. <em>«quiero refactorizar una clase»</em> o <em>«hacer una query a la base de datos»</em>).</li>
+      <li><strong>Falta de beneficio o valor:</strong> Omitir el «Para» o redactar un beneficio puramente técnico que no ayude al usuario en su negocio o trabajo cotidiano.</li>
+      <li><strong>Criterios de aceptación no verificables:</strong> Redactar criterios genéricos que no definan con claridad qué condición previa existe (Dado), qué evento ocurre (Cuando) y qué respuesta observable se espera (Entonces).</li>
+    </ul>
+  </div>
+
+  <h3>Ejemplo Modelo de Aplicación</h3>
+  <div class="card">
+    <p><span class="badge">Ejemplo Supermercado</span></p>
+    <p><strong>Descripción:</strong> Como <em>comprador</em> quiero <em>seleccionar un producto</em> para <em>poder agregarlo a mi carro de compras</em>.</p>
+    <p><strong>Criterio de aceptación:</strong> Dado <em>un comprador en la especificación de un producto</em>, cuando <em>selecciono el producto para comprarlo</em>, entonces <em>el producto debe agregarse o aumentar su cantidad en el carro de compras</em>.</p>
+  </div>
+
+  <h3>Banco de Preguntas de Certámenes Anteriores</h3>
+  
+  <div class="card">
+    <p><strong>Pregunta 1:</strong> En base a lo estudiado en clases, ¿cuál de las siguientes corresponde a la descripción de una Historia de Usuario?</p>
+    <ul>
+      <li>A) Como Aplicación, quiero enviar un Correo Electrónico, para notificar a los Usuarios.</li>
+      <li><strong>B) Como Comprador, quiero agregar un producto a mi carro de compras, así podré comprarlo. (Correcta)</strong></li>
+      <li>C) Como Desarrollador, quiero refactorizar una Clase, así mejoraré la calidad del código.</li>
+      <li>D) Como Médico, quiero una Aplicación, así registraré a mis Pacientes.</li>
+      <li>E) Como Usuario, quiero seleccionar una Habitación, así podré hospedarme.</li>
+    </ul>
+    <blockquote>
+      <em>Justificación:</em> La alternativa <strong>B</strong> define un rol de negocio específico (<em>Comprador</em>), una característica funcional real y un beneficio claro. Las alternativas A y C confunden roles de usuario con software/desarrollo; la D solicita «una aplicación» completa (demasiado amplia); la E es genérica y ambigua.
+    </blockquote>
+  </div>
+
+  <div class="card">
+    <p><strong>Pregunta 2:</strong> Respecto de las Historias de Usuario, es correcto afirmar:</p>
+    <ul>
+      <li>(i) Ayudan a resolver problemas de comunicación entre clientes y desarrolladores en la definición de requisitos.</li>
+      <li>(ii) Es una técnica vinculada a procesos ágiles y al tratamiento iterativo de requisitos.</li>
+      <li>(iii) Las historias de usuario no necesariamente deben agregar valor a los usuarios, pues estas se pueden detallar en etapas posteriores.</li>
+    </ul>
+    <p><strong>Respuesta:</strong> Son correctas solo <strong>(i) y (ii)</strong>. La afirmación (iii) es falsa porque toda historia de usuario debe proporcionar valor intrínseco al usuario (Criterio <em>Valuable</em> de INVEST).</p>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resumen Certamen 1 · FIS140 Física General IV</title>
+
+<!-- MathJax: renderiza las fórmulas en LaTeX. Necesita internet la 1ª vez. -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      tags: 'none'
+    },
+    svg: { fontCache: 'global' },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#3a5bd9; --brand-soft:#eaefff;
+    --accent:#0f9d8c; --accent-soft:#e4f6f3;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --code:#f0f1f4;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:280px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#8aa2ff; --brand-soft:#20263a;
+    --accent:#4fd1c0; --accent-soft:#16302c;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --code:#232733;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#8aa2ff; --brand-soft:#20263a;
+      --accent:#4fd1c0; --accent-soft:#16302c;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --code:#232733;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- Layout ---------- */
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{
+    width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;
+  }
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 120px; max-width:1000px; margin:0 auto}
+
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px;flex:0 0 auto}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:20px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:6px 10px;border-radius:7px;
+    font-size:14px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  nav a.sub{padding-left:22px;font-size:13px;opacity:.72}
+
+  .toolbar{display:flex;gap:8px;margin-top:14px}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+
+  /* ---------- Typography ---------- */
+  h2{font-size:26px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20px;margin:30px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:20px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:46px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  strong{font-weight:700}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+
+  /* Chips / pills */
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.g{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+
+  /* Callout boxes */
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.formula{border-left-color:var(--accent);background:var(--accent-soft)}
+  .box.formula .bt{color:var(--accent)}
+  .box.tip{border-left-color:var(--brand);background:var(--brand-soft)}
+  .box.tip .bt{color:var(--brand)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+  .box.warn .bt{color:var(--warn)}
+
+  /* Formula key list */
+  .keys{display:grid;gap:2px;margin:6px 0}
+  .keys .k{display:flex;justify-content:space-between;gap:14px;padding:9px 4px;border-bottom:1px dashed var(--line);
+    flex-wrap:wrap;align-items:baseline}
+  .keys .k:last-child{border-bottom:0}
+  .keys .k .d{color:var(--muted);font-size:13.5px;flex:1 1 220px;min-width:180px}
+  .keys .k .f{flex:0 0 auto}
+
+  /* Worked example (collapsible) */
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex>summary::before{content:"▸";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex .body{padding:6px 18px 16px}
+  .step{margin:12px 0}
+  .step .n{display:inline-block;background:var(--ex);color:#fff;border-radius:6px;font-size:11px;
+    font-weight:700;padding:1px 7px;margin-right:6px}
+
+  /* Tables */
+  .tablewrap{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:10px}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:520px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-size:12.5px;text-transform:uppercase;letter-spacing:.03em}
+  tr:last-child td{border-bottom:0}
+  td .yes{color:var(--accent);font-weight:700}
+  td .no{color:var(--muted)}
+
+  /* Cards grid (map) */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:16px 0}
+  .card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--panel);box-shadow:var(--shadow)}
+  .card .num{font-size:12px;font-weight:700;color:var(--brand)}
+  .card h4{margin:2px 0 4px;color:var(--ink)}
+  .card p{margin:0;font-size:13.5px;color:var(--muted)}
+
+  .figure{border:1px dashed var(--line);border-radius:10px;padding:12px;margin:14px 0;text-align:center;
+    color:var(--muted);font-size:13px;background:var(--panel);font-family:"SF Mono",Menlo,Consolas,monospace;
+    white-space:pre;overflow-x:auto;line-height:1.4}
+
+  /* Mobile */
+  .menuToggle{display:none}
+  @media (max-width:900px){
+    .sidebar{position:fixed;z-index:40;left:0;top:0;transform:translateX(-102%);transition:transform .22s;
+      box-shadow:var(--shadow)}
+    .sidebar.open{transform:none}
+    .menuToggle{display:inline-flex;position:fixed;z-index:50;top:12px;left:12px}
+    .content{padding-top:64px}
+    .scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:35}
+    .scrim.on{display:block}
+  }
+  .backtop{position:fixed;right:18px;bottom:18px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+  .backtop.on{opacity:1;pointer-events:auto}
+</style>
+</head>
+<body>
+
+<button class="btn menuToggle" id="menuToggle">☰ Índice</button>
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="dot">F4</div>
+      <div>
+        <h1>Certamen 1 · FIS140</h1>
+        <small>Física General IV — USM</small>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="themeBtn">🌓 Tema</button>
+      <button class="btn" id="printBtn">🖨️ Imprimir</button>
+    </div>
+
+    <nav id="nav">
+      <div class="grp">Empezar aquí</div>
+      <a href="#intro">Cómo usar esta guía</a>
+      <a href="#mapa">Mapa del Certamen 1</a>
+
+      <div class="grp">Bloque 1 · Ondas EM</div>
+      <a href="#b1" class="sub">Teoría desde cero</a>
+      <a href="#b1-form" class="sub">Formulario</a>
+      <a href="#b1-ej" class="sub">Ejercicios resueltos</a>
+
+      <div class="grp">Bloque 2 · Refracción</div>
+      <a href="#b2" class="sub">Teoría desde cero</a>
+      <a href="#b2-form" class="sub">Formulario</a>
+      <a href="#b2-ej" class="sub">Ejercicios resueltos</a>
+
+      <div class="grp">Bloque 3 · Interf. y Difracción</div>
+      <a href="#b3" class="sub">Teoría desde cero</a>
+      <a href="#b3-form" class="sub">Formulario</a>
+      <a href="#b3-ej" class="sub">Ejercicios resueltos</a>
+
+      <div class="grp">Extras</div>
+      <a href="#bonus">Bonus: Relatividad</a>
+      <a href="#mate">Apéndice matemático</a>
+      <a href="#master">Formulario maestro</a>
+      <a href="#tips">Estrategia de examen</a>
+    </nav>
+  </aside>
+
+  <!-- ================= CONTENT ================= -->
+  <main class="content">
+
+  <!-- ===== INTRO ===== -->
+  <section id="intro">
+    <h2>Resumen para el Certamen 1 · FIS140</h2>
+    <p class="lead">Todo lo necesario para el C1, explicado desde cero y con los ejercicios de los certámenes anteriores resueltos paso a paso. Si lees esta guía completa y haces los ejercicios tapando la solución, llegas listo.</p>
+
+    <div class="box tip">
+      <div class="bt">Cómo estudiar con esto</div>
+      <ol style="margin:6px 0 0">
+        <li><strong>Lee la teoría de cada bloque una vez.</strong> No es para memorizar, es para entender <em>qué</em> pregunta cada tipo de problema.</li>
+        <li><strong>Aprende el formulario de cada bloque</strong> con la columna de "cuándo se usa". En física el error típico es tener la fórmula pero no saber cuándo aplicarla.</li>
+        <li><strong>Haz los ejercicios resueltos tapando la solución.</strong> Ábrelos solo para verificar. Este es el 80% del estudio real que sirve para el certamen.</li>
+        <li>Al final tienes un <a class="inl" href="#master">formulario maestro</a> y una <a class="inl" href="#tips">estrategia de examen</a>.</li>
+      </ol>
+    </div>
+
+    <p>El certamen dura <strong>90–100 minutos</strong>. Según el campus/paralelo, puede ser <strong>con calculadora científica simple</strong> (Casa Central) o <strong>sin calculadora</strong> (San Joaquín); en ese último caso <em>dejas las expresiones planteadas sin evaluar</em> y eso vale como correcto. En todos: <strong>todo resultado debe justificarse</strong>, si no, no se corrige.</p>
+  </section>
+
+  <!-- ===== MAPA ===== -->
+  <section id="mapa">
+    <h2>Mapa del Certamen 1 <span class="pill">basado en 7 certámenes reales</span></h2>
+    <p>Revisé los certámenes de 2023.1, 2024.1, 2024.2 y 2025.1–2025.2 (campus Casa Central "CC" y San Joaquín "SJ"). El patrón es <strong>rígido</strong>: siempre 3 problemas grandes, uno por bloque. A veces se agrega un 4º de relatividad (solo en un caso de Casa Central).</p>
+
+    <div class="cards">
+      <div class="card"><div class="num">PROBLEMA 1 · 7 de 7</div><h4>Ondas electromagnéticas</h4><p>Vector de onda, sacar B de E, Poynting, intensidad, presión de radiación, polarización.</p></div>
+      <div class="card"><div class="num">PROBLEMA 2 · 7 de 7</div><h4>Luz en medios: refracción</h4><p>Snell, índice n, reflexión total interna, ángulo crítico, dispersión, prisma, fibra óptica, Brewster.</p></div>
+      <div class="card"><div class="num">PROBLEMA 3 · 7 de 7</div><h4>Interferencia y difracción</h4><p>Young, máximos/mínimos, intensidad, rendija simple, patrón combinado, franjas ausentes.</p></div>
+      <div class="card" style="border-style:dashed"><div class="num">PROBLEMA 4 · 1 de 7</div><h4>Relatividad (bonus)</h4><p>Solo apareció una vez (Casa Central). Fotones, E=γmc², conservación en colisiones. Repásalo por si acaso.</p></div>
+    </div>
+
+    <h4>Qué preguntaron exactamente cada vez</h4>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Certamen</th><th>Problema 1 (OEM)</th><th>Problema 2 (Refracción)</th><th>Problema 3 (Interf./Difr.)</th><th>Extra</th></tr></thead>
+        <tbody>
+          <tr><td>2023.1 SJ</td><td>B dado → k, ω, E, Poynting, I, presión (absorbente)</td><td>Piscina: Snell + Brewster</td><td>N rendijas: intensidad, máx. secundario, ancho central</td><td>—</td></tr>
+          <tr><td>2024.1 CC</td><td>Intensidad solar, celdas solares (I=P/A, cosθ)</td><td>Vaso con agua: Snell + profundidad aparente (imagen virtual)</td><td>2 antenas + difracción telescopio (resolución)</td><td>—</td></tr>
+          <tr><td>2024.2 CC</td><td>OEM en medio: f, λ, n, campo B, polarizador</td><td>(incluido en P1/P3)</td><td>Antenas + difracción rendija (reducir ancho)</td><td><span class="yes">Relatividad</span>: colisión fotón-partícula</td></tr>
+          <tr><td>2024.2 SJ</td><td>Vector k, presión (20% abs/80% ref), campo B</td><td>Dispersión n(λ) + prisma + ángulo límite</td><td>Young: franja ausente, separación y ancho de rendijas</td><td>—</td></tr>
+          <tr><td>2025.1 CC</td><td>Vela solar: dirección B, presión, tiempo Δv</td><td>Cuarto de cilindro: refracción + reflexión total interna</td><td>2 fuentes: posición máximos, polarización rotada</td><td>—</td></tr>
+          <tr><td>2025.1 SJ</td><td>Polarización circular: dirección, B, presión</td><td>3 interfaces Snell, n, λ en medio</td><td>Young: separación aberturas, ancho franjas, intensidad con difracción</td><td>—</td></tr>
+          <tr><td>2025.2 SJ</td><td>Polarización circular: condiciones, deducir B, Poynting</td><td>Fibra óptica: ángulo aceptación, reflexión total, nº reflexiones</td><td>Difracción Fraunhofer: λ, ancho central, I₀</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box warn">
+      <div class="bt">Lo que esto te dice</div>
+      Si dominas <strong>presión de radiación, polarización, Snell + reflexión total interna, y Young + difracción</strong>, cubres literalmente todos los certámenes. Todo lo demás son variantes de lo mismo.
+    </div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- BLOQUE 1 -->
+  <!-- ============================================================= -->
+  <section id="b1">
+    <h2>Bloque 1 — Ondas electromagnéticas <span class="pill">Problema 1 siempre</span></h2>
+
+    <h3>La idea de fondo (de Maxwell a la luz)</h3>
+    <p>Las <strong>ecuaciones de Maxwell</strong> resumen todo el electromagnetismo. Dos de ellas dicen algo clave: un campo magnético que cambia en el tiempo crea un campo eléctrico (<em>Faraday</em>), y un campo eléctrico que cambia crea uno magnético (<em>Ampère-Maxwell</em>). Si combinas ambas matemáticamente, aparece una <strong>ecuación de onda</strong>: una perturbación de $\vec E$ y $\vec B$ que se sostienen mutuamente y viajan solas por el espacio, sin necesitar un medio. Esa onda viaja a</p>
+    $$c=\frac{1}{\sqrt{\mu_0\varepsilon_0}}\approx 3\times10^{8}\ \text{m/s}.$$
+    <p>Ese número resultó ser <strong>la velocidad de la luz</strong>. Conclusión histórica: <em>la luz es una onda electromagnética</em>. Para el certamen no necesitas deducir esto; necesitas manejar la <strong>función de onda</strong> que la describe.</p>
+
+    <h3>Anatomía de la función de onda</h3>
+    <p>Una onda EM plana que se propaga se escribe así:</p>
+    $$\vec E(\vec r,t)=\vec E_0\,\cos(\vec k\cdot\vec r-\omega t+\phi)$$
+    <p>Cada símbolo tiene un significado que <strong>tienes que saber leer</strong>, porque los problemas te dan esta expresión y te piden extraer cosas de ella:</p>
+    <ul>
+      <li>$\vec E_0$ — <strong>amplitud</strong> y <strong>dirección de oscilación</strong> del campo (la dirección de $\vec E_0$ es la de la polarización).</li>
+      <li>$\vec k$ — <strong>vector de onda</strong>. Su <em>dirección</em> es la de propagación; su <em>magnitud</em> es $k=\tfrac{2\pi}{\lambda}$.</li>
+      <li>$\omega$ — <strong>frecuencia angular</strong> $=2\pi f=\tfrac{2\pi}{T}$.</li>
+      <li>$\phi$ — <strong>fase inicial</strong> (constante).</li>
+      <li>El argumento $\vec k\cdot\vec r-\omega t$ es la <strong>fase</strong>. El signo <em>menos</em> entre la parte espacial y la temporal indica que la onda avanza en el sentido $+\vec k$.</li>
+    </ul>
+
+    <div class="box tip">
+      <div class="bt">Truco: sacar $\vec k$ del argumento</div>
+      Si el argumento es, por ejemplo, $(4\pi x+3\pi y-\omega t)$, entonces $\vec k\cdot\vec r=k_x x+k_y y+k_z z$ te dice que $\vec k=\pi(4\hat x+3\hat y)\ \text{m}^{-1}$. La magnitud es $k=|\vec k|=\pi\sqrt{4^2+3^2}=5\pi\ \text{m}^{-1}$. Con eso, $\lambda=\tfrac{2\pi}{k}$ y $\omega=ck$.
+    </div>
+
+    <h3>Relaciones que siempre usarás</h3>
+    <p>Estas conectan todo (y en el vacío, $\omega=ck$):</p>
+    $$k=\frac{2\pi}{\lambda},\qquad \omega=2\pi f=\frac{2\pi}{T},\qquad c=\lambda f=\frac{\omega}{k},\qquad E=cB$$
+    <p>La última, $E=cB$, relaciona las <strong>magnitudes</strong> de los campos: el campo eléctrico "mide" $c$ veces el magnético. Por eso $B_0=E_0/c$.</p>
+
+    <h3>La terna $\hat E,\ \hat B,\ \hat k$ y cómo obtener B a partir de E</h3>
+    <p>En una onda EM, $\vec E$, $\vec B$ y la dirección de propagación $\hat k$ son <strong>mutuamente perpendiculares</strong> y forman una terna derecha en este orden:</p>
+    $$\hat k=\hat E\times\hat B$$
+    <p>De ahí salen las dos fórmulas más útiles del bloque (una para pasar de E a B y otra al revés):</p>
+    $$\boxed{\ \vec B=\frac{1}{c}\,\hat k\times\vec E\ }\qquad\qquad \vec E=c\,\vec B\times\hat k$$
+    <p><strong>Receta para hallar $\vec B$ dado $\vec E$</strong> (o al revés):</p>
+    <ol>
+      <li><strong>Magnitud:</strong> $B_0=E_0/c$.</li>
+      <li><strong>Dirección:</strong> calcula $\hat B=\hat k\times\hat E$ con la regla de la mano derecha (o el determinante, ver <a class="inl" href="#mate">apéndice</a>).</li>
+      <li><strong>Fase:</strong> es la <em>misma</em> que la de $\vec E$ (están en fase). Copias el argumento tal cual.</li>
+    </ol>
+    <div class="box warn">
+      <div class="bt">Error clásico</div>
+      Confundir dirección de propagación con dirección de oscilación. Si $\vec E$ oscila en $\hat z$ y la onda viaja en $\hat x$, entonces $\vec B$ oscila en $\hat y$ (nunca en $\hat x$ ni en $\hat z$). Los tres ejes son distintos.
+    </div>
+
+    <h3>Energía, vector de Poynting e intensidad</h3>
+    <p>La onda transporta energía. El <strong>vector de Poynting</strong> apunta en la dirección en que fluye esa energía (= dirección de propagación) y su magnitud es la potencia por unidad de área instantánea:</p>
+    $$\vec S=\frac{1}{\mu_0}\,\vec E\times\vec B$$
+    <p>Como los campos oscilan, lo que mides en la práctica es el <strong>promedio temporal</strong> de $|\vec S|$, que se llama <strong>intensidad</strong> $I$. Para polarización <em>lineal</em>:</p>
+    $$I=\langle|\vec S|\rangle=\tfrac{1}{2}\,c\,\varepsilon_0\,E_0^{2}$$
+    <p>El factor $\tfrac12$ viene del promedio de $\cos^2$. Otra forma súper útil: si conoces la potencia $P$ de la fuente repartida en un área $A$,</p>
+    $$I=\frac{P}{A}\quad\Rightarrow\quad \text{fuente puntual: } I=\frac{P}{4\pi r^2}\ \text{(esfera de radio } r\text{)}.$$
+
+    <h3>Presión de radiación <span class="pill w">estrella del bloque</span></h3>
+    <p>La luz también transporta <strong>momentum</strong>, así que al chocar con una superficie ejerce presión. El resultado depende de qué hace la superficie con la luz:</p>
+    <div class="box formula">
+      <div class="bt">Presión de radiación (incidencia normal)</div>
+      $$P_{\text{absorbente}}=\frac{I}{c}\qquad\qquad P_{\text{reflectante}}=\frac{2I}{c}$$
+      Una superficie que <strong>refleja</strong> ejerce el <em>doble</em> de presión que una que <strong>absorbe</strong>: la luz reflejada invierte su momentum, así que le entrega el doble a la superficie (como una pelota que rebota vs. una que se pega).
+    </div>
+    <p><strong>Superficie mixta</strong> (absorbe una fracción y refleja el resto): sumas ponderado. Si refleja el $35\%$ y absorbe el $65\%$:</p>
+    $$P=0{,}35\cdot\frac{2I}{c}+0{,}65\cdot\frac{I}{c}=\frac{1{,}35\,I}{c}$$
+    <p>Si la luz incide con un ángulo $\theta_{\text{inc}}$ respecto a la normal, se multiplica por $\cos\theta_{\text{inc}}$ (menos "de frente", menos presión).</p>
+
+    <h3>Polarización</h3>
+    <p>La polarización describe <strong>cómo oscila</strong> el vector $\vec E$ mientras la onda avanza. Solo tienen polarización las ondas transversales (como las EM).</p>
+    <h4>Lineal</h4>
+    <p>$\vec E$ oscila siempre en <strong>una sola dirección</strong>. Ej: $\vec E(x,t)=E_0\cos(kx-\omega t)\,\hat y$.</p>
+    <h4>Circular</h4>
+    <p>Es la suma de <strong>dos componentes perpendiculares de igual amplitud</strong> desfasadas $90^\circ$ ($\pi/2$). El extremo del vector $\vec E$ traza un círculo. Condiciones para que sea circular:</p>
+    $$|E_{0x}|=|E_{0y}|\qquad\text{y}\qquad \delta=\varphi_y-\varphi_x=\pm\frac{\pi}{2}$$
+    <p>Ejemplo típico de examen: $\vec E=E_0[\hat x\cos(kz-\omega t)+\hat y\,\text{sen}(kz-\omega t)]$ — componentes iguales, una con coseno y otra con seno (desfase de $90^\circ$) ⟹ <strong>circular</strong>.</p>
+    <div class="box warn">
+      <div class="bt">Intensidad según polarización</div>
+      Para <strong>lineal</strong>: $I=\tfrac12 c\varepsilon_0 E_0^2$. Para <strong>circular</strong>: como hay dos componentes que aportan, $I= c\varepsilon_0 E_0^2$ (el doble). Ojo con esto en presión de radiación.
+    </div>
+    <h4>Polarizadores (Ley de Malus)</h4>
+    <ul>
+      <li>Luz <strong>no polarizada</strong> que pasa por el primer polarizador: sale con la <strong>mitad</strong> de intensidad, $I=\tfrac{I_0}{2}$.</li>
+      <li>Luz ya polarizada que pasa por un polarizador cuyo eje forma ángulo $\theta$ con la polarización: $I=I_0\cos^2\theta$ (<strong>Ley de Malus</strong>).</li>
+    </ul>
+  </section>
+
+  <section id="b1-form">
+    <h3>Formulario — Bloque 1 (Ondas EM)</h3>
+    <div class="box formula">
+      <div class="bt">Ecuaciones clave · cuándo se usan</div>
+      <div class="keys">
+        <div class="k"><span class="d">Velocidad de la luz (vacío)</span><span class="f">$c=\dfrac{1}{\sqrt{\mu_0\varepsilon_0}}\approx3\times10^8\,$m/s</span></div>
+        <div class="k"><span class="d">Función de onda EM</span><span class="f">$\vec E=\vec E_0\cos(\vec k\cdot\vec r-\omega t+\phi)$</span></div>
+        <div class="k"><span class="d">Número de onda / frecuencia</span><span class="f">$k=\dfrac{2\pi}{\lambda},\quad \omega=2\pi f,\quad c=\dfrac{\omega}{k}=\lambda f$</span></div>
+        <div class="k"><span class="d">Magnitudes de los campos</span><span class="f">$E=cB\;\Rightarrow\;B_0=E_0/c$</span></div>
+        <div class="k"><span class="d">Terna / obtener B desde E</span><span class="f">$\hat k=\hat E\times\hat B,\quad \vec B=\dfrac1c\,\hat k\times\vec E$</span></div>
+        <div class="k"><span class="d">Vector de Poynting</span><span class="f">$\vec S=\dfrac{1}{\mu_0}\vec E\times\vec B$</span></div>
+        <div class="k"><span class="d">Intensidad (lineal)</span><span class="f">$I=\langle|\vec S|\rangle=\tfrac12 c\varepsilon_0 E_0^2=\dfrac{P}{A}$</span></div>
+        <div class="k"><span class="d">Intensidad (circular)</span><span class="f">$I=c\varepsilon_0 E_0^2$</span></div>
+        <div class="k"><span class="d">Presión radiación (abs / ref)</span><span class="f">$P=\dfrac{I}{c}\ \big/\ \dfrac{2I}{c}$ (×$\cos\theta_{inc}$ si oblicua)</span></div>
+        <div class="k"><span class="d">Polarizador (no polarizada)</span><span class="f">$I=\tfrac{I_0}{2}$</span></div>
+        <div class="k"><span class="d">Ley de Malus</span><span class="f">$I=I_0\cos^2\theta$</span></div>
+        <div class="k"><span class="d">Circular: condición</span><span class="f">$|E_{0x}|=|E_{0y}|,\ \ \delta=\pm\tfrac{\pi}{2}$</span></div>
+        <div class="k"><span class="d">Constantes</span><span class="f">$\varepsilon_0\!\approx\!8{,}85\!\times\!10^{-12},\ \mu_0\!=\!4\pi\!\times\!10^{-7}$</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="b1-ej">
+    <h3>Ejercicios resueltos — Bloque 1</h3>
+
+    <details class="ex">
+      <summary>Ejercicio 1 · Onda completa: de B a k, ω, E, Poynting, I y presión <span class="tag">2023.1 SJ · P1</span></summary>
+      <div class="body">
+        <p>Una onda EM en el vacío tiene $\vec B(\vec r,t)=\vec B_0\cos(4\pi\,x+3\pi\,y-\omega t)$ [en m⁻¹]. En $t=0$, en $x_0=\tfrac14$ m, $y_0=\tfrac13$ m, se mide $\vec B=5\,\hat z$ [V·s/m²]. Halla $\vec k$, $\omega$, $\vec E$, $\vec S$, $I$ y la presión sobre una superficie absorbente.</p>
+        <div class="step"><span class="n">1</span><strong>Vector de onda.</strong> Del argumento, $\vec k\cdot\vec r=(4x+3y)\pi \Rightarrow \vec k=\pi(4\hat x+3\hat y)\,$m⁻¹, y $k=\pi\sqrt{4^2+3^2}=5\pi\,$m⁻¹.</div>
+        <div class="step"><span class="n">2</span><strong>Frecuencia.</strong> $\omega=ck=3\times10^8\cdot5\pi=15\times10^8\pi\ $s⁻¹.</div>
+        <div class="step"><span class="n">3</span><strong>Amplitud de B.</strong> En $(x_0,y_0,0)$ el argumento vale $4\pi\cdot\tfrac14+3\pi\cdot\tfrac13=2\pi$, y $\cos 2\pi=1$, así que $\vec B_0=5\,\hat z$ [V·s/m²].</div>
+        <div class="step"><span class="n">4</span><strong>Campo eléctrico.</strong> $\vec E_0=c(\vec B_0\times\hat k)$ con $\hat k=\tfrac{1}{5}(4\hat x+3\hat y)$. Haciendo el producto cruz: $\hat z\times\hat x=\hat y$, $\hat z\times\hat y=-\hat x$, resulta $\vec E_0=cB_0\!\left(-\tfrac35\hat x+\tfrac45\hat y\right)=3\times10^8(-3\hat x+4\hat y)$ [V/m], con la misma fase que $\vec B$.</div>
+        <div class="step"><span class="n">5</span><strong>Poynting.</strong> $\vec S=\tfrac{1}{\mu_0}\vec E\times\vec B=\tfrac{15\times10^8}{\mu_0}\cos^2(4\pi x+3\pi y-\omega t)\,(4\hat x+3\hat y)$. Apunta en $+\vec k$, como debe ser.</div>
+        <div class="step"><span class="n">6</span><strong>Intensidad y presión.</strong> $I=\tfrac12 c\varepsilon_0 E_0^2$ y, superficie absorbente, $P=\dfrac{I}{c}$.</div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Lección</div>Este ejercicio es el "molde": casi todos los P1 son un subconjunto de estos 6 pasos. Domínalo y tienes medio problema 1 ganado siempre.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ejercicio 2 · Presión de radiación en superficie mixta <span class="tag">2025.1 SJ · P1c</span></summary>
+      <div class="body">
+        <p>Una onda con $E_0=500$ V/m incide normal a una superficie que <strong>refleja el 35%</strong> y absorbe el resto. Halla la presión de radiación.</p>
+        <div class="step"><span class="n">1</span><strong>Ponderar.</strong> $P=0{,}35\cdot\dfrac{2I}{c}+0{,}65\cdot\dfrac{I}{c}=\dfrac{1{,}35\,I}{c}$.</div>
+        <div class="step"><span class="n">2</span><strong>Intensidad (lineal).</strong> $I=\tfrac12 c\varepsilon_0 E_0^2$.</div>
+        <div class="step"><span class="n">3</span><strong>Sustituir.</strong> $P=\dfrac{1{,}35}{c}\cdot\tfrac12 c\varepsilon_0 E_0^2=1{,}35\cdot\tfrac12\varepsilon_0E_0^2\approx1{,}49\times10^{-6}$ Pa.</div>
+        <div class="box warn" style="margin-top:8px"><div class="bt">Ojo</div>Si la onda fuera de polarización <em>circular</em>, usarías $I=c\varepsilon_0 E_0^2$ (sin el ½) y la presión sería el doble. Lee siempre qué polarización te dan.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ejercicio 3 · Identificar polarización circular y deducir B <span class="tag">2025.1 SJ / 2025.2 SJ · P1</span></summary>
+      <div class="body">
+        <p>Dado $\vec E=E_0[\hat x\cos(kz-\omega t)+\hat y\,\text{sen}(kz-\omega t)]$, con $\omega=100\pi$ rad/s. Halla dirección de propagación, tipo de polarización y $\vec B$.</p>
+        <div class="step"><span class="n">1</span><strong>Propagación.</strong> El argumento solo tiene $z$: $\vec k\cdot\vec r=kz\Rightarrow$ propaga en $\hat k=\hat z$.</div>
+        <div class="step"><span class="n">2</span><strong>Polarización.</strong> Dos componentes perpendiculares ($\hat x,\hat y$) de <em>igual amplitud</em> $E_0$ y desfase $90^\circ$ (una es coseno, la otra seno) ⟹ <strong>circular</strong>.</div>
+        <div class="step"><span class="n">3</span><strong>Campo B.</strong> $\vec B=\tfrac1c\hat z\times\vec E$. Con $\hat z\times\hat x=\hat y$ y $\hat z\times\hat y=-\hat x$: $\vec B=\dfrac{E_0}{c}[-\hat x\,\text{sen}(kz-\omega t)+\hat y\cos(kz-\omega t)]$.</div>
+        <div class="step"><span class="n">4</span><strong>Números.</strong> $k=\omega/c=\tfrac{100\pi}{3\times10^8}$, $B_0=E_0/c$. Reemplazas y listo.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ejercicio 4 · Intensidad tras un polarizador <span class="tag">2024.2 CC · P1c</span></summary>
+      <div class="body">
+        <p>Una onda con $\vec E_0=\left(\tfrac{\sqrt3}{2}\hat x+\tfrac12\hat y\right)100$ V/m pasa por un polarizador con eje paralelo a $\hat x$. Halla la intensidad media transmitida.</p>
+        <div class="step"><span class="n">1</span><strong>Solo pasa la componente x.</strong> $E_{0x}=100\cdot\tfrac{\sqrt3}{2}\approx86{,}6$ V/m.</div>
+        <div class="step"><span class="n">2</span><strong>Intensidad.</strong> $I=\tfrac12 c\varepsilon_0 E_{0x}^2=\tfrac12 c\varepsilon_0(3750)\approx9{,}95$ W/m².</div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Idea</div>Un polarizador "corta" la proyección de $\vec E$ sobre su eje. Como $I\propto E^2$, elevas al cuadrado esa proyección. Equivale a la Ley de Malus con el ángulo entre la polarización y el eje.</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- BLOQUE 2 -->
+  <!-- ============================================================= -->
+  <section id="b2">
+    <h2>Bloque 2 — Reflexión y refracción de la luz <span class="pill">Problema 2 siempre</span></h2>
+
+    <h3>Índice de refracción</h3>
+    <p>Cuando la luz entra a un material (agua, vidrio…) va <strong>más lento</strong> que en el vacío. El <strong>índice de refracción</strong> $n$ mide cuánto:</p>
+    $$n=\frac{c}{v}\quad(n\ge1),\qquad v=\frac{c}{n}$$
+    <p>La <strong>frecuencia no cambia</strong> al pasar de un medio a otro (la fuente sigue oscilando igual), pero como $v=\lambda f$ y $v$ baja, la <strong>longitud de onda se acorta</strong>:</p>
+    $$\lambda_n=\frac{\lambda_0}{n}$$
+    <p>Valores típicos que dan en el formulario: $n_{\text{aire}}\approx1{,}00$, $n_{\text{agua}}=1{,}33$, $n_{\text{vidrio}}=1{,}50$.</p>
+
+    <h3>Ley de Snell</h3>
+    <p>En la frontera entre dos medios, el rayo se <strong>desvía</strong>. El ángulo se mide siempre <strong>respecto a la normal</strong> (perpendicular a la superficie), y se cumple:</p>
+    $$\boxed{\,n_1\,\text{sen}\,\theta_1=n_2\,\text{sen}\,\theta_2\,}$$
+    <p>Interpretación: al pasar a un medio más denso ($n$ mayor), el rayo se acerca a la normal; al pasar a uno menos denso, se aleja.</p>
+    <div class="box tip">
+      <div class="bt">Varias interfaces en serie</div>
+      Si el rayo atraviesa capas paralelas (medio 0 → 1 → 2 → 0), aplicas Snell en cada interfaz. Como los productos $n\,\text{sen}\theta$ se van igualando, si el medio final es igual al inicial, <strong>el ángulo de salida es igual al de entrada</strong> (aunque el rayo se haya desplazado lateralmente).
+    </div>
+
+    <h3>Reflexión total interna y ángulo crítico</h3>
+    <p>Cuando la luz va de un medio <strong>denso a uno menos denso</strong> ($n_1>n_2$), al aumentar el ángulo de incidencia llega un punto en que el rayo refractado sale <em>rasante</em> (a $90^\circ$). Pasado ese ángulo, <strong>toda la luz se refleja</strong> hacia adentro: <strong>reflexión total interna (TIR)</strong>. El ángulo límite es el <strong>crítico</strong>:</p>
+    $$\text{sen}\,\theta_c=\frac{n_2}{n_1}\qquad(\text{con } n_1>n_2)$$
+    <p>Esto es la base de la <strong>fibra óptica</strong>: la luz rebota indefinidamente dentro del núcleo sin escapar.</p>
+
+    <h3>Dispersión: por qué el prisma separa colores</h3>
+    <p>El índice depende un poquito de la longitud de onda, $n=n(\lambda)$. Los modelos típicos son de la forma</p>
+    $$n(\lambda)=A+\frac{B}{\lambda^2}$$
+    <p>Como $\lambda$ del violeta es menor que la del rojo, $n_{\text{violeta}}>n_{\text{rojo}}$. Consecuencias que preguntan:</p>
+    <ul>
+      <li>El <strong>violeta va más lento</strong> y se <strong>desvía más</strong> (Snell con mayor $n$).</li>
+      <li>En un prisma, cada color sale con distinto ángulo ⟹ se abre el arcoíris.</li>
+      <li>Se puede pedir el ángulo de incidencia límite para que <em>solo un color</em> emerja (el otro sufre reflexión total interna). Se resuelve encadenando Snell en las dos caras del prisma más geometría del triángulo.</li>
+    </ul>
+
+    <h3>Ángulo de Brewster (refracción y polarización)</h3>
+    <p>Cuando la luz incide con cierto ángulo especial, la luz <strong>reflejada queda 100% polarizada</strong>. Ese es el <strong>ángulo de Brewster</strong>:</p>
+    $$\tan\theta_B=\frac{n_2}{n_1}$$
+    <p>Dato de examen: si la luz incidente está polarizada <em>paralela al plano de incidencia</em> y llega con el ángulo de Brewster, <strong>no se refleja nada</strong> (toda se transmite).</p>
+
+    <h3>Profundidad aparente</h3>
+    <p>Un objeto bajo el agua se ve <strong>más cerca de la superficie</strong> de lo que está. Mirando casi verticalmente (rayos paraxiales), la profundidad aparente es:</p>
+    $$h'=\frac{h}{n}$$
+    <p>La imagen es <strong>virtual</strong> (se forma donde <em>parecen</em> venir los rayos al prolongarlos hacia atrás, no donde de verdad se cruzan).</p>
+  </section>
+
+  <section id="b2-form">
+    <h3>Formulario — Bloque 2 (Refracción)</h3>
+    <div class="box formula">
+      <div class="bt">Ecuaciones clave · cuándo se usan</div>
+      <div class="keys">
+        <div class="k"><span class="d">Índice de refracción</span><span class="f">$n=\dfrac{c}{v}$</span></div>
+        <div class="k"><span class="d">Longitud de onda en el medio</span><span class="f">$\lambda_n=\dfrac{\lambda_0}{n}$ ($f$ no cambia)</span></div>
+        <div class="k"><span class="d">Ley de Snell</span><span class="f">$n_1\text{sen}\theta_1=n_2\text{sen}\theta_2$</span></div>
+        <div class="k"><span class="d">Ángulo crítico (TIR, $n_1>n_2$)</span><span class="f">$\text{sen}\,\theta_c=\dfrac{n_2}{n_1}$</span></div>
+        <div class="k"><span class="d">Dispersión (modelo)</span><span class="f">$n(\lambda)=A+\dfrac{B}{\lambda^2}$</span></div>
+        <div class="k"><span class="d">Ángulo de Brewster</span><span class="f">$\tan\theta_B=\dfrac{n_2}{n_1}$</span></div>
+        <div class="k"><span class="d">Profundidad aparente (paraxial)</span><span class="f">$h'=\dfrac{h}{n}$ (imagen virtual)</span></div>
+        <div class="k"><span class="d">Ley de reflexión</span><span class="f">$\theta_i=\theta_r$</span></div>
+        <div class="k"><span class="d">Identidad útil</span><span class="f">$\tan\theta=\dfrac{\text{sen}\theta}{\sqrt{1-\text{sen}^2\theta}}$</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="b2-ej">
+    <h3>Ejercicios resueltos — Bloque 2</h3>
+
+    <details class="ex">
+      <summary>Ejercicio 1 · Refracción + reflexión total interna en un cilindro <span class="tag">2025.1 CC · P3</span></summary>
+      <div class="body">
+        <p>Un rayo incide horizontal desde el aire ($n=1$) sobre la cara curva de un cuarto de cilindro de $n_m=1{,}52$, con $\theta_0=32^\circ$ respecto a la normal $N_1$. (a) ángulo refractado; (b) ángulo para TIR en la cara vertical; (c) ángulo de salida.</p>
+        <div class="step"><span class="n">a</span><strong>Snell en la entrada.</strong> $1\cdot\text{sen}32^\circ=1{,}52\,\text{sen}\theta_t\Rightarrow\theta_t=\arcsin\!\big(\tfrac{\text{sen}32^\circ}{1{,}52}\big)\approx20{,}4^\circ$.</div>
+        <div class="step"><span class="n">b</span><strong>Ángulo crítico.</strong> $1{,}52\,\text{sen}\theta_c=1\cdot\text{sen}90^\circ\Rightarrow\theta_c=\arcsin\!\big(\tfrac{1}{1{,}52}\big)\approx41{,}1^\circ$. Para ángulos mayores hay TIR.</div>
+        <div class="step"><span class="n">c</span><strong>Geometría + Snell salida.</strong> Por el triángulo interno, el ángulo sobre la cara vertical es $\alpha_i=\theta_0-\theta_t\approx11{,}6^\circ$. Como $11{,}6^\circ<\theta_c$, <em>sí</em> sale. $1{,}52\,\text{sen}11{,}6^\circ=1\cdot\text{sen}\theta_s\Rightarrow\theta_s\approx17{,}8^\circ$.</div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Clave</div>El truco de estos problemas es la <strong>geometría</strong>: relacionar el ángulo refractado en una cara con el ángulo de incidencia en la siguiente usando los ángulos internos del triángulo. Dibuja siempre.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ejercicio 2 · Dispersión y prisma: ángulo límite por color <span class="tag">2024.2 SJ · P2</span></summary>
+      <div class="body">
+        <p>Vidrio Flint con $n(\lambda)=A+\tfrac{B^2}{\lambda^2}$, $A=1{,}67$, $B^2=7430$ nm². (a) $n$ para rojo (600 nm) y violeta (380 nm); (b) prisma equilátero: ángulo de incidencia límite para que solo emerja el rojo.</p>
+        <div class="step"><span class="n">a</span><strong>Índices.</strong> $n_R=1{,}67+\tfrac{7430}{600^2}\approx1{,}69$; $n_V=1{,}67+\tfrac{7430}{380^2}\approx1{,}72$. El rojo va más rápido (menor $n$).</div>
+        <div class="step"><span class="n">b</span><strong>Caso límite: el violeta sale tangente</strong> ($\theta_4=90^\circ$) en la cara derecha. Snell 2ª cara: $n_V\text{sen}\theta_3=1\Rightarrow\theta_3=\arcsin(1/1{,}72)\approx35{,}5^\circ$.</div>
+        <div class="step"><span class="n">·</span><strong>Geometría del prisma equilátero:</strong> $\theta_2+\theta_3=60^\circ\Rightarrow\theta_2\approx24{,}5^\circ$.</div>
+        <div class="step"><span class="n">·</span><strong>Snell 1ª cara:</strong> $\text{sen}\theta_1=1{,}72\,\text{sen}24{,}5^\circ\Rightarrow\theta_1\approx45{,}5^\circ$.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ejercicio 3 · Fibra óptica: ángulo de aceptación y nº de reflexiones <span class="tag">2025.2 SJ · P2</span></summary>
+      <div class="body">
+        <p>Núcleo $n_1$, cubierta $n_2$ ($n_2<n_1$). (a) demuestra que el ángulo máximo de entrada cumple $\theta=\text{sen}^{-1}\!\big(\sqrt{1-n_2^2/n_1^2}\cdot n_1\big)$; (b) con $n_1=1{,}58$, $n_2=1{,}53$; (c) nº de reflexiones en $L=1$ km.</p>
+        <div class="step"><span class="n">a</span><strong>Dos condiciones.</strong> Entrada: $n\,\text{sen}\theta=n_1\text{sen}\theta_1$. Para TIR en la pared: $n_1\text{sen}\theta_c=n_2$ con $\theta_c=90^\circ-\theta_1$. Usando $\cos\theta_1=\sqrt{1-\text{sen}^2\theta_1}$ despejas la condición del ángulo máximo de aceptación.</div>
+        <div class="step"><span class="n">b</span><strong>Números.</strong> Reemplazas y obtienes $\theta\approx23{,}2^\circ$.</div>
+        <div class="step"><span class="n">c</span><strong>Geometría.</strong> Cada reflexión avanza $D=\tfrac{2a}{\tan\theta_1}$, con $\theta_1$ del ángulo interno. Entonces $N=\tfrac{L}{D}$. Como $n_1$ depende de $\lambda$ (dispersión), cada color da un $N$ distinto: por eso se pide por separado para $\lambda_a$ y $\lambda_b$.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ejercicio 4 · Profundidad aparente (imagen virtual) <span class="tag">2024.1 CC · P2c</span></summary>
+      <div class="body">
+        <p>Mirando verticalmente sobre una marca en el fondo de un vaso lleno de agua ($n$), ¿a qué profundidad aparente se ve la imagen?</p>
+        <div class="step"><span class="n">1</span><strong>Snell paraxial.</strong> Ángulos pequeños ⟹ $\text{sen}\alpha\approx\tan\alpha\approx\alpha$; Snell da $\beta\approx n\,\alpha$.</div>
+        <div class="step"><span class="n">2</span><strong>Geometría.</strong> El desplazamiento horizontal es $d=H'\tan\beta=H\tan\alpha$, así que $H'\beta\approx H\alpha$.</div>
+        <div class="step"><span class="n">3</span><strong>Resultado.</strong> Con $\alpha/\beta=1/n$: $H'=\dfrac{H}{n}$. La imagen es <strong>virtual</strong> (los rayos que llegan al ojo parecen divergir de ese punto).</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- BLOQUE 3 -->
+  <!-- ============================================================= -->
+  <section id="b3">
+    <h2>Bloque 3 — Interferencia y difracción <span class="pill">Problema 3 siempre</span></h2>
+
+    <h3>Interferencia: la idea</h3>
+    <p>Cuando dos ondas <strong>coherentes</strong> (misma frecuencia, desfase constante) se superponen, sus crestas y valles se combinan:</p>
+    <ul>
+      <li>Cresta con cresta ⟹ se <strong>refuerzan</strong> (interferencia <strong>constructiva</strong>, zona brillante).</li>
+      <li>Cresta con valle ⟹ se <strong>anulan</strong> (interferencia <strong>destructiva</strong>, zona oscura).</li>
+    </ul>
+    <p>Lo que decide constructiva o destructiva es la <strong>diferencia de camino</strong> $\Delta r$ (cuánto más recorre una onda que la otra hasta el punto):</p>
+    $$\text{Constructiva: }\Delta r=m\lambda\qquad\qquad \text{Destructiva: }\Delta r=\left(m+\tfrac12\right)\lambda$$
+    <p>con $m=0,\pm1,\pm2,\dots$ Y la diferencia de fase asociada es $\phi=\dfrac{2\pi}{\lambda}\Delta r$.</p>
+
+    <h3>Experimento de Young (doble rendija)</h3>
+    <p>Dos rendijas separadas una distancia $d$, iluminadas por luz de longitud $\lambda$, proyectan franjas en una pantalla a distancia $L$. La diferencia de camino a un ángulo $\theta$ es $\Delta r=d\,\text{sen}\theta$, así que:</p>
+    <div class="box formula">
+      <div class="bt">Young — posición de máximos</div>
+      $$d\,\text{sen}\theta=m\lambda\qquad\xrightarrow{\ \theta\text{ pequeño}\ }\qquad y_m=\frac{m\lambda L}{d}$$
+      La aproximación de ángulo pequeño ($\text{sen}\theta\approx\tan\theta=y/L$) vale cuando la pantalla está lejos. La <strong>separación entre franjas</strong> vecinas es $\Delta y=\dfrac{\lambda L}{d}$.
+    </div>
+
+    <h3>Intensidad del patrón de interferencia</h3>
+    <p>No solo importa <em>dónde</em> están las franjas, también <em>qué tan brillantes</em>. Si cada rendija aporta intensidad $I_0$:</p>
+    $$I=4I_0\cos^2\!\left(\frac{\phi}{2}\right),\qquad \phi=\frac{2\pi}{\lambda}\,d\,\text{sen}\theta=kd\,\text{sen}\theta$$
+    <p>En los máximos ($\phi=2\pi m$) la intensidad es $4I_0$ (¡el cuádruple, no el doble! porque los campos se suman y la intensidad va como el cuadrado). En los mínimos, $0$.</p>
+
+    <h3>Dos fuentes cercanas (antenas): dos escenarios</h3>
+    <p>Un tipo de problema muy repetido son <strong>dos antenas</strong> separadas $d$. Hay que distinguir:</p>
+    <ul>
+      <li><strong>Sobre la línea que une las antenas:</strong> la diferencia de camino es directamente $d$ (o la posición relativa). Buscas dónde $\Delta r=m\lambda$. Ej: si $d=3{,}5\lambda$, en el punto medio $\Delta r$ es un semi-entero de $\lambda$ ⟹ interferencia <strong>destructiva</strong> (intensidad nula).</li>
+      <li><strong>En una pantalla lejana:</strong> usas $\Delta r=d\,\text{sen}\theta$. Máximos en $d\,\text{sen}\theta=m\lambda$; mínimos en $d\,\text{sen}\theta=(m+\tfrac12)\lambda$. El número de máximos/mínimos posibles está acotado por $|\text{sen}\theta|\le1$.</li>
+    </ul>
+
+    <h3>Difracción por una rendija</h3>
+    <p>Una <strong>sola</strong> rendija de ancho $a$ (no despreciable frente a $\lambda$) también produce un patrón: un máximo central ancho y máximos laterales cada vez más débiles. Aquí, ojo, los enteros marcan los <strong>mínimos</strong> (al revés que interferencia):</p>
+    <div class="box formula">
+      <div class="bt">Difracción — mínimos e intensidad</div>
+      $$\text{Mínimos: } a\,\text{sen}\theta=m\lambda\quad(m=\pm1,\pm2,\dots)$$
+      $$I(\theta)=I_0\left(\frac{\text{sen}(\beta/2)}{\beta/2}\right)^2,\qquad \beta=ka\,\text{sen}\theta=\frac{2\pi a\,\text{sen}\theta}{\lambda}$$
+      El <strong>ancho angular del máximo central</strong> (entre los dos primeros mínimos) es $\delta\theta=\dfrac{2\lambda}{a}$. En una pantalla a distancia $L$, el ancho es $\approx\dfrac{2\lambda L}{a}$.
+    </div>
+
+    <h3>Patrón combinado y "franjas ausentes"</h3>
+    <p>En Young real las rendijas <em>tienen</em> ancho, así que ves las franjas de interferencia <strong>moduladas</strong> por la envolvente de difracción:</p>
+    $$I=4I_0\cos^2\!\left(\frac{\phi}{2}\right)\left(\frac{\text{sen}(\beta/2)}{\beta/2}\right)^2$$
+    <p>Cuando un <strong>mínimo de difracción</strong> cae justo donde debería haber un <strong>máximo de interferencia</strong>, ese máximo <strong>desaparece</strong> (franja ausente / orden faltante). Es un cálculo típico: igualar las dos condiciones para hallar $d/a$ o el ancho de la rendija.</p>
+    <div class="box tip">
+      <div class="bt">No confundir $d$ y $a$</div>
+      $d$ = separación <strong>entre</strong> rendijas (gobierna la interferencia, franjas finitas). $a$ = <strong>ancho</strong> de cada rendija (gobierna la difracción, la envolvente). Enteros ⟹ máximos en interferencia, pero ⟹ mínimos en difracción.
+    </div>
+  </section>
+
+  <section id="b3-form">
+    <h3>Formulario — Bloque 3 (Interferencia y difracción)</h3>
+    <div class="box formula">
+      <div class="bt">Ecuaciones clave · cuándo se usan</div>
+      <div class="keys">
+        <div class="k"><span class="d">Diferencia de camino ↔ fase</span><span class="f">$\phi=\dfrac{2\pi}{\lambda}\Delta r$</span></div>
+        <div class="k"><span class="d">Constructiva / destructiva</span><span class="f">$\Delta r=m\lambda\ \big/\ (m+\tfrac12)\lambda$</span></div>
+        <div class="k"><span class="d">Young: máximos</span><span class="f">$d\,\text{sen}\theta=m\lambda$</span></div>
+        <div class="k"><span class="d">Young: posición (ángulo pequeño)</span><span class="f">$y_m=\dfrac{m\lambda L}{d}$, $\ \Delta y=\dfrac{\lambda L}{d}$</span></div>
+        <div class="k"><span class="d">Intensidad interferencia</span><span class="f">$I=4I_0\cos^2(\phi/2),\ \phi=kd\,\text{sen}\theta$</span></div>
+        <div class="k"><span class="d">Difracción: mínimos</span><span class="f">$a\,\text{sen}\theta=m\lambda\ (m\neq0)$</span></div>
+        <div class="k"><span class="d">Intensidad difracción</span><span class="f">$I=I_0\!\left(\dfrac{\text{sen}(\beta/2)}{\beta/2}\right)^2,\ \beta=ka\,\text{sen}\theta$</span></div>
+        <div class="k"><span class="d">Ancho del máximo central</span><span class="f">$\delta\theta=\dfrac{2\lambda}{a}$</span></div>
+        <div class="k"><span class="d">Patrón combinado</span><span class="f">$I=4I_0\cos^2\!\tfrac{\phi}{2}\left(\dfrac{\text{sen}(\beta/2)}{\beta/2}\right)^2$</span></div>
+        <div class="k"><span class="d">Aproximación pantalla lejana</span><span class="f">$\text{sen}\theta\approx\tan\theta=\dfrac{y}{L}$</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="b3-ej">
+    <h3>Ejercicios resueltos — Bloque 3</h3>
+
+    <details class="ex">
+      <summary>Ejercicio 1 · Young: separación de aberturas y ancho de franjas <span class="tag">2025.1 SJ · P3a-b</span></summary>
+      <div class="body">
+        <p>Doble rendija con $\lambda=500$ nm, pantalla a $L=4$ m. El primer máximo secundario está en $x_1=4$ mm. (a) distancia entre aberturas; (b) ancho de la zona central detectable si el sensor solo capta $I\ge I_{\max}/2$.</p>
+        <div class="step"><span class="n">a</span><strong>Ángulo pequeño.</strong> $d\,\tfrac{x_1}{L}=\lambda\Rightarrow d=\lambda\tfrac{L}{x_1}=500\times10^{-9}\cdot\tfrac{4}{4\times10^{-3}}=5\times10^{-4}$ m $=0{,}5$ mm.</div>
+        <div class="step"><span class="n">b</span><strong>Media intensidad.</strong> $4I_0\cos^2\!\big(\tfrac{\pi d x}{\lambda L}\big)=2I_0\Rightarrow\cos(\cdot)=\tfrac{1}{\sqrt2}\Rightarrow\tfrac{\pi d x}{\lambda L}=\tfrac{\pi}{4}$.</div>
+        <div class="step"><span class="n">·</span>Despejando $x=\tfrac{\lambda L}{4d}=1$ mm. Como es simétrico, el ancho es $2x=2$ mm.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ejercicio 2 · Franja ausente = mínimo de difracción sobre máximo de interferencia <span class="tag">2024.2 SJ · P3</span></summary>
+      <div class="body">
+        <p>Young con $\lambda=500$ nm, $L=8$ m. Se ven 6 franjas brillantes a cada lado con $\Delta y=2{,}5$ cm, pero la <strong>7ª está ausente</strong>. Halla la separación $d$ y el ancho $a$ de las rendijas.</p>
+        <div class="step"><span class="n">1</span><strong>Separación (interferencia).</strong> $\Delta y=\tfrac{\lambda L}{d}\Rightarrow d=\tfrac{\lambda L}{\Delta y}=\tfrac{500\times10^{-9}\cdot8}{2{,}5\times10^{-2}}=1{,}6\times10^{-4}$ m $=160\ \mu$m.</div>
+        <div class="step"><span class="n">2</span><strong>Franja 7 ausente.</strong> El 1er mínimo de difracción cae en $y_{\min}=7\Delta y=17{,}5$ cm. Ahí, $a\,\tfrac{y_{\min}}{L}=\lambda$.</div>
+        <div class="step"><span class="n">3</span><strong>Ancho.</strong> $a=\tfrac{\lambda L}{y_{\min}}=\tfrac{500\times10^{-9}\cdot8}{17{,}5\times10^{-2}}\approx2{,}28\times10^{-5}$ m $=22{,}8\ \mu$m.</div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Idea</div>Que falte el 7º máximo significa que el 1er cero de la envolvente de difracción coincide con el 7º máximo de interferencia. Eso te da la relación $d/a=7$. Es el "gancho" conceptual de estos problemas.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ejercicio 3 · Dos antenas: intensidad sobre la línea y máximos en pantalla lejana <span class="tag">2024.1 CC · P3</span></summary>
+      <div class="body">
+        <p>Dos antenas en fase, $d=0{,}75$ m, $\lambda=250$ mm. (b) $k$ y $\omega$; (c) máximos entre las antenas; (d) menor ángulo de mínimo en pantalla lejana.</p>
+        <div class="step"><span class="n">b</span>$k=\tfrac{2\pi}{\lambda}=\tfrac{2\pi}{0{,}25}\approx25$ rad/m; $\omega=ck\approx7{,}5\times10^9$ rad/s.</div>
+        <div class="step"><span class="n">c</span>Sobre la línea, $\Delta r=r_B-r_A=m\lambda$ y $r_A+r_B=d=3\lambda$. Resolviendo, $r_B=\tfrac{(3+m)\lambda}{2}$ para $m=0,\pm1,\pm2$ ⟹ máximos en $\tfrac12\lambda,\lambda,\tfrac32\lambda,2\lambda,\tfrac52\lambda$.</div>
+        <div class="step"><span class="n">d</span>Pantalla lejana: $\Delta r=d\,\text{sen}\theta=3\lambda\,\text{sen}\theta$. Mínimos: $3\lambda\,\text{sen}\theta=(m+\tfrac12)\lambda\Rightarrow\text{sen}\theta=\tfrac{2m+1}{6}$. El menor es $m=0$: $\text{sen}\theta=\tfrac16\Rightarrow\theta\approx9{,}6^\circ$. Hay más ángulos (6 valores de $m$ con $|\text{sen}\theta|\le1$).</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ejercicio 4 · Difracción de Fraunhofer: λ, ancho central e I₀ <span class="tag">2025.2 SJ · P3</span></summary>
+      <div class="body">
+        <p>Rendija de ancho $a=0{,}075$ mm, pantalla a $L=1{,}5$ m. El 2º mínimo está a $24{,}8$ mm del centro; a $y_0=6{,}2$ mm se mide $I=1{,}2\ \mu$W/mm². (a) $\lambda$; (b) ancho del máximo central; (c) $I_0$.</p>
+        <div class="step"><span class="n">a</span><strong>2º mínimo.</strong> $y_2=\tfrac{2\lambda L}{a}\Rightarrow\lambda=\tfrac{a\,y_2}{2L}=\tfrac{(0{,}075\times10^{-3})(24{,}8\times10^{-3})}{2(1{,}5)}=620$ nm.</div>
+        <div class="step"><span class="n">b</span><strong>Ancho central.</strong> $y_1=\tfrac{\lambda L}{a}=\tfrac{y_2}{2}=12{,}4$ mm ⟹ $D=2y_1=24{,}8$ mm.</div>
+        <div class="step"><span class="n">c</span><strong>Despejar $I_0$.</strong> En $y_0=y_1/2$ se tiene $\beta/2=\pi/2$, así que $I(y_0)=I_0\big(\tfrac{\text{sen}(\pi/2)}{\pi/2}\big)^2=I_0(2/\pi)^2$. Entonces $I_0=\tfrac{I(y_0)}{(2/\pi)^2}=\tfrac{1{,}2}{0{,}405}\approx2{,}96\ \mu$W/mm².</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- BONUS: RELATIVIDAD -->
+  <!-- ============================================================= -->
+  <section id="bonus">
+    <h2>Relatividad especial <span class="pill w">Casa Central: puede aparecer</span></h2>
+    <p><strong>Ojo, tú eres de Casa Central:</strong> esta materia ya apareció en un C1 de tu campus (2024.2 CC, problema 4), y su formulario incluyó las transformaciones de Lorentz. En otros paralelos entra en el C2, pero para ti <strong>no es opcional: estúdiala</strong>. Aun así, primero asegura los 3 bloques anteriores (son 3 de 3 seguros).</p>
+
+    <h3>Postulados y factor de Lorentz</h3>
+    <p>Einstein parte de dos ideas: (1) las leyes de la física son iguales en todo marco inercial; (2) la velocidad de la luz $c$ es la misma para todos. De ahí sale el <strong>factor de Lorentz</strong>, que aparece en todo:</p>
+    $$\gamma=\frac{1}{\sqrt{1-\beta^2}}=\frac{1}{\sqrt{1-v^2/c^2}},\qquad \beta=\frac{v}{c}$$
+
+    <h3>Energía y momentum relativistas</h3>
+    <div class="box formula">
+      <div class="bt">Las 4 que necesitas</div>
+      $$E=\gamma mc^2\qquad \vec p=\gamma m\vec v\qquad E^2-(pc)^2=(mc^2)^2\qquad E_K=(\gamma-1)mc^2$$
+      $mc^2$ es la <strong>energía en reposo</strong>. $E$ es la total. La tercera relación (energía-momentum) es la más útil para resolver colisiones sin conocer la velocidad.
+    </div>
+
+    <h3>Fotones</h3>
+    <p>El fotón no tiene masa ($m=0$), así que $E=pc$. Además:</p>
+    $$E=h f=\frac{hc}{\lambda},\qquad p=\frac{h}{\lambda}$$
+
+    <h3>Cómo se resuelven las colisiones</h3>
+    <p>Igual que en física clásica: <strong>conservas energía y momentum</strong>, pero con las expresiones relativistas. Escribes las dos ecuaciones de conservación y despejas.</p>
+
+    <details class="ex">
+      <summary>Ejercicio · Fotón que choca con partícula en reposo <span class="tag">2024.2 CC · P4</span></summary>
+      <div class="body">
+        <p>Partícula en reposo con $mc^2=50$ MeV es golpeada por un fotón de energía $E$. Se combinan en una nueva partícula de $Mc^2=100$ MeV. (b) halla $E$; (c) halla $\beta$ de la partícula resultante.</p>
+        <div class="step"><span class="n">a</span><strong>Conservación.</strong> Energía: $E_M=E+mc^2$. Momentum: $p_M=E/c$ (el fotón aporta todo el momentum).</div>
+        <div class="step"><span class="n">b</span><strong>Relación E-p.</strong> $E_M^2=M^2c^4+p_M^2c^2\Rightarrow(E+mc^2)^2=M^2c^4+E^2$. Despejando: $E=\dfrac{M^2c^4-m^2c^4}{2mc^2}=\dfrac{100^2-50^2}{2\cdot50}=75$ MeV.</div>
+        <div class="step"><span class="n">c</span><strong>Velocidad.</strong> $E_M=\sqrt{M^2c^4+E^2}=\sqrt{100^2+75^2}=125$ MeV. Como $E_M=\gamma Mc^2$: $\gamma=\tfrac{125}{100}=1{,}25\Rightarrow\beta=0{,}6$.</div>
+      </div>
+    </details>
+
+    <div class="box formula">
+      <div class="bt">Formulario relatividad</div>
+      <div class="keys">
+        <div class="k"><span class="d">Factor de Lorentz</span><span class="f">$\gamma=\dfrac{1}{\sqrt{1-\beta^2}}$</span></div>
+        <div class="k"><span class="d">Dilatación / contracción</span><span class="f">$\Delta t=\gamma\Delta t_0,\quad L=L_0/\gamma$</span></div>
+        <div class="k"><span class="d">Energía y momentum</span><span class="f">$E=\gamma mc^2,\ \ p=\gamma mv$</span></div>
+        <div class="k"><span class="d">Relación energía-momentum</span><span class="f">$E^2-(pc)^2=(mc^2)^2$</span></div>
+        <div class="k"><span class="d">Energía cinética</span><span class="f">$E_K=(\gamma-1)mc^2$</span></div>
+        <div class="k"><span class="d">Fotón</span><span class="f">$E=pc=hf=\dfrac{hc}{\lambda},\ p=\dfrac{h}{\lambda}$</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- APÉNDICE MATEMÁTICO -->
+  <!-- ============================================================= -->
+  <section id="mate">
+    <h2>Apéndice matemático (lo justo para no atascarte)</h2>
+
+    <h3>Producto cruz de vectores unitarios</h3>
+    <p>Lo usas todo el rato para hallar $\vec B$, $\vec S$ y direcciones. La regla cíclica $\hat x\to\hat y\to\hat z\to\hat x$:</p>
+    $$\hat x\times\hat y=\hat z,\quad \hat y\times\hat z=\hat x,\quad \hat z\times\hat x=\hat y$$
+    <p>Y al revés cambia el signo: $\hat y\times\hat x=-\hat z$, etc. Para vectores generales, el <strong>determinante</strong>:</p>
+    $$\vec A\times\vec B=\begin{vmatrix}\hat x&\hat y&\hat z\\A_x&A_y&A_z\\B_x&B_y&B_z\end{vmatrix}$$
+    <div class="box tip">
+      <div class="bt">Regla de la mano derecha</div>
+      Apunta los dedos en $\hat E$, ciérralos hacia $\hat B$: el pulgar da $\hat k=\hat E\times\hat B$ (la dirección de propagación). Sirve para verificar sin calcular.
+    </div>
+
+    <h3>Aproximación de ángulo pequeño</h3>
+    <p>Cuando la pantalla está lejos (ángulos chicos, en radianes):</p>
+    $$\text{sen}\theta\approx\tan\theta\approx\theta,\qquad \tan\theta=\frac{y}{L}$$
+    <p>Por eso $d\,\text{sen}\theta=m\lambda$ se convierte en $y_m=\dfrac{m\lambda L}{d}$.</p>
+
+    <h3>Identidad seno-a-producto (suma de ondas)</h3>
+    $$\text{sen}A+\text{sen}B=2\,\text{sen}\!\left(\tfrac{A+B}{2}\right)\cos\!\left(\tfrac{A-B}{2}\right)$$
+    <p>Es la que permite sumar dos ondas y sacar el factor $\cos(\phi/2)$ de la intensidad de interferencia.</p>
+
+    <h3>Exponencial compleja</h3>
+    $$e^{i\theta}=\cos\theta+i\,\text{sen}\theta$$
+    <p>A veces los campos se escriben como $E_0e^{i(kx-\omega t)}$; el campo físico es la <strong>parte real</strong>. Trabajar con exponenciales simplifica las sumas de ondas.</p>
+
+    <h3>Prefijos y potencias que aparecen siempre</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Prefijo</th><th>Factor</th><th>Ejemplo típico</th></tr></thead>
+        <tbody>
+          <tr><td>nano (n)</td><td>$10^{-9}$</td><td>$\lambda=500$ nm $=5\times10^{-7}$ m</td></tr>
+          <tr><td>micro (μ)</td><td>$10^{-6}$</td><td>$a=22{,}8\ \mu$m $=2{,}28\times10^{-5}$ m</td></tr>
+          <tr><td>mili (m)</td><td>$10^{-3}$</td><td>$x=8$ mm $=8\times10^{-3}$ m</td></tr>
+          <tr><td>Giga (G)</td><td>$10^{9}$</td><td>$30$ GW $=3\times10^{10}$ W</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- FORMULARIO MAESTRO -->
+  <!-- ============================================================= -->
+  <section id="master">
+    <h2>Formulario maestro (todo junto)</h2>
+    <p class="lead">Para repasar la noche antes. Si algo aquí no te suena, vuelve a la sección correspondiente.</p>
+
+    <h4>Ondas EM</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">Onda / velocidad</span><span class="f">$\vec E=\vec E_0\cos(\vec k\cdot\vec r-\omega t),\ c=\tfrac{1}{\sqrt{\mu_0\varepsilon_0}}$</span></div>
+      <div class="k"><span class="d">Relaciones</span><span class="f">$k=\tfrac{2\pi}{\lambda},\ \omega=2\pi f,\ c=\tfrac{\omega}{k}=\lambda f,\ E=cB$</span></div>
+      <div class="k"><span class="d">Campo B</span><span class="f">$\vec B=\tfrac1c\hat k\times\vec E,\ \ \hat k=\hat E\times\hat B$</span></div>
+      <div class="k"><span class="d">Poynting / intensidad</span><span class="f">$\vec S=\tfrac{1}{\mu_0}\vec E\times\vec B,\ I=\tfrac12 c\varepsilon_0E_0^2=\tfrac{P}{A}$</span></div>
+      <div class="k"><span class="d">Presión radiación</span><span class="f">$P=\tfrac{I}{c}$ (abs), $\tfrac{2I}{c}$ (ref)</span></div>
+      <div class="k"><span class="d">Polarización</span><span class="f">$I=\tfrac{I_0}{2}$ (1º pol.), $I=I_0\cos^2\theta$ (Malus)</span></div>
+    </div></div>
+
+    <h4>Refracción</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">Índice / λ</span><span class="f">$n=\tfrac{c}{v},\ \lambda_n=\tfrac{\lambda_0}{n}$</span></div>
+      <div class="k"><span class="d">Snell / reflexión</span><span class="f">$n_1\text{sen}\theta_1=n_2\text{sen}\theta_2,\ \theta_i=\theta_r$</span></div>
+      <div class="k"><span class="d">Ángulo crítico / Brewster</span><span class="f">$\text{sen}\theta_c=\tfrac{n_2}{n_1},\ \tan\theta_B=\tfrac{n_2}{n_1}$</span></div>
+      <div class="k"><span class="d">Profundidad aparente</span><span class="f">$h'=\tfrac{h}{n}$</span></div>
+    </div></div>
+
+    <h4>Interferencia y difracción</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">Camino / fase</span><span class="f">$\phi=\tfrac{2\pi}{\lambda}\Delta r$; const. $\Delta r=m\lambda$; destr. $(m+\tfrac12)\lambda$</span></div>
+      <div class="k"><span class="d">Young</span><span class="f">$d\text{sen}\theta=m\lambda,\ y_m=\tfrac{m\lambda L}{d}$</span></div>
+      <div class="k"><span class="d">Intensidad interf.</span><span class="f">$I=4I_0\cos^2(\phi/2),\ \phi=kd\text{sen}\theta$</span></div>
+      <div class="k"><span class="d">Difracción</span><span class="f">$a\text{sen}\theta=m\lambda,\ I=I_0\!\big(\tfrac{\text{sen}(\beta/2)}{\beta/2}\big)^2,\ \beta=ka\text{sen}\theta$</span></div>
+      <div class="k"><span class="d">Ancho central</span><span class="f">$\delta\theta=\tfrac{2\lambda}{a}$</span></div>
+    </div></div>
+
+    <h4>Relatividad (bonus)</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">Lorentz / energía</span><span class="f">$\gamma=\tfrac{1}{\sqrt{1-\beta^2}},\ E=\gamma mc^2,\ p=\gamma mv$</span></div>
+      <div class="k"><span class="d">E-p / fotón</span><span class="f">$E^2-(pc)^2=(mc^2)^2,\ E=hf=\tfrac{hc}{\lambda}$</span></div>
+    </div></div>
+
+    <div class="box tip">
+      <div class="bt">Constantes que suelen dar</div>
+      $c\approx3\times10^8$ m/s · $\varepsilon_0\approx8{,}85\times10^{-12}$ C²/N·m² · $\mu_0=4\pi\times10^{-7}$ N/A² · $h=6{,}626\times10^{-34}$ J·s · $n_{\text{agua}}=1{,}33$ · $n_{\text{vidrio}}=1{,}50$
+    </div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- TIPS -->
+  <!-- ============================================================= -->
+  <section id="tips">
+    <h2>Estrategia de examen</h2>
+    <div class="box tip">
+      <div class="bt">Método para cada problema</div>
+      <ol style="margin:6px 0 0">
+        <li><strong>Dibuja</strong> la situación (rayos, ejes, ángulos respecto a la normal).</li>
+        <li><strong>Lista datos e incógnitas</strong> con sus unidades.</li>
+        <li><strong>Elige el principio</strong> antes que la fórmula: ¿es Snell? ¿interferencia? ¿presión de radiación? ¿conservación?</li>
+        <li><strong>Plantea, luego reemplaza.</strong> Si es sin calculadora, deja la expresión indicada — vale como correcto.</li>
+        <li><strong>Verifica</strong>: ¿unidades coherentes? ¿orden de magnitud razonable?</li>
+      </ol>
+    </div>
+    <ul>
+      <li><strong>Justifica todo.</strong> En estos certámenes, resultado sin argumento = 0 puntos, aunque el número esté bien. La rúbrica premia el razonamiento por pasos.</li>
+      <li><strong>Ángulos siempre respecto a la normal</strong>, nunca respecto a la superficie. Es el error nº1 en Snell.</li>
+      <li><strong>Distingue propagación vs. oscilación</strong> (Bloque 1) y $d$ vs. $a$ (Bloque 3). Son las dos confusiones que más puntos cuestan.</li>
+      <li><strong>Si te dan una función de onda, léela como un mapa:</strong> del argumento sacas $\vec k$, $\omega$, $\lambda$, $f$, y la dirección de $\vec E_0$ te da la polarización.</li>
+      <li><strong>Con calculadora (tu caso, Casa Central):</strong> entrega el número final con unidades. Verifica el modo <em>grados/radianes</em> antes de empezar y cuida los paréntesis — ahí se van los errores tontos.</li>
+      <li><strong>Reparte el tiempo:</strong> ~30 min por problema. Si uno se atasca, pasa al siguiente y vuelve — cada inciso suma por separado.</li>
+    </ul>
+
+    <div class="box warn">
+      <div class="bt">Prioridad de estudio (si te queda poco tiempo)</div>
+      1) Presión de radiación + polarización · 2) Snell + reflexión total interna · 3) Young + difracción y franjas ausentes. Con eso cubres los 3 problemas seguros. 4) Relatividad — en Casa Central sí puede tocar, no la dejes fuera del repaso.
+    </div>
+
+    <hr>
+    <p style="color:var(--muted);font-size:13.5px">Guía generada a partir de: 7 certámenes 1 de FIS140 (2023.1–2025.2, campus Casa Central y San Joaquín), resúmenes de alumnos y la guía del ramo (libro Sears–Zemansky–Young–Freedman, Vol. 2, caps. 32–37). Úsala junto a los certámenes originales que están en esta misma carpeta.</p>
+  </section>
+
+  </main>
+</div>
+
+<button class="btn backtop" id="backtop" title="Volver arriba">↑</button>
+
+<script>
+  // ---- Tema claro/oscuro ----
+  const root=document.documentElement, themeBtn=document.getElementById('themeBtn');
+  function setTheme(t){root.setAttribute('data-theme',t);try{localStorage.setItem('fis140theme',t)}catch(e){}}
+  (function(){try{const s=localStorage.getItem('fis140theme');if(s)root.setAttribute('data-theme',s)}catch(e){}})();
+  themeBtn.addEventListener('click',()=>{
+    const cur=root.getAttribute('data-theme');
+    const isDark=cur? cur==='dark' : matchMedia('(prefers-color-scheme:dark)').matches;
+    setTheme(isDark?'light':'dark');
+  });
+
+  // ---- Imprimir ----
+  document.getElementById('printBtn').addEventListener('click',()=>window.print());
+
+  // ---- Menú móvil ----
+  const sb=document.getElementById('sidebar'), sc=document.getElementById('scrim'),
+        mt=document.getElementById('menuToggle');
+  function closeMenu(){sb.classList.remove('open');sc.classList.remove('on')}
+  mt.addEventListener('click',()=>{sb.classList.toggle('open');sc.classList.toggle('on')});
+  sc.addEventListener('click',closeMenu);
+  document.querySelectorAll('#nav a').forEach(a=>a.addEventListener('click',closeMenu));
+
+  // ---- Scrollspy: resalta la sección activa ----
+  const links=[...document.querySelectorAll('#nav a')];
+  const map=new Map(links.map(a=>[a.getAttribute('href').slice(1),a]));
+  const obs=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        links.forEach(l=>l.classList.remove('active'));
+        const a=map.get(e.target.id); if(a)a.classList.add('active');
+      }
+    });
+  },{rootMargin:'-20% 0px -70% 0px',threshold:0});
+  document.querySelectorAll('section[id]').forEach(s=>obs.observe(s));
+
+  // ---- Botón volver arriba ----
+  const bt=document.getElementById('backtop');
+  addEventListener('scroll',()=>{bt.classList.toggle('on',scrollY>600)});
+  bt.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
+</script>
+</body>
+</html>

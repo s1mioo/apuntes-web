@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ética y moral · Infosoc C1</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T7</div>
+    <div><h1>Ética y moral</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 1</small></div>
+  </div>
+  <div class="pages"><a href="0-Guia-de-estudio-C1.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 3</small></span></a><a href="1-Proyectos.html"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></a><a href="2-Definiciones.html"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></a><a href="3-Falacias.html"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></a><a href="4-Sesgos-cognitivos.html"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></a><a href="5-Pensamiento-critico.html"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></a><a href="6-Resolver-problemas.html"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></a><a href="7-Etica-y-moral.html" class="cur"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></a><a href="8-Etica-antiguedad.html"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></a><a href="9-Etica-moderna.html"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></a><a href="10-Sociedades.html"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></a><a href="11-Metodo-cientifico.html"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></a><a href="12-Ingenieria.html"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></a><a href="13-Computacion.html"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></a><a href="14-Ejercicios.html"><b>14</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 7</div><a href="#t7-inicio">Qué pesa y qué estudiar</a><a href="#origen">Grecia, Roma y hoy</a><a href="#rae">Lo que dice la RAE</a><a href="#puente">Lo que viene: antigua vs moderna</a><div class="grp">Práctica</div><a href="#t7-videos">Videos del tema</a><a href="#t7-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+<section id="t7-inicio">
+<h2>Tema 7 · Ética y moral</h2>
+<p class="lead">Clase <code>07-etica-moral-hnd.pdf</code>. La más corta del ramo: definiciones de la RAE, de dónde vienen las palabras “ética” y “moral”, y por qué hoy se usan como sinónimos. Es la puerta de entrada a los temas 8 y 9.</p>
+
+<div class="hero">
+  <div class="big">Peso en el certamen: medio</div>
+  <div class="sub">Fue la <b>pregunta 1 del C1 2026-1</b> (20 pts en el enunciado, 15 en la pauta): “En Grecia se hablaba de ‘ética’ y en Roma de ‘moral’. Hoy se consideran sinónimos, pero tenían significados diferentes. Explique cuáles eran.” La respuesta cabe en un párrafo; son puntos casi regalados si la sabes.</div>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder escribir</h5>
+    <p>· Qué significaba <b>ēthikós</b> en Grecia (carácter) y en qué se centraba.</p>
+    <p>· Qué significaba <b>morālis</b> en Roma (costumbres) y quién lo usó (Cicerón).</p>
+    <p>· <b>Por qué hoy son sinónimos</b> (traducción imprecisa).</p>
+    <p>· En qué se centra la ética moderna.</p>
+  </div>
+  <div class="card"><h5>Dónde está</h5>
+    <p><b>Diapositivas</b> <code>07-etica-moral-hnd.pdf</code> (las diapositivas “Comentarios – Grecia” y “Comentarios – Roma”).</p>
+    <p>Definiciones en <a class="inl" href="https://dle.rae.es/%C3%A9tico" target="_blank" rel="noopener">dle.rae.es/ético</a> y <a class="inl" href="https://dle.rae.es/moral" target="_blank" rel="noopener">dle.rae.es/moral</a>.</p>
+  </div>
+  <div class="card"><h5>Plan para este tema</h5>
+    <p>1. Leer esta página (10 min).</p>
+    <p>2. Escribir la respuesta de la P1 del C1 2026-1 en 5 líneas (5 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="origen">
+<h2>Grecia, Roma y hoy</h2>
+
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 720 200" width="720" role="img" aria-label="Origen de ética y moral">
+<g font-family="system-ui,sans-serif" font-size="13">
+  <defs><marker id="ar7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--muted)"/></marker></defs>
+  <rect x="10" y="20" width="210" height="150" rx="10" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="115" y="46" text-anchor="middle" fill="var(--brand)" font-weight="800">GRECIA · Aristóteles</text>
+  <text x="115" y="74" text-anchor="middle" fill="var(--ink)" font-size="15" font-weight="700">ēthikós</text>
+  <text x="115" y="96" text-anchor="middle" fill="var(--ink)">= “carácter”</text>
+  <text x="115" y="124" text-anchor="middle" fill="var(--muted)" font-size="12">centro: la persona,</text>
+  <text x="115" y="140" text-anchor="middle" fill="var(--muted)" font-size="12">ser feliz = estar conforme</text>
+  <text x="115" y="156" text-anchor="middle" fill="var(--muted)" font-size="12">consigo mismo</text>
+  <rect x="255" y="20" width="210" height="150" rx="10" fill="var(--lib-soft)" stroke="var(--lib)"/>
+  <text x="360" y="46" text-anchor="middle" fill="var(--lib)" font-weight="800">ROMA · Cicerón</text>
+  <text x="360" y="74" text-anchor="middle" fill="var(--ink)" font-size="15" font-weight="700">morālis</text>
+  <text x="360" y="96" text-anchor="middle" fill="var(--ink)">= “costumbres, usanzas”</text>
+  <text x="360" y="124" text-anchor="middle" fill="var(--muted)" font-size="12">lo usa para traducir</text>
+  <text x="360" y="140" text-anchor="middle" fill="var(--muted)" font-size="12">el término griego:</text>
+  <text x="360" y="156" text-anchor="middle" fill="var(--muted)" font-size="12">traducción imprecisa</text>
+  <rect x="500" y="20" width="210" height="150" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="605" y="46" text-anchor="middle" fill="var(--accent)" font-weight="800">HOY</text>
+  <text x="605" y="74" text-anchor="middle" fill="var(--ink)" font-size="15" font-weight="700">ética ≈ moral</text>
+  <text x="605" y="96" text-anchor="middle" fill="var(--ink)">sinónimos</text>
+  <text x="605" y="124" text-anchor="middle" fill="var(--muted)" font-size="12">la ética moderna se centra</text>
+  <text x="605" y="140" text-anchor="middle" fill="var(--muted)" font-size="12">en la relación de la</text>
+  <text x="605" y="156" text-anchor="middle" fill="var(--muted)" font-size="12">persona con la sociedad</text>
+  <path d="M222 95 L251 95" stroke="var(--muted)" stroke-width="2" marker-end="url(#ar7)"/>
+  <path d="M467 95 L496 95" stroke="var(--muted)" stroke-width="2" marker-end="url(#ar7)"/>
+  <text x="360" y="192" text-anchor="middle" fill="var(--muted)" font-size="12">la traducción de Cicerón une las dos palabras; con el tiempo se vuelven sinónimas</text>
+</g>
+</svg>
+</div>
+<figcaption>Toda la respuesta de la pregunta 1 del C1 2026-1 en un dibujo.</figcaption>
+</figure>
+
+<div class="box def">
+  <div class="bt">Grecia: ética como carácter</div>
+  <p>Los filósofos griegos que iniciaron el estudio del tema, en particular Aristóteles, hablaban de <b>ēthikḗ</b>, que se puede traducir como “<b>carácter</b>”. El centro de la filosofía griega era <b>la persona</b>, que fuera <b>feliz</b>. Pero “felicidad” la entendían como <b>estar conforme consigo mismo</b>, no como placer. La idea era esforzarse en <b>ser buena persona</b>.</p>
+</div>
+<div class="box def">
+  <div class="bt">Roma: moral como costumbre</div>
+  <p><b>Cicerón</b>, filósofo romano, usaba el término <b>morālis</b> (de <i>mos, moris</i>), que significa “<b>costumbres, usanzas</b>”, para traducir el término griego. Esa <b>traducción imprecisa</b> llevó a que hoy se consideren sinónimos.</p>
+</div>
+<div class="box def">
+  <div class="bt">Hoy</div>
+  <p>La <b>ética moderna se centra en la relación de la persona con la sociedad</b> (qué debo hacer, qué efecto tienen mis actos en los demás). Igual sobreviven variantes de las escuelas de la antigüedad, como la ética de la virtud neoaristotélica.</p>
+</div>
+
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">C1 2026-1 · P1</span></div>
+<p>“El término griego ēthikós puede traducirse como carácter; el énfasis de la filosofía griega era en el carácter de la persona, que fuera una persona virtuosa, conforme consigo misma. El término latín morālis significa costumbre, usanza. Fue usado por el filósofo romano Cicerón como traducción del término griego. Esta traducción imprecisa llevó finalmente a considerar ambos como sinónimos al integrar ambos términos en el vocabulario actual.”</p>
+<div class="pts"><span>Origen de “ética”</span><span>6</span><span>Origen de “moral”</span><span>6</span><span>Por qué son sinónimos en el uso actual</span><span>3</span></div>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · no contestes con la distinción de internet</div>
+  <p>En muchos videos y textos se distingue así: <b>moral</b> = normas y costumbres de una sociedad (externas, cambian según la cultura); <b>ética</b> = reflexión filosófica, personal y racional sobre esas normas. Es una distinción válida y la puedes agregar al final, pero <b>no es lo que pide el profe</b>. Él pregunta por el origen histórico: carácter (Grecia) vs costumbre (Roma) y la traducción de Cicerón.</p>
+</div>
+</section>
+
+<section id="rae">
+<h2>Lo que dice la RAE</h2>
+<p class="lead">Las diapositivas copian todas las acepciones. Estas son las que importan.</p>
+<div class="cols">
+  <div class="card"><h5>Ético, ca</h5>
+    <p>Del latín <i>ethĭcus</i>, y este del griego <i>ēthikós</i>.</p>
+    <p>· Recto, conforme a la moral.</p>
+    <p>· Conjunto de normas morales que rigen la conducta de la persona en cualquier ámbito (ética profesional, cívica, deportiva).</p>
+    <p>· <b>Parte de la filosofía que trata del bien y del fundamento de sus valores.</b></p>
+  </div>
+  <div class="card"><h5>Moral</h5>
+    <p>Del latín <i>morālis</i>.</p>
+    <p>· Relativo a las acciones de las personas desde el punto de vista del bien o el mal, en su vida individual y sobre todo colectiva.</p>
+    <p>· Que concierne al fuero interno, no al orden jurídico (“tenía obligación moral de pagar”).</p>
+    <p>· <b>Doctrina del obrar humano que regula el comportamiento en relación con el bien y el mal.</b></p>
+    <p>· También: estado de ánimo (“tengo la moral por los suelos”).</p>
+  </div>
+</div>
+<div class="box tip"><div class="bt">Fíjate</div>
+<p>La propia RAE da “moral” como sinónimo de “ético” y viceversa. Eso confirma el punto del profe: en el uso actual son sinónimos, aunque en su origen no lo eran.</p></div>
+</section>
+
+<section id="puente">
+<h2>Lo que viene: ética antigua vs moderna</h2>
+<p class="lead">El resumen de la clase anuncia los dos temas siguientes. Esta tabla es la columna vertebral de la pregunta “¿cuál es la principal diferencia entre los sistemas éticos antiguos y modernos?” (C1 2025-1, 20 pts).</p>
+<div class="tw"><table>
+<thead><tr><th></th><th>Antigüedad (tema 8)</th><th>Modernidad (tema 9)</th></tr></thead>
+<tbody>
+<tr><td><b>Pregunta central</b></td><td>¿Cómo vivir una buena vida? ¿Cómo ser buena persona?</td><td>¿Cómo debo actuar? ¿Qué le debo a los demás?</td></tr>
+<tr><td><b>Centro</b></td><td>La <b>persona</b> y su carácter.</td><td>Las <b>relaciones entre personas</b>, las acciones y sus resultados.</td></tr>
+<tr><td><b>Meta</b></td><td>La felicidad como estar conforme consigo mismo.</td><td>Cumplir deberes (Kant) o maximizar la felicidad de todos (utilitarismo).</td></tr>
+<tr><td><b>Escuelas</b></td><td>Cínicos, cirenaicos, peripatéticos (Aristóteles), epicúreos, estoicos.</td><td>Deontología de Kant, utilitarismo (Bentham, Mill); sobrevive la ética de la virtud neoaristotélica.</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="t7-videos">
+<h2>Videos del tema</h2>
+<p class="lead">Revisados con su transcripción. Ojo: casi todos explican la distinción “de internet” (ver el recuadro naranja de arriba); úsalos como complemento.</p>
+<div class="vgrid">
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=ABZwNy_zhtg" target="_blank" rel="noopener"><img loading="lazy" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAUDBAoNDw4ODQ0PDw0NDQ0NDQ4NDQ0NDQ0NDQ0NDQ0NDQ0NDRANDQ0ODQ0NDRUNDhERExMTDQ0WGBYSGBASExIBBQUFCAcIDwkJDxYVEBIVFxUVFRUVGBUVFRUVFRUVFRUVFRUSFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFf/AABEIALQBQAMBIgACEQEDEQH/xAAdAAABBAMBAQAAAAAAAAAAAAAABAUGBwEDCAIJ/8QAVRAAAQIDBQMFCQsIBwcFAAAAAQACAwQRBQYSITEHQXETIlFhsQgjMlRygZGh0xQzQlJzo6TB0dTwFyQ0Q2KU0uEYY4KEkqLxFVVkg7KzwhZERVN0/8QAGgEAAgMBAQAAAAAAAAAAAAAAAAQCAwUBBv/EADIRAAICAQMBBQcDBAMAAAAAAAABAgMRBBIhMRMyQVGBFCIzcZGh8CNh0QUVQ/FCUsH/2gAMAwEAAhEDEQA/AOMkIQgAQhCABCEIAEIQgAQhCABCEIAEIQgAQhCABCEIAEIQgAQhCABCEIAEIQgAQhCABCEIAEIQgAQhCABCEIAEIQgAQhCAJjB2Y2s7MS9a/wBdA9qlMLZFbR0lfn5b2y6KshnNbwHYpDZjcwlFqJMdlporzOYoGwy8LvBk6/3mU+uOmO29nNqS7zCjQMEQAEt5WC7I6ZtiFvrXf92pXIKkO6FlcM8euEw+tyndbKENyOUUQnPazmNtzJ4/qvnIX8aVyOzq1IhoyBU/KwR2xArbsxjamvxTTipJs8ZV+hGW/VJy1tihu4/PUZeirU9vP2/go8bIrb8V+flvbLP5ILb8V+flvbLrJsFe+SVH9yt8l9/5JewV+b/PQ5L/ACP254r8/Le2WfyPW54r8/Le2XWmBAauf3O3yX3/AJOewV+b/PQ5KGyC2/Ffn5b2yPyP254r8/Le2XWLWZlbMCP7nZ5L7/yd9gr83+ehyc3Yzbp/9p9IlfbL2Nilv+KfSJX2667lWpZCan46mT8heWlivM4+g7C7wu0kwf7zKe3TjB7m+9LtJAH+9yP1zK7HsZvOCsixoeQTVUnMWsrUT5t2xsRt+A7BFk8L6A090Sjsjpm2OR60iOyW2vFvn5b2y7e2zwqTPGEztcoM5qy9Rr7K7HFJcfnmP06GE4KTb5/PI5iktjNuxK4JStNfziVHbHCVDYReLxMfvMp94XWdzW5O4qUQ2pmrUylFN4KrNJCMsLP56HE42CXj8S+kyf3hehsBvJ4kP3qT+8Lt+GEktW1GwhqpvUNcsgtMm8LJxZ/R/vL4kP3qT+8JyZ3Md7TmLPGf/GSH3pdO/wDrhtaYh5s6ddagU6zQJ5k7ciuoWRifPmeNSajo1HRVVL+oQXUm9A/BnFl5tiNvyn6RKYKiv6TKPyHkR3J5s/uab1xWNiMs+rHtD2n3XIirXCoNDMgjLcRVdZ30kmzzMLnkRWtIa45jMHJwIBpXflTr0VyXEhlsrLNOrYMNp35taAcx1hMafURuztKbtP2aWT53f0YL3f7uH75IfekltPub70wWOiRJANYxpc4+65E0AFSaNmSTluAX0tinMqObRhWUmPkYn/SU244QvtPl+y4tonIQdf6yD7RSC62xK35x74ctKco+GAXj3RKswh2hrEjtB8xKs6UbmOI7Vffcvj86nPkoXakqb5Tlhj9+jhXHKb/PQ5TmO5kvY0VdZ9B/+yQ+qaTdE7n+8o1kh+9Sf3hfS+8Y72eIVe2hD04p3aZsuGcJf0f7yeJD96k/vCx+QG8niQ/epP7wu6ytbkp2rG+wicMfkCvJ4kP3qT+8LzE2CXjAqZIUH/FSf3hdykLRO+C7ySjtWc7FHCn5Gbd8U+kSvtkfkZt3xT6RK+3XXZCzRR7eRP2dHIZ2NW74p9IlfbLydjlueK/SJb2y68ctbgpK1kXSkROyG81vkjsUjslmYTJYzOYzyW9ikdisq4cUrX1G7HwWhdaWyCpLupJTDNwj8aAPU4/auj7q2WQ0E5Klu6/k2iJJuAzLIwPXhdDp2lOaqP6LF9I/1UyhYDFMLhQ++eZReXapjcJvfPMVgTZtsnXIdaORPSleBHJqvBEScielZ5E9KV8mjk1zAYG7kjXVBhu6Urw5ngtjJVx0BK4ot9CJslWpVDavEvDO9KWtWtDoJTHKwmVcFaVjSxoKqu7oNHKBWvAGQWlp1iORG3qU5t1lwI8MjfCz8z3KuHtKtLbu3vsE/wBW71O/mqzevP69frSNfSv9JDzc5vhKTwlG7ofCUlhpzTfDRTb3ma7Um+TYXb93FVdeC2icq1fWp1y4KX7S5ww4bD8HEcXACqrLZ67l4sV7jXOoB0AqQKCvUoXZcv2RZTETw7BmfCYHA6tqOrLzbslIbJnI8JuKKw5eEWetwA0cN4HhDXNTF7SRQD8epI56GMJxECmtaAAddcgOKjtUljBc489TUy8OhqHNNOeNM9MWVQDueObuLWmqs7ZPexvvT3jA7NpJHNfStDuo4eunSufJS04EOIQyLDfDNcQa9ri0nwjQasJzLenNOsSbiS7g+GawzQuGpA6R0tGtejPUZwqzRPcv9lVkIzjg6enL22e0nFMQh/zG/aohf3aDZhl4zGzDHOdDe0BpxEkggaJVcKTs+ahCL7ng4z4dIbaEnPFp8IZ5b6rVtcu/LNkZhzYMNpawuBDQCCCCCCBqt7e5V7o9DI2qM9ssnKkBtKdRHarY2EXjbLzEeIYUaIyIxrawYbohaW0IqGjfmquYxdM9y5ADZJ53umH18zWhIaVNyNPVySgONu7SYeHKTm6E6ugOYP8AMVGId/TEcGiTigONMTgAB1nPRXFbEMubTXPeorHsp+eTfx5lo7ZeZkOSz0GF4WshbnhaikRvJpcFonPBd5J7EpeEnmhzXcCg4iJOaii9OWaKBaaiFrc1bivDgrIlbZGbDb3uH5LexSi7HvjOIUZu/wC9w/Ib2KTXc98Z5QVdXVFlvRnQlkHmjgqL7sFn6Eflx/2leVi+COAVJ9174En5UbsZ9id1fw2L6X4kTnmAFM7hN74OBUSlQprcJvfRwXnJG6ywOTQGpThWC1RK8iei8OCUlq8uCMBkREZqSXUhAtNelMDhmpBdmKGtdx+xNaL4hTqe4IJhvOdxWWtXuMeceKy0JzxFn0Hm6fvjVa0DQKqrrjvjVastoFo0d0Ts7xVe3lvPgeQ//qaqwcFaO3k8+B5ETtaqvevPf1D40vzwNfSfCQ9XS+EpRBCi10jm78dClUuE3pvhoqu77K92+uf7nYGuAGMl5Oobh1HTv9SgmyV9A5w+EKgb8IJDRxNK8SrI292TEiyTjDZjdCcHlu8wwDjORByFDkdAVX2z+TfBcGxA0NfDAbgJIBbSoJIzOZ6dNVy7j1LaOWv2N1+byxWPEJkzhJpiZBYXPFRWheQQ0kZ6gkZ4U6WzHLpbEc60a+udRzcyNKHwk6vuvLuOTecSXFxJ1PhOppiPm3JbO2fCLMJIa2uTjpplXqOWag5rCSLlW8tsqyVhTUNw5NkPARm0QiKmuhiaVp5h0FTGfkHtgteBhLDvpTDoWkCuRy4deiLN5E5se17RQhzDVhDhVpad4/GlCXurnQn1zDQ12WVRX8FRslua4CNWEyQdznbvfIsM5CgdhzxAkn4LWkHTMggDozCs7bBnITPyR+pVlsRsJjozohbheMQGdTQlpBdnqWtaeqvWrL2vfoMwP6s/UtbS57H6mRqUldj5HKLGLpfuZx+ZH5eJ2NXODGLpDua/0J3y8TsaqNJ3hnW90smd0THOPNDwT3PaedMk2NeC0TKkRGIFpclMVqTuSDG0anBaJtvNdwKUlaZrwXcCuARMhFF7IXkhQLDW4LWVtetRViK2yMXZPeYXkN7FJLFdR7T0EKNXR95heQ3sUjs3whxUKuqLLfEvOw7QLmimWSqDusGktlD+1EHqCte6cElo4Ku+6xlB7nlnbxGc30w3H6k7qvgsX0r/AFYnPEs1TO4Q763gVDpZqmlxGnlWrzT6m8yyyxecK3Oa7qXhzXKzBUaXNXktW1wctbmlRwAke3NeXL3FDq+ZaXhyidQ5QAt4C0ywShacBKwdLuPo8FWbJTNQFVlkHnBWXZOgWlp37ojbxIrnbme+QfIf2tVbEKy9vEM4oB/ZiD0FqrKi8/8A1H48vzwRr6P4S/PEerqDNylkuFFLoN5zlMpZiZ0z/TRVf3mbhCBBBzBBBHSDkQqzmbHEJ0SFh8Aks6aHnMc09dKHrBVrQIaYdoF2zMwXBmUQA0zc0uBGbQ5pDgd4OY1FM1ZZHcjlNux/sQdkY4QK65eY6phvRa9nMLg6mN1OUDBziAKAPOmmVCe1O8pJOa1sN5zaMNTmTQAAk9NKEpHEuvBBc6G0NLs3kauJ1JNKknrKVjw+TRzlZRFrIt6DEcWMDmludC2gp1OFWmnRVTmQih0GKDl3tzSeiuQNK9J0TJDsljCQaCutBmVOtl1hwIp5SNHbDhsiw34Hlo5cNLiW5kUbjDTUdCshDtJYRVdPs4Nk02IWTGZD5SM1wPJta3G3ASDmcugZAGgyT7tdH5lMfJn6k8vvJJ1Pf4f+Nv2qM7VLalTJx2iKwudDIaA4EknQALaUVCvavIwZSc7Nz8zmqGxdE9zePzN3y7+xq58Yclffc5T8L3K9he0OEZxoSAaENoeGSR0nEzR1nMPUs6d0TVMsyPApfPzsIDN7dfjBNsWchEGj2nLpC0vAyWROO1JilkYJK8JBjZpK1TI5p4FbyFqmhzTwK4BFHBYXty80UCxo1RAtRW960FWIgyK3L94g/Jt7FKLIbzm8QovcTOXg/Jt7FK7JHPbxChV4FlpftgMAYOCq/urW/mkA9E0PXCiq0rB8AcFWvdSsrJQ+qaZ/24qd1Pw38hbT9+JzNL0U1uEe+sULgszUyuIO+sXm33kbslwWu4rWV4m5pjaAnXRaHTQVxUoyfRG1wXhy0umOpaYk8BqEYJqEvI9RdfMk8Urc9wJBHQtEZVtEUOcq1KKLTKaDgEoKfiKT6sXWKyrhTpVoWVAoBVVrdvw2q0pTQLSo7ohd3ise6BGUueuL/wCCrey5MPFaqx+6IPMl/KidjFXVgRwGEk0AqSegDMlZephGWoafl/4aVEsUJ/nUe7FkxDJI3qQy0ZVPae02DDqGQy4je40HoFe1R+0dqc27JpawfsNFfS7EexWwrwsIplam+ToWHONHSodffahAlqshNEWKBU84CGzoxEVLnb8ApxC5+tq9k1FydFiOruLyRn1VovYYcJFer1Z7t/BWxq8ymVuehaMjaESbg8rFdWI8ve4t5tCHENAA0DWgDhrXVIWx5gA4XVa0Zl2fABR/ZtOe/wALFrEa8DoaWBrqcS0fgqWTBAhOA3uoT6PqSVkMTaNamea0/wBiPzhjGpPhHoNdd1UvlpxkR8KA92BvJnC6mLC5ji01GtHNLDlvWmbbXPOlD1a5ajfr6VDLUtT87aBpDaAeLgC71BvrUqY++V6mWIFyS2zKPEAdCjw3NOh3FbImyC0D+tg9VS77FC7GvlEl3GjhheBk7wS7INJNQWl2lRrkpzYl/GRBzsTTvo4ub9o9adTh0aM3M+qZoOx20QMokE+dw+paWbKLSZo6F5nn7FLJe1i7wYhPBx7K1Sls8/4zv8R+1S21+QO2zxf2K/mdntot1w+Z5+xeLAu5Ow40MvbzQ8E0dXLgrJdMmmZJ861S8evpUZKPgCsl4j3FiBaHRB0pvdF614L+tR5AXFw6VqmjzTwKR415jxDQ8EHMDI9GFe3LDlWWmh4WhwSh60RFYitkOuNFDZSE46NhAnzBKLEv1KFwqS3PeFH7Ia5kJkATDaFlC0N5wG/MlSKxdn0pQE4nZbz9iUVssrYaPYQw+0OiLoXys+KxuCZhE0GXKNB9BNVFe6gzkGkZ/nMI5eREUAgXQk26QxkpHasyZiBDlYoBgw8OEUoeYC1tTXOgNE7K6U4NSXIkqIwknF8ZKBguzUnu1FLXV6AU6bSbnwZVsKJCrR5wuBNQDSoTJYjs/MVi2wcJYZpxmprKJTY0R8xEwl5BHg70qmbYl4JLXxBVpoaps2ev7/8AjoTZfezA6JEcRWpT1dcOwU31Fe2s7bYnwStt6pHKsVorpXJebStSUitwtmGNJ3ghUveqxYkXkmQm1Ica0yAFE53cuAxnOjvJPxQSB25qmTrUeW+fAZUrN2ML5lisY4eBNA9Gn2pxkZlzWuD3B7vgkKn9pEaghNg1ZSubcqphs+amxpFf6SoRrWM5JysecNHUsiatB6glaarrOJgwiczybanronVNxM+Q43eHfGq05XQKrru++NVmS8ywAAuaD0EgHtWlR3RC3vFebf47GQ4BdSmN452nghUvb94WCC5jMPfObVvR8KnmoPOrs21wWR4cJrCx5D3EguaaDDSvpXM20CKWxXMy73zebSgdq7TU1NDwS0oqV3T1G4vbp08+hErS8M7xhBPpKQOPYlzYgc89bHU01BB+tJYI1FUxtFMiezc3DpBqD1jpFU/iOaAmgzp/MDf9SYrLaA92Vci4ebX1J7YCRnw3ZBACu4jvzlzqnNlN1NRroBkPxVTueil3exvcCeG9MexiWhvjRg9odzARUac7cdRqrVgXZgYg4NJoMm4yB6aE01yKWtocnlD1GojCOGQW2YNA0dIqeA0Vd2xZ0SDEMVzaNiuDmYq85oGEuGW/d+KdAf7LhPo+jcNcqEuxU6STTCOigz16FXG3Vo5SD5D/AFOH812qlw5ZHUXqawivLXnMfMFeczUg5OBNAK5VxNrUHL0LF37YeONM+g8RwSGJMgGgoRrw667iMx6Vok4oOYyzOHppU0r10VuxYFNz6lgyNvPbQitNd/oHnBU8uReZ0aI6GTUYaiudCGtJzp0FUjDmHU1/lvy9Ke7gWyYcYuBzBA4g0bT1UVfZ4LO0zwzod800DM+jNaWWrCHSPMmG0HOa4iqaZ2M870pK/HA9DSJ8k6hz8N2jludXXd07lVz5l43lWRsrtgvgRhEzEE4gKZ0oSeNFyu9t4Z23SJLKGW89qTLHtbCYXClTRrnZ+YJPZs/PucMUFwZXnHARQdOanTL4SG8kf2T9i3xr0yL2ua2KMTmkAbySMgqXbJy6lqqjGGHH1Is4LBWXry5OIQNT0niJS9JoqsiVtlM5sfCfuJLHefT1q57oxsUMcFVtiw4Txgi1DTo4atcDkVOrqWhDg1bEiNo05EHJw3FZmnmlLk2L47kTWYg0FUklxmEosi14EyHCE6pbqDkeI6QsshUK0G0+UIpNcM0bSLO5SVIHhUxM8pmdBxCpyyotNegq2dol5YLIcKE1w5XHUDoABrXiq8m5eE8lw5uLMgaVOtOhI61p2egxpovZ6inZzMj3QOvL1FSi3ZNjXOe9uJmZIUOssCE4PZ4Q0JUptOQdMScSZDyHwXAPbucDTsrVM6bUQVezGWssov003ZuTwnhDNHnpcvaIDcJIOLFknKz7NY73xw4Ktpy2HQnA0qSN61RL1xzpkqLcWe9tGoR2e7u+o+7UbKhgwQwg+FWijcCRISKPORXvFX50KWSzX/HJ8y5GvjHJNzx5F+XSPeYXkN7E8phuSe8QvICf0zARmLbJfhdXozVUXhnnRIsR5JNXupXoBoB6FZMxGwseehp7FT0/E5uW/NVayeIxRPSQ5bNsSLQE7mgk+ZV3a00S41OZJPpzJ7U/2nanMMPPG4VPkAj1k0y6KqFTkapoTwPR+NyZ0FbUdz8SnXTTltXgaw+j29ZI9X20SyUHOP49CY48ycTQfjNz84T7JOzNPr6vxRPiCEh5sUHrAPA1r6iniC2gpxTPaUPOvn4fjqT0H1r1gH0j+aiySJPsYfSYf1tp9f1K8JcdhCo3ZbQRgek+ohyvCC7Qoi8r1JYM8m1raAAAaALnrbBeyHMRWMhtiNLAWERoboRqTiJDXitA2o5wFSDSooT0JHzVF7ZZNkWaDXUygtaCdxOJwJ30GKuXQh9DjRV7IxcKb3GmWlN/qqnCF+OGS9WlZrIRaGZCjz15OA3+fNeJQ50QnlEMcm956dfxw9C82HM0dUaueQPTr+OlJLUmQ0V6zTP8byFost4aQTu7dy5jJ3J2BK3YbHgQIzYmb4MNxBocy0V9dVH5+7UQbwVX0razxDhYXvHex4MRzRkSBzQaDIL0LVmd0aKP7Ve0FZ9rry8o1Ke1wsPgks5YEYbgfOnvZfLRYMV/KNpCiMLHGuh3fX6lBJa1bQrlGNP2mg/YlEG9Vot5tYbuLSOwpdbE8oZam1hjpathTIe4NcHMDjhNKVbXIkdNEksiXitjMDxo4bj2pZY1648VmItaDUg6nQ0S+VtOM5zQS2hOdGqpRjuzkuc5bMYXQkD15IXpZK0EY7ND0mipVECSxFbFFTKik9FuDU0XRneVh4qU5xGaeSsS6twscX5m7XNTipLox7uLNuhzELCaYnYT1ggqR3vt6Zq5sJlNRiUHlJ0QXsiEVDHYiOmil1iXvl4oq9wY4moD9KHTPRX1SezaiqcVu3Mg05ZM29weczWu8p3k7KnHeDCeeAVr2NyBoXvZTqop9Ys5JNAo5q6tF2j95kZapRXCKBlrrWic/c7/AFfappdaUfCk54R4bm+C8tcCCRTdXXTcl/dHXujS0syNJR+Tc2IGvAa1we1+XwgaEHPLrXPto7QbU0mzFcHNzB72HMOeeFoBCshQqZZWWRdrtjjoOd940B74eBhAAdVR58AbgfSl0jeuRd4cNw484eop/kbYs93guZwOR9aYeu28KPH7la0meXLkiECSiYgQ3KiXh7mGhBGmdDQeeim0J8I+CWnhQpwkQDqAVT7XOTLlpoJEg2WXqkwOSiuaaN5prrTcR0p4vLaEBjXOEWnxQM+Cg8exZZ550NvGlD6klnLowDpEeOoPcR6CiE2lyssrnGO5c49Bkt688VwLTEdhNaiuSxYk6IkMdIySr8nZeaNjH+0Aeyi82xdGYkIXKvLTDDg2rQ6uJ1cNaZBtd5IGg1IVMtNZZyWu+qPGSF34eWxcTT4LQ1w40IdwByPFR6aih2ooej+E7+GvFPFpTBiZudzvj7q9Y3A6FpFFHpuK4ZEDhXL+z1dQ6ls0x2xS8jFtluk35iKbjEZHdpkpRKvFa0/1KhU7FIJyIrkP9VKYUSnoHnyorWVRFdpNrx9X4olks8UHTh7DTsokjX1H86LcHUAruqMusZLhIluzB3fqU0I7Cruh6DgFQ+yiLWaDa6tcdcsqHL1q+4Q0CI8ZJ56G3CqF2pxPzyIegsb6IbB2roHJcz3/AJsRJmO6v614HAHCOyqi+ThHrbiViMGfvVfO57z9XYksuRnxWt8XFEc7owtB8kZ+sle26jo39QXVwiLfIy23M1fhGjAK8SK+oGnGq3ybySMqk0AAzJ4DpOqZosUPcXEnnOJpxOQ8wTxJxXNybkTll2E6nggj4lpWG0vhMBObHOGWdAQ04ajI01y0LnBL4sAtzqm/Z7KnkiNTix9dKBp9BA9alDrKe5Zl1UpSeDXoujGCyxFKE73ahb2tZVOsjdCYIq0A5fjelUrdWMx7TEDcNdxqfQo+zzx0J+0wz1GC5572fLd2lP8AZrhjb5QUZsyYawRN3fogpwe5brIny6NCAyGMV61nb8WYx4jsl7jf7FnBqHBegsPWwjGZoiJLFSqKkkwVdEpZRz55su8QS3MuIy0BBongRFFrQvPYUWOYz50+GXNaIEwAAc8+9V1Ty6+13CP0xzT0iDNexVV0KbLJSlGeW/BDNVtlcIxjKGEvFjzISbYz2QnHCHuDSegdOa9QLqWc2LEhzEeI0w3looaAjcRkmGSvfd1jg7/aDyRXIwJmmfCAvM5em7rw9wtIh3wQ6Wm3YjvGIQcqdarrojuwt2PDKLZ6n3ctxz8y3rAsOxGADl4hHQYpA9VFM5S0LFgCvNy3ueXH1lchSd9pFrojXTBcwkYXBsQZcCwEehLpe+Vi5Y47z5TIx/8ABSxJf8X9CDcH/wAl9S1u6K2gwJqVdAgMaGY2nFlU4SDkOjJRiBfSHFww3tDqQWtLjnuUNvreixHwCJeMOVqKN5KO0npzdDDfSUmsG8llNjNLpprIfJMDjyMc0eBQjC2ESeIyVsJNe9tfHn/orlt7u5crwJbNSki/9Xn+yCEzz13WfqxE4EAhSSUvpd0f/JNH90nPYJYL83a/3n9EnPYKNuqnP/F9mdqqrh/l+6K1nYceAc8TesE/UnGyr0zjSMEQnqPO/mn637z3cf4Nog8ZWbHbATHEvJYMNwiQZmrg2hbyMcAnpFYVBVLKEpJvY0/kNdvBPG9Y+Y+yW0aYB74xp9LT9aXxtpp+DCHnJ+xQ436sx4dWIwHOmKHFqeGGGfXRMEreeRGKsQHPLmv/AIURqn4xZJ3Vf9l9Sy4W06cBqyG0eYlKZ/ajakWFEhvLAx4wFpDWNLSM6l1SeDaHRVi2+EkNIn+V38K3vvVZjqF8UFwFAHMikDM55MpU1TNKnnDTSFdROvblNNjhSK41L2cGZj0/zTRaL/gmmnor6loj3isw/CHUWw4gO7fgG5Mc1bcuTlEqN1Q4n1tBCdRmykTS59mRCycj8kHQoUs5vKxAKMixXMhMEInMxSHurhrRtSaHDXzCNacB2JusW9ckySmILpg8pFjQiyHhiFuBha5zq4cIJLaUrXIJNJ3nlBSsXd8V/wDCuLJ3K4H6PGI0/H4+tJ4s6cx5/QUzx7zyh/Wf5X/wpNFvBK1qIo/wv+xdDKLG2WzuGdg/tFzfS00XSMGJouQrkXlkGx4cSLNCEyE4PrycZ7n00a0Mhmld7jp1q3oW2qx6ms2GN3FsGZL3ecwCG+hL3WTjxFZfyG9PXXPvySXzLWta1A1jyKksaXEAEmg6hnkuWZuexVcTrVx0OuZPrVnfljsOod7tiYho5sKMDQDIGsvQ1O/LqooXtNvHdmMx8SUmC2Yc4Pczk5kMikmsQc6FgY7VwLcIJBr4VRXVbZnEov6Fl9VSWYSXyyRKXdlnqSSeJKzaEQhjt5LHAecUTG28Uv8AHHod/Ctxt2TiPhsfGwQ3OY2JEDHuLGF3OcG4auLRnTfRNMQyhDZ9K/yTzJHPc0b3Orp1AZkphfPyrHvDI5ewOIa/A6HjaDk7AaltdaE5LdDtmW+P6cX8JUyCeGXRciIXQnuhE97AFXeE4eEaAZCgFeuqc2WxGHw1WN1L5SMJrsUxhrQhobFIJ0PgsO7PPzJ1df6zP/v+bjezSF0bE/dyaWndTj7+Mlk2Vb0wSQH7t5NPUUtg2/HDw0Vc49Br2qtLL2jWUwkuj7su9xvZrXA2k2djc4zBaKUbSHGrQ8IeSnXK3HOSNsKd3DX1HqWjucYldeVfUdZcU9XYHfoXlhVzZN+LOaHYo+r3H3uKSQSc8malP9hbSLJZEY50xQBwJPJRzT0QqrNennvztfXyNL2ivZjcunmjocLD1XY23Xf8c+jzXsFh2267/jn0ea9gtBQl5MynOPmT96RxyoQ/bZYHjn0ea9gkcXbLYXjfzEz7FWxiyqUl5nIKChYTQmZQsIQBmqFhCAMoQsIAEIQgAQhCAMhFVhCABZWEIAEIQgDKwhCAM1RVYQgDKAsIQB6WCsIQAIQhAAsrCyUAFVhCEAZWEIQBkLCEIAFlYWSgDCyFhCAMrCEIAEIQgAQhCABCEIAEIQgAQhCABCEIAEIQgAQhCABCEIAEIQgAQhCABCEIAEIQgAQhCABCEIAEIQgAQhCABCEIAEIQgD//2Q==" alt=""><span class="rk">RECOMENDADO</span><span class="dur">2:44</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=ABZwNy_zhtg" target="_blank" rel="noopener">Ética y moral: ¿qué significan y cuáles son sus diferencias?</a>
+    <div class="ch">Universidad de Deusto · 2:44 min</div>
+    <div class="tags"><span class="lt es">En español</span></div>
+    <p>La moral como conjunto de costumbres y normas que aprendemos al socializarnos (0:20) y la ética como la reflexión sobre por qué esas normas son buenas (1:30).</p>
+    <div class="ver"><b>Qué ver:</b> Completo (menos de 3 min).</div>
+    <div class="oj">Es la distinción “de internet”, no la del profe (Grecia vs Roma). Úsala solo como complemento.</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=eHIDwx6J-lA" target="_blank" rel="noopener"><img loading="lazy" src="data:image/jpeg;base64,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" alt=""><span class="dur">10:34</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=eHIDwx6J-lA" target="_blank" rel="noopener">Moral y ética: ¿cuáles son sus diferencias?</a>
+    <div class="ch">Astraway · 10:34 min</div>
+    <div class="tags"><span class="lt es">En español</span></div>
+    <p>Trae las etimologías: ética del griego, ligada a costumbre y hábito, según Aristóteles (1:50), y moral del latín <i>moralis</i>, de <i>mos, moris</i>, costumbre (6:55).</p>
+    <div class="ver"><b>Qué ver:</b> Solo 1:50-2:10 y 6:55-7:10.</div>
+    <div class="oj">Para el profe, <i>ēthikós</i> se traduce como “carácter”; responde con esa versión.</div>
+  </div>
+</div>
+</div>
+</section>
+
+<section id="t7-preguntas">
+<h2>Preguntas del tema</h2>
+<p class="lead">La de certamen con pauta y respuesta modelo: <a class="inl" href="14-Ejercicios.html#e9">E9 (ética vs moral)</a>.</p>
+
+<details class="ex"><summary>1 · ¿Qué significaba “ética” en Grecia? <span class="tag">C1 2026-1</span></summary>
+<div class="body"><p><i>Ēthikós</i> se traduce como “carácter”. La filosofía griega (en particular Aristóteles) se centraba en la persona: ser feliz, entendido como estar conforme consigo mismo, esforzándose en ser buena persona.</p></div></details>
+
+<details class="ex"><summary>2 · ¿Qué significaba “moral” en Roma y quién la usó? <span class="tag">C1 2026-1</span></summary>
+<div class="body"><p><i>Morālis</i> significa “costumbres, usanzas”. La usó Cicerón para traducir el término griego.</p></div></details>
+
+<details class="ex"><summary>3 · ¿Por qué hoy “ética” y “moral” son sinónimos? <span class="tag">C1 2026-1</span></summary>
+<div class="body"><p>Porque la traducción de Cicerón fue imprecisa: tradujo un término que hablaba del carácter con uno que hablaba de costumbres. Al integrarse ambos al vocabulario actual, terminaron usándose como sinónimos.</p></div></details>
+
+<details class="ex"><summary>4 · ¿En qué se centra la ética moderna? <span class="tag">puente</span></summary>
+<div class="body"><p>En la relación de la persona con la sociedad: cómo actuar, qué obligaciones tenemos con los demás y qué efectos tienen nuestras acciones.</p></div></details>
+</section>
+
+<div class="pnav"><a href="6-Resolver-problemas.html"><small>← Anterior</small>Resolver problemas</a><a class="nx" href="8-Etica-antiguedad.html"><small>Siguiente →</small>Ética de la antigüedad</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c1-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c1-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c1-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>

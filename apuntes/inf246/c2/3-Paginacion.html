@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paginación · SO C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  /* --- agregado para el C2: probabilidad por sección --- */
+  .prio{margin:2px 0 16px;font-size:14.5px;color:var(--muted)}
+  .prio strong{color:var(--ink)}
+  .lv{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    padding:2px 9px;border-radius:999px;border:1px solid var(--line);margin-right:8px;vertical-align:1px;white-space:nowrap}
+  .lv.p3{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lv.p2{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lv.p1{color:var(--muted);border-style:dashed}
+  .lv.p0{color:var(--ex);border-color:var(--ex);background:var(--ex-soft)}
+  td .lv{margin-right:0}
+  nav a{display:flex;align-items:baseline;gap:6px}
+  nav a .nt{flex:1 1 auto;min-width:0}
+  .pd{display:inline-flex;gap:3px;align-items:center;color:var(--muted);vertical-align:1px;flex:0 0 auto}
+  .pd i{display:inline-block;width:6px;height:6px;border-radius:50%;border:1px solid currentColor;box-sizing:border-box}
+  .pd i.on{background:currentColor}
+  .pd.p3{color:var(--accent)} .pd.p2{color:var(--brand)} .pd.p0{color:var(--ex)}
+  /* --- tiras de bloques de memoria --- */
+  .mem{display:flex;flex-wrap:nowrap;gap:0;margin:10px 0 2px;overflow-x:auto;padding-bottom:2px}
+  .mem .c{flex:1 0 46px;min-width:46px;height:44px;border:1px solid var(--line);margin-right:-1px;display:grid;place-items:center;
+    font-size:11.5px;line-height:1.15;text-align:center;background:var(--panel);color:var(--ink)}
+  .mem .c small{display:block;font-size:10px;color:var(--muted)}
+  .mem .c.u1{background:var(--brand-soft);border-color:var(--brand);color:var(--brand);font-weight:700}
+  .mem .c.u2{background:var(--lib-soft);border-color:var(--lib);color:var(--lib);font-weight:700}
+  .mem .c.u3{background:var(--ana-soft);border-color:var(--ana);color:var(--ana);font-weight:700}
+  .mem .c.nw{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
+  .mem .c.fx{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+  .mem .c.os{background:var(--code);color:var(--muted)}
+  .memlab{display:flex;gap:0;font-size:11.5px;color:var(--muted);margin:0 0 10px;overflow-x:auto}
+  .memlab span{flex:1 0 46px;min-width:46px;text-align:center}
+  .memcap{font-size:13px;color:var(--muted);margin:2px 0 14px}
+  /* --- dirección dividida en campos --- */
+  .addr{display:flex;margin:12px auto;max-width:620px;border-radius:9px;overflow:hidden;border:1px solid var(--line);font-size:13.5px;box-shadow:var(--shadow)}
+  .addr div{padding:9px 10px;text-align:center;border-right:1px solid var(--line)}
+  .addr div:last-child{border-right:0}
+  .addr .a1{background:var(--brand-soft);color:var(--brand);font-weight:700}
+  .addr .a2{background:var(--lib-soft);color:var(--lib);font-weight:700}
+  .addr .a3{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  .addr .a4{background:var(--ex-soft);color:var(--ex);font-weight:700}
+  .addr small{display:block;font-weight:500;color:var(--muted);font-size:11.5px}
+  /* --- tablas de páginas y de reemplazo --- */
+  table.pt td,table.pt th{text-align:center;padding:6px 8px;font-variant-numeric:tabular-nums}
+  table.pt td.bad{background:var(--no-soft);color:var(--no);font-weight:700}
+  table.pt td.ok{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  table.rp{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px}
+  table.rp td,table.rp th{text-align:center;padding:4px 6px;min-width:26px}
+  table.rp td.f{background:var(--warn-soft);color:var(--warn);font-weight:700}
+  table.rp td.h{color:var(--accent);font-weight:700}
+  table.rp td.n{color:var(--ink);font-weight:700}
+  table.rp th.rh{text-align:right;color:var(--muted);background:var(--panel)}
+  .tw table.rp{min-width:0}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.93em}
+  .q{font-weight:600}
+  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:14px 0}
+  .tiny{font-size:12.5px;color:var(--muted)}
+  @media (max-width:900px){
+    .layout{align-items:stretch}
+    .content{width:100%;max-width:100%}
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T3</div>
+    <div><h1>Paginación</h1><small>Sistemas Operativos · INF-246 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><a href="0-Guia-de-estudio-C2.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html" class="cur"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, reloj · por confirmar</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 3</div><a href="#t3-inicio"><span class="nt">Qué pesa y qué estudiar</span></a><a href="#principio"><span class="nt">Páginas y marcos</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#tabla-pag"><span class="nt">La tabla de páginas y sus bits</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#traduccion"><span class="nt">Traducir: marco × 2^K + offset</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#control"><span class="nt">Los tres controles y sus errores</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#page-fault"><span class="nt">El page fault paso a paso</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#demanda"><span class="nt">On demand paging</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#costo-pf"><span class="nt">Bajar el costo de los page faults</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#thrashing"><span class="nt">Reemplazo y thrashing</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#ubicacion"><span class="nt">¿Dónde se guarda la tabla?</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#tipos"><span class="nt">Los tipos de tabla, comparados</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#tamano-pag"><span class="nt">Tamaño de página</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#indexada"><span class="nt">Tabla indexada</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#tlb"><span class="nt">La TLB (tabla asociativa)</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#jerarquica"><span class="nt">Tabla jerárquica</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#invertida"><span class="nt">Tabla invertida</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#segpag"><span class="nt">Segmentación paginada</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#tabla-mala"><span class="nt">Encontrar errores en una tabla</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><div class="grp">Práctica</div><a href="#t3-receta"><span class="nt">Receta: traducir y revisar tablas</span></a><a href="#t3-videos"><span class="nt">Videos del tema</span></a><a href="#ex2023v"><span class="nt">C2 2023 · sección 4 y 1.5-1.7</span></a><a href="#V1"><span class="nt">V1 · Traducir con la tabla de la lámina</span></a><a href="#V2"><span class="nt">V2 · Direcciones en decimal</span></a><a href="#V3"><span class="nt">V3 · Tamaño de las tablas</span></a><a href="#V4"><span class="nt">V4 · Partir una dirección en X, Y, Z</span></a><a href="#V5"><span class="nt">V5 · Buscar en la tabla invertida</span></a><a href="#V6"><span class="nt">V6 · Segmentación paginada con 16 KB</span></a><a href="#V7"><span class="nt">V7 · Otra tabla con errores</span></a><a href="#V8"><span class="nt">V8 · Tiempo efectivo con TLB</span></a><a href="#t3-preguntas"><span class="nt">Preguntas del tema</span></a></nav>
+</aside>
+<main class="content">
+
+<section id="t3-inicio" data-nav="Qué pesa y qué estudiar" data-grp="Tema 3">
+<h2>Tema 3 · Paginación, tablas de páginas y segmentación paginada</h2>
+<p class="lead">Segunda mitad de la lámina <code>VirtualMemory</code> (diapositivas 22 a 47): marcos y páginas, la tabla de páginas con sus bits, la traducción con control, el page fault, el on demand paging, los tipos de tabla (indexada, TLB, jerárquica, invertida), el tamaño de página y la segmentación paginada.</p>
+<div class="hero">
+  <div class="big">Peso en el certamen: el más alto</div>
+  <div class="sub">En el C2 2023 la sección “Memoria Segmentada Paginada” valía 35 puntos: ventajas y desventajas del tamaño de página, el rol de V, U y D, qué parte de una tabla de páginas es incorrecta y cómo funciona la TLB. Además, dos de las siete preguntas de conocimiento eran de este tema (definir page fault y por qué la paginación mejora el swapping), y la 1.6 (segmentation violation) es de segmentación paginada.</div>
+</div>
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder hacer</h5>
+    <p>· Partir una dirección en (página, offset) y calcular <b>marco × 2<sup>K</sup> + offset</b>.</p>
+    <p>· Recorrer los tres controles: página existe, presente, derechos; y nombrar el error de cada uno.</p>
+    <p>· Definir page fault y contar qué hace el SO, paso a paso.</p>
+    <p>· Explicar por qué no hay fragmentación externa y por qué el swapping mejora.</p>
+    <p>· Comparar tabla indexada, asociativa (TLB), jerárquica e invertida.</p>
+    <p>· Justificar el tamaño de página y encontrar inconsistencias en una tabla.</p>
+  </div>
+  <div class="card"><h5>Dónde está en los libros</h5>
+    <p><b>Wolf</b>: §5.4 “Paginación”, con tamaño de página, almacenamiento de la tabla y memoria compartida (pp. 182-191), y §5.5.1 “Paginación sobre demanda” (p. 193).</p>
+    <p><b>Silberschatz</b> (10.ª ed.): §9.3 <i>Paging</i> (método básico, TLB, bit válido, páginas compartidas), §9.4 <i>Structure of the Page Table</i> (jerárquica, hash, invertida) y §10.2 <i>Demand Paging</i>.</p>
+  </div>
+  <div class="card"><h5>Plan para este tema (≈ 2 h 30)</h5>
+    <p>1. Leer hasta “Tamaño de página” (1 h): es lo que más se pregunta.</p>
+    <p>2. Videos: Elvira sobre paginación (11 min) y BitLemon sobre la tabla de páginas y la TLB (12 min, con doblaje).</p>
+    <p>3. Leer de la tabla indexada a la segmentación paginada (40 min).</p>
+    <p>4. Ejercicios: el C2 2023 completo, V1, V6 y V7 (30 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="principio" data-nav="Páginas y marcos" data-p="3">
+<h2>Páginas y marcos</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Es la definición que sostiene todo el tema.</p>
+<div class="box def"><div class="bt">Paginación (lámina 22)</div>
+<p>· La <b>memoria real</b> se corta en <b>marcos</b> (páginas reales o <i>frames</i>) de tamaño fijo <b>2<sup>K</sup></b>.</p>
+<p>· Los <b>espacios de trabajo</b> se cortan en <b>páginas virtuales</b> del mismo tamaño.</p>
+<p>· Cada proceso tiene una <b>tabla de páginas</b> que dice a qué marco apunta cada una de sus páginas virtuales.</p>
+<p>· La asignación de marcos es <b>discontinua</b>: los marcos de un proceso no tienen que estar seguidos ni en el mismo orden.</p></div>
+<div class="box ana"><div class="bt">Analogía · el libro de hojas sueltas</div>
+<p>En vez de exigir un estante vacío del largo del libro entero (memoria lineal), arrancas las hojas y metes cada una en cualquier ranura libre del archivador. Un índice dice en qué ranura quedó cada hoja: esa es la tabla de páginas. Como todas las ranuras son del mismo tamaño, cualquier ranura libre sirve; por eso desaparece la fragmentación externa.</p></div>
+</section>
+
+<section id="tabla-pag" data-nav="La tabla de páginas y sus bits" data-p="3">
+<h2>La tabla de páginas por proceso y sus bits</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> El C2 2023 dio una tabla con este formato (V, U, D, COW, RWX, Frame) y pidió el rol de los bits y encontrar los errores.</p>
+<div class="tw"><table class="pt">
+<thead><tr><th>Pág.</th><th>V<br><small>Valid</small></th><th>U<br><small>Used</small></th><th>D<br><small>Dirty</small></th><th>R<br><small>Refer</small></th><th>COW</th><th>R<br><small>Read</small></th><th>W<br><small>Write</small></th><th>X<br><small>eXec</small></th><th>Frame</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td>4</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+<tr><td>2</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>2</td></tr>
+<tr><td>3</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>20</td></tr>
+<tr><td>4</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td>6</td></tr>
+</tbody></table></div>
+<p class="memcap">La tabla de la lámina 23 (y 36). Ojo: hay <b>dos R</b>, una es el bit Refer y la otra el derecho de lectura.</p>
+<div class="tw"><table>
+<thead><tr><th>Bit</th><th>Qué indica</th><th>Quién lo pone en 0</th><th>Quién lo pone en 1</th></tr></thead>
+<tbody>
+<tr><td><b>V</b> (Valid)</td><td>La página está presente en la memoria real</td><td>El sistema, al descargarla</td><td>El sistema, al cargarla. La MMU lo mira en cada acceso: si es 0, <b>page fault</b></td></tr>
+<tr><td><b>U</b> (Used)</td><td>La página fue usada (leída o escrita)</td><td>El sistema, al cargarla</td><td>La MMU, en cada acceso</td></tr>
+<tr><td><b>D</b> (Dirty)</td><td>La página fue escrita</td><td>El sistema, al cargarla</td><td>La MMU, en cada escritura</td></tr>
+<tr><td><b>R</b> (Refer)</td><td>Tuvo acceso desde el último reset</td><td>El sistema, a una frecuencia F (en la lámina: cada TICK)</td><td>La MMU, en cada acceso</td></tr>
+<tr><td><b>COW</b> (Copy On Write)</td><td>Hay que copiar la página cuando ocurra la primera escritura</td><td colspan="2">Se ve en el capítulo de procesos Linux/Unix (Unidad 3): después de un <code>fork()</code>, padre e hijo comparten las páginas hasta que uno escribe</td></tr>
+<tr><td><b>R W X</b></td><td>Los derechos de acceso: leer, escribir, ejecutar</td><td colspan="2">Los fija el sistema según el tipo de página (código: R-X; datos y pila: RW-)</td></tr>
+<tr><td><b>Frame</b></td><td>El número de página física (marco) en la RAM</td><td colspan="2">Lo escribe el sistema cuando asigna un marco a la página</td></tr>
+</tbody></table></div>
+<div class="box tip"><div class="bt">¿Para qué tener U y además R?</div>
+<p>U dice si la página se usó <b>desde que se cargó</b>. R se borra cada TICK, así que dice si se usó <b>hace poco</b>. Para elegir qué página descargar interesa más lo reciente: es la base de los algoritmos que aproximan LRU (página 4).</p></div>
+</section>
+
+<section id="traduccion" data-nav="Traducir: marco × 2^K + offset" data-p="3">
+<h2>Traducir una dirección virtual</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer V1 y V2.</strong> No salió como cálculo en 2023, pero es el mecanismo que hay que explicar en cualquier pregunta de MMU o TLB, y el ejercicio numérico más natural del tema.</p>
+<div class="addr"><div class="a1" style="flex:3">Número de página virtual<small>P = 64 − K bits</small></div><div class="a2" style="flex:1">Offset<small>K bits</small></div></div>
+<p>Con páginas de 2<sup>K</sup> bytes, los K bits bajos de la dirección son el <b>offset</b> dentro de la página y el resto es el <b>número de página</b>. La MMU busca la página en la tabla, obtiene el marco i y calcula:</p>
+<div class="form"><b>@física = i × 2<sup>K</sup> + offset</b><span class="n">En decimal: página = ⌊d / 2<sup>K</sup>⌋ y offset = d mod 2<sup>K</sup>. En binario o hexadecimal es solo cortar la dirección y pegar el marco delante del offset.</span></div>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 760 250" width="760" role="img" aria-label="Traducción: el número de página indexa la tabla, el marco se multiplica por 2 a la K y se suma el offset">
+ <defs><marker id="ar8" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <text x="200" y="16" text-anchor="middle" fill="var(--muted)" font-size="10.5">P = 64 − K bits</text><text x="440" y="16" text-anchor="middle" fill="var(--muted)" font-size="10.5">K bits</text>
+  <rect x="40" y="24" width="320" height="34" fill="var(--brand-soft)" stroke="var(--brand)"/><text x="200" y="46" text-anchor="middle" fill="var(--brand)" font-weight="700">NÚMERO DE PÁGINA VIRTUAL</text>
+  <rect x="360" y="24" width="160" height="34" fill="var(--lib-soft)" stroke="var(--lib)"/><text x="440" y="46" text-anchor="middle" fill="var(--lib)" font-weight="700">OFFSET</text>
+  <rect x="60" y="100" width="140" height="22" fill="var(--brand-soft)" stroke="var(--line)"/><text x="130" y="116" text-anchor="middle" fill="var(--brand)" font-size="11" font-weight="700">Tabla de páginas</text>
+  <g stroke="var(--line)" fill="var(--panel)"><rect x="60" y="122" width="140" height="24"/><rect x="60" y="146" width="140" height="24" fill="var(--brand-soft)"/><rect x="60" y="170" width="140" height="24"/><rect x="60" y="194" width="140" height="24"/></g>
+  <g fill="var(--ink)" font-size="11"><text x="68" y="138">0</text><text x="68" y="162">1</text><text x="68" y="186">2</text><text x="68" y="210">3</text></g>
+  <rect x="164" y="149" width="32" height="18" fill="var(--panel)" stroke="var(--brand)"/><text x="180" y="162" text-anchor="middle" fill="var(--brand)" font-weight="700">i</text>
+  <text x="300" y="104" text-anchor="middle" fill="var(--ink)" font-size="15" font-weight="700">2<tspan baseline-shift="super" font-size="10">K</tspan></text>
+  <circle cx="300" cy="158" r="20" fill="var(--panel)" stroke="var(--brand)"/><text x="300" y="164" text-anchor="middle" fill="var(--brand)" font-size="17" font-weight="700">×</text>
+  <circle cx="420" cy="158" r="20" fill="var(--panel)" stroke="var(--lib)"/><text x="420" y="165" text-anchor="middle" fill="var(--lib)" font-size="19" font-weight="700">+</text>
+  <rect x="580" y="70" width="150" height="170" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <rect x="580" y="146" width="150" height="24" fill="var(--panel)" stroke="var(--accent)"/><text x="655" y="163" text-anchor="middle" fill="var(--accent)" font-weight="700">Marco i</text>
+  <text x="655" y="92" text-anchor="middle" fill="var(--accent)" font-size="11">RAM</text>
+  <g stroke="var(--muted)" fill="none" marker-end="url(#ar8)">
+   <path d="M120,58 L120,80 L44,80 L44,158 L56,158"/><path d="M200,158 L276,158"/><path d="M300,110 L300,134"/>
+   <path d="M322,158 L396,158"/><path d="M440,58 L440,112 L420,112 L420,134"/><path d="M442,158 L576,158"/>
+  </g>
+  <text x="510" y="150" text-anchor="middle" fill="var(--ink)" font-size="10.5" font-weight="700">i × 2^K + offset</text>
+ </g>
+</svg>
+</div>
+<figcaption>Redibujado de la lámina 26. El número de página es el índice en la tabla; el marco i se multiplica por el tamaño de página y se le suma el offset.</figcaption>
+</figure>
+<h4>Tres ejemplos</h4>
+<p><b>Decimal, páginas de 4 KB (K = 12).</b> d = 19 986 → página ⌊19 986 / 4 096⌋ = <b>4</b>, offset 19 986 − 16 384 = <b>3 602</b>. Si la página 4 está en el marco 6 (como en la tabla de arriba): 6 × 4 096 + 3 602 = <b>28 178</b>.</p>
+<p><b>Hexadecimal, 4 KB.</b> 12 bits son 3 dígitos hex: d = 0x3A7F2 → página 0x3A, offset 0x7F2. Si la página 0x3A está en el marco 0x15, la dirección física es <b>0x157F2</b>.</p>
+<p><b>Páginas de 16 KB (K = 14), las del C2 2023.</b> d = 50 000 → página ⌊50 000 / 16 384⌋ = <b>3</b>, offset 50 000 − 49 152 = <b>848</b>.</p>
+<div class="box tip"><div class="bt">Por qué las páginas siempre miden una potencia de 2</div><p>Porque así la MMU no tiene que dividir: el número de página son los bits altos y el offset los bits bajos de la misma dirección. Cortar bits es instantáneo; dividir no.</p></div>
+</section>
+
+<section id="control" data-nav="Los tres controles y sus errores" data-p="3">
+<h2>Traducción con control: los tres errores</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Es el diagrama de la lámina 28 y la base de las preguntas de page fault.</p>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 790 300" width="790" role="img" aria-label="La página existe, está presente, los derechos están bien; si no: memory violation, page fault o permission denied">
+ <defs><marker id="ar9" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <polygon points="110,20 180,60 110,100 40,60" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="110" y="57" text-anchor="middle" fill="var(--brand)" font-size="11" font-weight="700">¿La página</text><text x="110" y="71" text-anchor="middle" fill="var(--brand)" font-size="11" font-weight="700">existe?</text>
+  <polygon points="330,20 400,60 330,100 260,60" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="330" y="57" text-anchor="middle" fill="var(--brand)" font-size="11" font-weight="700">¿Presente?</text><text x="330" y="71" text-anchor="middle" fill="var(--brand)" font-size="11" font-weight="700">(V = 1)</text>
+  <polygon points="550,20 620,60 550,100 480,60" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="550" y="57" text-anchor="middle" fill="var(--warn)" font-size="11" font-weight="700">¿Derechos</text><text x="550" y="71" text-anchor="middle" fill="var(--warn)" font-size="11" font-weight="700">ok?</text>
+  <rect x="648" y="36" width="136" height="48" rx="6" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="716" y="56" text-anchor="middle" fill="var(--accent)" font-weight="700">ACCESO</text><text x="716" y="73" text-anchor="middle" fill="var(--accent)" font-size="10">i × 2^K + offset</text>
+  <rect x="40" y="140" width="140" height="40" rx="6" fill="var(--no-soft)" stroke="var(--no)"/><text x="110" y="165" text-anchor="middle" fill="var(--no)" font-weight="700">Memory violation</text>
+  <rect x="260" y="140" width="140" height="40" rx="6" fill="var(--ex-soft)" stroke="var(--ex)"/><text x="330" y="165" text-anchor="middle" fill="var(--ex)" font-weight="700">Page fault</text>
+  <rect x="480" y="140" width="140" height="40" rx="6" fill="var(--no-soft)" stroke="var(--no)"/><text x="550" y="165" text-anchor="middle" fill="var(--no)" font-weight="700">Permission denied</text>
+  <rect x="40" y="206" width="140" height="34" rx="6" fill="var(--panel)" stroke="var(--line)"/><text x="110" y="228" text-anchor="middle" fill="var(--ink)" font-size="11">error del proceso</text>
+  <rect x="480" y="206" width="140" height="34" rx="6" fill="var(--panel)" stroke="var(--line)"/><text x="550" y="228" text-anchor="middle" fill="var(--ink)" font-size="11">error del proceso</text>
+  <rect x="230" y="206" width="200" height="34" rx="6" fill="var(--lib-soft)" stroke="var(--lib)"/><text x="330" y="227" text-anchor="middle" fill="var(--lib)" font-size="11" font-weight="700">Swap-in: asignar marco y cargar</text>
+  <rect x="200" y="256" width="260" height="38" rx="6" fill="var(--lib-soft)" stroke="var(--lib)"/>
+  <text x="330" y="272" text-anchor="middle" fill="var(--lib)" font-size="11" font-weight="700">Task switch: el scheduler elige otro proceso</text>
+  <text x="330" y="287" text-anchor="middle" fill="var(--ink)" font-size="10">al volver, la tarea reejecuta la misma instrucción</text>
+  <g stroke="var(--muted)" fill="none" marker-end="url(#ar9)">
+   <path d="M180,60 L256,60"/><path d="M400,60 L476,60"/><path d="M620,60 L644,60"/>
+   <path d="M110,100 L110,136"/><path d="M330,100 L330,136"/><path d="M550,100 L550,136"/>
+   <path d="M110,180 L110,202"/><path d="M330,180 L330,202"/><path d="M550,180 L550,202"/><path d="M330,240 L330,252"/>
+  </g>
+  <g fill="var(--muted)" font-size="10.5"><text x="218" y="52" text-anchor="middle">sí</text><text x="438" y="52" text-anchor="middle">sí</text><text x="632" y="52" text-anchor="middle">sí</text>
+  <text x="120" y="122">no → TRAP</text><text x="340" y="122">no → TRAP</text><text x="560" y="122">no → TRAP</text></g>
+ </g>
+</svg>
+</div>
+<figcaption>Redibujado de la lámina 28. Los tres errores entran al sistema por un TRAP; solo el page fault se recupera.</figcaption>
+</figure>
+<div class="tw"><table>
+<thead><tr><th>Error</th><th>Cuándo</th><th>Qué hace el SO</th></tr></thead>
+<tbody>
+<tr><td><b>Memory violation</b> (o memory fault)</td><td>La página no pertenece al espacio de trabajo del proceso</td><td>Error del proceso</td></tr>
+<tr><td><b>Page fault</b></td><td>La página existe, pero V = 0</td><td>Le asigna un marco, la carga (swap-in) y hace un task switch mientras tanto</td></tr>
+<tr><td><b>Permission denied</b></td><td>La operación no está permitida por R, W o X</td><td>Error del proceso (salvo el caso de COW, ver abajo)</td></tr>
+</tbody></table></div>
+<p class="tiny">El task switch durante el page fault es la Unidad 1 otra vez: cargar la página es una E/S de disco, así que la tarea pasa a <b>bloqueada</b> y el scheduler le da el procesador a otra. Cuando el disco termina, la tarea vuelve a lista.</p>
+</section>
+
+<section id="page-fault" data-nav="El page fault paso a paso" data-p="3">
+<h2>El page fault, paso a paso</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> “Definir la noción de Page Fault en gestión de memoria virtual paginada” fue la 1.5 del C2 2023.</p>
+<p>Cuando la MMU accede a una página (lámina 27):</p>
+<ul>
+  <li><b>HIT</b>: la página está en memoria, hay un marco asociado: acceso directo a la dirección final.</li>
+  <li><b>MISS</b>: la página no está en memoria → <b>PAGE FAULT</b>.</li>
+</ul>
+<div class="steps">
+<div class="step">La MMU genera un <b>TRAP</b>.</div>
+<div class="step">El sistema verifica que la página <b>pertenezca realmente al espacio de trabajo</b> del proceso. Si no: <b>MEMORY FAULT</b>.</div>
+<div class="step">El sistema <b>le asigna un marco</b> a la página virtual: uno libre, o si la memoria está saturada, libera uno descargando otra página (swap-out, escribiéndola en disco solo si D = 1).</div>
+<div class="step">Carga la página desde el disco y actualiza la tabla: marco, V = 1, U = 0, D = 0. Mientras tanto, el proceso está bloqueado y otro usa la CPU.</div>
+<div class="step">Cuando el proceso recupera el procesador, <b>reejecuta la instrucción</b> que falló, y ahora es un HIT.</div>
+</div>
+<div class="box warn"><div class="bt">Respuesta modelo para “definir page fault”</div>
+<p>Un page fault es la interrupción (TRAP) que genera la MMU cuando un proceso accede a una página virtual de su espacio de trabajo que <b>no está presente en memoria</b> (bit V = 0). El sistema verifica que la página sea válida, le asigna un marco (descargando otra página si no hay marcos libres), la carga desde el disco y actualiza la tabla de páginas; el proceso queda bloqueado mientras tanto y después reejecuta la instrucción. No es un error del programa: es el mecanismo normal de la paginación bajo demanda.</p></div>
+</section>
+
+<section id="demanda" data-nav="On demand paging" data-p="3">
+<h2>On demand paging: cargar solo lo útil</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> “¿Por qué la gestión de memoria paginada mejora bastante el desempeño del swapping?” fue la 1.7 del C2 2023.</p>
+<p>El sistema carga <b>solo las páginas útiles</b> de los procesos, en el momento en que ocurre un page fault (<i>on demand paging</i>), porque no todas las páginas van a tener acceso. Cuando falta memoria, descarga las páginas inútiles (swap-out de páginas), eligiendo las menos útiles con los bits U y D. Es <b>menos costoso</b> que descargar el proceso completo o un segmento.</p>
+<p>El espacio de trabajo pasa a ser un conjunto de páginas, mapeadas a un marco cuando V = 1. La <b>granularidad es más fina</b>, así que:</p>
+<ul>
+  <li>La asignación de memoria es <b>más fácil</b>: cualquier marco libre sirve.</li>
+  <li><b>No hay fragmentación externa.</b> (Sí queda una fragmentación interna pequeña: la última página de cada zona casi nunca se llena.)</li>
+</ul>
+<div class="box warn"><div class="bt">Cómo responder la 1.7 del C2 2023</div>
+<p>Porque el swapping deja de ser de procesos completos y pasa a ser <b>por páginas</b> de pocos KB: solo se descargan las páginas poco usadas (bit U) y solo se escriben en disco las modificadas (bit D = 1); al volver, solo se cargan las páginas que se necesitan, cuando se necesitan. Además, la página puede volver a <b>cualquier marco libre</b>: no hay que buscar una zona contigua, ni compactar, ni retraducir las direcciones del programa (basta actualizar la tabla). Y el proceso puede seguir ejecutándose con solo una parte de sus páginas en memoria.</p></div>
+</section>
+
+<section id="costo-pf" data-nav="Bajar el costo de los page faults" data-p="2">
+<h2>Bajar el costo de los page faults</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Son tres ideas cortas que sirven para justificar los bits.</p>
+<p>En general las páginas de un proceso no pueden estar todas en memoria, así que hay varios page faults y varios intercambios con el disco. Se puede reducir el costo (lámina 30):</p>
+<ul>
+  <li><b>Con el bit D</b>: si la página no fue modificada, no hay que escribirla en el disco.</li>
+  <li><b>Con el bit U</b>: si una página no se usa durante un periodo, el sistema la puede descargar <b>de forma preventiva</b> para tener espacio listo.</li>
+  <li><b>Compartiendo marcos</b>: varias páginas virtuales (de distintos procesos) pueden apuntar al mismo marco. Es un nivel más fino que compartir segmentos.</li>
+</ul>
+</section>
+
+<section id="thrashing" data-nav="Reemplazo y thrashing" data-p="2">
+<h2>Reemplazo de páginas y thrashing</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Lo que dice esta lámina sí entra; los algoritmos con detalle están en la <a class="inl" href="4-Reemplazo-de-paginas.html">página 4</a>, que depende de si el profe alcanzó a pasarlos.</p>
+<p>Cuando hay un page fault, el sistema mantiene una <b>lista de marcos libres</b>. Si no queda ninguno, tiene que <b>elegir una página para descargarla</b>. Una mala elección cuesta caro: si justo después hay un page fault con la misma página que se acaba de descargar, se hizo el trabajo dos veces.</p>
+<div class="box def"><div class="bt">Thrashing (hiperpaginación)</div>
+<p>El estado en que el sistema <b>siempre</b> produce un page fault con la página que acaba de descargar. El sistema se vuelve rápidamente ineficiente (pasa el tiempo moviendo páginas en vez de ejecutar) y <b>puede colapsar</b>.</p></div>
+<p><b>Conclusión de la lámina:</b> el sistema necesita un buen algoritmo para elegir qué página descargar, y hay que <b>limitar la frecuencia de page faults</b>.</p>
+</section>
+
+<section id="ubicacion" data-nav="¿Dónde se guarda la tabla?" data-p="2">
+<h2>¿Dónde se guarda la tabla de páginas?</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Explica por qué existe la TLB, que sí salió.</p>
+<p>Hay un acceso a la tabla de páginas <b>en cada acceso a la memoria</b>, así que ese acceso tiene que ser mucho más rápido que el acceso a la memoria. Dónde se guarda la tabla es clave (lámina 32):</p>
+<div class="cols">
+<div class="card"><h5>En registros</h5><p>Rapidísimo, pero el tamaño de la tabla queda muy limitado.</p></div>
+<div class="card"><h5>En la RAM</h5><p>Cabe cualquier tabla, pero es demasiado lento: cada acceso a un dato cuesta dos accesos (la tabla y el dato). Se pueden usar caches.</p></div>
+<div class="card"><h5>Compromiso: la TLB</h5><p>Una memoria especial muy rápida, que guarda solo una parte de la tabla.</p></div>
+</div>
+<p>El problema de fondo es la <b>búsqueda rápida del marco</b>, y la latencia de acceso depende del tipo de tabla.</p>
+</section>
+
+<section id="tipos" data-nav="Los tipos de tabla, comparados" data-p="3">
+<h2>Los tipos de tabla, comparados</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> La 4.4 del C2 2023 pidió la TLB “para las tablas de memoria indexadas”: hay que tener claro qué es cada tipo.</p>
+<p>La lámina 33 lista tres tipos; la jerárquica aparece después como solución al tamaño.</p>
+<div class="tw"><table>
+<thead><tr><th>Tipo</th><th>Indexada por</th><th>Contiene</th><th>Una por</th><th>Ventaja</th><th>Problema</th></tr></thead>
+<tbody>
+<tr><td><b>Indexada</b></td><td>Número de página</td><td><b>Todas</b> las páginas virtuales</td><td>Proceso</td><td>Fácil y natural; acceso directo a tabla[p]</td><td>Enorme con espacios grandes</td></tr>
+<tr><td><b>Asociativa (TLB)</b></td><td>Búsqueda por contenido (hash) del número de página</td><td>Solo páginas presentes en memoria (las recientes)</td><td>MMU</td><td>Búsqueda muy rápida (≈ 1 ns); se carga por partes a la demanda</td><td>Cara: es chica y no cabe toda la tabla</td></tr>
+<tr><td><b>Jerárquica</b></td><td>Varios índices (X, Y, Z)</td><td>Solo las subtablas que se usan</td><td>Proceso</td><td>La primaria siempre cargada; el resto, a la demanda</td><td>Varios accesos por traducción; table fault</td></tr>
+<tr><td><b>Invertida</b></td><td>Número de marco</td><td>Todas las páginas de los procesos cargados en memoria</td><td>Sistema (una sola)</td><td>Tamaño fijo, no crece con los procesos; bien adaptada a la memoria real</td><td>Hay que buscar (PID, p): no hay acceso directo</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="tamano-pag" data-nav="Tamaño de página" data-p="3">
+<h2>¿Páginas chicas o grandes?</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Fue la 4.1 del C2 2023, y la misma idea con bloques salió en 2015.</p>
+<p>La lámina 34 dice que hay que buscar un <b>compromiso</b> entre páginas <b>pequeñas</b>, para limitar la fragmentación, y páginas <b>grandes</b>, para limitar el costo de los accesos al disco. En la mayoría de los procesadores el tamaño es fijo; algunos (Intel, AMD) permiten elegir entre varios tamaños según el tamaño del espacio de direccionamiento. Y aparece otro problema: el <b>volumen de la tabla</b> en registros o caches, que se resuelve con tablas parcialmente cargadas o jerárquicas.</p>
+<div class="two">
+<div class="card"><h5>Páginas pequeñas</h5>
+<p><b>+</b> Menos fragmentación interna (se pierde menos en la última página).</p>
+<p><b>+</b> Granularidad fina: se carga solo lo que se usa, y cada page fault transfiere poco.</p>
+<p><b>−</b> Muchas páginas: tablas grandes (más memoria, cuesta tenerlas en registros o en la TLB, que cubre menos memoria).</p>
+<p><b>−</b> Más page faults y más transferencias con el disco, cada una con su costo fijo.</p></div>
+<div class="card"><h5>Páginas grandes</h5>
+<p><b>+</b> Tablas más chicas y mejor cobertura de la TLB.</p>
+<p><b>+</b> Menos page faults; el costo de cada acceso al disco se reparte en más bytes.</p>
+<p><b>−</b> Más fragmentación interna.</p>
+<p><b>−</b> Se cargan datos que quizás no se usen, y cada page fault demora más.</p></div>
+</div>
+</section>
+
+<section id="indexada" data-nav="Tabla indexada" data-p="2">
+<h2>La tabla indexada</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Es la tabla de los ejercicios; lo nuevo acá es el descriptor y lo del COW.</p>
+<p>El <b>descriptor</b> de cada página virtual contiene (lámina 35): el marco en memoria, el bit P de presencia (el mismo V), el bit D, el bit U, el bit COW (opcional) y los derechos R, W, X. La dirección virtual es <b>@v = (page, offset)</b>, y la MMU llega <b>directo</b> al descriptor con tabla[page]. La MMU modifica U y D según los accesos.</p>
+<div class="box tip"><div class="bt">“COW opcional: se puede simular con el derecho Read”</div>
+<p>Si el hardware no tiene bit COW, el sistema marca la página compartida como <b>solo lectura</b>. La primera escritura produce un TRAP (permission denied); el sistema ve que en realidad es una página COW, hace la copia, le da W = 1 a la copia y la instrucción se reintenta. Es un permission denied que no termina el proceso.</p></div>
+<p>Su problema: tiene una entrada por <b>cada página virtual posible</b>, se use o no. Con direcciones de 64 bits y páginas de 16 KB serían 2<sup>50</sup> entradas por proceso: imposible. Eso lleva a la tabla jerárquica y a la invertida.</p>
+</section>
+
+<section id="tlb" data-nav="La TLB (tabla asociativa)" data-p="3">
+<h2>La TLB: tabla de páginas asociativa</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> “Explicar el funcionamiento del Translation Lookaside Buffer (TLB) de la MMU para las tablas de memoria indexadas” fue la 4.4 del C2 2023.</p>
+<div class="box def"><div class="bt">TLB · Translation Lookaside Buffer (lámina 37)</div>
+<p>Una <b>memoria asociativa muy rápida</b> que permite encontrar el descriptor de una página a partir de su número p, <b>sea cual sea su ubicación</b> en la tabla, usando funciones de hash. Tiempo de acceso del orden de <b>1 ns</b>. Su costo de fabricación es alto (más que un cache), así que <b>no puede ser muy grande</b> ni contener toda la tabla: se usa <b>como un cache</b>, administrado con <b>LRU</b> (Least Recently Used).</p></div>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 780 340" width="780" role="img" aria-label="TLB: hit va directo al chequeo de permisos; miss consulta la tabla indexada, que da memory fault, page fault o carga la entrada en la TLB">
+ <defs><marker id="ar10" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <rect x="10" y="42" width="120" height="32" rx="16" fill="var(--brand-soft)" stroke="var(--brand)"/><text x="70" y="63" text-anchor="middle" fill="var(--brand)" font-weight="700">(page, offset)</text>
+  <polygon points="210,28 262,58 210,88 158,58" fill="var(--warn-soft)" stroke="var(--warn)"/><text x="210" y="62" text-anchor="middle" fill="var(--warn)" font-size="11" font-weight="700">hash</text>
+  <rect x="300" y="14" width="190" height="96" rx="8" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="395" y="32" text-anchor="middle" fill="var(--brand)" font-size="11" font-weight="700">TLB (memoria asociativa)</text>
+  <rect x="314" y="46" width="60" height="26" fill="var(--panel)" stroke="var(--brand)"/><text x="344" y="64" text-anchor="middle" fill="var(--ink)">page</text>
+  <rect x="374" y="46" width="102" height="26" fill="var(--panel)" stroke="var(--brand)"/><text x="425" y="64" text-anchor="middle" fill="var(--ink)">infos, marco i</text>
+  <text x="395" y="96" text-anchor="middle" fill="var(--muted)" font-size="10">pocas entradas · ≈ 1 ns · LRU</text>
+  <polygon points="575,28 625,59 575,90 525,59" fill="var(--warn-soft)" stroke="var(--warn)"/><text x="575" y="56" text-anchor="middle" fill="var(--warn)" font-size="10.5" font-weight="700">¿permisos</text><text x="575" y="69" text-anchor="middle" fill="var(--warn)" font-size="10.5" font-weight="700">ok?</text>
+  <rect x="660" y="14" width="110" height="130" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <rect x="660" y="46" width="110" height="26" fill="var(--panel)" stroke="var(--accent)"/><text x="715" y="64" text-anchor="middle" fill="var(--accent)" font-weight="700">Marco i</text>
+  <text x="715" y="128" text-anchor="middle" fill="var(--accent)" font-size="11">RAM</text>
+  <rect x="515" y="128" width="120" height="30" rx="6" fill="var(--no-soft)" stroke="var(--no)"/><text x="575" y="148" text-anchor="middle" fill="var(--no)" font-size="11" font-weight="700">Permission denied</text>
+  <rect x="240" y="176" width="170" height="104" rx="8" fill="var(--panel)" stroke="var(--line)"/>
+  <rect x="240" y="176" width="170" height="24" rx="8" fill="var(--code)" stroke="var(--line)"/><text x="325" y="193" text-anchor="middle" fill="var(--ink)" font-size="11" font-weight="700">Tabla indexada (en RAM)</text>
+  <g stroke="var(--line)"><line x1="240" y1="220" x2="410" y2="220"/><line x1="240" y1="240" x2="410" y2="240"/><line x1="240" y1="260" x2="410" y2="260"/></g>
+  <rect x="240" y="220" width="170" height="20" fill="var(--brand-soft)" stroke="var(--line)"/><text x="250" y="234" fill="var(--ink)" font-size="10.5">page → marco i, V, U, D, RWX</text>
+  <rect x="150" y="300" width="110" height="30" rx="6" fill="var(--no-soft)" stroke="var(--no)"/><text x="205" y="320" text-anchor="middle" fill="var(--no)" font-size="11" font-weight="700">Memory fault</text>
+  <rect x="300" y="300" width="110" height="30" rx="6" fill="var(--ex-soft)" stroke="var(--ex)"/><text x="355" y="320" text-anchor="middle" fill="var(--ex)" font-size="11" font-weight="700">Page fault</text>
+  <rect x="515" y="300" width="160" height="30" rx="6" fill="var(--lib-soft)" stroke="var(--lib)"/><text x="595" y="320" text-anchor="middle" fill="var(--lib)" font-size="11" font-weight="700">Sistema operativo</text>
+  <g stroke="var(--muted)" fill="none" marker-end="url(#ar10)">
+   <path d="M130,58 L154,58"/><path d="M262,58 L310,58"/><path d="M476,59 L521,59"/><path d="M625,59 L656,59"/>
+   <path d="M575,90 L575,124"/><path d="M575,158 L575,296"/>
+   <path d="M210,88 L210,230 L236,230"/><path d="M400,220 L400,114"/>
+   <path d="M270,280 L270,290 L205,290 L205,296"/><path d="M355,280 L355,296"/><path d="M410,315 L511,315"/>
+  </g>
+  <g font-size="10.5"><text x="286" y="50" text-anchor="middle" fill="var(--accent)" font-weight="700">HIT</text><text x="196" y="160" text-anchor="end" fill="var(--warn)" font-weight="700">MISS</text>
+  <text x="640" y="51" text-anchor="middle" fill="var(--accent)">OK</text><text x="586" y="114" fill="var(--no)">NOK</text>
+  <text x="393" y="142" text-anchor="end" fill="var(--brand)">si está cargada:</text><text x="393" y="156" text-anchor="end" fill="var(--brand)">entra en la TLB (LRU)</text>
+  <text x="200" y="296" text-anchor="end" fill="var(--muted)">no existe</text><text x="364" y="294" fill="var(--muted)">no cargada</text></g>
+ </g>
+</svg>
+</div>
+<figcaption>Redibujado de la lámina 38.</figcaption>
+</figure>
+<div class="box warn"><div class="bt">Respuesta modelo para la 4.4 del C2 2023</div>
+<p>La TLB es una memoria asociativa muy rápida (≈ 1 ns) dentro de la MMU que guarda los descriptores de las páginas usadas más recientemente. En cada acceso, la MMU busca el número de página en la TLB (por hash, en paralelo sobre todas sus entradas). Si está (<b>HIT</b>), obtiene el marco y los derechos sin consultar la tabla indexada, que está en la RAM. Si no está (<b>MISS</b>), consulta la tabla indexada: si la página no existe, <b>memory fault</b>; si existe pero no está cargada, <b>page fault</b>; si está cargada, su descriptor se copia a la TLB reemplazando la entrada usada hace más tiempo (<b>LRU</b>) y se verifican los permisos. Como es cara, la TLB es pequeña y funciona como un cache: gracias a la localidad, la gran mayoría de los accesos son HIT.</p></div>
+<div class="box tip"><div class="bt">Si preguntan por el cambio de proceso</div><p>Las entradas de la TLB son del proceso que se estaba ejecutando. En cada conmutación hay que invalidarlas (o etiquetarlas con el PID), y el proceso nuevo parte con varios MISS. Es parte del “hay que cambiar de tabla a cada conmutación” que la lámina 41 le reprocha a las tablas por proceso.</p></div>
+<h4>Tiempo efectivo de acceso <span class="lv p1">Probabilidad baja</span></h4>
+<p>No está en las láminas, pero es el cálculo clásico del Silberschatz (§9.3.2). Con la tabla indexada en RAM, un HIT cuesta la TLB más un acceso; un MISS, la TLB más dos accesos (tabla y dato):</p>
+<div class="form"><b>TEA = h × (t<sub>TLB</sub> + t<sub>mem</sub>) + (1 − h) × (t<sub>TLB</sub> + 2 t<sub>mem</sub>)</b><span class="n">Con t<sub>mem</sub> = 50 ns, t<sub>TLB</sub> = 1 ns y h = 90 %: 0,9 × 51 + 0,1 × 101 = 56 ns, contra 100 ns sin TLB.</span></div>
+</section>
+
+<section id="jerarquica" data-nav="Tabla jerárquica" data-p="2">
+<h2>La tabla jerárquica</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo y hacer V4.</strong> No ha salido, pero tiene su propio diagrama y un error con nombre propio (table fault).</p>
+<p><b>El problema</b> de las tablas anteriores: con espacios de direccionamiento muy grandes, la tabla de páginas es enorme. <b>La solución</b>: una tabla en varios niveles. Con tres niveles, la dirección virtual es <b>@v = (X, Y, Z, offset)</b>:</p>
+<div class="addr"><div class="a1" style="flex:1">X</div><div class="a4" style="flex:1">Y</div><div class="a3" style="flex:1">Z</div><div class="a2" style="flex:1.4">OFFSET</div></div>
+<ul>
+  <li><b>X</b> es el índice en la tabla primaria; la entrada Tp[X] apunta a una tabla secundaria.</li>
+  <li><b>Y</b> es el índice en esa tabla secundaria; Ts[Y] apunta a una tercera tabla.</li>
+  <li><b>Z</b> es el índice del marco final en la tercera tabla.</li>
+</ul>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 740 260" width="740" role="img" aria-label="Tabla jerárquica de tres niveles: X en la tabla nivel 1, Y en la nivel 2, Z en la nivel 3, que da el marco">
+ <defs><marker id="ar11" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <rect x="60" y="10" width="100" height="30" fill="var(--brand-soft)" stroke="var(--brand)"/><text x="110" y="30" text-anchor="middle" fill="var(--brand)" font-weight="700">X</text>
+  <rect x="160" y="10" width="100" height="30" fill="var(--ex-soft)" stroke="var(--ex)"/><text x="210" y="30" text-anchor="middle" fill="var(--ex)" font-weight="700">Y</text>
+  <rect x="260" y="10" width="100" height="30" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="310" y="30" text-anchor="middle" fill="var(--accent)" font-weight="700">Z</text>
+  <rect x="360" y="10" width="110" height="30" fill="var(--lib-soft)" stroke="var(--lib)"/><text x="415" y="30" text-anchor="middle" fill="var(--lib)" font-weight="700">OFFSET</text>
+  <g stroke="var(--line)" fill="var(--panel)">
+   <rect x="40" y="80" width="110" height="22" fill="var(--code)"/><rect x="40" y="102" width="110" height="22"/><rect x="40" y="124" width="110" height="22" fill="var(--brand-soft)"/><rect x="40" y="146" width="110" height="22"/>
+   <rect x="220" y="112" width="110" height="22" fill="var(--code)"/><rect x="220" y="134" width="110" height="22"/><rect x="220" y="156" width="110" height="22" fill="var(--ex-soft)"/><rect x="220" y="178" width="110" height="22"/>
+   <rect x="400" y="144" width="110" height="22" fill="var(--code)"/><rect x="400" y="166" width="110" height="22"/><rect x="400" y="188" width="110" height="22" fill="var(--accent-soft)"/><rect x="400" y="210" width="110" height="22"/>
+  </g>
+  <g font-size="10.5" fill="var(--ink)"><text x="95" y="95" text-anchor="middle" font-weight="700">Nivel 1</text><text x="48" y="117">0</text><text x="48" y="139">X</text><text x="48" y="161">…</text>
+  <text x="275" y="127" text-anchor="middle" font-weight="700">Nivel 2</text><text x="228" y="149">0</text><text x="228" y="171">Y</text><text x="228" y="193">…</text>
+  <text x="455" y="159" text-anchor="middle" font-weight="700">Nivel 3</text><text x="408" y="181">0</text><text x="408" y="203">Z → i</text><text x="408" y="225">…</text></g>
+  <rect x="590" y="60" width="130" height="190" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <rect x="590" y="188" width="130" height="22" fill="var(--panel)" stroke="var(--accent)"/><text x="655" y="203" text-anchor="middle" fill="var(--accent)" font-weight="700">Marco i</text>
+  <text x="655" y="82" text-anchor="middle" fill="var(--accent)" font-size="11">RAM</text>
+  <g stroke="var(--muted)" fill="none" marker-end="url(#ar11)">
+   <path d="M100,40 L100,60 L26,60 L26,135 L36,135"/><path d="M210,40 L210,167 L216,167"/><path d="M310,40 L310,70 L380,70 L380,199 L396,199"/>
+  </g>
+  <g stroke="var(--muted)" fill="none" stroke-dasharray="4 3" marker-end="url(#ar11)"><path d="M150,135 L185,135 L185,122 L216,122"/><path d="M330,167 L365,167 L365,154 L396,154"/></g>
+  <path d="M510,199 L586,199" stroke="var(--accent)" stroke-width="2.2" fill="none" marker-end="url(#ar11)"/>
+  <text x="95" y="190" text-anchor="middle" fill="var(--muted)" font-size="10">siempre cargada</text>
+  <text x="275" y="222" text-anchor="middle" fill="var(--muted)" font-size="10">solo las que se usan</text>
+  <text x="455" y="250" text-anchor="middle" fill="var(--muted)" font-size="10">si falta: table fault</text>
+ </g>
+</svg>
+</div>
+<figcaption>Redibujado de la lámina 40. Las flechas punteadas son punteros a la tabla del nivel siguiente.</figcaption>
+</figure>
+<p><b>Ventajas (lámina 41):</b> la tabla primaria está siempre cargada; las secundarias y terciarias no están todas cargadas. Durante la búsqueda puede ocurrir un <b>table fault</b> (falta una de esas tablas): el sistema carga la tabla que falta y actualiza las tablas.</p>
+<div class="box warn"><div class="bt">El problema que le queda a todas estas tablas (lámina 41)</div>
+<p>Cada proceso tiene <b>su propia</b> tabla de páginas: el volumen de las tablas <b>crece con el número de procesos</b>, y hay que <b>cambiar de tabla en cada conmutación</b> de proceso. Solución: la tabla invertida.</p></div>
+</section>
+
+<section id="invertida" data-nav="Tabla invertida" data-p="2">
+<h2>La tabla invertida</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Mismo motivo que la jerárquica; cuidado con que el índice es el marco, no la página.</p>
+<p>Una tabla invertida (lámina 42):</p>
+<ul>
+  <li>Está <b>indexada por el número de marco</b> de la RAM, no por el número de página.</li>
+  <li>Tiene <b>tamaño fijo</b> (una entrada por marco) y hay <b>una sola tabla</b> para todo el sistema.</li>
+  <li>Cada descriptor guarda: el <b>PID</b> del proceso (o de los procesos) que ocupa ese marco, el <b>número de página virtual</b>, los bits U[PID, p] y D[PID, p], el bit COW y los derechos R, W, X[PID, p].</li>
+</ul>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 740 250" width="740" role="img" aria-label="Tabla invertida: se busca el par PID y página; si se encuentra en la fila c, el marco es c">
+ <defs><marker id="ar12" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <rect x="20" y="10" width="80" height="30" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="60" y="30" text-anchor="middle" fill="var(--accent)" font-weight="700">PID</text>
+  <rect x="110" y="10" width="200" height="30" fill="var(--brand-soft)" stroke="var(--brand)"/><text x="210" y="30" text-anchor="middle" fill="var(--brand)" font-weight="700">Página virtual p</text>
+  <rect x="310" y="10" width="100" height="30" fill="var(--lib-soft)" stroke="var(--lib)"/><text x="360" y="30" text-anchor="middle" fill="var(--lib)" font-weight="700">OFFSET</text>
+  <rect x="170" y="70" width="230" height="22" fill="var(--code)" stroke="var(--line)"/><text x="285" y="85" text-anchor="middle" fill="var(--ink)" font-size="11" font-weight="700">Tabla invertida (una fila por marco)</text>
+  <g stroke="var(--line)" fill="var(--panel)"><rect x="170" y="92" width="230" height="24"/><rect x="170" y="116" width="230" height="24" fill="var(--brand-soft)"/><rect x="170" y="140" width="230" height="24"/><rect x="170" y="164" width="230" height="24"/></g>
+  <g font-size="11" fill="var(--ink)"><text x="180" y="108">0</text><text x="180" y="132" font-weight="700">c</text><text x="180" y="156">…</text><text x="180" y="180">N</text>
+  <text x="215" y="132">PID</text><text x="265" y="132">p</text><text x="310" y="132">U, D, COW, RWX</text></g>
+  <polygon points="560,104 610,128 560,152 510,128" fill="var(--warn-soft)" stroke="var(--warn)"/><text x="560" y="125" text-anchor="middle" fill="var(--warn)" font-size="10.5" font-weight="700">¿permisos</text><text x="560" y="138" text-anchor="middle" fill="var(--warn)" font-size="10.5" font-weight="700">ok?</text>
+  <rect x="640" y="60" width="90" height="150" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <rect x="640" y="116" width="90" height="24" fill="var(--panel)" stroke="var(--accent)"/><text x="685" y="133" text-anchor="middle" fill="var(--accent)" font-weight="700">Marco c</text>
+  <rect x="30" y="196" width="130" height="30" rx="6" fill="var(--ex-soft)" stroke="var(--ex)"/><text x="95" y="216" text-anchor="middle" fill="var(--ex)" font-size="11" font-weight="700">Page fault → SO</text>
+  <rect x="495" y="196" width="130" height="30" rx="6" fill="var(--no-soft)" stroke="var(--no)"/><text x="560" y="216" text-anchor="middle" fill="var(--no)" font-size="11" font-weight="700">Perm. denied → SO</text>
+  <g stroke="var(--muted)" fill="none" marker-end="url(#ar12)">
+   <path d="M60,40 L60,128 L166,128"/><path d="M210,40 L210,60 L250,60 L250,112"/>
+   <path d="M400,128 L506,128"/><path d="M610,128 L636,128"/><path d="M560,152 L560,192"/><path d="M60,140 L60,192" stroke-dasharray="4 3"/>
+  </g>
+  <g font-size="10.5"><text x="110" y="120" text-anchor="middle" fill="var(--muted)">buscar (PID, p)</text><text x="455" y="120" text-anchor="middle" fill="var(--accent)" font-weight="700">HIT en c</text>
+  <text x="70" y="168" fill="var(--muted)">no está</text><text x="623" y="120" text-anchor="middle" fill="var(--accent)">OK</text><text x="570" y="178" fill="var(--no)">NOK</text></g>
+  <text x="370" y="244" text-anchor="middle" fill="var(--ink)" font-size="11.5" font-weight="700">@física = c × 2^K + offset</text>
+ </g>
+</svg>
+</div>
+<figcaption>Redibujado de la lámina 43. La posición c donde se encontró el par (PID, p) es el número de marco.</figcaption>
+</figure>
+<p><b>Por qué conviene:</b> su tamaño depende de la RAM y no del número de procesos (con 16 GB y marcos de 16 KB son 2<sup>20</sup> entradas para todo el sistema), y no hay que cambiar de tabla en cada conmutación. <b>Su costo:</b> como está ordenada por marco, para encontrar (PID, p) hay que buscar; en la práctica se usa un hash y la TLB delante.</p>
+</section>
+
+<section id="segpag" data-nav="Segmentación paginada" data-p="3">
+<h2>Segmentación paginada</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer V6.</strong> Es el modelo del enunciado de la sección 4 del C2 2023 (“un sistema tipo Linux donde el espacio de trabajo tiene varios segmentos y cada segmento es paginado”).</p>
+<p>Junta lo mejor de los dos temas (lámina 44):</p>
+<ul>
+  <li>La <b>segmentación</b> estructura el espacio de trabajo (código, datos, pila…).</li>
+  <li>La <b>paginación</b> asigna la memoria real de forma eficiente, <b>sin fragmentación externa</b>.</li>
+</ul>
+<p>Son <b>dos niveles</b> de gestión: cada segmento está dividido en páginas virtuales y <b>cada segmento tiene su propia tabla de páginas</b>. La tabla global de segmentos sirve para mapear el segmento de un proceso a uno que ya existe (por ejemplo, una biblioteca), y en ese caso se copian las páginas virtuales (las entradas, no los datos).</p>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 760 250" width="760" role="img" aria-label="Segmentación paginada: el segmento elige la tabla de páginas, el offset se parte en página i y desplazamiento o">
+ <defs><marker id="ar13" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <rect x="20" y="10" width="80" height="30" fill="var(--brand-soft)" stroke="var(--brand)"/><text x="60" y="30" text-anchor="middle" fill="var(--brand)" font-weight="700">seg</text>
+  <rect x="100" y="10" width="160" height="30" fill="var(--lib-soft)" stroke="var(--lib)"/><text x="180" y="30" text-anchor="middle" fill="var(--lib)" font-weight="700">offset</text>
+  <text x="470" y="34" text-anchor="middle" fill="var(--ink)" font-size="12.5" font-weight="700">i = offset div 2^K   ·   o = offset mod 2^K</text>
+  <rect x="40" y="90" width="150" height="24" fill="var(--code)" stroke="var(--line)"/><text x="115" y="106" text-anchor="middle" fill="var(--ink)" font-size="10.5" font-weight="700">Tabla local de segmentos</text>
+  <g stroke="var(--line)" fill="var(--panel)"><rect x="40" y="114" width="150" height="24"/><rect x="40" y="138" width="150" height="24" fill="var(--brand-soft)"/><rect x="40" y="162" width="150" height="24"/><rect x="40" y="186" width="150" height="24"/></g>
+  <g font-size="10.5" fill="var(--ink)"><text x="48" y="130">0</text><text x="48" y="154">1 · límite, RWX, tabla</text><text x="48" y="178">2</text><text x="48" y="202">3</text></g>
+  <rect x="300" y="90" width="170" height="24" fill="var(--code)" stroke="var(--line)"/><text x="385" y="106" text-anchor="middle" fill="var(--ink)" font-size="10.5" font-weight="700">Tabla de páginas del segmento 1</text>
+  <g stroke="var(--line)" fill="var(--panel)"><rect x="300" y="114" width="170" height="24"/><rect x="300" y="138" width="170" height="24"/><rect x="300" y="162" width="170" height="24"/><rect x="300" y="186" width="170" height="24" fill="var(--accent-soft)"/></g>
+  <g font-size="10.5" fill="var(--ink)"><text x="308" y="130">0</text><text x="308" y="154">1</text><text x="308" y="178">2</text><text x="308" y="202" font-weight="700">i → marco m, V, U, D</text></g>
+  <rect x="600" y="70" width="140" height="170" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <rect x="600" y="186" width="140" height="24" fill="var(--panel)" stroke="var(--accent)"/><text x="670" y="203" text-anchor="middle" fill="var(--accent)" font-weight="700">Marco m</text>
+  <text x="670" y="92" text-anchor="middle" fill="var(--accent)" font-size="11">RAM</text>
+  <g stroke="var(--muted)" fill="none" marker-end="url(#ar13)">
+   <path d="M60,40 L60,70 L28,70 L28,150 L36,150"/><path d="M180,40 L180,60 L280,60 L280,198 L296,198"/>
+  </g>
+  <path d="M190,150 L240,150 L240,102 L296,102" stroke="var(--muted)" fill="none" stroke-dasharray="4 3" marker-end="url(#ar13)"/>
+  <path d="M470,198 L596,198" stroke="var(--accent)" stroke-width="2.2" fill="none" marker-end="url(#ar13)"/>
+  <text x="533" y="190" text-anchor="middle" fill="var(--ink)" font-size="10.5" font-weight="700">m × 2^K + o</text>
+  <text x="300" y="230" text-anchor="middle" fill="var(--muted)" font-size="10.5">antes: ¿el segmento existe? ¿offset &lt; límite? (si no, segmentation violation) · ¿RWX?</text>
+  <text x="300" y="245" text-anchor="middle" fill="var(--muted)" font-size="10.5">después: ¿la página i tiene V = 1? (si no, page fault)</text>
+ </g>
+</svg>
+</div>
+<figcaption>Redibujado de la lámina 45. En la lámina el número de página dentro del segmento se llama i.</figcaption>
+</figure>
+<div class="form"><b>@(seg, offset):</b> página i = offset div 2<sup>K</sup> &nbsp;·&nbsp; o = offset mod 2<sup>K</sup> &nbsp;·&nbsp; @física = marco(i) × 2<sup>K</sup> + o</div>
+<p><b>Compartir</b> (lámina 46): dos procesos pueden tener tablas de páginas distintas para sus segmentos y aun así apuntar al mismo marco en una de sus páginas.</p>
+<div class="box warn"><div class="bt">Los errores de la segmentación paginada, en orden</div>
+<p>1. El segmento no está en la tabla del proceso, o el offset no es menor que el tamaño del segmento → <b>segmentation violation</b> (la 1.6 del C2 2023).</p>
+<p>2. La operación no está permitida → <b>permission denied</b>.</p>
+<p>3. La página i del segmento tiene V = 0 → <b>page fault</b> (se carga y se sigue).</p></div>
+</section>
+
+<section id="tabla-mala" data-nav="Encontrar errores en una tabla" data-p="3">
+<h2>Cómo encontrar lo incorrecto en una tabla de páginas</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer V7.</strong> Fue la 4.3 del C2 2023 (“¿Qué parte de la tabla anterior es incorrecta? Justificar”). Si el profe repite el formato, cambia los números.</p>
+<p>Ninguna lámina da una lista de reglas, pero todas salen de quién mueve cada bit. Revisa fila por fila:</p>
+<div class="tw"><table>
+<thead><tr><th>Regla</th><th>Por qué</th></tr></thead>
+<tbody>
+<tr><td><b>D = 1 exige W = 1</b></td><td>La MMU pone D en 1 al escribir, y sin derecho de escritura la escritura termina en permission denied. (Con COW simulado, la página tiene W = 0, pero al copiarla la copia recibe W = 1 y D se marca en ella.)</td></tr>
+<tr><td><b>D = 1 exige U = 1</b></td><td>Escribir es un acceso: la MMU pone U y D a la vez.</td></tr>
+<tr><td><b>V = 0 y D = 1 no calza</b></td><td>D dice que la copia en memoria difiere de la del disco, pero una página ausente no tiene copia en memoria. Al descargar una página sucia, el sistema la escribe en el swap; al volver a cargarla, pone U = D = 0.</td></tr>
+<tr><td><b>El marco tiene que existir</b></td><td>Si el enunciado da el tamaño de la RAM, el marco debe ser menor que el número de marcos.</td></tr>
+<tr><td><b>Dos páginas, un marco</b></td><td>Solo es correcto si es memoria compartida a propósito (páginas de distintos procesos, o COW).</td></tr>
+</tbody></table></div>
+<h4>La tabla del C2 2023, resuelta</h4>
+<div class="tw"><table class="pt">
+<thead><tr><th>Page</th><th>V</th><th>U</th><th>D</th><th>COW</th><th>RWX</th><th>Frame</th></tr></thead>
+<tbody>
+<tr><td>0</td><td class="bad">0</td><td class="bad">1</td><td class="bad">1</td><td>0</td><td>110</td><td>4</td></tr>
+<tr><td>1</td><td>1</td><td>1</td><td class="bad">1</td><td>0</td><td class="bad">100</td><td>100</td></tr>
+<tr><td>2</td><td>0</td><td>0</td><td>0</td><td>1</td><td>110</td><td>11</td></tr>
+<tr><td>3</td><td>1</td><td>0</td><td>0</td><td>1</td><td>110</td><td>9</td></tr>
+</tbody></table></div>
+<div class="steps">
+<div class="step"><b>Página 1, seguro incorrecta.</b> Tiene D = 1 (fue escrita) pero sus derechos son RWX = 100: solo lectura, y sin COW. El proceso no pudo haberla escrito: cualquier escritura habría terminado en permission denied.</div>
+<div class="step"><b>Página 0, casi seguro incorrecta.</b> V = 0 (no está en memoria) pero U = 1 y D = 1, como si tuviera modificaciones pendientes. Una página ausente no puede estar sucia: si se descargó estando modificada, el sistema la escribió en el swap, y U y D se reinician al volver a cargarla.</div>
+<div class="step"><b>Páginas 2 y 3, correctas.</b> La 2 no está cargada y no tiene uso ni escritura. La 3 está cargada y nadie la ha usado todavía; COW = 1 con W = 1 es coherente si el hardware tiene bit COW: la primera escritura provoca la copia.</div>
+</div>
+<p class="tiny">Honestidad: el certamen está escaneado sin pauta. En la copia, quien lo rindió marcó con una cruz las filas 0 y 1, que coincide con este análisis. Ojo con un detalle de las propias láminas: en la tabla de la lámina 23, la página 2 tiene V = 0 y U = 1, así que el profe no trata como error que una página ausente conserve U = 1. Por eso, en la página 0, el argumento fuerte es el D = 1, no el U.</p>
+</section>
+
+<section id="t3-receta" data-nav="Receta: traducir y revisar tablas" data-grp="Práctica">
+<h2>Receta para los ejercicios de paginación</h2>
+<div class="cols">
+<div class="card"><h5>Traducir (paginación)</h5>
+<p>1. K = log<sub>2</sub>(tamaño de página).</p>
+<p>2. página = d div 2<sup>K</sup>, offset = d mod 2<sup>K</sup> (o cortar bits).</p>
+<p>3. ¿Existe en la tabla? Si no: memory violation.</p>
+<p>4. ¿V = 1? Si no: page fault.</p>
+<p>5. ¿RWX permite la operación? Si no: permission denied.</p>
+<p>6. @física = marco × 2<sup>K</sup> + offset; U = 1 y, si escribe, D = 1.</p></div>
+<div class="card"><h5>Segmentación paginada</h5>
+<p>1. Segmento en la tabla y offset &lt; tamaño; si no, segmentation violation.</p>
+<p>2. Derechos del segmento.</p>
+<p>3. i = offset div 2<sup>K</sup>, o = offset mod 2<sup>K</sup>.</p>
+<p>4. Tabla de páginas del segmento: V, marco.</p>
+<p>5. @ = marco × 2<sup>K</sup> + o.</p></div>
+<div class="card"><h5>Tamaños de tablas</h5>
+<p><b>Indexada:</b> 2<sup>bits de página</sup> entradas por proceso.</p>
+<p><b>Invertida:</b> RAM / tamaño de página entradas en total.</p>
+<p><b>Jerárquica:</b> cada nivel tiene 2<sup>bits del nivel</sup> entradas; solo se crean las tablas que se usan.</p></div>
+</div>
+</section>
+
+<section id="t3-videos" data-nav="Videos del tema">
+<h2>Videos del tema</h2>
+<p class="lead">Elegidos entre unos cuarenta candidatos. De cada uno se transcribió el audio para comprobar qué explica y en qué minuto; los marcados como recomendados son los que más se parecen a las láminas del profe.</p>
+<div class="box tip"><div class="bt">Cómo ver los videos doblados</div>
+<p>En los marcados “Audio en español (doblaje)”: ⚙ Configuración → <b>Pista de audio</b> → Español. Es un doblaje automático de YouTube; se entiende bien.</p></div>
+<div class="vgrid">
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=JYyyoeHEAXU" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/JYyyoeHEAXU/mqdefault.jpg" alt=""><span class="rk">RECOMENDADO</span><span class="dur">10:46</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=JYyyoeHEAXU" target="_blank" rel="noopener">Sistemas Operativos, Manejo de la memoria 5 Paginación parte 1</a>
+    <div class="ch">Mtro. José Luis Elvira · 10:46 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Paginación desde cero: marcos y páginas de 2<sup>n</sup> bytes, la fragmentación interna en la última página, la tabla de páginas, la dirección (página, desplazamiento) y un ejemplo en hexadecimal: con páginas de 4 KB, la 0x1234 pasa a 0x3234.</p>
+    <div class="ver"><b>Qué ver:</b> Completo. Si hay poco tiempo: 2:15-3:00 fragmentación interna · 5:15-8:15 la traducción · 8:15-10:46 el ejemplo en hex.</div>
+  </div>
+</div>
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=B6tJxvYBNrU" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/B6tJxvYBNrU/mqdefault.jpg" alt=""><span class="rk">RECOMENDADO</span><span class="dur">11:40</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=B6tJxvYBNrU" target="_blank" rel="noopener">Page Tables and MMU: How Virtual Memory Actually Works Behind the Scenes (Animation)</a>
+    <div class="ch">BitLemon · 11:40 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>La tabla de páginas por dentro: cuánto mide, el registro que apunta a ella, los bits de cada entrada (presente, lectura/escritura, usuario/supervisor, <i>accessed</i> y <i>dirty</i>), la TLB y la traducción completa, incluido el page fault.</p>
+    <div class="ver"><b>Qué ver:</b> 1:00-2:30 tamaño de la tabla · 2:30-4:30 los bits · 6:12-7:40 la TLB · 8:08-10:30 la traducción completa con page fault.</div>
+    <p class="oj">Ojo: Usa los nombres de x86: present = V, accessed = U, dirty = D.</p>
+  </div>
+</div>
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=habdRVUUfCY" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/habdRVUUfCY/mqdefault.jpg" alt=""><span class="rk">RECOMENDADO</span><span class="dur">8:44</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=habdRVUUfCY" target="_blank" rel="noopener">Sistemas Operativos, Memoria virtual 1 introducción</a>
+    <div class="ch">Mtro. José Luis Elvira · 8:44 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Memoria virtual con los dos bits que más pregunta el profe: el de presencia y el de modificado, y por qué una página que no se modificó no hay que escribirla en el disco. Después, un page fault con reemplazo, paso a paso.</p>
+    <div class="ver"><b>Qué ver:</b> 3:05-4:30 los bits · 5:00-8:43 el page fault con reemplazo.</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=7eL1mVRBvtE" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/7eL1mVRBvtE/mqdefault.jpg" alt=""><span class="dur">13:54</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=7eL1mVRBvtE" target="_blank" rel="noopener">Sistemas Operativos, Memoria virtual 2 paginación por demanda</a>
+    <div class="ch">Mtro. José Luis Elvira · 13:54 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Paginación bajo demanda: el bit válido, qué hace el sistema en un page fault, reemplazo local y global, y el tiempo efectivo con una tasa de fallos.</p>
+    <div class="ver"><b>Qué ver:</b> 2:00-5:00 el page fault paso a paso · 5:00-8:00 reemplazo local o global · 10:00-13:54 tiempo efectivo (no está en las láminas).</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=pFlGf3AaF4g" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/pFlGf3AaF4g/mqdefault.jpg" alt=""><span class="dur">5:59</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=pFlGf3AaF4g" target="_blank" rel="noopener">Sistemas Operativos, Manejo de la memoria 6 Paginación parte 2</a>
+    <div class="ch">Mtro. José Luis Elvira · 5:59 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Por qué la tabla en memoria duplica los accesos y cómo lo arreglan los registros asociativos (la TLB), con el tiempo de acceso efectivo.</p>
+    <div class="ver"><b>Qué ver:</b> 0:45-3:00 el problema y la TLB · 3:00-5:58 el tiempo efectivo.</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=4AD0GQf9ZM0" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/4AD0GQf9ZM0/mqdefault.jpg" alt=""><span class="dur">9:17</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=4AD0GQf9ZM0" target="_blank" rel="noopener">C09P01 - Translation Lookaside Buffer TLB - ISI485 - Sistemas Operativos</a>
+    <div class="ch">Sistemas Operativos UdeA · 9:17 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Clase universitaria sobre la TLB: por qué funciona (localidad temporal y espacial), cuántos accesos extra agrega la paginación, y el recorrido de un TLB hit y un TLB miss.</p>
+    <div class="ver"><b>Qué ver:</b> 1:00-4:00 localidad · 6:00-9:16 hit y miss.</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=uyrSn3qbZ8U" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/uyrSn3qbZ8U/mqdefault.jpg" alt=""><span class="dur">9:26</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=uyrSn3qbZ8U" target="_blank" rel="noopener">Virtual Memory: 10 Making Virtual Memory Fast</a>
+    <div class="ch">David Black-Schaffer · 9:26 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Cómo hacer rápida la memoria virtual: la TLB como cache de la tabla (64 entradas contra un millón), qué cuesta un miss y un page fault, y por qué las <b>páginas grandes</b> hacen que la TLB alcance más memoria.</p>
+    <div class="ver"><b>Qué ver:</b> 1:00-5:00 la TLB · 8:00-9:25 páginas grandes (sirve para la pregunta del tamaño de página).</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=r-0c6kob9ro" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/r-0c6kob9ro/mqdefault.jpg" alt=""><span class="dur">8:19</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=r-0c6kob9ro" target="_blank" rel="noopener">Sistemas Operativos, Manejo de la memoria 7 Paginación parte 3</a>
+    <div class="ch">Mtro. José Luis Elvira · 8:19 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Las tablas grandes y sus soluciones: paginación jerárquica de dos niveles (10 + 10 + 12 bits), tabla invertida y páginas compartidas.</p>
+    <div class="ver"><b>Qué ver:</b> 0:45-4:30 jerárquica · 4:30-5:15 invertida · 5:15-8:19 páginas compartidas.</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=zNPVmTGt7Ds" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/zNPVmTGt7Ds/mqdefault.jpg" alt=""><span class="dur">4:53</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=zNPVmTGt7Ds" target="_blank" rel="noopener">MultiLevel Page Tables: How Virtual Memory is Optimized (Animation)</a>
+    <div class="ch">BitLemon · 4:53 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Tablas multinivel con animación: por qué ahorran memoria y cómo se recorren.</p>
+    <div class="ver"><b>Qué ver:</b> Completo (5 minutos).</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=-UWGHQRBZvo" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/-UWGHQRBZvo/mqdefault.jpg" alt=""><span class="dur">10:12</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=-UWGHQRBZvo" target="_blank" rel="noopener">Implementaciones de la Tabla de Páginas</a>
+    <div class="ch">ULLaudiovisual - Universidad de La Laguna · 10:12 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Clase de la Universidad de La Laguna: cuánto mediría la tabla con 32 y 64 bits, la tabla jerárquica (y dos formas de recorrerla) y la invertida con hash.</p>
+    <div class="ver"><b>Qué ver:</b> 1:00-3:00 tamaño de la tabla · 3:00-6:30 jerárquica · 7:00-9:30 invertida.</div>
+    <p class="oj">Ojo: La parte de recorrido top-down y bottom-up va más allá de lo que pide el ramo.</p>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=9pXnMfKq7Hw" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/9pXnMfKq7Hw/mqdefault.jpg" alt=""><span class="dur">6:18</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=9pXnMfKq7Hw" target="_blank" rel="noopener">OS47 - Inverted page table</a>
+    <div class="ch">EZCSE · 6:18 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Tabla invertida: una sola tabla con una entrada por marco y la búsqueda del par (PID, página).</p>
+    <div class="ver"><b>Qué ver:</b> Completo.</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=7D3Kdw8sEnc" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/7D3Kdw8sEnc/mqdefault.jpg" alt=""><span class="dur">4:27</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=7D3Kdw8sEnc" target="_blank" rel="noopener">Sistemas Operativos, Manejo de la memoria 9 Segmentación combinada con paginación</a>
+    <div class="ch">Mtro. José Luis Elvira · 4:27 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Segmentación paginada: comparar el offset con el largo del segmento (si se pasa, excepción), y partir el offset en página y desplazamiento.</p>
+    <div class="ver"><b>Qué ver:</b> 0:45-2:15. Lo de Intel (2:15 en adelante) es opcional.</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=Qb179PJiN8o" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/Qb179PJiN8o/mqdefault.jpg" alt=""><span class="dur">15:20</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=Qb179PJiN8o" target="_blank" rel="noopener">Traducir direcciones virtuales a físicas en paginación de memoria · MMU · tabla de páginas</a>
+    <div class="ch">FNE Profesor - Ciencias de la Computación · 15:20 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Traducción paso a paso con direcciones virtuales de 16 bits, 8 marcos y el bit de presente/ausente; acierto y fallo de página.</p>
+    <div class="ver"><b>Qué ver:</b> 4:00-9:00 el ejemplo · 10:00-11:30 acierto y fallo.</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=eoFcFqPiPjk" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/eoFcFqPiPjk/mqdefault.jpg" alt=""><span class="dur">2:50</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=eoFcFqPiPjk" target="_blank" rel="noopener">What is a Page Fault</a>
+    <div class="ch">BitLemon · 2:50 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Qué es un page fault, la diferencia entre fallo menor y mayor, y qué pasa con un acceso inválido (el <i>segmentation fault</i>).</p>
+    <div class="ver"><b>Qué ver:</b> Completo (3 minutos).</div>
+  </div>
+</div>
+</div>
+</section>
+
+<details class="ex" id="ex2023v" data-nav="C2 2023 · sección 4 y 1.5-1.7">
+<summary>Certamen 2 2023-1 · preguntas 1.5 a 1.7 y sección 4 “Memoria Segmentada Paginada” <span class="tag">35 pts la sección · sin pauta</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div>
+<p><b>1.5</b> Definir la noción de Page Fault en gestión de memoria virtual paginada. <b>1.6</b> En un sistema con segmentación paginada, ¿cuándo ocurre el error SEGMENTATION VIOLATION? <b>1.7</b> ¿Por qué la gestión de memoria paginada mejora bastante el desempeño del swapping?</p>
+<p><b>Sección 4.</b> Un sistema tipo Linux donde el espacio de trabajo de un proceso contiene varios segmentos de memoria virtual, y cada segmento es paginado. El tamaño de las páginas es de 16 KB. <b>4.1</b> ¿Ventajas y desventajas de elegir páginas pequeñas o grandes? Tabla de páginas del proceso P0: (V, U, D, COW, RWX, Frame) = página 0: (0, 1, 1, 0, 110, 4) · página 1: (1, 1, 1, 0, 100, 100) · página 2: (0, 0, 0, 1, 110, 11) · página 3: (1, 0, 0, 1, 110, 9). <b>4.2</b> Explicar el rol de los bits V, U y D en la tabla. <b>4.3</b> ¿Qué parte de la tabla es incorrecta? (Justificar). <b>4.4</b> Explicar el funcionamiento del TLB de la MMU para las tablas de memoria indexadas.</p></div>
+<div class="sol">
+<div class="st">1.5</div><p>Ver <a class="inl" href="#page-fault">el page fault paso a paso</a> (respuesta modelo en el recuadro).</p>
+<div class="st">1.6</div><p>Cuando el segmento de la dirección no está en la tabla de segmentos del proceso, o cuando el offset sale del tamaño (límite) del segmento. Ver <a class="inl" href="#segpag">segmentación paginada</a>.</p>
+<div class="st">1.7</div><p>Ver <a class="inl" href="#demanda">on demand paging</a>: swapping por páginas en vez de procesos completos, solo las útiles, solo se escriben las sucias, y cualquier marco libre sirve.</p>
+<div class="st">4.1</div><p>Ver <a class="inl" href="#tamano-pag">tamaño de página</a>. Con 16 KB: si una página es pequeña, menos fragmentación interna y carga más fina, pero tablas más grandes y más page faults; si es grande, al revés.</p>
+<div class="st">4.2</div><p>V: presencia, la MMU genera page fault si es 0. U: uso, para elegir qué descargar (U = 0 buen candidato). D: escritura, para saber si hay que escribir la página en el swap al descargarla. Quién los pone en 0 y en 1: ver <a class="inl" href="#tabla-pag">la tabla de bits</a>.</p>
+<div class="st">4.3</div><p>Página 1 (D = 1 con derechos de solo lectura y sin COW) y página 0 (ausente pero marcada como modificada). Ver <a class="inl" href="#tabla-mala">el análisis completo</a>.</p>
+<div class="st">4.4</div><p>Ver <a class="inl" href="#tlb">la TLB</a> (respuesta modelo en el recuadro).</p>
+</div></div>
+</details>
+
+<details class="ex" id="V1" data-nav="V1 · Traducir con la tabla de la lámina">
+<summary>V1 · Seis accesos con la tabla de la lámina 23 <span class="tag">nuevo · páginas de 4 KB</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Usa <a class="inl" href="#tabla-pag">la tabla de la lámina 23</a> (páginas 0 a 4) con páginas de 4 KB. ¿Qué pasa en cada acceso? a) leer 0x0ABC · b) escribir 0x1F00 · c) leer 0x2010 · d) ejecutar 0x3004 · e) escribir 0x4FFF · f) leer 0x5000.</p></div>
+<div class="sol">
+<p>Con 4 KB, K = 12: los últimos 3 dígitos hex son el offset y el resto es la página.</p>
+<p><b>a)</b> página 0, offset 0xABC; V = 1, R = 1 → marco 4 → <b>0x4ABC</b>.</p>
+<p><b>b)</b> página 1, W = 1 → marco 1 → <b>0x1F00</b> (D ya era 1).</p>
+<p><b>c)</b> página 2, V = 0 → <b>page fault</b>: se le asigna un marco, se carga y se reintenta.</p>
+<p><b>d)</b> página 3, X = 0 → <b>permission denied</b>.</p>
+<p><b>e)</b> página 4, W = 1 → marco 6 → <b>0x6FFF</b>; D pasa de 0 a 1.</p>
+<p><b>f)</b> página 5 no existe en la tabla → <b>memory violation</b>.</p>
+</div></div>
+</details>
+
+<details class="ex" id="V2" data-nav="V2 · Direcciones en decimal">
+<summary>V2 · Página y offset en decimal <span class="tag">nuevo + Silberschatz 9.7</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>a) Páginas de 1 KB: página y offset de 3 085, 42 095, 215 201, 650 000 y 2 000 001. b) Páginas de 16 KB: dirección 50 000; si su página está en el marco 20, ¿cuál es la dirección física?</p></div>
+<div class="sol">
+<div class="tw"><table class="mini"><thead><tr><th>Dirección</th><th>Página = d div 1024</th><th>Offset = d mod 1024</th></tr></thead><tbody>
+<tr><td>3 085</td><td>3</td><td>13</td></tr>
+<tr><td>42 095</td><td>41</td><td>111</td></tr>
+<tr><td>215 201</td><td>210</td><td>161</td></tr>
+<tr><td>650 000</td><td>634</td><td>784</td></tr>
+<tr><td>2 000 001</td><td>1953</td><td>129</td></tr>
+</tbody></table></div>
+<p><b>b)</b> 50 000 div 16 384 = 3, offset 848. Física: 20 × 16 384 + 848 = <b>328 528</b>.</p>
+</div></div>
+</details>
+
+<details class="ex" id="V3" data-nav="V3 · Tamaño de las tablas">
+<summary>V3 · ¿Cuánto mide cada tabla? <span class="tag">nuevo + Silberschatz 9.24</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>a) Direcciones de 32 bits, páginas de 4 KB, entradas de 4 B: ¿cuánto mide la tabla indexada de un proceso? ¿Y la de 100 procesos? b) Con 64 bits y páginas de 16 KB, ¿cuántas entradas tendría? c) RAM de 16 GB con marcos de 16 KB: ¿cuántas entradas tiene la tabla invertida? d) 32 bits, páginas de 8 KB y 1 GB de RAM: entradas de la tabla convencional y de la invertida.</p></div>
+<div class="sol">
+<p><b>a)</b> 2<sup>32−12</sup> = 2<sup>20</sup> entradas × 4 B = <b>4 MB por proceso</b>; 100 procesos, 400 MB solo en tablas.</p>
+<p><b>b)</b> 2<sup>64−14</sup> = <b>2<sup>50</sup></b> entradas: imposible. Por eso hacen falta tablas jerárquicas o invertidas.</p>
+<p><b>c)</b> 2<sup>34</sup> / 2<sup>14</sup> = <b>2<sup>20</sup></b> entradas, para todo el sistema.</p>
+<p><b>d)</b> Convencional: 2<sup>32</sup> / 2<sup>13</sup> = 2<sup>19</sup> = <b>524 288</b>. Invertida: 2<sup>30</sup> / 2<sup>13</sup> = 2<sup>17</sup> = <b>131 072</b>.</p>
+</div></div>
+</details>
+
+<details class="ex" id="V4" data-nav="V4 · Partir una dirección en X, Y, Z">
+<summary>V4 · Tabla jerárquica de tres niveles <span class="tag">nuevo</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Direcciones virtuales de 48 bits, páginas de 4 KB y tres niveles de igual tamaño. a) ¿Cuántos bits tiene cada campo? b) Parte la dirección 0x123456789ABC. c) Con entradas de 8 B, ¿cuánto mide cada tabla? d) Un proceso usa tres zonas lejanas entre sí (código, heap y pila), cada una de pocos MB: ¿cuántas tablas necesita, y cuánto mediría una tabla indexada plana?</p></div>
+<div class="sol">
+<p><b>a)</b> Offset 12 bits; quedan 36 para X, Y y Z: <b>12 bits cada uno</b>.</p>
+<p><b>b)</b> Cada campo son 3 dígitos hex: X = 0x123, Y = 0x456, Z = 0x789, offset = 0xABC.</p>
+<p><b>c)</b> 2<sup>12</sup> entradas × 8 B = <b>32 KB</b> por tabla.</p>
+<p><b>d)</b> Una primaria, hasta tres secundarias y tres terciarias: 7 tablas, unos 224 KB. La tabla plana tendría 2<sup>36</sup> entradas × 8 B = <b>512 GB</b>. La diferencia es que las zonas que nadie usa no tienen tablas de nivel 2 ni 3.</p>
+</div></div>
+</details>
+
+<details class="ex" id="V5" data-nav="V5 · Buscar en la tabla invertida">
+<summary>V5 · Accesos con una tabla invertida <span class="tag">nuevo</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Páginas de 4 KB. Tabla invertida de 8 marcos, (PID, página): 0: (1, 0) · 1: (2, 3) · 2: (1, 5) · 3: (2, 5) · 4: libre · 5: (1, 1) · 6: (3, 0) · 7: (2, 0). a) PID 2 lee 0x5123. b) PID 1 lee 0x5ABC. c) PID 3 lee 0x1004. d) ¿Por qué no hay conflicto entre la página 5 de PID 1 y la de PID 2?</p></div>
+<div class="sol">
+<p><b>a)</b> p = 5, offset 0x123; (2, 5) está en la fila 3 → <b>0x3123</b>.</p>
+<p><b>b)</b> (1, 5) está en la fila 2 → <b>0x2ABC</b>.</p>
+<p><b>c)</b> (3, 1) no está en la tabla → <b>page fault</b>; el sistema puede usar el marco 4, que está libre.</p>
+<p><b>d)</b> Porque se busca el par (PID, p): la misma página virtual de dos procesos distintos son dos entradas distintas.</p>
+</div></div>
+</details>
+
+<details class="ex" id="V6" data-nav="V6 · Segmentación paginada con 16 KB">
+<summary>V6 · Segmentación paginada con páginas de 16 KB <span class="tag">nuevo · formato del C2 2023</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Páginas de 16 KB (16 384 B). El proceso P tiene dos segmentos. Segmento 0, código, 40 KB, R-X; su tabla de páginas: 0 → marco 7, 1 → marco 3, 2 → no presente. Segmento 1, datos, 64 KB, RW-; su tabla: 0 → 9, 1 → 12, 2 → 4, 3 → no presente. ¿Qué pasa en cada acceso? a) leer (1, 40 000) · b) escribir (0, 100) · c) leer (0, 35 000) · d) leer (0, 45 000) · e) leer (2, 0) · f) escribir (1, 60 000). g) ¿Cuánta fragmentación interna tiene el segmento 0?</p></div>
+<div class="sol">
+<p><b>a)</b> 40 000 &lt; 65 536 ✓ · i = 40 000 div 16 384 = 2, o = 40 000 − 32 768 = 7 232 · marco 4 → 4 × 16 384 + 7 232 = <b>72 768</b>.</p>
+<p><b>b)</b> El segmento 0 es R-X → <b>permission denied</b>.</p>
+<p><b>c)</b> 35 000 &lt; 40 960 ✓ · i = 2 (o = 2 232) · la página 2 no está → <b>page fault</b>.</p>
+<p><b>d)</b> 45 000 ≥ 40 960 (40 KB) → <b>segmentation violation</b>.</p>
+<p><b>e)</b> El proceso no tiene segmento 2 → <b>segmentation violation</b>.</p>
+<p><b>f)</b> 60 000 &lt; 65 536 ✓, W ✓ · i = 3 (o = 10 848) · no presente → <b>page fault</b>; después del reintento, D = 1.</p>
+<p><b>g)</b> 40 KB son 2,5 páginas → 3 páginas = 48 KB; se pierden <b>8 KB</b> en la última.</p>
+</div></div>
+</details>
+
+<details class="ex" id="V7" data-nav="V7 · Otra tabla con errores">
+<summary>V7 · Encuentra los errores (variante de la 4.3) <span class="tag">nuevo</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>La RAM tiene 64 marcos. Tabla (V, U, D, COW, RWX, Frame): página 0: (1, 0, 1, 0, 110, 3) · página 1: (1, 1, 0, 0, 101, 7) · página 2: (1, 1, 1, 0, 110, 70) · página 3: (0, 0, 0, 0, 110, −) · página 4: (1, 1, 1, 0, 100, 12) · página 5: (1, 0, 0, 1, 100, 21). ¿Qué filas son incorrectas?</p></div>
+<div class="sol">
+<p><b>Página 0:</b> D = 1 con U = 0. Escribir es un acceso: no puede estar sucia sin estar usada.</p>
+<p><b>Página 2:</b> marco 70, pero la RAM tiene 64 marcos (0 a 63).</p>
+<p><b>Página 4:</b> D = 1 con derechos 100 y sin COW: no pudo ser escrita.</p>
+<p><b>Correctas:</b> la 1 (código: lectura y ejecución, usada y limpia), la 3 (no cargada) y la 5 (página COW recién compartida tras un <code>fork()</code>, marcada solo lectura para que la primera escritura avise).</p>
+</div></div>
+</details>
+
+<details class="ex" id="V8" data-nav="V8 · Tiempo efectivo con TLB">
+<summary>V8 · Tiempo efectivo de acceso con TLB <span class="tag">probabilidad baja · Silberschatz 9.25</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Acceso a memoria de 50 ns, TLB de 1 ns, tabla indexada en RAM. a) Sin TLB. b) Con TLB y 90 % de HIT. c) Con 99 %. d) Con tabla jerárquica de 3 niveles y 99 % de HIT. e) Silberschatz: 75 % de HIT y TLB de 2 ns.</p></div>
+<div class="sol">
+<p><b>a)</b> 50 + 50 = <b>100 ns</b>. · <b>b)</b> 0,9 × 51 + 0,1 × 101 = <b>56 ns</b>. · <b>c)</b> 0,99 × 51 + 0,01 × 101 = <b>51,5 ns</b>.</p>
+<p><b>d)</b> Un MISS cuesta 1 + 3 × 50 + 50 = 201 ns: 0,99 × 51 + 0,01 × 201 = <b>52,5 ns</b>.</p>
+<p><b>e)</b> 0,75 × 52 + 0,25 × 102 = <b>64,5 ns</b>.</p>
+</div></div>
+</details>
+
+<section id="t3-preguntas" data-nav="Preguntas del tema">
+<h2>Preguntas del tema</h2>
+<p class="lead">Tapa la respuesta y contesta en voz alta.</p>
+<details class="ex"><summary>¿Por qué la paginación no tiene fragmentación externa?</summary><div class="body"><p>Porque todos los marcos miden lo mismo y una página puede ir a cualquier marco libre: no hace falta una zona contigua.</p></div></details>
+<details class="ex"><summary>¿Qué fragmentación sí tiene la paginación?</summary><div class="body"><p>Interna, en la última página de cada zona (segmento o proceso), que casi nunca se llena.</p></div></details>
+<details class="ex"><summary>¿Qué diferencia hay entre el bit U y el bit R (Refer)?</summary><div class="body"><p>U se pone en 0 al cargar la página: dice si se usó desde entonces. R se borra periódicamente (cada TICK): dice si se usó hace poco.</p></div></details>
+<details class="ex"><summary>¿Qué pasa si se accede a una página con V = 0? ¿Y a una que no existe?</summary><div class="body"><p>V = 0: page fault, el sistema la carga y la instrucción se reejecuta. Si no existe en el espacio del proceso: memory violation (memory fault), error del proceso.</p></div></details>
+<details class="ex"><summary>¿Por qué durante un page fault hay un task switch?</summary><div class="body"><p>Porque cargar la página es una E/S de disco (lenta): la tarea queda bloqueada y el scheduler le da la CPU a otra. Al volver, reejecuta la instrucción.</p></div></details>
+<details class="ex"><summary>¿Por qué no se guarda la tabla de páginas en registros? ¿Y por qué no solo en RAM?</summary><div class="body"><p>En registros el tamaño de la tabla queda muy limitado. Solo en RAM, cada acceso a un dato costaría dos accesos. El compromiso es la TLB.</p></div></details>
+<details class="ex"><summary>¿Por qué la TLB es chica y cómo decide qué entrada reemplazar?</summary><div class="body"><p>Porque es una memoria asociativa muy cara de fabricar. Funciona como un cache y reemplaza la entrada usada hace más tiempo (LRU).</p></div></details>
+<details class="ex"><summary>¿Qué es un table fault?</summary><div class="body"><p>En una tabla jerárquica, falta (no está cargada) una de las tablas secundarias o terciarias durante la búsqueda; el sistema la carga y actualiza las tablas.</p></div></details>
+<details class="ex"><summary>¿Qué problema de las tablas por proceso resuelve la tabla invertida?</summary><div class="body"><p>Que su volumen crece con el número de procesos y que hay que cambiar de tabla en cada conmutación. La invertida es una sola, del tamaño de la RAM.</p></div></details>
+<details class="ex"><summary>¿Qué ganas al combinar segmentación y paginación?</summary><div class="body"><p>La estructura y la protección por segmentos (código, datos, pila, compartir bibliotecas) y la asignación sin fragmentación externa de la paginación.</p></div></details>
+<details class="ex"><summary>¿Qué trabajo hace el hardware y qué trabajo hace el SO en la memoria virtual?</summary><div class="body"><p>El hardware (MMU) verifica presencia y derechos, calcula la dirección real, genera los TRAPs y actualiza U y D. El SO atiende los TRAPs: carga páginas, elige víctimas, mantiene las tablas y termina a los procesos que hacen accesos ilegales.</p></div></details>
+<details class="ex"><summary>¿Qué es el thrashing?</summary><div class="body"><p>El estado en que el sistema produce page faults todo el tiempo, sacando páginas que se vuelven a necesitar enseguida; deja de ejecutar trabajo útil y puede colapsar.</p></div></details>
+</section>
+
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=(localStorage.getItem('so-c2-theme')||localStorage.getItem('so-c2-theme')); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('so-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  var lastBest=-1;
+  function onScroll(){
+    var y=window.scrollY+70, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4) best=secs.length-1;
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+    var sb=document.querySelector('.sidebar'), act=links[best];
+    if(sb && act && window.innerWidth>900 && best!==lastBest){
+      var r=act.getBoundingClientRect(), s=sb.getBoundingClientRect();
+      if(r.top<s.top+40 || r.bottom>s.bottom-40){ sb.scrollTop+=r.top-s.top-sb.clientHeight/2; }
+    }
+    lastBest=best;
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='so-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+</script>
+</body>
+</html>

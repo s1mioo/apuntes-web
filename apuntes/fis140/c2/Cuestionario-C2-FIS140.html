@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cuestionario C2 FIS140</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<style>
+  :root{
+    --bg:#f6f7f9; --surface:#ffffff; --ink:#1b2130; --muted:#586174; --line:#e1e4ea;
+    --accent:#3445b4; --accent-soft:#eceefa; --warn:#94550f; --warn-soft:#fbf3e7; --code:#eef0f4;
+    --ok:#1b7f4b; --ok-soft:#e8f6ee; --err:#b42318; --err-soft:#fdeceb;
+    --strip:#0f1117; --h-delta:#8a4fd6; --h-gamma:#5b5cf0; --h-beta:#1fa8d4; --h-alpha:#e2463f;
+    --f-display:"IBM Plex Serif", Georgia, "Times New Roman", serif;
+    --f-body:"IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    --f-mono:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --sidew:276px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#12151c; --surface:#181c25; --ink:#e5e8ef; --muted:#9aa2b4; --line:#2a2f3b;
+      --accent:#a3afff; --accent-soft:#1f2541; --warn:#e6ad66; --warn-soft:#2a2116; --code:#222734;
+      --ok:#5dd39e; --ok-soft:#142e24; --err:#f97066; --err-soft:#341a1a;
+      --strip:#0b0d12; color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#12151c; --surface:#181c25; --ink:#e5e8ef; --muted:#9aa2b4; --line:#2a2f3b;
+    --accent:#a3afff; --accent-soft:#1f2541; --warn:#e6ad66; --warn-soft:#2a2116; --code:#222734;
+    --ok:#5dd39e; --ok-soft:#142e24; --err:#f97066; --err-soft:#341a1a;
+    --strip:#0b0d12; color-scheme:dark;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.66;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:var(--accent)}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+  .layout{display:flex;align-items:flex-start}
+  .sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;overflow-y:auto;
+    background:var(--surface);border-right:1px solid var(--line);padding:22px 14px 60px}
+  .content{flex:1 1 auto;min-width:0;padding:40px clamp(16px,4.5vw,64px) 140px}
+  .col{max-width:760px;margin:0 auto}
+
+  .brand .kicker{font-family:var(--f-mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+  .brand h1{font-family:var(--f-display);font-weight:600;font-size:20px;line-height:1.25;margin:4px 0 2px;text-wrap:balance}
+  .brand p{margin:0;color:var(--muted);font-size:13px}
+  .spectrum{margin:14px 0 4px}
+  .spectrum .bar{position:relative;height:12px;border-radius:3px;background:var(--strip)}
+  .spectrum .bar i{position:absolute;top:0;bottom:0;width:2px}
+  .spectrum .lbl{position:relative;height:14px;font-family:var(--f-mono);font-size:9.5px;color:var(--muted)}
+  .spectrum .lbl span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 6px}
+  .btn{font:500 12.5px/1 var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);
+    border-radius:6px;padding:7px 10px;cursor:pointer;transition:all .15s ease}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  :root[data-theme="dark"] .btn.primary{color:#12151c}
+  .btn.primary:hover{opacity:.92;color:#fff}
+  :root[data-theme="dark"] .btn.primary:hover{color:#12151c}
+
+  nav .grp{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:18px 8px 4px}
+  nav a{display:flex;justify-content:space-between;align-items:center;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:6px;font-size:13.2px;line-height:1.35;opacity:.86}
+  nav a:hover{background:var(--accent-soft);opacity:1}
+  nav a.active{background:var(--accent-soft);color:var(--accent);font-weight:600;opacity:1}
+  nav a .dot{width:7px;height:7px;border-radius:50%;background:transparent;flex:0 0 7px}
+  nav a.done-ok .dot{background:var(--ok)}
+  nav a.done-err .dot{background:var(--err)}
+  nav .xlink{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+
+  h2{font-family:var(--f-display);font-weight:600;font-size:29px;line-height:1.2;margin:0 0 8px;letter-spacing:-.005em;text-wrap:balance;scroll-margin-top:24px}
+  h4{font-size:16.5px;font-weight:600;margin:0;scroll-margin-top:24px}
+  p{margin:10px 0}
+  .eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+  .lead{font-size:17.5px;color:var(--muted);margin:4px 0 14px}
+  .muted{color:var(--muted)}
+  section.first{border-top:0;margin-top:0;padding-top:0}
+  code,.mono{font-family:var(--f-mono);font-size:.88em}
+  code{background:var(--code);border-radius:4px;padding:1px 5px}
+
+  .scorebar{position:sticky;top:12px;z-index:20;background:var(--surface);border:1px solid var(--line);border-radius:8px;
+    padding:12px 16px;margin:18px 0 24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;
+    box-shadow:0 4px 14px rgba(0,0,0,.05)}
+  .scorebar .stat{font-family:var(--f-mono);font-size:13.5px}
+  .scorebar .stat strong{color:var(--accent);font-size:15px}
+
+  .ex{border-top:1px solid var(--line);padding:24px 0 12px;scroll-margin-top:70px}
+  .ex .hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;margin-bottom:8px}
+  .ex .id{font-family:var(--f-mono);font-weight:500;font-size:13px;color:var(--accent);min-width:2.4em}
+  .ex .hd h4{flex:1 1 260px;min-width:0}
+  .tag{display:inline-block;font-family:var(--f-mono);font-size:11px;line-height:1.5;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 6px;white-space:nowrap}
+  .tag.ok{color:var(--ok);border-color:var(--ok);background:var(--ok-soft)}
+  .tag.err{color:var(--err);border-color:var(--err);background:var(--err-soft)}
+
+  .formula-box{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 16px;margin:10px 0;font-family:var(--f-display);font-size:17px;text-align:center}
+  .sub-list{list-style:none;padding:0;margin:10px 0;font-size:15px}
+  .sub-list li{padding:5px 10px;background:var(--surface);border:1px solid var(--line);border-radius:5px;margin-bottom:5px;font-family:var(--f-display)}
+
+  .opts{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+  label.opt{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;background:var(--surface);border:1px solid var(--line);
+    border-radius:7px;cursor:pointer;font-size:15.2px;line-height:1.45;transition:border-color .15s,background .15s;user-select:none}
+  label.opt:hover{border-color:var(--accent)}
+  label.opt input[type="checkbox"]{margin-top:3px;width:17px;height:17px;accent-color:var(--accent);flex:0 0 17px;cursor:pointer}
+  label.opt .txt{flex:1 1 auto}
+  label.opt .badge{font-family:var(--f-mono);font-size:11px;padding:2px 6px;border-radius:4px;white-space:nowrap;display:none;align-self:center}
+
+  label.opt.st-correct-hit{border-color:var(--ok);background:var(--ok-soft)}
+  label.opt.st-correct-hit .badge{display:inline-block;color:var(--ok);font-weight:600}
+  label.opt.st-correct-miss{border-color:var(--warn);background:var(--warn-soft)}
+  label.opt.st-correct-miss .badge{display:inline-block;color:var(--warn);font-weight:600}
+  label.opt.st-wrong-hit{border-color:var(--err);background:var(--err-soft)}
+  label.opt.st-wrong-hit .badge{display:inline-block;color:var(--err);font-weight:600}
+
+  .actions{display:flex;align-items:center;gap:10px;margin-top:10px}
+  .sol-box{display:none;margin-top:12px;padding:12px 16px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 6px 6px 0;font-size:15px}
+  .sol-box.open{display:block}
+  .sol-box .ans{color:var(--accent);font-weight:600}
+  .sol-box p{margin:6px 0}
+
+  .menuToggle{display:none}
+  .scrim{display:none}
+  @media (max-width:920px){
+    .sidebar{position:fixed;z-index:40;left:0;top:0;transform:translateX(-102%);transition:transform .2s ease;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .sidebar.open{transform:none}
+    .menuToggle{display:inline-block;position:fixed;z-index:50;top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+    .scrim.on{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:35}
+    .content{padding-top:62px}
+    .scorebar{top:52px}
+  }
+</style>
+</head>
+<body>
+<button class="btn menuToggle" id="menuToggle" type="button">Índice</button>
+<div class="scrim" id="scrim"></div>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="kicker">FIS140 · Física General IV · USM</div>
+    <h1>Cuestionario Certamen 2</h1>
+    <p>18 preguntas formativas interactivas con corrección y retroalimentación.</p>
+  </div>
+  <div class="spectrum" title="Líneas de Balmer del hidrógeno">
+    <div class="bar"><i style="left:9.4%;background:var(--h-delta)"></i><i style="left:16.9%;background:var(--h-gamma)"></i><i style="left:33.2%;background:var(--h-beta)"></i><i style="left:86.3%;background:var(--h-alpha)"></i></div>
+    <div class="lbl"><span style="left:7.5%">410</span><span style="left:17.5%">434</span><span style="left:33.2%">486</span><span style="left:86.3%">656 nm</span></div>
+  </div>
+  <div class="toolbar">
+    <button class="btn" id="themeBtn" type="button">Cambiar tema</button>
+    <button class="btn" id="allSolBtn" type="button">Mostrar soluciones</button>
+    <button class="btn" id="resetBtn" type="button">Reiniciar</button>
+  </div>
+  <nav id="nav">
+    <div class="grp">Preguntas</div>
+    <a href="#q1"><span>P1 · Cuerpo negro I</span><i class="dot"></i></a>
+    <a href="#q2"><span>P2 · Tiempo propio</span><i class="dot"></i></a>
+    <a href="#q3"><span>P3 · Longitud propia</span><i class="dot"></i></a>
+    <a href="#q4"><span>P4 · Velocidad en E y p</span><i class="dot"></i></a>
+    <a href="#q5"><span>P5 · Decaimiento 50 MeV</span><i class="dot"></i></a>
+    <a href="#q6"><span>P6 · Módulo cuadrado |Ψ|²</span><i class="dot"></i></a>
+    <a href="#q7"><span>P7 · Función de onda</span><i class="dot"></i></a>
+    <a href="#q8"><span>P8 · Intensidad fotoeléctrico</span><i class="dot"></i></a>
+    <a href="#q9"><span>P9 · Pendiente E vs f</span><i class="dot"></i></a>
+    <a href="#q10"><span>P10 · Ionización atómica</span><i class="dot"></i></a>
+    <a href="#q11"><span>P11 · Potencial escalón</span><i class="dot"></i></a>
+    <a href="#q12"><span>P12 · Observador y L₀</span><i class="dot"></i></a>
+    <a href="#q13"><span>P13 · Compton máximo Δλ</span><i class="dot"></i></a>
+    <a href="#q14"><span>P14 · Momentum con K=2mc²</span><i class="dot"></i></a>
+    <a href="#q15"><span>P15 · Protón a 0,8c</span><i class="dot"></i></a>
+    <a href="#q16"><span>P16 · Nave A y proyectil B</span><i class="dot"></i></a>
+    <a href="#q17"><span>P17 · Estrellas A y B (Wien)</span><i class="dot"></i></a>
+    <a href="#q18"><span>P18 · Pozo infinito n=1 y n=2</span><i class="dot"></i></a>
+    <div class="xlink">
+      <a href="Resumen-C2-FIS140.html">← Ir al resumen de teoría</a>
+      <a href="Ejercicios-C2-FIS140.html">← Ir a ejercicios resueltos</a>
+    </div>
+  </nav>
+</aside>
+
+<main class="content">
+<div class="col">
+
+<section class="first">
+  <p class="eyebrow">Autoevaluación interactiva</p>
+  <h2>Cuestionario del Certamen 2</h2>
+  <p class="lead">Marca todas las alternativas que consideres correctas en cada pregunta y presiona <strong>«Verificar y ver solución»</strong> para evaluar tu respuesta al instante, o usa <strong>«Corregir todo»</strong> al finalizar.</p>
+
+  <div class="scorebar">
+    <div class="stat">Puntaje obtenido: <strong id="scoreVal">0 / 18</strong> puntos <span class="muted" id="checkedCount">(0 de 18 verificadas)</span></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn primary" id="checkAllBtn" type="button">Corregir todo</button>
+      <button class="btn" id="resetTopBtn" type="button">Limpiar respuestas</button>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 1 -->
+  <div class="ex" id="q1" data-qid="1">
+    <div class="hd">
+      <span class="id">P1</span>
+      <h4>Respecto a un cuerpo negro, ¿cuáles de las siguientes afirmaciones son correctas?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Un cuerpo negro absorbe toda la radiación electromagnética que incide sobre él.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">El espectro de radiación emitida por un cuerpo negro depende únicamente de su temperatura.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Al aumentar la temperatura de un cuerpo negro, aumenta la longitud de onda correspondiente a su máxima emisión.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">La potencia total emitida por unidad de área aumenta con la cuarta potencia de la temperatura absoluta.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Un cuerpo negro necesariamente debe ser de color negro en el espectro visible.</span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opciones correctas: 1, 2 y 4.</span></p>
+      <p>Un cuerpo negro ideal absorbe toda la radiación incidente y su espectro térmico depende exclusivamente de su temperatura absoluta <i>T</i>. Por la ley de Stefan-Boltzmann, la intensidad radiada es <i>I = &sigma;T</i><sup>4</sup> (cuarta potencia de <i>T</i>). En cambio, por la ley de Wien (<i>&lambda;</i><sub>máx</sub><i>T</i> = 2,9&times;10<sup>&minus;3</sup> m·K), al aumentar <i>T</i> la longitud de onda del máximo <strong>disminuye</strong>, y si está suficientemente caliente brilla en el espectro visible.</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 2 -->
+  <div class="ex" id="q2" data-qid="2">
+    <div class="hd">
+      <span class="id">P2</span>
+      <h4>Respecto al tiempo propio en relatividad especial, ¿cuáles de las siguientes afirmaciones son correctas?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">El tiempo propio es el intervalo de tiempo medido por un reloj que se encuentra en reposo respecto a los dos eventos considerados.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">El tiempo propio corresponde al menor intervalo de tiempo entre dos eventos medido por distintos observadores inerciales.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Dos observadores inerciales pueden medir distintos intervalos de tiempo entre los mismos dos eventos.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">El tiempo propio es siempre igual para todos los observadores inerciales.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Si dos eventos ocurren en el mismo lugar para un observador, el intervalo de tiempo que este mide corresponde al tiempo propio.</span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opciones correctas: 2, 3 y 5.</span></p>
+      <p>La opción 1 es falsa porque los <strong>eventos</strong> son puntos instantáneos en el espacio-tiempo y no objetos físicos respecto a los cuales un reloj pueda estar «en reposo». La condición correcta es la <strong>opción 5</strong>: ambos eventos ocurren en el mismo lugar para el observador (&Delta;<i>x'</i> = 0). Como &Delta;<i>t</i> = &gamma;&Delta;<i>t</i><sub>0</sub> con &gamma; &ge; 1, el tiempo propio es el menor intervalo entre los dos eventos (<strong>opción 2</strong>) y distintos observadores inerciales pueden medir distintos intervalos (<strong>opción 3</strong>).</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 3 -->
+  <div class="ex" id="q3" data-qid="3">
+    <div class="hd">
+      <span class="id">P3</span>
+      <h4>Respecto a la longitud propia en relatividad especial, ¿cuáles de las siguientes afirmaciones son correctas?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">La longitud propia es la longitud de un objeto medida en un sistema de referencia en el cual el objeto se encuentra en reposo.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">La longitud propia es la mayor longitud que puede medir cualquier observador inercial.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Un observador que ve al objeto en movimiento mide una longitud menor que su longitud propia.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La longitud propia depende de la velocidad relativa entre el objeto y el observador.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">La contracción de longitud ocurre únicamente en la dirección del movimiento relativo.</span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opciones correctas: 1, 2, 3 y 5.</span></p>
+      <p>La longitud propia <i>L</i><sub>0</sub> se mide en el sistema donde el objeto está en reposo (por lo tanto, no depende de la velocidad de otros observadores). Cualquier observador que vea al objeto moverse con rapidez <i>v</i> mide una longitud contraída <i>L = L</i><sub>0</sub>/&gamma; &lt; <i>L</i><sub>0</sub> exclusivamente en la dirección paralela al movimiento.</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 4 -->
+  <div class="ex" id="q4" data-qid="4">
+    <div class="hd">
+      <span class="id">P4</span>
+      <h4>En las expresiones relativistas para el momentum y la energía, ¿a qué corresponde la velocidad <i>v</i>?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="formula-box">
+      <b>p</b> = &gamma;<i>m</i><b>v</b>, &emsp; <i>E</i> = &gamma;<i>mc</i><sup>2</sup>, &emsp; &gamma; = 1 / &radic;(1 &minus; <i>v</i><sup>2</sup>/<i>c</i><sup>2</sup>)
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">A la velocidad de la luz en el vacío.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">A la velocidad de la partícula respecto del centro de masa del sistema.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">A la velocidad de la partícula respecto de su propio sistema de referencia.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">A la velocidad de la partícula respecto del observador que mide su energía y momentum.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">A la velocidad promedio de la partícula durante su movimiento.</span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opción correcta: 4 («A la velocidad de la partícula respecto del observador que mide su energía y momentum»).</span></p>
+      <p>Tanto la energía total <i>E</i> como el momentum relativista <b>p</b> dependen del marco de referencia inercial desde el cual se observe la partícula; <i>v</i> es la rapidez que tiene la partícula respecto a dicho observador.</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 5 -->
+  <div class="ex" id="q5" data-qid="5">
+    <div class="hd">
+      <span class="id">P5</span>
+      <h4>Una partícula, inicialmente en reposo, tiene una energía en reposo de 50 [MeV]. La partícula decae en dos partículas. Considerando únicamente las restricciones cinemáticas de conservación de energía y momentum, ¿cuál de las siguientes opciones podría corresponder al estado final? (considere que el fotón y el neutrino tienen masa cero)</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Un electrón (<i>mc</i><sup>2</sup> = 0,511 MeV) y un positrón (<i>mc</i><sup>2</sup> = 0,511 MeV), que salen en la misma dirección y con el mismo sentido.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Un electrón y un positrón, que salen en direcciones opuestas.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Un muón (<i>mc</i><sup>2</sup> = 105,7 MeV) y un neutrino, que salen en direcciones opuestas.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Dos muones, que salen en direcciones opuestas.</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Un electrón y un protón (<i>mc</i><sup>2</sup> = 938 MeV), que salen en direcciones opuestas.</span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opción correcta: 2 («Un electrón y un positrón, que salen en direcciones opuestas»).</span></p>
+      <p>Como la partícula inicial está en reposo, el momentum inicial es cero (<b>p</b><sub>i</sub> = 0), por lo que las dos partículas hijas deben salir en sentidos opuestos (descarta la 1). Además, por conservación de la energía total, la energía en reposo inicial (50 MeV) debe ser mayor o igual a la suma de las energías en reposo de los productos: el par electrón-positrón suma 1,022 MeV &lt; 50 MeV (posible), mientras que un muón (105,7 MeV) o un protón (938 MeV) superan los 50 MeV disponibles.</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 6 -->
+  <div class="ex" id="q6" data-qid="6">
+    <div class="hd">
+      <span class="id">P6</span>
+      <h4>¿Qué representa el módulo cuadrado de la función de onda de un electrón en mecánica cuántica?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La distribución de carga del electrón en la posición <i>x</i></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La probabilidad de encontrar al electrón en la posición <i>x</i></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">La densidad de probabilidad de encontrar al electrón en la posición <i>x</i></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La velocidad del electrón en la posición <i>x</i></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La energía potencial acumulada por el electrón en la posición <i>x</i></span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opción correcta: 3 («La densidad de probabilidad de encontrar al electrón en la posición x»).</span></p>
+      <p>Según la interpretación de Born, |&Psi;(<i>x</i>)|<sup>2</sup> es la <strong>densidad de probabilidad</strong> (probabilidad por unidad de longitud). Para obtener una probabilidad adimensional hay que multiplicar por un diferencial de longitud, <i>dP</i> = |&Psi;(<i>x</i>)|<sup>2</sup><i>dx</i>, o integrar en un intervalo.</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 7 -->
+  <div class="ex" id="q7" data-qid="7">
+    <div class="hd">
+      <span class="id">P7</span>
+      <h4>Respecto a la función de onda, ¿cuáles de las siguientes afirmaciones son correctas?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Para una partícula libre no puede ser una función sinusoidal</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">No puede tomar valores negativos porque es una probabilidad</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Siempre toma valores reales</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Siempre es cero en zonas donde el potencial es <i>V &gt; E</i>, con <i>E</i> la energía de la partícula</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Siempre es cero en zonas donde el potencial es infinito</span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opciones correctas: 1 y 5.</span></p>
+      <p>Para una partícula libre que viaja con momentum definido, su función de estado es una onda plana exponencial compleja (<i>Ae<sup>ikx</sup></i>) y además una función sinusoidal pura en todo el espacio (&minus;&infin;, +&infin;) no es normalizable (<strong>opción 1</strong>). Asimismo, donde <i>V</i> = &infin; la partícula no puede penetrar y la función de onda es siempre cero (<strong>opción 5</strong>). En cambio, cuando <i>V &gt; E</i> finito, la función de onda decae exponencialmente sin anularse de inmediato, y &psi; puede tomar valores negativos o complejos.</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 8 -->
+  <div class="ex" id="q8" data-qid="8">
+    <div class="hd">
+      <span class="id">P8</span>
+      <h4>Si en un experimento fotoeléctrico se aumenta la intensidad al doble, ¿qué otra cosa aumenta al doble?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La energía cinética de los electrones emitidos</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La frecuencia umbral</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">El número de electrones emitidos por minuto</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">El potencial de frenado</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">La fotocorriente del circuito</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">La potencia de la luz que llega al cátodo</span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opciones correctas: 3, 5 y 6.</span></p>
+      <p>Al duplicar la intensidad (manteniendo la misma frecuencia y área del cátodo), se duplica la potencia luminosa <i>P = I·A</i> y llega el doble de fotones por unidad de tiempo. Esto arranca el doble de fotoelectrones por minuto y duplica la fotocorriente. En cambio, <i>K</i><sub>máx</sub> y el potencial de frenado <i>V</i><sub>0</sub> dependen solo de la frecuencia <i>f</i> y de la función trabajo &phi;.</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 9 -->
+  <div class="ex" id="q9" data-qid="9">
+    <div class="hd">
+      <span class="id">P9</span>
+      <h4>¿Qué representa la pendiente de un gráfico Energía vs frecuencia de un experimento de efecto fotoeléctrico?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La frecuencia umbral</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">La constante de Planck</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La velocidad de la Luz</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La función trabajo</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La constante de Stefan-Boltzmann</span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opción correcta: 2 («La constante de Planck»).</span></p>
+      <p>De la ecuación de Einstein <i>K</i><sub>máx</sub> = <i>hf &minus; &phi;</i>, al graficar energía cinética máxima (o <i>eV</i><sub>0</sub>) en función de la frecuencia <i>f</i> se obtiene una línea recta cuya pendiente es la constante de Planck <i>h</i>.</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 10 -->
+  <div class="ex" id="q10" data-qid="10">
+    <div class="hd">
+      <span class="id">P10</span>
+      <h4>Es correcto afirmar que cuando un átomo se ioniza</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Se emite un fotón</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Un electrón del átomo queda libre de su influencia</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Ocurre solamente cuando se absorbe un fotón</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Si el átomo es hidrogenoide se deben suministrar la energía equivalente a <i>E</i><sub>1</sub></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Si el átomo es hidrogenoide se deben suministrar la energía equivalente a &minus;<i>E</i><sub>1</sub></span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opciones correctas: 2 y 5.</span></p>
+      <p>Ionizar consiste en arrancar al electrón dejándolo libre (<i>E</i> &ge; 0). Como la energía del estado fundamental <i>E</i><sub>1</sub> = &minus;13,6<i>Z</i><sup>2</sup> eV es negativa, la energía positiva mínima que se debe suministrar para llevarlo de <i>E</i><sub>1</sub> a 0 es 0 &minus; <i>E</i><sub>1</sub> = &minus;<i>E</i><sub>1</sub> = |<i>E</i><sub>1</sub>|. Además, un átomo también puede ionizarse por colisiones térmicas o descargas eléctricas, no solo por fotones.</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 11 -->
+  <div class="ex" id="q11" data-qid="11">
+    <div class="hd">
+      <span class="id">P11</span>
+      <h4>¿Cuál es la forma matemática de la función de estado independiente del tiempo para la región de potencial distinto de cero (<i>V</i><sub>0</sub>) en un potencial escalón?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <ul class="sub-list">
+      <li><b>a)</b> &psi;(<i>x</i>) = <i>A<sub>T</sub> e<sup>ik'x</sup></i>, con <i>k'</i> = &radic;[2<i>mE</i> / &hbar;<sup>2</sup>] si <i>E &gt; V</i><sub>0</sub></li>
+      <li><b>b)</b> &psi;(<i>x</i>) = <i>A<sub>T</sub> e<sup>ik'x</sup></i>, con <i>k'</i> = &radic;[2<i>m</i>(<i>E &minus; V</i><sub>0</sub>) / &hbar;<sup>2</sup>] si <i>E &gt; V</i><sub>0</sub></li>
+      <li><b>c)</b> &psi;(<i>x</i>) = <i>A<sub>T</sub> e<sup>&minus;ik'x</sup></i>, con <i>k'</i> = &radic;[2<i>m</i>(<i>E &minus; V</i><sub>0</sub>) / &hbar;<sup>2</sup>] si <i>E &gt; V</i><sub>0</sub></li>
+      <li><b>d)</b> &psi;(<i>x</i>) = <i>A</i><sub><i>T</i>1</sub> <i>e<sup>k'x</sup></i> + <i>A</i><sub><i>T</i>2</sub> <i>e<sup>&minus;k'x</sup></i>, con <i>k'</i> = &radic;[2<i>m</i>(<i>V</i><sub>0</sub> &minus; <i>E</i>) / &hbar;<sup>2</sup>] si <i>E &lt; V</i><sub>0</sub></li>
+      <li><b>e)</b> &psi;(<i>x</i>) = <i>A<sub>T</sub> e<sup>k'x</sup></i>, con <i>k'</i> = &radic;[2<i>m</i>(<i>V</i><sub>0</sub> &minus; <i>E</i>) / &hbar;<sup>2</sup>] si <i>E &lt; V</i><sub>0</sub></li>
+      <li><b>f)</b> &psi;(<i>x</i>) = <i>A<sub>T</sub> e<sup>&minus;k'x</sup></i>, con <i>k'</i> = &radic;[2<i>m</i>(<i>V</i><sub>0</sub> &minus; <i>E</i>) / &hbar;<sup>2</sup>] si <i>E &lt; V</i><sub>0</sub></li>
+    </ul>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Opción a)</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Opción b)</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Opción c)</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Opción d)</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Opción e)</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Opción f)</span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opciones correctas: Opción b) y Opción f).</span></p>
+      <p>En la región del escalón (<i>x &gt; 0</i> con potencial <i>V</i><sub>0</sub>): si <i>E &gt; V</i><sub>0</sub> hay una onda transmitida que viaja hacia la derecha (+<i>x</i>) de la forma <i>A<sub>T</sub>e<sup>ik'x</sup></i> con <i>k'</i> = &radic;[2<i>m</i>(<i>E &minus; V</i><sub>0</sub>)/&hbar;<sup>2</sup>] (<strong>Opción b</strong>). Si <i>E &lt; V</i><sub>0</sub>, la solución es una exponencial real que debe decaer cuando <i>x</i> &rarr; &infin; para ser normalizable: <i>A<sub>T</sub>e<sup>&minus;k'x</sup></i> con <i>k'</i> = &radic;[2<i>m</i>(<i>V</i><sub>0</sub> &minus; <i>E</i>)/&hbar;<sup>2</sup>] (<strong>Opción f</strong>).</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 12 -->
+  <div class="ex" id="q12" data-qid="12">
+    <div class="hd">
+      <span class="id">P12</span>
+      <h4>Una nave espacial de longitud propia <i>L</i><sub>0</sub> viaja a una velocidad <i>v</i> respecto a la Tierra. ¿Qué observador mide la «longitud propia» de la nave?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Un observador en reposo en la Tierra que mira pasar la nave</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Cualquier astronauta situado dentro de la nave espacial</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Cualquier observador inercial que mida la nave al mismo tiempo</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Un observador que viaja en sentido contrario a la nave con la misma rapidez <i>v</i></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Un astronauta situado en reposo dentro de la nave espacial</span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opción correcta: 5 («Un astronauta situado en reposo dentro de la nave espacial»).</span></p>
+      <p>La longitud propia la mide exclusivamente un observador que se encuentre <strong>en reposo respecto a la nave</strong>. Estar «dentro de la nave» no basta si el astronauta se está moviendo respecto de ella.</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 13 -->
+  <div class="ex" id="q13" data-qid="13">
+    <div class="hd">
+      <span class="id">P13</span>
+      <h4>En un experimento de dispersión Compton entre un fotón incidente y un electrón libre en reposo, ¿en qué caso el fotón dispersado experimenta el MÁXIMO cambio de longitud de onda?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Cuando el fotón sale en una dirección perpendicular a la incidente</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Cuando el fotón es retrodispersado hacia atrás</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Cuando la energía cinética del electrón resultante es exactamente igual a cero</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Cuando el fotón sale con un ángulo de 180° respecto al momentum del electrón en el estado final</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Cuando el fotón sale con un ángulo de 180° respecto al momentum del fotón en el estado inicial</span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opciones correctas: 2 y 5.</span></p>
+      <p>De la ecuación de Compton &Delta;&lambda; = &lambda;<sub>C</sub>(1 &minus; cos&theta;), donde &theta; se define respecto a la dirección del momentum inicial del fotón incidente, el cambio es máximo (&Delta;&lambda;<sub>máx</sub> = 2&lambda;<sub>C</sub>) cuando cos&theta; = &minus;1 (&theta; = 180°), es decir, cuando el fotón sale con un ángulo de 180° respecto a su momentum inicial (<strong>opción 5</strong>), lo que equivale a ser retrodispersado hacia atrás (<strong>opción 2</strong>).</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 14 -->
+  <div class="ex" id="q14" data-qid="14">
+    <div class="hd">
+      <span class="id">P14</span>
+      <h4>Un electrón es acelerado hasta que su energía cinética es el doble de su energía en reposo (<i>K</i> = 2<i>mc</i><sup>2</sup>). ¿Cuál es el valor de su momentum relativista <i>p</i>?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt"><i>p</i> = 2<i>mc</i></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt"><i>p</i> = &radic;3 <i>mc</i></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt"><i>p</i> = &radic;8 <i>mc</i></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt"><i>p</i> = 3<i>mc</i></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt"><i>p</i> = &radic;5 <i>mc</i></span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opción correcta: 3 (<i>p</i> = &radic;8 <i>mc</i>).</span></p>
+      <p>La energía total es <i>E = K + mc</i><sup>2</sup> = 2<i>mc</i><sup>2</sup> + <i>mc</i><sup>2</sup> = 3<i>mc</i><sup>2</sup>. Aplicando la relación energía-momentum <i>E</i><sup>2</sup> = (<i>pc</i>)<sup>2</sup> + (<i>mc</i><sup>2</sup>)<sup>2</sup>, resulta (<i>pc</i>)<sup>2</sup> = (3<i>mc</i><sup>2</sup>)<sup>2</sup> &minus; (<i>mc</i><sup>2</sup>)<sup>2</sup> = 8(<i>mc</i><sup>2</sup>)<sup>2</sup>, de donde <i>p</i> = &radic;8 <i>mc</i>.</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 15 -->
+  <div class="ex" id="q15" data-qid="15">
+    <div class="hd">
+      <span class="id">P15</span>
+      <h4>Un protón es acelerado en un laboratorio hasta alcanzar una velocidad <i>v</i> = 0,8<i>c</i>. ¿Cuáles de las siguientes afirmaciones sobre su dinámica son correctas?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Su factor de Lorentz asociado es &gamma; = 5/3 &sim; 1,67</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Su energía cinética es <i>K</i> = 0,8<i>mc</i><sup>2</sup></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Su cantidad de movimiento (momentum) relativista es mayor que el valor newtoniano <i>p = mv</i></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Para duplicar la velocidad del protón de 0,4<i>c</i> a 0,8<i>c</i>, se requiere suministrar más del doble del trabajo necesario para acelerarlo de 0 a 0,4<i>c</i></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La masa en reposo <i>m</i> del protón aumenta un 67% debido al movimiento</span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opciones correctas: 1, 3 y 4.</span></p>
+      <p>Para <i>v</i> = 0,8<i>c</i>, &gamma; = 1/&radic;(1 &minus; 0,64) = 1/0,6 = 5/3 &approx; 1,67. Su energía cinética es <i>K</i> = (&gamma; &minus; 1)<i>mc</i><sup>2</sup> = (2/3)<i>mc</i><sup>2</sup> &approx; 0,67<i>mc</i><sup>2</sup> (no 0,8<i>mc</i><sup>2</sup>). Su momentum <i>p</i> = &gamma;<i>mv</i> es mayor que <i>mv</i>. Acelerar de 0 a 0,4<i>c</i> (&gamma; &approx; 1,091) requiere <i>W</i><sub>1</sub> = 0,091<i>mc</i><sup>2</sup>, mientras que pasar de 0,4<i>c</i> a 0,8<i>c</i> requiere <i>W</i><sub>2</sub> = (1,667 &minus; 1,091)<i>mc</i><sup>2</sup> = 0,576<i>mc</i><sup>2</sup> &gt; 2<i>W</i><sub>1</sub>. La masa en reposo <i>m</i> es invariante.</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 16 -->
+  <div class="ex" id="q16" data-qid="16">
+    <div class="hd">
+      <span class="id">P16</span>
+      <h4>Desde un planeta en reposo se observa una nave A alejándose hacia la derecha a una velocidad de 0,8<i>c</i>. Desde esa misma nave A, se dispara un proyectil B hacia la derecha a una velocidad de 0,6<i>c</i> respecto a la nave A. ¿Cuáles de las siguientes afirmaciones son correctas?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La velocidad del proyectil B medida desde el planeta es 1,40<i>c</i></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">La velocidad del proyectil B medida desde el planeta es 0,946<i>c</i></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La velocidad del proyectil B medida desde el planeta es 0,385<i>c</i></span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">Un observador en el planeta mide que el reloj de la nave A avanza más lento que su propio reloj</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">La velocidad del planeta medida desde la nave A es &minus;0,8<i>c</i></span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opciones correctas: 2, 4 y 5.</span></p>
+      <p>Por adición relativista de velocidades, <i>u</i> = (0,8<i>c</i> + 0,6<i>c</i>)/(1 + 0,8&times;0,6) = 1,4<i>c</i>/1,48 = 0,946<i>c</i>. Por dilatación del tiempo, el observador en el planeta ve que el reloj en movimiento de la nave A atrasa respecto a los relojes del planeta, y por reciprocidad la nave A ve alejarse al planeta hacia la izquierda con velocidad &minus;0,8<i>c</i>.</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 17 -->
+  <div class="ex" id="q17" data-qid="17">
+    <div class="hd">
+      <span class="id">P17</span>
+      <h4>Se analiza la radiación emitida por dos estrellas, A y B, comportándose ambas como cuerpos negros ideales. Se observa que el pico de emisión de la estrella A ocurre a una longitud de onda menor que el de la estrella B. ¿Cuáles de las siguientes afirmaciones son correctas?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">La estrella A se encuentra a una temperatura superficial mayor que la estrella B</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">El producto entre la longitud de onda del pico de emisión y la temperatura absoluta es una constante universal</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">La estrella A emite menos potencia por unidad de área que la estrella B debido a su menor longitud de onda</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">La frecuencia a la cual se emite la máxima intensidad de radiación es mayor en la estrella A que en la estrella B</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">Al enfriarse un cuerpo negro, el color del brillo dominante se desplaza progresivamente hacia longitudes de onda más cortas (hacia el azul/ultravioleta)</span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opciones correctas: 1, 2 y 4.</span></p>
+      <p>Por la ley de desplazamiento de Wien (<i>&lambda;</i><sub>máx</sub><i>T = b</i> = constante), si <i>&lambda;</i><sub>máx,A</sub> &lt; <i>&lambda;</i><sub>máx,B</sub>, entonces <i>T</i><sub>A</sub> &gt; <i>T</i><sub>B</sub>, su pico ocurre a mayor frecuencia y emite <strong>más</strong> potencia por unidad de área (<i>I = &sigma;T</i><sup>4</sup>).</p>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 18 -->
+  <div class="ex" id="q18" data-qid="18">
+    <div class="hd">
+      <span class="id">P18</span>
+      <h4>Se considera una partícula de masa <i>m</i> en el estado fundamental (<i>n</i>=1) y en el primer estado excitado (<i>n</i>=2) de un pozo de potencial infinito en el intervalo [0, <i>L</i>]. ¿Cuáles de las siguientes afirmaciones son correctas?</h4>
+      <span class="tag" data-status>1 punto</span>
+    </div>
+    <div class="opts">
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">En el estado fundamental (<i>n</i>=1), el punto de mayor probabilidad para encontrar a la partícula es exactamente el centro del pozo (<i>x = L</i>/2)</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">En el primer estado excitado (<i>n</i>=2), la probabilidad de encontrar a la partícula en la mitad izquierda (0 &lt; <i>x &lt; L</i>/2) es menor que en la mitad derecha (<i>L</i>/2 &lt; <i>x &lt; L</i>)</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">La función de onda del primer estado excitado cambia de signo en <i>x = L</i>/2, pero la densidad de probabilidad es completamente simétrica respecto al centro del pozo</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="true"><span class="txt">La probabilidad total de encontrar a la partícula en todo el intervalo [0, <i>L</i>] es igual a 1 para cualquier estado <i>n</i>, debido a la condición de normalización</span><span class="badge"></span></label>
+      <label class="opt"><input type="checkbox" data-correct="false"><span class="txt">En los puntos donde la función de onda se anula, la energía cinética de la partícula se vuelve infinita</span><span class="badge"></span></label>
+    </div>
+    <div class="actions">
+      <button class="btn check-btn" type="button">Verificar y ver solución</button>
+    </div>
+    <div class="sol-box">
+      <p><span class="ans">Opciones correctas: 1, 3 y 4.</span></p>
+      <p>En <i>n</i> = 1 hay un único lomo centrado en <i>x = L</i>/2. En <i>n</i> = 2, &psi;<sub>2</sub>(<i>x</i>) = &radic;(2/<i>L</i>) sin(2&pi;<i>x/L</i>) es positiva en (0, <i>L</i>/2) y negativa en (<i>L</i>/2, <i>L</i>), pero al elevar al cuadrado |&psi;<sub>2</sub>|<sup>2</sup> ambos lomos son idénticos y simétricos (probabilidad 1/2 en cada mitad). Por normalización, la integral en [0, <i>L</i>] vale 1 para todo <i>n</i>, y la energía del estado es constante (<i>E<sub>n</sub> = n</i><sup>2</sup><i>E</i><sub>1</sub>).</p>
+    </div>
+  </div>
+
+</section>
+
+</div>
+</main>
+</div>
+
+<script>
+(function(){
+  var root = document.documentElement;
+  try {
+    var saved = localStorage.getItem('fis140-tema');
+    if (saved === 'dark' || saved === 'light') root.setAttribute('data-theme', saved);
+  } catch(e) {}
+
+  var themeBtn = document.getElementById('themeBtn');
+  if (themeBtn) themeBtn.addEventListener('click', function(){
+    var cur = root.getAttribute('data-theme');
+    if (!cur) cur = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var next = cur === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('fis140-tema', next); } catch(e) {}
+  });
+
+  function evaluateQuestion(exEl, openSol) {
+    var labels = exEl.querySelectorAll('label.opt');
+    var allExact = true;
+
+    labels.forEach(function(lbl){
+      var cb = lbl.querySelector('input[type="checkbox"]');
+      var badge = lbl.querySelector('.badge');
+      var isCorrect = cb.getAttribute('data-correct') === 'true';
+      var isChecked = cb.checked;
+
+      lbl.classList.remove('st-correct-hit', 'st-correct-miss', 'st-wrong-hit');
+      badge.textContent = '';
+
+      if (isCorrect && isChecked) {
+        lbl.classList.add('st-correct-hit');
+        badge.textContent = '✓ Correcta';
+      } else if (isCorrect && !isChecked) {
+        lbl.classList.add('st-correct-miss');
+        badge.textContent = '✓ Era correcta';
+        allExact = false;
+      } else if (!isCorrect && isChecked) {
+        lbl.classList.add('st-wrong-hit');
+        badge.textContent = '✗ Incorrecta';
+        allExact = false;
+      }
+    });
+
+    exEl.setAttribute('data-evaluated', 'true');
+    exEl.setAttribute('data-perfect', allExact ? 'true' : 'false');
+
+    var tag = exEl.querySelector('[data-status]');
+    if (tag) {
+      tag.classList.remove('ok', 'err');
+      tag.classList.add(allExact ? 'ok' : 'err');
+      tag.textContent = allExact ? '✓ 1 / 1 pto' : '✗ 0 / 1 pto';
+    }
+
+    var navLink = document.querySelector('#nav a[href="#' + exEl.id + '"]');
+    if (navLink) {
+      navLink.classList.remove('done-ok', 'done-err');
+      navLink.classList.add(allExact ? 'done-ok' : 'done-err');
+    }
+
+    if (openSol) {
+      var sol = exEl.querySelector('.sol-box');
+      if (sol) sol.classList.add('open');
+    }
+
+    updateGlobalScore();
+  }
+
+  function updateGlobalScore() {
+    var allEx = document.querySelectorAll('.ex[data-qid]');
+    var score = 0;
+    var evaluated = 0;
+    allEx.forEach(function(ex){
+      if (ex.getAttribute('data-evaluated') === 'true') {
+        evaluated++;
+        if (ex.getAttribute('data-perfect') === 'true') score++;
+      }
+    });
+    document.getElementById('scoreVal').textContent = score + ' / ' + allEx.length;
+    document.getElementById('checkedCount').textContent = '(' + evaluated + ' de ' + allEx.length + ' verificadas)';
+  }
+
+  document.querySelectorAll('.check-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var ex = btn.closest('.ex');
+      evaluateQuestion(ex, true);
+    });
+  });
+
+  var checkAllBtn = document.getElementById('checkAllBtn');
+  if (checkAllBtn) checkAllBtn.addEventListener('click', function(){
+    document.querySelectorAll('.ex[data-qid]').forEach(function(ex){
+      evaluateQuestion(ex, true);
+    });
+  });
+
+  var allSolBtn = document.getElementById('allSolBtn');
+  if (allSolBtn) allSolBtn.addEventListener('click', function(){
+    var sols = document.querySelectorAll('.sol-box');
+    var anyClosed = Array.prototype.some.call(sols, function(s){ return !s.classList.contains('open'); });
+    sols.forEach(function(s){ s.classList.toggle('open', anyClosed); });
+    allSolBtn.textContent = anyClosed ? 'Ocultar soluciones' : 'Mostrar soluciones';
+  });
+
+  function resetAll() {
+    document.querySelectorAll('.ex[data-qid]').forEach(function(ex){
+      ex.removeAttribute('data-evaluated');
+      ex.removeAttribute('data-perfect');
+      ex.querySelectorAll('label.opt').forEach(function(lbl){
+        lbl.classList.remove('st-correct-hit', 'st-correct-miss', 'st-wrong-hit');
+        lbl.querySelector('input[type="checkbox"]').checked = false;
+        lbl.querySelector('.badge').textContent = '';
+      });
+      var tag = ex.querySelector('[data-status]');
+      if (tag) {
+        tag.classList.remove('ok', 'err');
+        tag.textContent = '1 punto';
+      }
+      var sol = ex.querySelector('.sol-box');
+      if (sol) sol.classList.remove('open');
+    });
+    document.querySelectorAll('#nav a').forEach(function(a){
+      a.classList.remove('done-ok', 'done-err');
+    });
+    if (allSolBtn) allSolBtn.textContent = 'Mostrar soluciones';
+    updateGlobalScore();
+  }
+
+  var resetBtn = document.getElementById('resetBtn');
+  var resetTopBtn = document.getElementById('resetTopBtn');
+  if (resetBtn) resetBtn.addEventListener('click', resetAll);
+  if (resetTopBtn) resetTopBtn.addEventListener('click', resetAll);
+
+  var sidebar = document.getElementById('sidebar'), scrim = document.getElementById('scrim'), menuBtn = document.getElementById('menuToggle');
+  function closeMenu(){ sidebar.classList.remove('open'); scrim.classList.remove('on'); }
+  if (menuBtn) menuBtn.addEventListener('click', function(){ sidebar.classList.toggle('open'); scrim.classList.toggle('on'); });
+  if (scrim) scrim.addEventListener('click', closeMenu);
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('#nav a[href^="#"]'));
+  links.forEach(function(a){ a.addEventListener('click', function(){ if (window.innerWidth <= 920) closeMenu(); }); });
+  var targets = links.map(function(a){ return document.getElementById(a.getAttribute('href').slice(1)); });
+
+  var ticking = false;
+  function sync(){
+    ticking = false;
+    var y = window.scrollY + 140, idx = 0;
+    for (var i = 0; i < targets.length; i++) {
+      if (targets[i] && targets[i].getBoundingClientRect().top + window.scrollY <= y) idx = i;
+    }
+    if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 4) idx = targets.length - 1;
+    links.forEach(function(a, i){ a.classList.toggle('active', i === idx); });
+  }
+  window.addEventListener('scroll', function(){ if (!ticking) { ticking = true; requestAnimationFrame(sync); } }, { passive: true });
+  window.addEventListener('load', sync);
+  sync();
+})();
+</script>
+</body>
+</html>

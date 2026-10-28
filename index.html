@@ -4,58 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Apuntes Universitarios</title>
+    <!-- Aplica el tema antes de pintar para evitar el parpadeo -->
+    <script>
+        (function () {
+            var tema = null;
+            try { tema = localStorage.getItem('apuntes-tema'); } catch (e) {}
+            if (!tema) tema = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', tema);
+        })();
+    </script>
     <!-- Importamos una fuente moderna para mejorar la estética -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    
+
     <!-- Barra Lateral -->
     <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>📚 Mis Apuntes</h2>
-        </div>
-        
-        <button id="btn-home" class="btn-home">
-            🏠 Volver al Inicio
-        </button>
-        
-        <div class="sidebar-menu">
-            <h3>ASIGNATURAS</h3>
-            <!-- Se llena desde js/ramos.js -->
+        <a href="#" class="sidebar-header">📚 Mis Apuntes</a>
+
+        <nav class="sidebar-menu">
+            <h3>Ramos</h3>
+            <!-- Se llena desde apuntes.json -->
             <ul id="lista-ramos" class="subject-list"></ul>
-        </div>
+        </nav>
+
+        <a class="sidebar-aportar" href="https://github.com/s1mioo/apuntes-web/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">¿Quieres aportar?</a>
     </aside>
+    <div class="sidebar-fondo" id="sidebar-fondo"></div>
 
     <!-- Área de Contenido Principal -->
     <main class="content">
-        
+
+        <header class="topbar">
+            <button id="btn-sidebar" class="btn-icono" title="Mostrar u ocultar menú" aria-label="Mostrar u ocultar menú">☰</button>
+
+            <div id="controles-visor" class="controles-visor" hidden>
+                <span id="titulo-ramo" class="topbar-ramo"></span>
+                <select id="sel-evaluacion" aria-label="Evaluación"></select>
+                <select id="sel-apunte" aria-label="Apunte"></select>
+                <span id="autor-apunte" class="topbar-autor"></span>
+            </div>
+
+            <div class="topbar-acciones">
+                <a id="btn-pestana" class="btn-icono" href="#" target="_blank" rel="noopener" title="Abrir en pestaña nueva" hidden>↗</a>
+                <button id="btn-tema" class="btn-icono" title="Cambiar tema" aria-label="Cambiar tema">🌙</button>
+            </div>
+        </header>
+
         <!-- Vista de Inicio (Home) -->
-        <section id="home-view" class="view-section active">
+        <section id="home-view" class="view-section home active">
             <header class="home-header">
                 <h1>Bienvenido a tu área de estudio</h1>
-                <p>Selecciona una asignatura para acceder a tus resúmenes y apuntes en HTML.</p>
+                <p>Selecciona un ramo para acceder a sus resúmenes, guías y ejercicios.</p>
             </header>
-            
-            <!-- Se llena desde js/ramos.js -->
+
+            <!-- Se llena desde apuntes.json -->
             <div id="grid-ramos" class="grid-ramos"></div>
+
+            <section class="recientes">
+                <h2>Agregados recientemente</h2>
+                <ul id="lista-recientes"></ul>
+            </section>
+
+            <p class="aportar">¿Tienes un apunte en HTML? <a href="https://github.com/s1mioo/apuntes-web/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Así puedes aportar</a>.</p>
         </section>
 
         <!-- Vista del Visor de Apuntes -->
-        <section id="apuntes-view" class="view-section">
-            <header class="apuntes-header">
-                <h2 id="titulo-ramo">Título del Ramo</h2>
-                <div id="lista-archivos-ramo" class="file-buttons"></div>
-            </header>
-            
-            <div class="iframe-wrapper">
-                <iframe id="visor-html" src="" title="Visor de apuntes"></iframe>
-            </div>
+        <section id="apuntes-view" class="view-section visor">
+            <iframe id="visor-html" title="Visor de apuntes"></iframe>
         </section>
-        
+
     </main>
 
-    <script src="js/ramos.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>

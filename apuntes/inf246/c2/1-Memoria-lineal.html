@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Memoria lineal · SO C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  /* --- agregado para el C2: probabilidad por sección --- */
+  .prio{margin:2px 0 16px;font-size:14.5px;color:var(--muted)}
+  .prio strong{color:var(--ink)}
+  .lv{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    padding:2px 9px;border-radius:999px;border:1px solid var(--line);margin-right:8px;vertical-align:1px;white-space:nowrap}
+  .lv.p3{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lv.p2{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lv.p1{color:var(--muted);border-style:dashed}
+  .lv.p0{color:var(--ex);border-color:var(--ex);background:var(--ex-soft)}
+  td .lv{margin-right:0}
+  nav a{display:flex;align-items:baseline;gap:6px}
+  nav a .nt{flex:1 1 auto;min-width:0}
+  .pd{display:inline-flex;gap:3px;align-items:center;color:var(--muted);vertical-align:1px;flex:0 0 auto}
+  .pd i{display:inline-block;width:6px;height:6px;border-radius:50%;border:1px solid currentColor;box-sizing:border-box}
+  .pd i.on{background:currentColor}
+  .pd.p3{color:var(--accent)} .pd.p2{color:var(--brand)} .pd.p0{color:var(--ex)}
+  /* --- tiras de bloques de memoria --- */
+  .mem{display:flex;flex-wrap:nowrap;gap:0;margin:10px 0 2px;overflow-x:auto;padding-bottom:2px}
+  .mem .c{flex:1 0 46px;min-width:46px;height:44px;border:1px solid var(--line);margin-right:-1px;display:grid;place-items:center;
+    font-size:11.5px;line-height:1.15;text-align:center;background:var(--panel);color:var(--ink)}
+  .mem .c small{display:block;font-size:10px;color:var(--muted)}
+  .mem .c.u1{background:var(--brand-soft);border-color:var(--brand);color:var(--brand);font-weight:700}
+  .mem .c.u2{background:var(--lib-soft);border-color:var(--lib);color:var(--lib);font-weight:700}
+  .mem .c.u3{background:var(--ana-soft);border-color:var(--ana);color:var(--ana);font-weight:700}
+  .mem .c.nw{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
+  .mem .c.fx{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+  .mem .c.os{background:var(--code);color:var(--muted)}
+  .memlab{display:flex;gap:0;font-size:11.5px;color:var(--muted);margin:0 0 10px;overflow-x:auto}
+  .memlab span{flex:1 0 46px;min-width:46px;text-align:center}
+  .memcap{font-size:13px;color:var(--muted);margin:2px 0 14px}
+  /* --- dirección dividida en campos --- */
+  .addr{display:flex;margin:12px auto;max-width:620px;border-radius:9px;overflow:hidden;border:1px solid var(--line);font-size:13.5px;box-shadow:var(--shadow)}
+  .addr div{padding:9px 10px;text-align:center;border-right:1px solid var(--line)}
+  .addr div:last-child{border-right:0}
+  .addr .a1{background:var(--brand-soft);color:var(--brand);font-weight:700}
+  .addr .a2{background:var(--lib-soft);color:var(--lib);font-weight:700}
+  .addr .a3{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  .addr .a4{background:var(--ex-soft);color:var(--ex);font-weight:700}
+  .addr small{display:block;font-weight:500;color:var(--muted);font-size:11.5px}
+  /* --- tablas de páginas y de reemplazo --- */
+  table.pt td,table.pt th{text-align:center;padding:6px 8px;font-variant-numeric:tabular-nums}
+  table.pt td.bad{background:var(--no-soft);color:var(--no);font-weight:700}
+  table.pt td.ok{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  table.rp{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px}
+  table.rp td,table.rp th{text-align:center;padding:4px 6px;min-width:26px}
+  table.rp td.f{background:var(--warn-soft);color:var(--warn);font-weight:700}
+  table.rp td.h{color:var(--accent);font-weight:700}
+  table.rp td.n{color:var(--ink);font-weight:700}
+  table.rp th.rh{text-align:right;color:var(--muted);background:var(--panel)}
+  .tw table.rp{min-width:0}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.93em}
+  .q{font-weight:600}
+  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:14px 0}
+  .tiny{font-size:12.5px;color:var(--muted)}
+  @media (max-width:900px){
+    .layout{align-items:stretch}
+    .content{width:100%;max-width:100%}
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T1</div>
+    <div><h1>Memoria lineal</h1><small>Sistemas Operativos · INF-246 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><a href="0-Guia-de-estudio-C2.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html" class="cur"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, reloj · por confirmar</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 1</div><a href="#t1-inicio"><span class="nt">Qué pesa y qué estudiar</span></a><a href="#modelos"><span class="nt">Los modelos de gestión</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#direcciones"><span class="nt">Dirección lógica, física y la MMU</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#politicas"><span class="nt">Las cuatro políticas y los overlays</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a><a href="#mmu-simple"><span class="nt">MMU simple: BASE + offset</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#mmu-control"><span class="nt">MMU con control: el LÍMITE</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#ram"><span class="nt">Organización de la RAM</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a><a href="#fijas"><span class="nt">Particiones fijas</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#frag"><span class="nt">Fragmentación interna y externa</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#dinamicas"><span class="nt">Particiones dinámicas y bloques</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#bits"><span class="nt">Arreglo de bits y su costo</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#cadena"><span class="nt">Lista de zonas libres en los bloques</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#nbloques"><span class="nt">Cuántos bloques pide una tarea</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#fit"><span class="nt">FIRST, BEST y WORST FIT</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#tamano-bloque"><span class="nt">Bloques chicos o grandes</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#compactar"><span class="nt">Compactar y cuánto cuesta</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#swapping"><span class="nt">Swapping</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#lineal-conclusion"><span class="nt">Por qué lo lineal es ineficiente</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><div class="grp">Práctica</div><a href="#t1-receta"><span class="nt">Receta: ejercicios de memoria lineal</span></a><a href="#t1-videos"><span class="nt">Videos del tema</span></a><a href="#ex2015"><span class="nt">Certamen 2015 · sección 3</span></a><a href="#ex2023l"><span class="nt">C2 2023 · lineal y conocimiento</span></a><a href="#ex2014"><span class="nt">Certámenes 2014 y 2016</span></a><a href="#L1"><span class="nt">L1 · Varios pedidos en la tabla 2015</span></a><a href="#L2"><span class="nt">L2 · Tamaño del arreglo de bits</span></a><a href="#L3"><span class="nt">L3 · Costo de compactar</span></a><a href="#L4"><span class="nt">L4 · MMU con BASE y LÍMITE</span></a><a href="#L5"><span class="nt">L5 · La lista de zonas libres</span></a><a href="#L6"><span class="nt">L6 · Particiones fijas</span></a><a href="#L7"><span class="nt">L7 · Silberschatz 9.6</span></a><a href="#t1-preguntas"><span class="nt">Preguntas del tema</span></a></nav>
+</aside>
+<main class="content">
+
+<section id="t1-inicio" data-nav="Qué pesa y qué estudiar" data-grp="Tema 1">
+<h2>Tema 1 · Gestión lineal de memoria</h2>
+<p class="lead">Lámina <code>LinearMemory</code> (37 diapositivas). La MMU y las direcciones lógicas, las particiones fijas y dinámicas, la fragmentación, el arreglo de bits y la lista de zonas libres, FIRST, BEST y WORST FIT, compactar y el swapping.</p>
+<div class="hero">
+  <div class="big">Peso en el certamen: un tercio, más varias preguntas cortas</div>
+  <div class="sub">En el C2 2023-1 fue una sección propia (FIRST/BEST/WORST FIT, el costo de 50 ns por byte y por qué lo lineal es ineficiente) y además cuatro de las siete preguntas de conocimiento salieron de acá: el rol de la MMU, fragmentación interna y externa, por qué las particiones estáticas no sirven y por qué conviene mantener memoria libre. En los años en que la memoria lineal iba en el C1 (2014-2016) siempre hubo preguntas de este tema, y en 2015 una sección de 30 puntos con una tabla de zonas libres.</div>
+</div>
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder hacer</h5>
+    <p>· Explicar qué hace la MMU y cómo calcula <b>@física = BASE + d</b>, con el control <b>d &lt; LÍMITE</b>.</p>
+    <p>· Definir fragmentación interna y externa con un ejemplo de cada una.</p>
+    <p>· Calcular cuántos bloques pide una tarea: <b>b = ⌈K / tamaño de bloque⌉</b>.</p>
+    <p>· Ubicar una tarea en una tabla de zonas libres con FIRST, BEST y WORST FIT, y actualizar la tabla.</p>
+    <p>· Calcular la memoria que ocupa el arreglo de bits y el tiempo de compactar.</p>
+    <p>· Explicar el swapping, su peor escenario y por qué lo lineal termina siendo ineficiente.</p>
+  </div>
+  <div class="card"><h5>Dónde está en los libros</h5>
+    <p><b>Wolf</b> (en español, misma escuela que el profe): §5.1 “Funciones y operaciones”, con la MMU y la resolución de direcciones (pp. 167-174), y §5.2 “Asignación de memoria contigua”, con particiones, fragmentación y compactación (pp. 174-178).</p>
+    <p><b>Silberschatz</b> (10.ª ed.): §9.1 <i>Background</i> (registros base y límite, direcciones lógicas y físicas), §9.2 <i>Contiguous Memory Allocation</i> (first, best y worst-fit, fragmentación) y §9.5 <i>Swapping</i>.</p>
+  </div>
+  <div class="card"><h5>Plan para este tema (≈ 2 h)</h5>
+    <p>1. Leer las secciones en orden, deteniéndote en las marcadas como probabilidad alta (1 h).</p>
+    <p>2. Videos del Mtro. Elvira sobre direcciones y asignación contigua (15 min, en español).</p>
+    <p>3. Ejercicios: el certamen 2015 completo, la variante L1 y los cálculos L2 y L3 (45 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="modelos" data-nav="Los modelos de gestión" data-p="2">
+<h2>Cómo puede un SO manejar la memoria</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Pasar por encima.</strong> Es el mapa de la unidad; sirve para ubicar cada tema, pero ninguna pregunta de certamen lo ha pedido tal cual.</p>
+<p>El profe abre la unidad con tres formas de manejar la memoria, de la más simple a la más elaborada:</p>
+<ol>
+  <li><b>Manejo continuo de la memoria física</b>, con o sin swapping.</li>
+  <li><b>Manejo con unidades de asignación fijas</b>: particiones fijas o dinámicas, y los overlays.</li>
+  <li><b>Memoria virtual</b>: segmentación, paginación y segmentación paginada (temas 2 y 3).</li>
+</ol>
+<p>En todos los casos el sistema necesita mecanismos para dos problemas que no se pueden evitar: la <b>falta de memoria física</b> (saturación) y el <b>swapping</b> de las tareas y de sus datos.</p>
+<h4>Los conceptos básicos de la lámina</h4>
+<ul>
+  <li><b>Buen uso de la memoria ⇒ multiprogramación.</b> Muchos procesos usan la memoria al mismo tiempo, con accesos concurrentes y necesidades distintas: cuánto ocupa su código y cuánto piden después en forma dinámica (<code>malloc()</code>).</li>
+  <li><b>La memoria es un arreglo de bytes</b>, cada uno identificado por su dirección.</li>
+  <li><b>Ejecutar una instrucción</b> requiere buscarla en memoria (<i>fetch</i>, <b>siempre</b>), buscar sus operandos (no siempre) y guardar el resultado (<i>write back</i>, no siempre).</li>
+  <li><b>El chip de RAM solo ve un flujo de direcciones físicas.</b> No sabe de procesos ni de quién es cada byte.</li>
+</ul>
+<div class="box tip"><div class="bt">Por qué importa el detalle del fetch</div>
+<p>Si cada instrucción necesita al menos un acceso a memoria, cualquier mecanismo que se meta entre la CPU y la RAM se ejecuta <b>millones de veces por segundo</b>. Por eso la traducción de direcciones no la puede hacer el sistema operativo en software: tiene que hacerla un circuito, la MMU. Esa idea vuelve en las tres páginas de esta guía.</p></div>
+</section>
+
+<section id="direcciones" data-nav="Dirección lógica, física y la MMU" data-p="3">
+<h2>Dirección lógica, dirección física y la MMU</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> “¿Cuál es el rol de la MMU, lo que sea el modelo de gestión usado?” fue la pregunta 1.1 del C2 2023, y la traducción lógica → física salió en 2014 (1.5) y en 2015 (3.5).</p>
+<div class="two">
+<div class="box def"><div class="bt">Dirección lógica</div><p>Es la dirección que <b>ve el programa</b> (el proceso) durante su ejecución. Puede ser distinta de la dirección física.</p></div>
+<div class="box def"><div class="bt">Dirección física</div><p>Es la dirección que sirve como <b>entrada del chip de memoria</b>: la posición real del byte en la RAM.</p></div>
+</div>
+<p>Como el programa habla en direcciones lógicas y el chip solo entiende físicas, el sistema necesita <b>traducir</b> una en la otra. La lámina dice que para eso se requiere un soporte especial de hardware, por dos razones:</p>
+<ul>
+  <li><b>Rendimiento</b>: la traducción ocurre en cada acceso, así que tiene que ser casi instantánea.</li>
+  <li><b>Seguridad</b>: el mismo circuito puede revisar que el acceso sea legal antes de dejarlo pasar.</li>
+</ul>
+<div class="box def"><div class="bt">MMU · Memory Management Unit (definición del profe)</div>
+<p>La MMU es una <b>unidad hardware del procesador</b> que <b>traduce una dirección virtual o lógica en una dirección física a cada acceso a la memoria</b>.</p></div>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 640 220" width="640" role="img" aria-label="La MMU está dentro de la CPU, entre el núcleo y el bus de memoria">
+ <defs><marker id="ar1" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <rect x="30" y="20" width="220" height="150" rx="12" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="140" y="46" text-anchor="middle" fill="var(--brand)" font-weight="700">CPU</text>
+  <text x="140" y="70" text-anchor="middle" fill="var(--muted)" font-size="11">el programa emite</text>
+  <text x="140" y="85" text-anchor="middle" fill="var(--muted)" font-size="11">direcciones lógicas</text>
+  <rect x="48" y="104" width="184" height="48" rx="8" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="140" y="125" text-anchor="middle" fill="var(--warn)" font-weight="700">MMU</text>
+  <text x="140" y="141" text-anchor="middle" fill="var(--warn)" font-size="10.5">traduce y controla</text>
+  <rect x="300" y="104" width="160" height="48" rx="8" fill="var(--code)" stroke="var(--line)"/>
+  <text x="380" y="132" text-anchor="middle" fill="var(--ink)">BUS</text>
+  <rect x="510" y="60" width="110" height="136" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="565" y="124" text-anchor="middle" fill="var(--accent)" font-weight="700">RAM</text>
+  <text x="565" y="142" text-anchor="middle" fill="var(--muted)" font-size="10.5">solo ve</text>
+  <text x="565" y="156" text-anchor="middle" fill="var(--muted)" font-size="10.5">direcciones físicas</text>
+  <g stroke="var(--muted)" fill="none" marker-end="url(#ar1)"><path d="M232,128 L296,128"/><path d="M460,128 L506,128"/></g>
+  <text x="266" y="120" text-anchor="middle" fill="var(--muted)" font-size="10">física</text>
+ </g>
+</svg>
+</div>
+<figcaption>La MMU vive dentro del procesador: lo que sale al bus ya es una dirección física (lámina 6).</figcaption>
+</figure>
+<div class="box warn"><div class="bt">Cómo responder “el rol de la MMU, lo que sea el modelo” (C2 2023, 1.1)</div>
+<p>La MMU hace dos cosas en <b>cada</b> acceso a memoria (fetch de instrucciones, lectura y escritura de variables): <b>1)</b> <b>traduce</b> la dirección lógica o virtual del proceso en una dirección física, y <b>2)</b> <b>verifica</b> que el acceso sea válido (que el proceso no salga de su espacio y que tenga derecho a esa operación); si no lo es, genera un <b>TRAP</b> para que el sistema operativo decida. Como ocurre en cada acceso, tiene que ser hardware: si lo hiciera el SO en software, el sistema sería inutilizable.</p>
+<p>Lo que cambia según el modelo es <i>con qué</i> traduce: en memoria lineal con los registros BASE y LÍMITE; en segmentación con la tabla de segmentos (base, límite, derechos, bit V); en paginación con la tabla de páginas (marco, bit V, derechos) y además actualiza los bits U y D.</p></div>
+<div class="box ana"><div class="bt">Analogía · el condominio</div>
+<p>El programa da direcciones del tipo “casa 12 del condominio”. No sabe ni le importa en qué número de la calle empieza el condominio. El conserje (la MMU) sí lo sabe: suma el número donde empieza el condominio y te lleva a la puerta real. Si alguien pide la “casa 400” y el condominio tiene 50 casas, el conserje no lo deja pasar y llama a la administración (el TRAP al sistema operativo).</p></div>
+</section>
+
+<section id="politicas" data-nav="Las cuatro políticas y los overlays" data-p="1">
+<h2>Las cuatro políticas y los overlays</h2>
+<p class="prio"><span class="lv p1">Probabilidad baja</span><strong>Pasar por encima.</strong> Los overlays no han salido en certámenes; la lista sirve como contexto.</p>
+<p>Frente a la pregunta “¿qué hacer cuando un proceso necesita espacio y la memoria física está llena?”, la lámina presenta cuatro políticas:</p>
+<div class="tw"><table>
+<thead><tr><th>Política</th><th>Idea</th><th>Lo que dice la lámina</th></tr></thead>
+<tbody>
+<tr><td><b>1. Varios pedazos</b></td><td>Estructurar el programa en pedazos independientes</td><td>Imposible de usar en la práctica.</td></tr>
+<tr><td><b>2. Overlays</b></td><td>Partes del código reemplazan a otras cuando se necesitan</td><td>Solo una parte del código está en memoria; permite ejecutar un programa con un espacio físico <b>menor</b> que su espacio lógico.</td></tr>
+<tr><td><b>3. Gestión lineal</b></td><td>Una zona contigua por proceso</td><td>Con particiones fijas o dinámicas; MMU simple o MMU con control. Es este tema.</td></tr>
+<tr><td><b>4. Memoria virtual</b></td><td>El espacio de trabajo se divide en segmentos, páginas o segmentos paginados</td><td>Partes compartibles: segmentos para intercambiar datos y bibliotecas (DLL de Windows, <code>.so</code> de Linux), con enlace dinámico de las direcciones de sus funciones. Temas 2 y 3.</td></tr>
+</tbody></table></div>
+<h4>Overlays, en una imagen</h4>
+<p>La memoria física del proceso es de tamaño fijo y contiene: una <b>tabla de símbolos</b> (indica en qué overlay está cada función que usa el programa principal), el <b>programa principal</b>, los <b>datos</b>, el <b>código de manejo de overlays</b> y un <b>espacio para overlays</b>. Cuando el programa llama a una función que está en el overlay 2, el código de manejo lo carga en ese espacio, encima del overlay que estaba antes.</p>
+<div class="box tip"><div class="bt">Por qué desaparecieron</div><p>El trabajo de partir el programa en overlays lo hacía el <b>programador</b>, a mano. La memoria virtual hace lo mismo (tener en RAM solo la parte útil del programa) pero automáticamente y sin que el programa se entere.</p></div>
+</section>
+
+<section id="mmu-simple" data-nav="MMU simple: BASE + offset" data-p="3">
+<h2>Asignación lineal y la MMU simple</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> “Explicar la transformación de una dirección lógica en física por la MMU, y el rol de los registros Base y Limit” salió en 2014 y casi igual en 2015.</p>
+<div class="box def"><div class="bt">Asignación contigua (lineal)</div>
+<p>Asignar <b>una sola zona de memoria contigua</b> a un proceso como espacio de trabajo, para su código y sus variables.</p></div>
+<p>Necesita dos cosas de hardware: un mecanismo para traducir la dirección lógica en física (la <b>MMU simple</b>) y un mecanismo de control que impida que un proceso se desborde hacia otro (la <b>MMU con control</b>). A cambio da tres ventajas: una gestión <b>rápida</b> de las direcciones, una <b>reubicación fácil</b> del proceso y operaciones de swap-in y swap-out más fáciles.</p>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 760 236" width="760" role="img" aria-label="MMU simple: en modo sistema acceso directo, en modo usuario BASE más offset">
+ <defs><marker id="ar2" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <rect x="165" y="10" width="310" height="214" rx="12" fill="var(--code)" stroke="var(--line)"/>
+  <text x="465" y="214" text-anchor="end" fill="var(--muted)" font-size="11">MMU simple</text>
+  <rect x="14" y="90" width="128" height="44" rx="8" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="78" y="108" text-anchor="middle" fill="var(--brand)" font-weight="700">Dirección d</text>
+  <text x="78" y="124" text-anchor="middle" fill="var(--muted)" font-size="10.5">emitida por la CPU</text>
+  <polygon points="250,72 312,112 250,152 188,112" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="250" y="108" text-anchor="middle" fill="var(--accent)" font-size="11" font-weight="700">¿CPU en</text>
+  <text x="250" y="122" text-anchor="middle" fill="var(--accent)" font-size="11" font-weight="700">modo sistema?</text>
+  <rect x="375" y="22" width="90" height="34" rx="6" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="420" y="44" text-anchor="middle" fill="var(--warn)" font-weight="700">BASE</text>
+  <circle cx="420" cy="112" r="20" fill="var(--panel)" stroke="var(--warn)"/>
+  <text x="420" y="119" text-anchor="middle" fill="var(--warn)" font-size="20" font-weight="700">+</text>
+  <rect x="600" y="30" width="140" height="190" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="670" y="122" text-anchor="middle" fill="var(--accent)" font-weight="700">RAM</text>
+  <g stroke="var(--muted)" fill="none" marker-end="url(#ar2)">
+   <path d="M142,112 L184,112"/><path d="M312,112 L396,112"/><path d="M420,56 L420,88"/>
+   <path d="M440,112 L596,112"/><path d="M250,152 L250,198 L596,198"/>
+  </g>
+  <text x="352" y="104" text-anchor="middle" fill="var(--muted)" font-size="10.5">No (usuario)</text>
+  <text x="520" y="104" text-anchor="middle" fill="var(--ink)" font-size="11" font-weight="700">BASE + d</text>
+  <text x="420" y="190" text-anchor="middle" fill="var(--muted)" font-size="10.5">Sí · acceso directo: la dirección ya es física</text>
+ </g>
+</svg>
+</div>
+<figcaption>Láminas 12 y 13. En modo usuario la dirección lógica es un <b>offset</b> desde el comienzo de la zona del proceso.</figcaption>
+</figure>
+<div class="form"><b>@física = BASE + d</b><span class="n">d = dirección lógica (offset) · BASE = dirección donde empieza la zona del proceso en la RAM</span></div>
+<ul>
+  <li><b>¿Por qué en modo sistema el acceso es directo?</b> Porque el núcleo necesita ver toda la RAM: los vectores de interrupción, sus propias estructuras y la memoria de los procesos (por ejemplo, para cargarlos).</li>
+  <li><b>Reubicación fácil.</b> Si el sistema mueve el proceso a otra zona, solo cambia el valor del registro BASE; las direcciones lógicas del programa siguen siendo las mismas.</li>
+  <li><b>¿Quién carga BASE?</b> El sistema operativo, con una instrucción privilegiada, cada vez que le da el procesador a otro proceso. BASE es parte del contexto de la tarea.</li>
+</ul>
+</section>
+
+<section id="mmu-control" data-nav="MMU con control: el LÍMITE" data-p="3">
+<h2>MMU con control: el registro LÍMITE</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Es la otra mitad de la pregunta de 2014 (“el rol de los registros Base y Limit”) y la base de la protección en todos los modelos.</p>
+<p><b>Objetivo:</b> controlar que un proceso no salga de su espacio de memoria. Antes de sumar, la MMU compara la dirección lógica con el registro <b>LÍMITE</b>, que guarda el tamaño de la zona del proceso.</p>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 760 250" width="760" role="img" aria-label="MMU con control: si d es menor que el límite se suma la base, si no hay TRAP">
+ <defs><marker id="ar3" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <rect x="14" y="62" width="128" height="44" rx="8" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="78" y="81" text-anchor="middle" fill="var(--brand)" font-weight="700">Dirección</text>
+  <text x="78" y="97" text-anchor="middle" fill="var(--brand)" font-weight="700">lógica d</text>
+  <rect x="205" y="4" width="90" height="28" rx="6" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="250" y="23" text-anchor="middle" fill="var(--warn)" font-weight="700">LÍMITE</text>
+  <polygon points="250,44 312,84 250,124 188,84" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="250" y="88" text-anchor="middle" fill="var(--accent)" font-size="11.5" font-weight="700">¿d &lt; LÍMITE?</text>
+  <rect x="375" y="4" width="90" height="30" rx="6" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="420" y="24" text-anchor="middle" fill="var(--warn)" font-weight="700">BASE</text>
+  <circle cx="420" cy="84" r="20" fill="var(--panel)" stroke="var(--warn)"/>
+  <text x="420" y="91" text-anchor="middle" fill="var(--warn)" font-size="20" font-weight="700">+</text>
+  <rect x="600" y="14" width="140" height="120" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="670" y="80" text-anchor="middle" fill="var(--accent)" font-weight="700">RAM</text>
+  <rect x="200" y="160" width="100" height="34" rx="6" fill="var(--no-soft)" stroke="var(--no)"/>
+  <text x="250" y="182" text-anchor="middle" fill="var(--no)" font-weight="700">TRAP</text>
+  <rect x="345" y="160" width="150" height="34" rx="6" fill="var(--lib-soft)" stroke="var(--lib)"/>
+  <text x="420" y="182" text-anchor="middle" fill="var(--lib)" font-weight="700">Sistema operativo</text>
+  <rect x="540" y="160" width="200" height="34" rx="6" fill="var(--panel)" stroke="var(--line)"/>
+  <text x="640" y="182" text-anchor="middle" fill="var(--ink)">Error del proceso</text>
+  <g stroke="var(--muted)" fill="none" marker-end="url(#ar3)">
+   <path d="M142,84 L184,84"/><path d="M250,32 L250,42"/><path d="M312,84 L396,84"/><path d="M420,34 L420,60"/>
+   <path d="M440,84 L596,84"/><path d="M250,124 L250,156"/><path d="M300,177 L341,177"/><path d="M495,177 L536,177"/>
+  </g>
+  <text x="352" y="76" text-anchor="middle" fill="var(--muted)" font-size="10.5">Sí</text>
+  <text x="520" y="76" text-anchor="middle" fill="var(--ink)" font-size="11" font-weight="700">BASE + d</text>
+  <text x="264" y="146" fill="var(--muted)" font-size="10.5">No</text>
+  <text x="380" y="226" text-anchor="middle" fill="var(--muted)" font-size="10.5">El SO determina cuál es la acción correspondiente para el proceso (en general, lo termina con un error).</text>
+ </g>
+</svg>
+</div>
+<figcaption>Lámina 14. La comparación se hace con la dirección <b>lógica</b>, antes de sumar la base.</figcaption>
+</figure>
+<div class="form"><b>Si d &lt; LÍMITE:</b> @física = BASE + d &nbsp;&nbsp;·&nbsp;&nbsp; <b>si no:</b> TRAP<span class="n">La desigualdad es estricta: con LÍMITE = 1000, las direcciones válidas van de 0 a 999.</span></div>
+<div class="box warn"><div class="bt">La respuesta de la pauta (2014, 1.5)</div>
+<p>“El registro <b>BASE</b> determina la dirección base donde está cargada una tarea, y el registro <b>LIMIT</b> corresponde al tamaño que ocupa la tarea. La dirección de memoria física es <b>@ram = BASE + d</b>, donde d es la dirección lógica. El resultado debe ser tal que <b>d &lt; LIMIT</b>.” En 2015 la pauta agregó por qué sirve: la dirección lógica hace que la ubicación de la tarea en memoria sea <b>transparente</b> para su direccionamiento (instrucciones, datos, pila).</p></div>
+<p><b>Ejemplo corto.</b> BASE = 300 000 y LÍMITE = 50 000. La dirección lógica 12 345 va a la física 312 345. La 49 999 va a la 349 999, el último byte del proceso. La 50 000 no pasa: TRAP.</p>
+</section>
+
+<section id="ram" data-nav="Organización de la RAM" data-p="1">
+<h2>Organización de la RAM</h2>
+<p class="prio"><span class="lv p1">Probabilidad baja</span><strong>Pasar por encima.</strong> Nunca ha salido; la parte de chips y dual channel es cultura general.</p>
+<p><b>Organización lógica (lámina 15).</b> De arriba hacia abajo: los <b>vectores de interrupción</b> (los links hacia las rutinas de gestión de las interrupciones y de las llamadas de sistema, el mismo tema de la Unidad 1), el <b>sistema operativo</b> con sus datos, y la <b>memoria libre</b> para los procesos y sus datos. Todo lo que sigue en este tema trata de cómo repartir esa memoria libre.</p>
+<p><b>Organización física (láminas 16 y 17).</b> Los bytes consecutivos no están en el mismo chip: el byte 0 va al chip RAM 1, el byte 1 al RAM 2, el 2 al RAM 3, el 3 al RAM 4 y el 4 vuelve al RAM 1. Así se leen o escriben varios bytes en paralelo. En <i>dual channel</i> de 32 bits hay dos placas: los bytes 0-3 en la placa 0 y los 4-7 en la placa 1, de modo que en un acceso salen 8 bytes.</p>
+</section>
+
+<section id="fijas" data-nav="Particiones fijas" data-p="3">
+<h2>Particiones de tamaño fijo</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> “¿Por qué el uso de particiones estáticas de diferente tamaño no es eficiente?” fue la 1.3 del C2 2023.</p>
+<p>La memoria libre se divide <b>de antemano</b> en varias particiones de distintos tamaños, pensadas para distintos tipos de procesos. Cuando llega un proceso, el sistema le asigna una partición donde quepa.</p>
+<div class="mem">
+  <div class="c os">vect.</div><div class="c os" style="flex-grow:2">SO</div>
+  <div class="c">8 KB</div><div class="c">8 KB</div><div class="c">16 KB</div><div class="c" style="flex-grow:1.4">32 KB</div><div class="c" style="flex-grow:2">128 KB</div><div class="c" style="flex-grow:3">512 KB</div>
+</div>
+<p class="memcap">Las particiones del ejemplo de la lámina 18 (los anchos no están a escala).</p>
+<h4>Evaluación (lámina 19)</h4>
+<ul>
+  <li>Si el proceso no ocupa toda la partición asignada → <b>fragmentación interna</b>.</li>
+  <li>Si hay particiones libres donde no cabe ningún proceso → <b>fragmentación externa</b>.</li>
+  <li>La fragmentación causa un uso poco eficiente de la memoria.</li>
+  <li>Es muy difícil para el sistema <b>determinar a priori el tamaño de los procesos</b>.</li>
+</ul>
+<div class="box warn"><div class="bt">Cómo responder la 1.3 del C2 2023</div>
+<p>Porque los tamaños se fijan antes de conocer los procesos, y el sistema no puede saber a priori cuánta memoria va a necesitar cada uno. Un proceso casi nunca calza exacto con una partición: si cae en una más grande, el sobrante queda perdido adentro (<b>fragmentación interna</b>, por ejemplo 9 KB en una partición de 16 KB pierden 7); y puede haber particiones libres demasiado chicas para los procesos que esperan (<b>fragmentación externa</b>), aunque sumadas alcanzarían. Además, la cantidad de particiones limita el grado de multiprogramación.</p></div>
+</section>
+
+<section id="frag" data-nav="Fragmentación interna y externa" data-p="3">
+<h2>Fragmentación interna y externa</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Salió en 2015 (3.1), 2016 (1.6) y en el C2 2023 (1.2). Es la pregunta más repetida de toda la unidad.</p>
+<div class="two">
+<div class="box def"><div class="bt">Fragmentación interna</div><p>Una zona de memoria que el proceso <b>no usa adentro de su partición</b> (su espacio de trabajo). Es memoria perdida para el sistema: está asignada, pero nadie la ocupa.</p><p class="tiny">Pauta 2015: ocurre cuando un bloque asignado a una tarea no está ocupado completamente por esta tarea.</p></div>
+<div class="box def"><div class="bt">Fragmentación externa</div><p>Una zona de memoria libre (una partición) <b>probablemente perdida</b> para el sistema, porque es muy poco probable encontrar un proceso que quepa en ella.</p><p class="tiny">Pauta 2015: existen bloques libres, pero no hay una zona suficientemente grande para asignarla a una nueva tarea.</p></div>
+</div>
+<div class="box tip"><div class="bt">Truco para no confundirlas</div>
+<p>Pregúntate <b>dónde</b> está el espacio perdido. Si está <b>adentro</b> de lo que se le asignó a alguien, es <b>interna</b>. Si está <b>afuera</b>, libre, entre asignaciones, pero en pedazos que no sirven, es <b>externa</b>.</p></div>
+<div class="box ana"><div class="bt">Analogía · el estacionamiento</div>
+<p><b>Interna:</b> te dieron un estacionamiento para camioneta y llegaste en un auto chico. El espacio que sobra es tuyo y nadie más lo puede usar. <b>Externa:</b> entre autos mal estacionados quedan tres huecos de medio auto. Sumados son un auto y medio, pero no cabe ninguno.</p></div>
+<h4>Dónde aparece cada una</h4>
+<div class="tw"><table>
+<thead><tr><th>Modelo</th><th>Interna</th><th>Externa</th></tr></thead>
+<tbody>
+<tr><td>Particiones fijas</td><td>Sí, mucha (la partición casi nunca calza)</td><td>Sí (particiones libres que no le sirven a nadie)</td></tr>
+<tr><td>Particiones dinámicas por bloques</td><td>Poca: solo el último bloque de cada partición (menos de un bloque)</td><td>Sí, entre particiones: es su gran problema</td></tr>
+<tr><td>Segmentación (tema 2)</td><td>Casi nada</td><td>Sí: los segmentos tienen tamaños variables</td></tr>
+<tr><td>Paginación (tema 3)</td><td>Solo en la última página de cada zona</td><td><b>No hay</b>: cualquier marco libre sirve</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="dinamicas" data-nav="Particiones dinámicas y bloques" data-p="3">
+<h2>Particiones dinámicas</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Es el modelo sobre el que se hacen los ejercicios de FIT y de costo; sin esto no se entienden.</p>
+<p><b>Objetivo:</b> minimizar la fragmentación, es decir, perder menos memoria.</p>
+<ul>
+  <li><b>Contra la interna:</b> ajustar la partición al tamaño real del proceso.</li>
+  <li><b>Contra la externa:</b> evitar perder memoria entre los procesos.</li>
+</ul>
+<p><b>Funcionamiento.</b> El sistema mantiene tablas con las particiones asignadas y las libres. Las particiones se crean <b>dinámicamente, bajo demanda</b>: cuando se carga la tarea, cuando hay un swap-in y cuando el proceso necesita más memoria. Usa el mismo hardware que las particiones fijas: la MMU con control.</p>
+<p><b>Organización de la memoria física.</b> La memoria se divide en <b>unidades de asignación de tamaño fijo, los bloques</b> (por ejemplo de 4 KB). Una partición es un <b>conjunto de bloques contiguos</b>.</p>
+<div class="mem">
+  <div class="c">1</div><div class="c">2</div><div class="c">3</div><div class="c u1">4</div><div class="c u1">5</div><div class="c u1">6</div><div class="c">7</div><div class="c">8</div><div class="c u2">9</div><div class="c u2">10</div><div class="c">11</div>
+</div>
+<div class="memlab"><span></span><span></span><span></span><span></span><span>Partición 1</span><span></span><span></span><span></span><span style="flex-grow:2">Partición 2</span><span></span></div>
+<p class="memcap">El ejemplo que el profe usa en todas las láminas: 11 bloques, la partición 1 en los bloques 4-6, la partición 2 en los 9-10. Libres: 1-3, 7-8 y 11.</p>
+<div class="box tip"><div class="bt">Ojo con la palabra “partición”</div><p>En particiones fijas, la partición existe aunque esté vacía. En particiones dinámicas, la partición es lo que se le asigna a un proceso y desaparece cuando el proceso libera la memoria: lo que queda son bloques libres.</p></div>
+</section>
+
+<section id="bits" data-nav="Arreglo de bits y su costo" data-p="2">
+<h2>Representar la memoria: el arreglo de bits</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo y hacer L2.</strong> No ha salido, pero es el único cálculo de la lámina además del de compactar, y se presta para un ejercicio corto.</p>
+<p>Para asignar memoria, el sistema necesita una <b>representación de la memoria física</b>. La más simple es un <b>arreglo de bits</b>: un bit por bloque, que indica si el bloque está libre (0) u ocupado (1).</p>
+<div class="mem">
+  <div class="c">0</div><div class="c">0</div><div class="c">0</div><div class="c u1">1</div><div class="c u1">1</div><div class="c u1">1</div><div class="c">0</div><div class="c">0</div><div class="c u2">1</div><div class="c u2">1</div><div class="c">0</div>
+</div>
+<p class="memcap">El arreglo de bits del ejemplo anterior (bit 1 = bloque 1, … bit N = bloque N).</p>
+<p>El problema que marca el profe: <b>es poco eficiente porque ocupa memoria adicional</b>. Su ejemplo, para 4 GB de RAM con bloques de 8 KB:</p>
+<div class="form"><b>bloques</b> = 4 × 1024³ / (8 × 1024) = 1024² / 2 = <b>524 288</b> &nbsp;·&nbsp; <b>m</b> = 524 288 / 8 = 65 536 B = <b>64 KB</b><span class="n">Un byte indexa 8 bloques. En general: m (bytes) = (tamaño de la RAM / tamaño del bloque) / 8.</span></div>
+<p>Además, para encontrar b bloques libres seguidos hay que recorrer los bits uno por uno, lo que también cuesta tiempo. La alternativa del profe no usa memoria extra: guardar la información <b>dentro de los propios bloques libres</b>.</p>
+<div class="box tip"><div class="bt">Truco de cálculo con potencias de 2</div>
+<p>Pasa todo a potencias de 2: 4 GB = 2<sup>32</sup> B y 8 KB = 2<sup>13</sup> B, así que hay 2<sup>32−13</sup> = 2<sup>19</sup> = 524 288 bloques; en bytes, 2<sup>19</sup> / 2<sup>3</sup> = 2<sup>16</sup> = 64 KB. Tabla útil: 2<sup>10</sup> = 1 K, 2<sup>20</sup> = 1 M, 2<sup>30</sup> = 1 G.</p></div>
+</section>
+
+<section id="cadena" data-nav="Lista de zonas libres en los bloques" data-p="2">
+<h2>La lista de zonas libres dentro de los bloques</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> El profe le dedicó dos láminas con su propio diagrama; podría pedir dibujarla o actualizarla después de una asignación.</p>
+<p>En la lámina la sección se llama <i>Gestión en Blockchain</i> (cadena de bloques; no tiene nada que ver con criptomonedas). La idea: <b>usar los bloques libres para la gestión de las particiones</b>. El primer bloque de cada zona libre guarda dos números:</p>
+<div class="form"><b>n / s</b><span class="n">n = cantidad de bloques libres consecutivos de esa zona · s = bloque donde empieza la próxima zona libre</span></div>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 720 210" width="720" role="img" aria-label="Lista de zonas libres: Head apunta al bloque 1 que guarda 3/7, el bloque 7 guarda 2/11 y el 11 guarda 1/fin">
+ <defs><marker id="ar4" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <rect x="20" y="6" width="60" height="26" rx="5" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="50" y="24" text-anchor="middle" fill="var(--warn)" font-weight="700">Head</text>
+  <g stroke="var(--line)">
+   <rect x="20" y="50" width="60" height="40" fill="var(--panel)"/><rect x="80" y="50" width="60" height="40" fill="var(--panel)"/><rect x="140" y="50" width="60" height="40" fill="var(--panel)"/>
+   <rect x="200" y="50" width="60" height="40" fill="var(--brand-soft)"/><rect x="260" y="50" width="60" height="40" fill="var(--brand-soft)"/><rect x="320" y="50" width="60" height="40" fill="var(--brand-soft)"/>
+   <rect x="380" y="50" width="60" height="40" fill="var(--panel)"/><rect x="440" y="50" width="60" height="40" fill="var(--panel)"/>
+   <rect x="500" y="50" width="60" height="40" fill="var(--lib-soft)"/><rect x="560" y="50" width="60" height="40" fill="var(--lib-soft)"/>
+   <rect x="620" y="50" width="60" height="40" fill="var(--panel)"/>
+  </g>
+  <g text-anchor="middle" fill="var(--ink)">
+   <text x="50" y="75">1</text><text x="110" y="75">2</text><text x="170" y="75">3</text><text x="230" y="75" fill="var(--brand)">4</text><text x="290" y="75" fill="var(--brand)">5</text><text x="350" y="75" fill="var(--brand)">6</text>
+   <text x="410" y="75">7</text><text x="470" y="75">8</text><text x="530" y="75" fill="var(--lib)">9</text><text x="590" y="75" fill="var(--lib)">10</text><text x="650" y="75">11</text>
+  </g>
+  <text x="290" y="106" text-anchor="middle" fill="var(--brand)" font-size="11">Partición 1</text>
+  <text x="560" y="106" text-anchor="middle" fill="var(--lib)" font-size="11">Partición 2</text>
+  <rect x="20" y="138" width="60" height="30" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="50" y="158" text-anchor="middle" fill="var(--accent)" font-weight="700">3 / 7</text>
+  <rect x="380" y="138" width="60" height="30" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="410" y="158" text-anchor="middle" fill="var(--accent)" font-weight="700">2 / 11</text>
+  <rect x="620" y="138" width="60" height="30" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="650" y="158" text-anchor="middle" fill="var(--accent)" font-weight="700">1 / fin</text>
+  <g stroke="var(--muted)" fill="none" marker-end="url(#ar4)">
+   <path d="M50,32 L50,48"/><path d="M50,90 L50,134"/><path d="M410,90 L410,134"/><path d="M650,90 L650,134"/>
+   <path d="M80,153 C220,190 330,150 400,94" stroke-dasharray="5 4"/>
+   <path d="M440,153 C540,190 600,150 640,94" stroke-dasharray="5 4"/>
+  </g>
+  <text x="360" y="200" text-anchor="middle" fill="var(--muted)" font-size="10.5">n / s = bloques libres consecutivos / próxima zona libre</text>
+ </g>
+</svg>
+</div>
+<figcaption>Lámina 25: la lista no usa memoria extra, vive en los bloques que nadie está usando.</figcaption>
+</figure>
+<p><b>Asignar una partición nueva (lámina 26).</b> Si el sistema asigna el bloque 1 a una partición de un bloque, la zona libre ahora empieza en el bloque 2: el <b>Head</b> pasa a apuntar al bloque 2, que ahora guarda <b>2 / 7</b>. El resto de la cadena no cambia.</p>
+<p><b>Buscar un lugar</b> es recorrer la cadena desde el Head comparando cada n con los bloques pedidos: una búsqueda secuencial, que es justo lo que hacen FIRST, BEST y WORST FIT.</p>
+<div class="box tip"><div class="bt">Lo que la lámina no muestra, pero conviene decir</div><p>Cuando un proceso libera su partición, la zona se vuelve a insertar en la cadena, y si queda pegada a otra zona libre se <b>juntan</b> en una sola (sumando los n). Si no se juntaran, la memoria se iría picando en zonas cada vez más chicas.</p></div>
+</section>
+
+<section id="nbloques" data-nav="Cuántos bloques pide una tarea" data-p="3">
+<h2>Cuántos bloques pide una tarea</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Es el primer paso de cualquier ejercicio de FIT; en 2015 había que darse cuenta de que 150 KB son 10 bloques de 16 KB.</p>
+<p>Para una solicitud de K KB (lámina 27):</p>
+<ul>
+  <li>Si K es múltiplo del tamaño de un bloque: <b>b = K / blocksize</b>.</li>
+  <li>Si no (<i>sinon</i>, en francés en la lámina): <b>b = K / blocksize + 1</b>, con división entera.</li>
+</ul>
+<div class="form"><b>b = ⌈ K / tamaño de bloque ⌉</b> &nbsp;&nbsp;·&nbsp;&nbsp; fragmentación interna = b × tamaño de bloque − K<span class="n">Ejemplo de 2015: 150 / 16 = 9,375 → b = 10 bloques = 160 KB asignados, 10 KB de fragmentación interna.</span></div>
+<p>Después hay que buscar dónde poner esos b bloques de forma contigua. Como la memoria está fragmentada, puede que <b>no exista</b> ningún lugar con suficientes bloques, o que existan <b>varios</b> posibles. Para elegir hace falta un algoritmo.</p>
+</section>
+
+<section id="fit" data-nav="FIRST, BEST y WORST FIT" data-p="3">
+<h2>FIRST FIT, BEST FIT y WORST FIT</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y hacer los ejercicios.</strong> Salió en 2015 (con tabla, 5 pts), 2016 (BEST_FIT y sus desventajas) y en el C2 2023 (los tres, 5 pts). Es el ejercicio más seguro de la sección de memoria lineal.</p>
+<div class="tw"><table>
+<thead><tr><th>Algoritmo</th><th>Qué zona elige</th><th>Ventaja</th><th>Desventaja</th></tr></thead>
+<tbody>
+<tr><td><b>FIRST FIT</b></td><td>La <b>primera</b> zona con al menos b bloques libres consecutivos</td><td>El más rápido: se detiene en la primera que sirve</td><td>Va dejando pedacitos al comienzo de la memoria, que hay que volver a recorrer cada vez</td></tr>
+<tr><td><b>BEST FIT</b></td><td>La zona donde cabe y deja el <b>remanente más pequeño</b> posible</td><td>Guarda las zonas grandes para las tareas grandes</td><td>Recorre toda la lista; deja remanentes tan chicos que no sirven (lámina: “en general, Best Fit produce también fragmentación externa”)</td></tr>
+<tr><td><b>WORST FIT</b></td><td>La zona donde cabe y deja el <b>remanente más grande</b> posible</td><td>El sobrante queda grande y útil para otra tarea</td><td>Recorre toda la lista y va destruyendo las zonas grandes: después una tarea grande ya no cabe</td></tr>
+</tbody></table></div>
+<p class="tiny">El <b>remanente</b> es lo que sobra de la zona: tamaño de la zona − b.</p>
+<h4>Los ejemplos de las láminas 28-30</h4>
+<p>Libres: 1-3 (3 bloques), 7-8 (2) y 11 (1).</p>
+<p><b>FIRST FIT, partición de 2 bloques:</b> la primera zona que sirve es 1-3 → bloques 1 y 2. El bloque 3 queda solo, una zona difícil de asignar: fragmentación externa.</p>
+<div class="mem"><div class="c nw">1</div><div class="c nw">2</div><div class="c fx">3</div><div class="c u1">4</div><div class="c u1">5</div><div class="c u1">6</div><div class="c">7</div><div class="c">8</div><div class="c u2">9</div><div class="c u2">10</div><div class="c">11</div></div>
+<p><b>BEST FIT, partición de 2 bloques:</b> remanentes posibles: 1-3 deja 1, 7-8 deja 0 → bloques 7 y 8.</p>
+<div class="mem"><div class="c">1</div><div class="c">2</div><div class="c">3</div><div class="c u1">4</div><div class="c u1">5</div><div class="c u1">6</div><div class="c nw">7</div><div class="c nw">8</div><div class="c u2">9</div><div class="c u2">10</div><div class="c">11</div></div>
+<p><b>WORST FIT, partición de 1 bloque:</b> remanentes posibles: 1-3 deja 2, 7-8 deja 1, 11 deja 0 → bloque 1. Los bloques 2-3 quedan como zona libre (la lámina también la marca como fragmentación externa).</p>
+<div class="mem"><div class="c nw">1</div><div class="c fx">2</div><div class="c fx">3</div><div class="c u1">4</div><div class="c u1">5</div><div class="c u1">6</div><div class="c">7</div><div class="c">8</div><div class="c u2">9</div><div class="c u2">10</div><div class="c">11</div></div>
+<p class="memcap">Verde: la nueva partición. Naranjo: lo que la lámina marca como fragmentación externa.</p>
+<h4>El ejercicio del certamen 2015, resuelto</h4>
+<p>Bloques de 16 KB. La tabla de zonas libres tiene en cada fila el primer bloque libre de la zona (<i>Start</i>) y su tamaño en bloques (<i>Size</i>). Llega una tarea de <b>150 KB</b>.</p>
+<div class="tw"><table class="pt mini">
+<thead><tr><th>Start</th><th>15</th><th>30</th><th>47</th><th>120</th><th>250</th><th>300</th><th>400</th><th>600</th><th>652</th></tr></thead>
+<tbody><tr><th>Size</th><td>3</td><td>12</td><td>10</td><td>50</td><td>40</td><td>5</td><td>8</td><td>2</td><td>7</td></tr>
+<tr><th>Remanente con b = 10</th><td>no cabe</td><td>2</td><td>0</td><td>40</td><td>30</td><td>no cabe</td><td>no cabe</td><td>no cabe</td><td>no cabe</td></tr></tbody></table></div>
+<div class="steps">
+<div class="step"><b>Bloques:</b> 150 / 16 = 9,375, no es múltiplo → b = 9 + 1 = <b>10 bloques</b> (160 KB, 10 KB de fragmentación interna).</div>
+<div class="step"><b>FIRST_FIT:</b> la zona 15 tiene 3 &lt; 10; la siguiente, <b>30</b>, tiene 12 ≥ 10. Queda (40, 2) en la tabla.</div>
+<div class="step"><b>BEST_FIT:</b> el menor remanente es 0, en la zona <b>47</b>: calza exacta y desaparece de la tabla.</div>
+<div class="step"><b>WORST_FIT:</b> el mayor remanente es 40, en la zona <b>120</b>. Queda (130, 40).</div>
+</div>
+<div class="ans">FIRST_FIT → bloque 30 · BEST_FIT → bloque 47 · WORST_FIT → bloque 120 (igual que la pauta)</div>
+<div class="box warn"><div class="bt">Cómo escribirlo en el certamen</div>
+<p>Primero el cálculo de b, con la división. Después, para cada algoritmo, una línea con la regla (“asigna la primera zona donde cabe”, “la que deja el menor remanente”, “la que deja el mayor”) y la zona elegida. Si te piden actualizar la tabla: la zona elegida pasa a (Start + b, Size − b), y si Size − b = 0 se borra la fila.</p></div>
+<div class="box warn"><div class="bt">Las desventajas de BEST_FIT (2016, 1.7)</div>
+<p>Tiene que recorrer <b>toda</b> la lista de zonas libres para encontrar la mejor (o mantenerla ordenada por tamaño, lo que encarece cada liberación), y los remanentes que deja son tan pequeños que casi nunca le sirven a otra tarea: en vez de evitar la fragmentación externa, la produce en forma de migajas.</p></div>
+</section>
+
+<section id="tamano-bloque" data-nav="Bloques chicos o grandes" data-p="3">
+<h2>¿Bloques chicos o grandes?</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Salió en 2015 (3.2), y la misma pregunta con páginas fue la 4.1 del C2 2023.</p>
+<div class="two">
+<div class="card"><h5>Bloques pequeños</h5><p>· <b>Menos fragmentación interna</b>: lo que se desperdicia en el último bloque es menor.</p><p>· <b>Más fragmentación externa</b> según la pauta: es más difícil encontrar una zona con suficientes bloques libres para una tarea nueva.</p><p>· Más bloques que administrar: el arreglo de bits es más grande y las búsquedas, más largas.</p></div>
+<div class="card"><h5>Bloques grandes</h5><p>· <b>Menos fragmentación externa</b>: es más fácil encontrar una zona libre para asignar.</p><p>· <b>Más fragmentación interna</b> para las tareas que usan poca memoria.</p><p>· Menos bloques: estructuras de gestión más chicas.</p></div>
+</div>
+<div class="box warn"><div class="bt">La respuesta de la pauta 2015, para copiar el razonamiento</div>
+<p>“Si se elige un tamaño de bloque pequeño, se reduce la fragmentación interna dado que hay menos desperdicio cuando se asigna una cierta cantidad de bloques a una tarea. Sin embargo, esto aumenta la fragmentación externa ya que es aún más difícil encontrar una zona de bloques libres suficientes. Si se eligen bloques grandes, disminuye la fragmentación externa ya que es más fácil encontrar una zona libre, pero aumenta la fragmentación interna para las tareas que usan poca memoria.”</p></div>
+</section>
+
+<section id="compactar" data-nav="Compactar y cuánto cuesta" data-p="3">
+<h2>Compactar la memoria, y cuánto cuesta</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer L3.</strong> 2015 preguntó cuál técnica es posible en teoría pero no en la práctica (compactar), y el C2 2023 dio el dato “leer o escribir un byte cuesta 50 ns”, el mismo de la lámina.</p>
+<p>La fragmentación es un problema importante: una asignación puede <b>fallar</b> porque no hay una zona que contenga la partición, <b>aunque físicamente exista el espacio</b> en la memoria. Solución: <b>compactar</b>, es decir, correr todas las particiones hacia un extremo para que los bloques libres queden juntos en una sola zona.</p>
+<div class="mem"><div class="c nw">1</div><div class="c">2</div><div class="c">3</div><div class="c u1">4</div><div class="c u1">5</div><div class="c u1">6</div><div class="c">7</div><div class="c">8</div><div class="c u2">9</div><div class="c u2">10</div><div class="c">11</div></div>
+<p class="memcap">Antes: tres zonas libres separadas (2-3, 7-8 y 11).</p>
+<div class="mem"><div class="c nw">1</div><div class="c u1">2</div><div class="c u1">3</div><div class="c u1">4</div><div class="c u2">5</div><div class="c u2">6</div><div class="c">7</div><div class="c">8</div><div class="c">9</div><div class="c">10</div><div class="c">11</div></div>
+<p class="memcap">Después de compactar (lámina 31): una sola zona libre de 5 bloques.</p>
+<h4>Los problemas de compactar (lámina 32)</h4>
+<ul>
+  <li>Hay que <b>modificar el registro BASE</b> de cada proceso que se movió.</li>
+  <li><b>Mover los bloques tiene un costo.</b> Necesita un mecanismo de hardware, el DMA (<i>Direct Memory Access</i>).</li>
+  <li>Si la memoria está sobrecargada, la fragmentación <b>reaparece rápidamente</b>.</li>
+</ul>
+<div class="form"><b>t = 2 × t<sub>acceso</sub> × bytes a mover</b><span class="n">Por 2 porque cada byte se lee y después se escribe. Con 50 ns: 1 MB = 2 × 50 ns × 1024² ≈ 105 ms · 1 GB ≈ 105 ms × 1024 ≈ 107 s ≈ 1 min 48 s.</span></div>
+<div class="box warn"><div class="bt">Las dos técnicas para liberar espacio (2015, 3.4)</div>
+<p>Compactar la memoria o hacer swapping. <b>Compactar es teóricamente posible</b>, pero aunque se haga por hardware, el tiempo para compactar una memoria grande (varios GB) es demasiado alto para usarlo en la práctica: más de un minuto y medio por GB, con los procesos detenidos. El <b>swapping</b> se puede implementar sea cual sea el tamaño de la memoria.</p></div>
+</section>
+
+<section id="swapping" data-nav="Swapping" data-p="3">
+<h2>Swapping</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Salió en 2014 (1.6), 2015 (1.7 y 1.8) y como contraste en el C2 2023 (1.7: por qué la paginación mejora el swapping).</p>
+<div class="two">
+<div class="box def"><div class="bt">Swap-Out</div><p>Descargar desde la memoria central hacia una <b>memoria secundaria persistente</b> todo o parte del espacio de trabajo de un proceso. Típicamente a una zona especial del disco, la <b>zona de swap</b>.</p></div>
+<div class="box def"><div class="bt">Swap-In</div><p>Cargar desde la zona de swap hacia la memoria central la o las partes de un proceso descargado antes.</p></div>
+</div>
+<h4>Los problemas (lámina 35)</h4>
+<ul>
+  <li><b>El costo de cargar y descargar.</b> Según el profe, un disco duro es <b>un millón de veces más lento</b> que la RAM; un swapping completo (out e in) es muy caro.</li>
+  <li>Por eso se necesita hardware para hacerlo <b>en paralelo</b> con la CPU: el <b>DMA</b>.</li>
+  <li>Y el swapping solo es interesante si hay <b>por lo menos otro proceso en memoria listo para ejecutarse</b>, que use la CPU mientras el disco trabaja.</li>
+  <li>También solo es interesante si el proceso se puede cargar <b>en otra zona</b> de memoria. Eso exige traducir sus direcciones (instrucciones, punteros…): el <i>dynamic linker</i>, o la MMU con el registro BASE.</li>
+</ul>
+<h4>Elegir qué proceso descargar (lámina 36)</h4>
+<p>Criterios posibles: ocupación de memoria, prioridades, tiempo de ejecución… Se pueden usar algoritmos parecidos a los de planificación (Round Robin, etc.). La elección no es fácil: <b>si el sistema necesita cargar un proceso que acaba de descargar, pierde mucho tiempo</b> y mucha eficiencia.</p>
+<div class="box warn"><div class="bt">Respuestas de pauta que conviene tener listas</div>
+<p><b>2014, 1.6 (explicar el swapping).</b> Consiste en elegir una tarea y descargarla de la memoria al disco duro para liberar espacio. El sistema debe elegir la más adecuada (la que libera el espacio requerido, la de prioridad más baja, etc.). Cuando necesita ejecutarla de nuevo (por ejemplo, le toca un quantum), debe cargarla otra vez desde el disco. El swapping tiene un costo y baja el rendimiento.</p>
+<p><b>2015, 1.8 (el peor escenario).</b> Tener que cargar de nuevo (swap-in) una tarea que acaba de descargar (swap-out). Ocurre cuando la tarea descargada es justo la elegida después por el algoritmo de scheduling.</p>
+<p><b>2015, 1.7 (estado LISTO_NO_EN_MEMORIA).</b> Una tarea lista para ejecutarse pero que no está en la memoria: está en el disco como resultado de un swap-out. Es el puente con los estados de la Unidad 1.</p></div>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 560 230" width="560" role="img" aria-label="Swapping: el proceso A sale al disco y el proceso B entra a la RAM">
+ <defs><marker id="ar5" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <rect x="40" y="10" width="150" height="34" fill="var(--code)" stroke="var(--line)"/><text x="115" y="32" text-anchor="middle" fill="var(--muted)" font-size="11">Vectores de interrupción</text>
+  <rect x="40" y="44" width="150" height="46" fill="var(--code)" stroke="var(--line)"/><text x="115" y="72" text-anchor="middle" fill="var(--muted)">Sistema operativo</text>
+  <rect x="40" y="90" width="150" height="130" fill="var(--brand-soft)" stroke="var(--line)"/>
+  <rect x="40" y="110" width="150" height="34" fill="var(--warn-soft)" stroke="var(--warn)"/><text x="115" y="132" text-anchor="middle" fill="var(--warn)" font-weight="700">Proceso A</text>
+  <text x="115" y="200" text-anchor="middle" fill="var(--brand)" font-size="11">memoria libre</text>
+  <text x="20" y="120" text-anchor="middle" fill="var(--muted)" font-size="11" transform="rotate(-90 20 120)">RAM</text>
+  <rect x="370" y="70" width="160" height="120" rx="14" fill="var(--code)" stroke="var(--line)"/>
+  <text x="450" y="210" text-anchor="middle" fill="var(--muted)" font-size="11">Disco (zona de swap)</text>
+  <rect x="390" y="90" width="120" height="30" rx="5" fill="var(--warn-soft)" stroke="var(--warn)"/><text x="450" y="110" text-anchor="middle" fill="var(--warn)">Proceso A</text>
+  <rect x="390" y="140" width="120" height="30" rx="5" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="450" y="160" text-anchor="middle" fill="var(--accent)">Proceso B</text>
+  <g fill="none" marker-end="url(#ar5)">
+   <path d="M190,127 L386,105" stroke="var(--no)"/>
+   <path d="M386,155 L280,155 L280,185 L194,185" stroke="var(--accent)"/>
+  </g>
+  <text x="290" y="106" text-anchor="middle" fill="var(--no)" font-size="11" font-weight="700">Swap-Out</text>
+  <text x="240" y="178" text-anchor="middle" fill="var(--accent)" font-size="11" font-weight="700">Swap-In</text>
+ </g>
+</svg>
+</div>
+<figcaption>Lámina 34.</figcaption>
+</figure>
+</section>
+
+<section id="lineal-conclusion" data-nav="Por qué lo lineal es ineficiente" data-p="3">
+<h2>Por qué la memoria lineal es ineficiente</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Fue la 3.2 del C2 2023 casi con estas palabras, y la 1.4 del mismo certamen (mantener memoria libre) sale del mismo razonamiento.</p>
+<p>La conclusión de la lámina 37 (que es, palabra por palabra, la respuesta esperada):</p>
+<ul>
+  <li><b>Es una tarea difícil:</b> fragmentación, algoritmos de asignación, compactar la memoria.</li>
+  <li><b>No es muy eficiente:</b> el costo de compactar, el costo del swapping, y la reubicación frecuente de los programas implica un costo del <i>linker</i> dinámico que puede ser importante.</li>
+  <li>⇒ Hay que usar otro tipo de gestión de memoria: la <b>memoria virtual</b>.</li>
+</ul>
+<div class="box warn"><div class="bt">Cómo responder la 3.2 del C2 2023</div>
+<p>Porque cada proceso necesita una zona <b>contigua</b> del tamaño de todo su espacio de trabajo. Eso produce fragmentación externa entre las particiones, que hace fallar asignaciones aunque haya memoria libre suficiente; para recuperarla hay que compactar (muy caro: unos 105 ms por MB con 50 ns por acceso) o hacer swapping de procesos completos (el disco es un millón de veces más lento que la RAM). Además el proceso debe estar cargado entero aunque use solo una parte, y cada vez que se reubica hay que retraducir sus direcciones.</p></div>
+<div class="box warn"><div class="bt">Y la 1.4 del C2 2023: ¿por qué interesa mantener más memoria libre?</div>
+<p>Porque con memoria libre disponible el sistema puede <b>atender de inmediato</b> las solicitudes (cargar tareas nuevas, el crecimiento dinámico de las existentes, un swap-in) sin tener que compactar ni descargar procesos al disco en ese momento, que son operaciones lentas. Además permite tener <b>más procesos listos en memoria</b>: más multiprogramación y mejor uso del procesador.</p></div>
+</section>
+
+<section id="t1-receta" data-nav="Receta: ejercicios de memoria lineal" data-grp="Práctica">
+<h2>Receta para los ejercicios de memoria lineal</h2>
+<div class="cols">
+<div class="card"><h5>Ubicar una tarea (FIT)</h5>
+<p>1. <b>b = ⌈K / bloque⌉</b>, mostrando la división.</p>
+<p>2. Marca las zonas con Size ≥ b y su remanente (Size − b).</p>
+<p>3. FIRST: la primera en orden de dirección. BEST: menor remanente. WORST: mayor remanente.</p>
+<p>4. Actualiza la tabla: (Start + b, Size − b), o borra la fila si queda en 0.</p>
+<p>5. Si nada cabe aunque la suma de las zonas alcance: fragmentación externa.</p></div>
+<div class="card"><h5>Traducir con la MMU</h5>
+<p>1. ¿Modo sistema? Acceso directo.</p>
+<p>2. ¿d &lt; LÍMITE? Si no: TRAP.</p>
+<p>3. @física = BASE + d.</p>
+<p>4. Si el proceso se mueve, cambia solo BASE.</p></div>
+<div class="card"><h5>Los dos costos</h5>
+<p><b>Arreglo de bits:</b> m = (RAM / bloque) / 8 bytes.</p>
+<p><b>Compactar:</b> t = 2 × t<sub>acceso</sub> × bytes a mover.</p>
+<p>Trabaja con potencias de 2 y convierte al final.</p></div>
+</div>
+</section>
+
+<section id="t1-videos" data-nav="Videos del tema">
+<h2>Videos del tema</h2>
+<p class="lead">Elegidos entre unos cuarenta candidatos. De cada uno se transcribió el audio para comprobar qué explica y en qué minuto; los marcados como recomendados son los que más se parecen a las láminas del profe.</p>
+<div class="box tip"><div class="bt">Cómo ver los videos doblados</div>
+<p>En los marcados “Audio en español (doblaje)”: ⚙ Configuración → <b>Pista de audio</b> → Español. Es un doblaje automático de YouTube; se entiende bien.</p></div>
+<div class="vgrid">
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=et5SCRxqMjM" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/et5SCRxqMjM/mqdefault.jpg" alt=""><span class="rk">RECOMENDADO</span><span class="dur">27:39</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=et5SCRxqMjM" target="_blank" rel="noopener">Gestión de memoria: asignación, mapa de bits y listas enlazadas</a>
+    <div class="ch">FNE Profesor - Ciencias de la Computación · 27:39 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>El video que más se parece a la lámina de memoria lineal: registros base y límite, intercambio y compactación, el <b>mapa de bits</b> y las <b>listas enlazadas</b> de huecos (con cómo se juntan los huecos al liberar), y los algoritmos de primer, mejor y peor ajuste con un mismo ejemplo de huecos de 16, 4 y 12 KB.</p>
+    <div class="ver"><b>Qué ver:</b> 5:00-6:30 base y límite · 4:00-8:30 intercambio y compactación · 10:00-14:30 mapa de bits y listas · 15:00-25:00 primer, siguiente, mejor y peor ajuste.</div>
+    <p class="oj">Ojo: El siguiente ajuste (<i>next fit</i>) y el ajuste rápido no están en las láminas del profe. Si tienes poco tiempo, el mismo canal tiene los tres algoritmos en videos de 2 a 3 minutos (tarjeta de más abajo).</p>
+  </div>
+</div>
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=LiOEqABqd-A" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/LiOEqABqd-A/mqdefault.jpg" alt=""><span class="rk">RECOMENDADO</span><span class="dur">9:55</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=LiOEqABqd-A" target="_blank" rel="noopener">Sistemas Operativos, Manejo de la memoria 4 Asignación contigua</a>
+    <div class="ch">Mtro. José Luis Elvira · 9:55 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Asignación contigua en 10 minutos, siguiendo a Silberschatz: el registro base (que él llama de reubicación) y el registro límite como protección, los huecos que van quedando, primer, mejor, siguiente y peor ajuste, fragmentación externa e interna y compactación.</p>
+    <div class="ver"><b>Qué ver:</b> Completo. Si hay poco tiempo: 0:53-2:15 base y límite · 5:21-7:27 los ajustes · 7:27-8:45 las dos fragmentaciones · 8:45-9:55 compactación.</div>
+    <p class="oj">Ojo: Dice que la compactación solo se puede hacer si la reubicación es dinámica: es el mismo motivo por el que el profe dice que hay que actualizar BASE.</p>
+  </div>
+</div>
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=Zmtxl7LZwjQ" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/Zmtxl7LZwjQ/mqdefault.jpg" alt=""><span class="rk">RECOMENDADO</span><span class="dur">14:51</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=Zmtxl7LZwjQ" target="_blank" rel="noopener">Why Can&#x27;t Programs Access Each Other&#x27;s Memory?</a>
+    <div class="ch">Core Dumped · 14:51 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Por qué un proceso no puede tocar la memoria de otro (el ejemplo de un formulario de pago alterado), por qué la verificación tiene que ser hardware, y cómo se arma con un sumador y dos comparadores la MMU con BASE y LÍMITE. Termina con el TRAP al sistema y el famoso <i>segmentation fault</i>.</p>
+    <div class="ver"><b>Qué ver:</b> 3:00-6:00 el problema de la protección · 8:40-12:40 base, límite y el circuito · 12:14-12:40 el TRAP · 13:08-14:30 registros privilegiados y el cambio de contexto.</div>
+    <p class="oj">Ojo: Él compara la dirección física con BASE y BASE + LÍMITE; el profe compara el offset con LÍMITE. Es lo mismo. Hay un auspicio entre 6:30 y 7:40.</p>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=Ga3pFAA2TmQ" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/Ga3pFAA2TmQ/mqdefault.jpg" alt=""><span class="dur">3:52</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=Ga3pFAA2TmQ" target="_blank" rel="noopener">Sistemas Operativos, Manejo de la memoria 2 Direcciones lógicas y direcciones físicas</a>
+    <div class="ch">Mtro. José Luis Elvira · 3:52 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Direcciones lógicas y físicas, y la MMU que traduce unas en otras. Muy corto.</p>
+    <div class="ver"><b>Qué ver:</b> Completo.</div>
+    <p class="oj">Ojo: Dice que el espacio lógico “llega a ser hasta el doble” de la memoria física: no es una regla, depende del sistema.</p>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=hmhr1_UNMYM" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/hmhr1_UNMYM/mqdefault.jpg" alt=""><span class="dur">9:14</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=hmhr1_UNMYM" target="_blank" rel="noopener">Sistemas Operativos, Manejo de la memoria 1 Introducción</a>
+    <div class="ch">Mtro. José Luis Elvira · 9:14 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Introducción al manejo de memoria: cuándo se asignan las direcciones (compilación, carga, ejecución), y dos ejemplos que conectan con la lámina: los <b>overlays</b> de MS-DOS con 640 KB y el encadenamiento dinámico de bibliotecas.</p>
+    <div class="ver"><b>Qué ver:</b> 6:00-7:30 overlays · 7:31-9:00 encadenamiento dinámico (las .so y DLL de la lámina).</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=Aq_apMR31Kw" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/Aq_apMR31Kw/mqdefault.jpg" alt=""><span class="dur">4:42</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=Aq_apMR31Kw" target="_blank" rel="noopener">Memory Partitioning 1: Fixed Partitioning</a>
+    <div class="ch">Jacob Schrum · 4:42 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Particiones fijas iguales y de distinto tamaño, y la fragmentación interna que producen.</p>
+    <div class="ver"><b>Qué ver:</b> Completo (menos de 5 minutos).</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=5Dh4FyhewPM" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/5Dh4FyhewPM/mqdefault.jpg" alt=""><span class="dur">3:07</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=5Dh4FyhewPM" target="_blank" rel="noopener">Algoritmo del primer ajuste</a>
+    <div class="ch">FNE Profesor - Ciencias de la Computación · 3:07 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Tres cortos del mismo canal con el mismo ejemplo: <a class="inl" href="https://www.youtube.com/watch?v=5Dh4FyhewPM" target="_blank" rel="noopener">primer ajuste</a>, <a class="inl" href="https://www.youtube.com/watch?v=9FBFr0_1sG8" target="_blank" rel="noopener">mejor ajuste</a> y <a class="inl" href="https://www.youtube.com/watch?v=BSL8ehb_RNg" target="_blank" rel="noopener">peor ajuste</a>. Son extractos del video largo de arriba.</p>
+    <div class="ver"><b>Qué ver:</b> Los tres, unos 8 minutos en total.</div>
+  </div>
+</div>
+</div>
+<p class="tiny">Descartado: “Cómo entender la fragmentación interna y externa” (J. RoMo), porque confunde la fragmentación de la memoria con la de los archivos en disco.</p>
+</section>
+
+<details class="ex" id="ex2015" data-nav="Certamen 2015 · sección 3">
+<summary>Certamen 2015-1 · sección 3 “Gestión de memoria continua” completa <span class="tag">30 pts · 5 por pregunta · con pauta</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div>
+<p>El sistema usa gestión de memoria continua con bloques de <b>16 KB</b> y una tabla (como una lista) de zonas libres: la primera entrada de cada fila es el número del primer bloque libre de la zona y la segunda, su tamaño en bloques. Tabla: (15, 3), (30, 12), (47, 10), (120, 50), (250, 40), (300, 5), (400, 8), (600, 2), (652, 7).</p>
+<p><b>3.1</b> Explicar fragmentación interna y externa en memoria continua por bloques. <b>3.2</b> ¿Qué consecuencia tiene elegir bloques pequeños? ¿Y grandes? <b>3.3</b> Una tarea necesita 150 KB: ¿dónde la ubica el sistema con BEST_FIT, FIRST_FIT y WORST_FIT? <b>3.4</b> Si no hay espacio donde quepa una tarea nueva, ¿cuáles son las 2 técnicas para liberar espacio? ¿Cuál es posible en teoría pero no se usa en la práctica? <b>3.5</b> Explicar la dirección lógica en gestión continua y cómo la MMU la transforma en física.</p></div>
+<div class="sol">
+<div class="st">3.1</div><p>Interna: un bloque asignado a una tarea no está ocupado completamente por ella. Externa: existen bloques libres, pero ninguna zona es suficientemente grande para asignarla a una tarea nueva.</p>
+<div class="st">3.2</div><p>Pequeños: menos fragmentación interna, más externa (más difícil juntar bloques libres suficientes). Grandes: menos externa, más interna para las tareas que usan poca memoria.</p>
+<div class="st">3.3</div><p>150 KB = 10 bloques. FIRST_FIT → zona del bloque <b>30</b>. BEST_FIT → zona del bloque <b>47</b> (deja la fragmentación externa más pequeña: 0). WORST_FIT → zona del bloque <b>120</b> (deja la más grande: 40 bloques).</p>
+<div class="st">3.4</div><p>Compactar o swapping. Compactar es posible en teoría, pero el tiempo para compactar una memoria de varios GB es demasiado grande para usarlo en la práctica. El swapping descarga tareas al disco para liberar zonas y se puede implementar sea cual sea el tamaño de la memoria.</p>
+<div class="st">3.5</div><p>La dirección lógica hace que la ubicación de la tarea en memoria sea transparente para su direccionamiento (instrucciones, datos, pila). La base indica dónde empieza la zona asignada: @real = BASE + @lógica (y la MMU con control verifica @lógica &lt; LÍMITE).</p>
+</div></div>
+</details>
+
+<details class="ex" id="ex2023l" data-nav="C2 2023 · lineal y conocimiento">
+<summary>Certamen 2 2023-1 · preguntas 1.1 a 1.4 y sección 3 <span class="tag">sin pauta · respuestas armadas con las láminas</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div>
+<p><b>1.1</b> ¿Cuál es el rol de la MMU en la gestión de memoria (lo que sea el modelo usado)? <b>1.2</b> En gestión de memoria lineal, definir fragmentación externa e interna. <b>1.3</b> ¿Por qué el uso de particiones estáticas de diferente tamaño no es eficiente? <b>1.4</b> ¿Por qué es interesante para el SO tener una gestión de memoria que mantiene más memoria libre? (4 pts cada una)</p>
+<p><b>3.1</b> Explicar el funcionamiento de FIRST_FIT, BEST_FIT y WORST_FIT. <i>Suponga que el costo de leer o escribir un byte de memoria es de 50 ns.</i> <b>3.2</b> En términos generales, ¿por qué la gestión de memoria lineal es ineficiente? (5 pts cada una)</p></div>
+<div class="sol">
+<div class="st">1.1</div><p>Ver el recuadro de <a class="inl" href="#direcciones">la MMU</a>: traduce cada dirección lógica en física y verifica que el acceso sea válido, generando un TRAP si no; tiene que ser hardware porque ocurre en cada acceso.</p>
+<div class="st">1.2</div><p>Interna: memoria que el proceso no usa adentro de su partición; perdida para el sistema. Externa: zonas libres entre particiones donde muy probablemente no cabe ningún proceso.</p>
+<div class="st">1.3</div><p>El tamaño de los procesos no se conoce a priori: casi nunca calzan, lo que produce fragmentación interna (el sobrante dentro de la partición) y externa (particiones libres demasiado chicas para los procesos que esperan).</p>
+<div class="st">1.4</div><p>Para atender las solicitudes de inmediato (cargar, crecer, swap-in) sin compactar ni descargar procesos en ese momento, y para tener más procesos listos en memoria (más multiprogramación).</p>
+<div class="st">3.1</div><p>Con b = ⌈K / bloque⌉ bloques: FIRST asigna la primera zona libre con al menos b bloques; BEST la zona donde cabe con el menor remanente; WORST la zona con el mayor remanente. Los tres hacen una búsqueda secuencial en la lista de zonas libres; FIRST se detiene antes, BEST y WORST la recorren entera.</p>
+<p class="tiny">El dato de 50 ns parece preparar una pregunta de costo que no aparece en la copia escaneada (falta una pregunta: la sección vale 15 pts a 5 cada una y solo hay dos). Lo más probable es el costo de compactar: ver el ejercicio L3.</p>
+<div class="st">3.2</div><p>Ver <a class="inl" href="#lineal-conclusion">la conclusión</a>: zona contigua del tamaño de todo el proceso → fragmentación externa → compactar (caro) o swapping de procesos completos (más caro); proceso cargado entero; reubicación con costo del linker dinámico.</p>
+</div></div>
+</details>
+
+<details class="ex" id="ex2014" data-nav="Certámenes 2014 y 2016">
+<summary>Preguntas de memoria de los certámenes 2014-1 y 2016-1 <span class="tag">2014 con pauta · 2016 sin pauta</span></summary>
+<div class="body">
+<p><b>2014 · 1.5</b> Explicar la transformación de una dirección lógica en física por la MMU en memoria continua, y el rol de los registros Base y Limit. → BASE es donde está cargada la tarea, LIMIT el tamaño que ocupa; @ram = BASE + d con d &lt; LIMIT.</p>
+<p><b>2014 · 1.6</b> Explicar brevemente el swapping. → Ver <a class="inl" href="#swapping">swapping</a>.</p>
+<p><b>2016 · 1.6</b> Explicar la noción de fragmentación externa en gestión continua. → Bloques libres en zonas que, por separado, son demasiado chicas para una tarea nueva, aunque sumadas alcanzarían.</p>
+<p><b>2016 · 1.7</b> Explicar BEST_FIT y sus desventajas. → Asigna la zona donde cabe con el menor remanente. Recorre toda la lista y deja remanentes inutilizables.</p>
+</div>
+</details>
+
+<details class="ex" id="L1" data-nav="L1 · Varios pedidos en la tabla 2015">
+<summary>L1 · La tabla de 2015 con cinco pedidos seguidos <span class="tag">nuevo · verificado con un simulador</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Misma tabla y bloques de 16 KB que en 2015. Llegan en orden A = 150 KB, B = 600 KB, C = 100 KB, D = 40 KB y E = 700 KB. Para cada algoritmo, ¿dónde queda cada tarea? ¿Alguna no cabe? ¿Por qué?</p></div>
+<div class="sol">
+<div class="st">Bloques</div><p>A: 150/16 = 9,4 → 10 · B: 600/16 = 37,5 → 38 · C: 100/16 = 6,25 → 7 · D: 40/16 = 2,5 → 3 · E: 700/16 = 43,75 → 44.</p>
+<div class="tw"><table class="mini"><thead><tr><th>Tarea (b)</th><th>FIRST_FIT</th><th>BEST_FIT</th><th>WORST_FIT</th></tr></thead><tbody>
+<tr><td>A (10)</td><td>30 → queda (40, 2)</td><td>47 → se borra</td><td>120 → queda (130, 40)</td></tr>
+<tr><td>B (38)</td><td>120 → queda (158, 12)</td><td>250 → queda (288, 2)</td><td>130 → queda (168, 2)</td></tr>
+<tr><td>C (7)</td><td>47 → queda (54, 3)</td><td>652 → se borra</td><td>250 → queda (257, 33)</td></tr>
+<tr><td>D (3)</td><td>15 → se borra</td><td>15 → se borra</td><td>257 → queda (260, 30)</td></tr>
+<tr><td>E (44)</td><td><b>no cabe</b></td><td>120 → queda (164, 6)</td><td><b>no cabe</b></td></tr>
+</tbody></table></div>
+<p>Con FIRST_FIT, al final quedan libres 2 + 3 + 12 + 40 + 5 + 8 + 2 + 7 = <b>79 bloques</b> (1264 KB), casi el doble de lo que pide E, pero la zona más grande tiene 40: es <b>fragmentación externa</b> pura. WORST_FIT partió la zona de 50 para A (y el resto se lo llevó B) y la de 40 para C y D. BEST_FIT guardó la zona de 50 intacta hasta que llegó la tarea que la necesitaba.</p>
+<p class="tiny">Moraleja: ningún algoritmo gana siempre, pero esta secuencia muestra el argumento a favor de BEST_FIT y el problema de WORST_FIT con las tareas grandes.</p>
+</div></div>
+</details>
+
+<details class="ex" id="L2" data-nav="L2 · Tamaño del arreglo de bits">
+<summary>L2 · ¿Cuánto ocupa el arreglo de bits? <span class="tag">nuevo · cálculo</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>a) RAM de 8 GB con bloques de 4 KB. b) RAM de 16 GB con bloques de 16 KB. c) Para (a), ¿qué fracción de la RAM ocupa el arreglo? d) ¿Por qué la lista de zonas libres del profe no tiene este costo?</p></div>
+<div class="sol">
+<p><b>a)</b> 2<sup>33</sup> / 2<sup>12</sup> = 2<sup>21</sup> = 2 097 152 bloques → 2<sup>21</sup> / 8 = 2<sup>18</sup> B = <b>256 KB</b>.</p>
+<p><b>b)</b> 2<sup>34</sup> / 2<sup>14</sup> = 2<sup>20</sup> bloques → 2<sup>17</sup> B = <b>128 KB</b>. Con bloques más grandes, el arreglo es más chico.</p>
+<p><b>c)</b> 2<sup>18</sup> / 2<sup>33</sup> = 2<sup>−15</sup> ≈ 0,003 %. Poco espacio, pero hay que recorrerlo bit a bit para buscar zonas.</p>
+<p><b>d)</b> Porque guarda “n / siguiente” dentro de los bloques libres, que de todas formas nadie está usando.</p>
+</div></div>
+</details>
+
+<details class="ex" id="L3" data-nav="L3 · Costo de compactar">
+<summary>L3 · Costo de compactar con 50 ns por acceso <span class="tag">nuevo · cálculo · probable por el dato del C2 2023</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Leer o escribir un byte cuesta 50 ns. a) ¿Cuánto demora compactar si hay que mover 300 MB? b) ¿Y 2 GB? c) ¿Por qué no se compacta en la práctica?</p></div>
+<div class="sol">
+<p><b>a)</b> t = 2 × 50 ns × 300 × 2<sup>20</sup> = 100 ns × 314 572 800 ≈ <b>31,5 s</b> (o 300 × 105 ms).</p>
+<p><b>b)</b> t = 100 ns × 2 × 2<sup>30</sup> ≈ 214,7 s ≈ <b>3 min 35 s</b> (o 2 × 107 s).</p>
+<p><b>c)</b> Durante ese tiempo los procesos que se mueven no pueden ejecutarse (y hay que actualizar su BASE). Si la memoria está sobrecargada, la fragmentación vuelve enseguida, así que habría que repetirlo. El swapping libera espacio sin detener toda la memoria.</p>
+</div></div>
+</details>
+
+<details class="ex" id="L4" data-nav="L4 · MMU con BASE y LÍMITE">
+<summary>L4 · Traducir con la MMU con control <span class="tag">nuevo</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Un proceso tiene BASE = 300 000 y LÍMITE = 50 000. Traduce, en modo usuario, las direcciones lógicas 0, 12 345, 49 999 y 50 000. ¿Qué pasa con 12 345 si la CPU está en modo sistema? Si el SO compacta y mueve el proceso a 120 000, ¿qué cambia?</p></div>
+<div class="sol">
+<p>0 → 300 000 · 12 345 → 312 345 · 49 999 → 349 999 · <b>50 000 → TRAP</b> (no es menor que el límite).</p>
+<p>En modo sistema no se suma la base: se accede directamente a la dirección física 12 345.</p>
+<p>Si el proceso se mueve, solo cambia el registro: BASE = 120 000. Las direcciones lógicas del programa no cambian (esa es la reubicación fácil).</p>
+</div></div>
+</details>
+
+<details class="ex" id="L5" data-nav="L5 · La lista de zonas libres">
+<summary>L5 · Dibujar y actualizar la lista de zonas libres <span class="tag">nuevo</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Memoria de 16 bloques de 4 KB. Ocupados: P1 en 3-5, P2 en 10-11, P3 en 15. a) Escribe la lista (Head y los “n / s”). b) Llega una tarea de 10 KB: ¿dónde queda con FIRST, BEST y WORST FIT? c) Después de asignarla con BEST FIT, P1 termina: ¿cómo queda la lista?</p></div>
+<div class="sol">
+<p><b>a)</b> Libres: 1-2, 6-9, 12-14 y 16. Head → 1. Bloque 1: <b>2 / 6</b> · bloque 6: <b>4 / 12</b> · bloque 12: <b>3 / 16</b> · bloque 16: <b>1 / fin</b>.</p>
+<p><b>b)</b> b = ⌈10/4⌉ = 3. FIRST: zona 6 (la 1 tiene 2) → bloques 6-8, queda el 9 solo (“1 / 12”). BEST: remanentes 1 (zona 6) y 0 (zona 12) → bloques 12-14, la zona desaparece. WORST: el mayor remanente es 1, en la zona 6 → igual que FIRST.</p>
+<p><b>c)</b> Tras BEST, la lista es 1: 2/6 · 6: 4/16 · 16: 1/fin. Al liberar P1 (3-5), la zona 3-5 queda pegada a 1-2 y a 6-9: se juntan en una sola, <b>1: 9 / 16</b>, y 16: 1 / fin.</p>
+</div></div>
+</details>
+
+<details class="ex" id="L6" data-nav="L6 · Particiones fijas">
+<summary>L6 · Particiones fijas: fragmentación interna y externa a la vez <span class="tag">nuevo</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Particiones fijas de 8, 8, 16, 32, 128 y 512 KB. Llegan en orden A = 6 KB, B = 30 KB, C = 100 KB, D = 20 KB, E = 300 KB, F = 140 KB y G = 7 KB. Cada proceso va a la partición libre más chica donde cabe; si no hay, espera. ¿Cuánta fragmentación interna hay? ¿Dónde hay fragmentación externa?</p></div>
+<div class="sol">
+<p>A → 8 (sobran 2) · B → 32 (2) · C → 128 (28) · D → 512 (¡sobran 492!, la de 32 ya está ocupada) · E y F esperan · G → 8 (1).</p>
+<p><b>Interna:</b> 2 + 2 + 28 + 492 + 1 = <b>525 KB</b> perdidos dentro de particiones asignadas.</p>
+<p><b>Externa:</b> la partición de 16 KB queda libre y no le sirve a ninguno de los que esperan (E y F necesitan 300 y 140). Y D, que ocupa la de 512, bloquea a E aunque solo usa 20 KB.</p>
+</div></div>
+</details>
+
+<details class="ex" id="L7" data-nav="L7 · Silberschatz 9.6">
+<summary>L7 · Seis particiones y cinco procesos (Silberschatz 9.6) <span class="tag">libro · verificado</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Zonas libres de 300, 600, 350, 200, 750 y 125 KB (en ese orden). Llegan procesos de 115, 500, 358, 200 y 375 KB. ¿Cómo los ubican FIRST, BEST y WORST FIT? (Aquí la zona se parte exacta, sin bloques.)</p></div>
+<div class="sol">
+<div class="tw"><table class="mini"><thead><tr><th>Proceso</th><th>FIRST</th><th>BEST</th><th>WORST</th></tr></thead><tbody>
+<tr><td>115</td><td>300 (quedan 185)</td><td>125 (quedan 10)</td><td>750 (quedan 635)</td></tr>
+<tr><td>500</td><td>600 (100)</td><td>600 (100)</td><td>635 (135)</td></tr>
+<tr><td>358</td><td>750 (392)</td><td>750 (392)</td><td>600 (242)</td></tr>
+<tr><td>200</td><td>350 (150)</td><td>200 (0)</td><td>350 (150)</td></tr>
+<tr><td>375</td><td>392 (17)</td><td>392 (17)</td><td><b>no cabe</b></td></tr>
+</tbody></table></div>
+<p>WORST FIT deja al último esperando aunque hay 300 + 242 + 150 + 200 + 135 + 125 KB libres: ninguna zona llega a 375.</p>
+</div></div>
+</details>
+
+<section id="t1-preguntas" data-nav="Preguntas del tema">
+<h2>Preguntas del tema</h2>
+<p class="lead">Tapa la respuesta y contesta en voz alta. Son las que más se parecen a las del profe.</p>
+<details class="ex"><summary>¿Qué diferencia hay entre una dirección lógica y una física?</summary><div class="body"><p>La lógica es la que ve el programa durante su ejecución; la física es la que entra al chip de memoria. La MMU traduce una en la otra en cada acceso.</p></div></details>
+<details class="ex"><summary>¿Por qué la traducción de direcciones necesita hardware?</summary><div class="body"><p>Porque se hace en cada acceso a memoria (cada fetch, cada lectura y escritura): por rendimiento tiene que ser casi instantánea, y por seguridad el mismo circuito controla que el acceso sea legal.</p></div></details>
+<details class="ex"><summary>¿Qué hace la MMU simple en modo sistema y en modo usuario?</summary><div class="body"><p>En modo sistema deja pasar la dirección tal cual (acceso directo). En modo usuario le suma el registro BASE: @física = BASE + d.</p></div></details>
+<details class="ex"><summary>¿Para qué sirve el registro LÍMITE y qué pasa si se viola?</summary><div class="body"><p>Guarda el tamaño de la zona del proceso; la MMU verifica d &lt; LÍMITE. Si no se cumple genera un TRAP y el sistema operativo decide la acción (normalmente un error que termina el proceso).</p></div></details>
+<details class="ex"><summary>¿Por qué las particiones fijas desperdician memoria?</summary><div class="body"><p>Porque los tamaños se fijan sin conocer los procesos: aparece fragmentación interna (el sobrante dentro de la partición) y externa (particiones libres que no le sirven a ningún proceso).</p></div></details>
+<details class="ex"><summary>¿Cuántos bloques de 4 KB necesita una tarea de 18 KB? ¿Cuánta fragmentación interna deja?</summary><div class="body"><p>18 / 4 = 4,5 → b = 5 bloques = 20 KB; 2 KB de fragmentación interna.</p></div></details>
+<details class="ex"><summary>¿Qué guarda la lista de zonas libres del profe y dónde?</summary><div class="body"><p>En el primer bloque de cada zona libre guarda cuántos bloques libres consecutivos tiene la zona y dónde empieza la próxima. El Head apunta a la primera zona. No usa memoria extra.</p></div></details>
+<details class="ex"><summary>¿Qué algoritmo es el más rápido y cuál produce más migajas?</summary><div class="body"><p>FIRST FIT es el más rápido (se detiene en la primera zona que sirve). BEST FIT deja los remanentes más pequeños, que casi nunca sirven.</p></div></details>
+<details class="ex"><summary>¿Cuánto cuesta mover 1 MB con accesos de 50 ns y por qué el 2?</summary><div class="body"><p>2 × 50 ns × 1024² ≈ 105 ms. El 2 es porque cada byte se lee de su lugar y se escribe en el nuevo.</p></div></details>
+<details class="ex"><summary>¿Cuándo es interesante hacer swapping?</summary><div class="body"><p>Cuando hay al menos otro proceso listo en memoria para usar la CPU mientras el disco trabaja (con DMA), y cuando el proceso se puede volver a cargar en otra zona (traducción de direcciones). Si hay que traer de vuelta el proceso que se acaba de sacar, el swapping es pura pérdida.</p></div></details>
+<details class="ex"><summary>¿Por qué la memoria lineal es ineficiente, en una frase?</summary><div class="body"><p>Porque exige una zona contigua del tamaño de todo el proceso, lo que produce fragmentación externa que solo se arregla compactando (caro) o con swapping de procesos completos (más caro).</p></div></details>
+</section>
+
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=(localStorage.getItem('so-c2-theme')||localStorage.getItem('so-c2-theme')); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('so-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  var lastBest=-1;
+  function onScroll(){
+    var y=window.scrollY+70, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4) best=secs.length-1;
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+    var sb=document.querySelector('.sidebar'), act=links[best];
+    if(sb && act && window.innerWidth>900 && best!==lastBest){
+      var r=act.getBoundingClientRect(), s=sb.getBoundingClientRect();
+      if(r.top<s.top+40 || r.bottom>s.bottom-40){ sb.scrollTop+=r.top-s.top-sb.clientHeight/2; }
+    }
+    lastBest=best;
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='so-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+</script>
+</body>
+</html>

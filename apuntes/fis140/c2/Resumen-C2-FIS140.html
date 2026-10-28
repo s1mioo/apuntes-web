@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Resumen C2 FIS140</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], tags: 'none' },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+<style>
+  /* Diseño: índice lateral fijo + una columna de lectura de unos 70 caracteres.
+     Una sola tinta de acento (azul índigo, cercano a la línea H-gamma de 434 nm) y neutros.
+     El único color fuerte es la tira con las cuatro líneas de Balmer del hidrógeno. */
+  :root{
+    --bg:#f6f7f9; --surface:#ffffff; --ink:#1b2130; --muted:#586174; --line:#e1e4ea;
+    --accent:#3445b4; --accent-soft:#eceefa; --warn:#94550f; --warn-soft:#fbf3e7; --code:#eef0f4;
+    --strip:#0f1117; --h-delta:#8a4fd6; --h-gamma:#5b5cf0; --h-beta:#1fa8d4; --h-alpha:#e2463f;
+    --f-display:"IBM Plex Serif", Georgia, "Times New Roman", serif;
+    --f-body:"IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    --f-mono:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --sidew:276px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#12151c; --surface:#181c25; --ink:#e5e8ef; --muted:#9aa2b4; --line:#2a2f3b;
+      --accent:#a3afff; --accent-soft:#1f2541; --warn:#e6ad66; --warn-soft:#2a2116; --code:#222734;
+      --strip:#0b0d12; color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#12151c; --surface:#181c25; --ink:#e5e8ef; --muted:#9aa2b4; --line:#2a2f3b;
+    --accent:#a3afff; --accent-soft:#1f2541; --warn:#e6ad66; --warn-soft:#2a2116; --code:#222734;
+    --strip:#0b0d12; color-scheme:dark;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.66;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:var(--accent)}
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+  .layout{display:flex;align-items:flex-start}
+  .sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;overflow-y:auto;
+    background:var(--surface);border-right:1px solid var(--line);padding:22px 14px 60px}
+  .content{flex:1 1 auto;min-width:0;padding:40px clamp(16px,4.5vw,64px) 140px}
+  .col{max-width:760px;margin:0 auto}
+
+  .brand .kicker{font-family:var(--f-mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+  .brand h1{font-family:var(--f-display);font-weight:600;font-size:20px;line-height:1.25;margin:4px 0 2px;text-wrap:balance}
+  .brand p{margin:0;color:var(--muted);font-size:13px}
+  .spectrum{margin:14px 0 4px}
+  .spectrum .bar{position:relative;height:12px;border-radius:3px;background:var(--strip)}
+  .spectrum .bar i{position:absolute;top:0;bottom:0;width:2px}
+  .spectrum .lbl{position:relative;height:14px;font-family:var(--f-mono);font-size:9.5px;color:var(--muted)}
+  .spectrum .lbl span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+  .spectrum small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 6px}
+  .btn{font:500 12.5px/1 var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);
+    border-radius:6px;padding:7px 10px;cursor:pointer}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+
+  nav .grp{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:18px 8px 4px}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:6px;font-size:13.5px;line-height:1.35;opacity:.86}
+  nav a:hover{background:var(--accent-soft);opacity:1}
+  nav a.sub{padding-left:20px;font-size:13px;opacity:.74}
+  nav a.active{background:var(--accent-soft);color:var(--accent);font-weight:600;opacity:1}
+  nav .xlink{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+
+  h2{font-family:var(--f-display);font-weight:600;font-size:29px;line-height:1.2;margin:0 0 8px;letter-spacing:-.005em;text-wrap:balance;scroll-margin-top:24px}
+  h3{font-family:var(--f-display);font-weight:600;font-size:21px;line-height:1.3;margin:38px 0 6px;text-wrap:balance;scroll-margin-top:24px}
+  h4{font-size:16px;font-weight:600;margin:24px 0 4px;scroll-margin-top:24px}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  strong{font-weight:600}
+  .eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+  .lead{font-size:18px;color:var(--muted);margin:4px 0 14px}
+  .muted{color:var(--muted)}
+  section{border-top:1px solid var(--line);padding-top:38px;margin-top:52px}
+  section.first{border-top:0;margin-top:0;padding-top:0}
+  code,.mono{font-family:var(--f-mono);font-size:.88em}
+  code{background:var(--code);border-radius:4px;padding:1px 5px}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* Lista de fórmulas: la fórmula a la izquierda y cuándo se usa a la derecha */
+  .fl{margin:14px 0;border-top:1px solid var(--line)}
+  .fl .r{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;align-items:center;padding:10px 2px;border-bottom:1px solid var(--line)}
+  .fl .r .f{min-width:0;overflow-x:auto;overflow-y:hidden}
+  .fl .r .w{color:var(--muted);font-size:14.5px;min-width:0}
+
+  .note{border-left:3px solid var(--line);padding:2px 0 2px 14px;margin:16px 0}
+  .note .t,.warn .t{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+  .warn{border-left:3px solid var(--warn);background:var(--warn-soft);padding:10px 14px;margin:18px 0;border-radius:0 6px 6px 0}
+  .warn .t{color:var(--warn)}
+  .warn ul{margin:4px 0}
+
+  .tablewrap{overflow-x:auto;margin:16px 0}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+  th,td{padding:9px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+  th{font-family:var(--f-mono);font-weight:500;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:1.5px solid var(--ink)}
+  tr.hl td{background:var(--accent-soft)}
+  table.small{min-width:0;font-size:14px}
+
+  .tag{display:inline-block;font-family:var(--f-mono);font-size:11px;line-height:1.5;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 6px;vertical-align:2px;white-space:nowrap}
+  .tag.ac{color:var(--accent);border-color:var(--accent)}
+
+  .videos{list-style:none;padding:0;margin:8px 0}
+  .videos li{padding:6px 0;border-bottom:1px dashed var(--line);margin:0}
+  .videos li:last-child{border-bottom:0}
+  .videos a{text-decoration:none;font-weight:500}
+  .videos a:hover{text-decoration:underline}
+  .videos .meta{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);white-space:nowrap}
+  .videos .why{display:block;font-size:13.5px;color:var(--muted)}
+  .vbox{margin:24px 0 4px}
+  .vbox > .t{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+  .ans{color:var(--accent);font-weight:600}
+  mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;max-width:100%;padding:2px 0}
+
+  /* Ejercicios */
+  .ex{border-top:1px solid var(--line);padding:20px 0 6px;scroll-margin-top:20px}
+  .ex .hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+  .ex .id{font-family:var(--f-mono);font-weight:500;font-size:13px;color:var(--accent);min-width:2.6em}
+  .ex .hd h4{margin:0;font-size:17px;flex:1 1 240px;min-width:0}
+  .ex .enun{margin:8px 0 4px}
+  .ex .enun ol{margin:6px 0}
+  details.sol{margin:8px 0 6px}
+  details.sol > summary{display:inline-block;cursor:pointer;list-style:none;font:500 13px/1 var(--f-body);color:var(--accent);
+    border:1px solid var(--accent);border-radius:6px;padding:7px 11px;user-select:none}
+  details.sol > summary::-webkit-details-marker{display:none}
+  details.sol[open] > summary{background:var(--accent-soft)}
+  details.sol .body{margin-top:10px;padding:0 12px 0 14px;border-left:2px solid var(--accent-soft)}
+  .step{margin:12px 0;padding:2px 14px 2px 0}
+  .step > b:first-child{font-family:var(--f-mono);font-weight:500;font-size:12px;color:var(--muted);margin-right:6px}
+
+  .recall{padding-left:28px}
+  .recall li{margin:12px 0}
+  .recall li > p{margin:0 0 4px}
+  .plan td:first-child{white-space:nowrap;font-family:var(--f-mono);font-size:13px}
+
+  /* Móvil */
+  .menuToggle{display:none}
+  .scrim{display:none}
+  @media (max-width:920px){
+    .sidebar{position:fixed;z-index:40;left:0;top:0;transform:translateX(-102%);transition:transform .2s ease;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .sidebar.open{transform:none}
+    .menuToggle{display:inline-block;position:fixed;z-index:50;top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+    .scrim.on{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:35}
+    .content{padding-top:62px}
+    .fl .r{grid-template-columns:1fr;gap:2px}
+    .step{overflow-x:auto}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sidebar{transition:none}}
+  @media print{
+    .sidebar,.menuToggle,.scrim,.toolbar{display:none!important}
+    .content{padding:0}
+    body{font-size:12.5px;background:#fff;color:#000}
+    details.sol > summary{display:none}
+    details.sol .body{border-left:0;padding-left:0}
+    .ex{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<button class="btn menuToggle" id="menuToggle" type="button">Índice</button>
+<div class="scrim" id="scrim"></div>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="kicker">FIS140 · Física General IV · USM</div>
+    <h1>Resumen del Certamen 2</h1>
+    <p>Relatividad, fotones, átomos y cuántica. Miércoles 21 de octubre, 16:05.</p>
+  </div>
+  <div class="spectrum" title="Líneas de Balmer del hidrógeno, las mismas de la lámpara de descarga de la Clase 13">
+    <div class="bar"><i style="left:9.4%;background:var(--h-delta)"></i><i style="left:16.9%;background:var(--h-gamma)"></i><i style="left:33.2%;background:var(--h-beta)"></i><i style="left:86.3%;background:var(--h-alpha)"></i></div>
+    <div class="lbl"><span style="left:7.5%">410</span><span style="left:17.5%">434</span><span style="left:33.2%">486</span><span style="left:86.3%">656 nm</span></div>
+    <small>Hidrógeno, serie de Balmer: $n\to 2$</small>
+  </div>
+  <div class="toolbar">
+    <button class="btn" id="themeBtn" type="button">Cambiar tema</button>
+    <button class="btn" id="printBtn" type="button">Imprimir</button>
+  </div>
+  <nav id="nav">
+    <div class="grp">Empezar</div>
+    <a href="#intro">Cómo usar esta guía</a>
+    <a href="#temario">Qué entra en el C2</a>
+    <a href="#solar">Lo que dijo Solar</a>
+    <a href="#pizarra">La pizarra de Solar</a>
+    <a href="#mapa">Certámenes anteriores y apuesta</a>
+
+    <div class="grp">A · Relatividad · P1</div>
+    <a class="sub" href="#a-idea">La idea y el factor γ</a>
+    <a class="sub" href="#a-propio">Tiempo y longitud propios</a>
+    <a class="sub" href="#a-lorentz">Lorentz y simultaneidad</a>
+    <a class="sub" href="#a-vel">Suma de velocidades</a>
+    <a class="sub" href="#a-doppler">Doppler relativista</a>
+    <a class="sub" href="#a-energia">Energía y momentum</a>
+    <a class="sub" href="#a-conserv">Decaimientos, choques y pares</a>
+
+    <div class="grp">B · Fotones y átomos · P2</div>
+    <a class="sub" href="#b-negro">Cuerpo negro</a>
+    <a class="sub" href="#b-foton">El fotón</a>
+    <a class="sub" href="#b-fotoel">Efecto fotoeléctrico</a>
+    <a class="sub" href="#b-rx">Rayos X de frenado</a>
+    <a class="sub" href="#b-compton">Efecto Compton</a>
+    <a class="sub" href="#b-broglie">Ondas de materia</a>
+    <a class="sub" href="#b-incert">Incertidumbre</a>
+    <a class="sub" href="#b-bohr">Bohr e hidrogenoides</a>
+    <a class="sub" href="#b-laser">El láser</a>
+
+    <div class="grp">C · Cuántica · P3</div>
+    <a class="sub" href="#c-psi">Función de onda</a>
+    <a class="sub" href="#c-schr">Ecuación de Schrödinger</a>
+    <a class="sub" href="#c-pozo">Pozo infinito</a>
+    <a class="sub" href="#c-finito">Pozo finito</a>
+    <a class="sub" href="#c-escalon">Escalón y efecto túnel</a>
+    <a class="sub" href="#c-osc">Oscilador armónico</a>
+
+    <div class="grp">Cierre</div>
+    <a href="#formulario">Formulario: qué te dan y qué no</a>
+    <a href="#errores">Errores que cuestan puntos</a>
+    <a href="#videos">Todos los videos</a>
+    <div class="xlink"><a href="Ejercicios-C2-FIS140.html">Ir a los ejercicios resueltos →</a></div>
+  </nav>
+</aside>
+
+<main class="content">
+<div class="col">
+
+<section id="intro" class="first">
+  <p class="eyebrow">Empezar aquí</p>
+  <h2>Resumen para el Certamen 2</h2>
+  <p class="lead">La materia del C2 explicada desde cero, para que sirva aunque no hayas ido a ninguna clase. Está ordenada por la pregunta del certamen a la que sirve cada tema, y cada tema termina con los ejercicios que lo practican y un par de videos.</p>
+
+  <h3>Cómo estudiar con esto</h3>
+  <p>Busqué qué técnicas de estudio tienen evidencia sólida y armé la guía alrededor de las cuatro que mejor salen paradas. Son pocas y conviene tomárselas en serio, porque las que más usamos (releer y subrayar) son justamente las que menos sirven.</p>
+  <ol>
+    <li><strong>Recuperar en vez de releer.</strong> Intentar recordar o resolver sin mirar es, junto con espaciar, la técnica mejor evaluada en la revisión de Dunlosky y colegas (2013); releer, subrayar y resumir quedaron con utilidad baja. Por eso en el archivo de ejercicios el enunciado está a la vista y la solución plegada: primero lo intentas en papel y después abres.</li>
+    <li><strong>Un ejemplo resuelto antes de resolver solo.</strong> Cuando un tema es nuevo, leer un ejemplo resuelto paso a paso y explicarte por qué se hace cada paso rinde más que lanzarse a resolver. Cuando ya lo dominas, conviene dejar los ejemplos y resolver sin ayuda. Cada tema de este resumen trae un ejemplo mínimo y después te manda a los ejercicios.</li>
+    <li><strong>Mezclar tipos de problema.</strong> En un curso de física universitaria, hacer las tareas con problemas de temas mezclados en vez de agrupados mejoró los resultados en pruebas sorpresa entre 50&nbsp;% y 125&nbsp;% (Samani y Pan, 2021). Se siente más difícil y da la impresión de aprender menos; esa dificultad es la parte útil. Los simulacros y el plan intensivo alternan temas por eso.</li>
+    <li><strong>Espaciar.</strong> Volver a cada bloque cada dos a cuatro días rinde más que estudiarlo una vez y no tocarlo. Para un examen a una semana, la separación óptima entre repasos anda en el 20&nbsp;% a 40&nbsp;% del plazo (Cepeda y colegas, 2008). Con un día y medio, el plan lo aplica en chico: pasa por cada bloque el martes y vuelve a todos el miércoles.</li>
+  </ol>
+  <div class="note"><span class="t">Archivo compañero</span>Los ejercicios están en <a href="Ejercicios-C2-FIS140.html">Ejercicios-C2-FIS140.html</a>, en esta misma carpeta: el <strong>plan intensivo para hoy y mañana</strong>, el <strong>cuestionario conceptual de Solar resuelto</strong> junto a 18 preguntas más del mismo estilo, las cuatro ayudantías, los problemas de ocho certámenes anteriores y de las clases, y dos simulacros. Todo resuelto y con los números revisados.</div>
+
+  <h3>Cómo es el certamen</h3>
+  <ul>
+    <li><strong>90 minutos, tres problemas de 34, 33 y 33 puntos.</strong> Así fueron el C2 de 2026-1 y tu C1 de este semestre. Solar confirmó que serán <strong>tres ejercicios: uno de relatividad, uno de fenómenos cuánticos y uno de mecánica cuántica</strong>, y que el certamen será bastante conceptual, aunque con cálculo. Es el miércoles 21 a las 16:05.</li>
+    <li><strong>Calculadora científica no programable</strong> y sin apuntes. En la primera hoja viene un <strong>formulario</strong>; al final de esta guía está qué trae y qué tienes que saber tú.</li>
+    <li><strong>Cada inciso se corrige de 0 a 3.</strong> Según las rúbricas de 2024-2, un planteamiento correcto con un error numérico o sin unidades vale 2 de 3, y un error de arrastre no te hunde los incisos siguientes. Escribir la ecuación de partida siempre suma.</li>
+    <li>Todo resultado tiene que estar justificado. Si un enunciado es ambiguo, anota qué supones y sigue.</li>
+  </ul>
+</section>
+
+<section id="temario">
+  <p class="eyebrow">Empezar aquí</p>
+  <h2>Qué entra en el C2</h2>
+  <p>Esto es lo dictado hasta la <strong>Clase 16</strong>, más las <strong>Ayudantías 5 a 8</strong> y los apuntes 15 y 16 de Pablo Solar. El temario ya está cerrado: Solar lo confirmó en clases (ver <a href="#solar">lo que dijo Solar</a>).</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Material</th><th>Qué se vio</th><th>Bloque</th></tr></thead>
+      <tbody>
+        <tr><td>Clase 9 y apunte 9 de Pablo Solar</td><td>Postulados de Einstein, simultaneidad, dilatación del tiempo, contracción de longitudes, transformaciones de Lorentz, Doppler relativista, suma de velocidades</td><td>A</td></tr>
+        <tr><td>Clase 10 y apunte 10</td><td>Momentum y energía relativistas, $E^2=(pc)^2+(mc^2)^2$, choques, creación y aniquilación de partículas, efecto Compton</td><td>A y B</td></tr>
+        <tr><td>Clase 11, Duarte 11 y apunte 11</td><td>Cuerpo negro (Wien, Stefan-Boltzmann, Planck), efecto fotoeléctrico, intensidad de un haz de fotones, rayos X de frenado</td><td>B</td></tr>
+        <tr><td>Clase 12 y apunte 12</td><td>De Broglie, experimento de Davisson y Germer, difracción de rayos X (Bragg), principio de incertidumbre</td><td>B</td></tr>
+        <tr><td>Clase 13, Duarte 13 y apunte 13</td><td>Modelos atómicos, Bohr, líneas espectrales, átomos hidrogenoides, láser</td><td>B</td></tr>
+        <tr><td>Clase 14 y presentación 14</td><td>Ecuación de Schrödinger, interpretación de Born, normalización, valor esperado</td><td>C</td></tr>
+        <tr><td>Clase 15</td><td>Partícula libre, pozo infinito, pozo finito</td><td>C</td></tr>
+        <tr><td>Clase 16</td><td>Escalón de potencial (coeficientes R y T), efecto túnel, microscopio de efecto túnel, oscilador armónico</td><td>C</td></tr>
+        <tr><td>Ayudantía 5 (21 sep)</td><td>Muón, viaje a Sirio, tres galaxias, creación de pares, Compton</td><td>A y B</td></tr>
+        <tr><td>Ayudantía 6 (28 sep)</td><td>Difracción de electrones y fotones, rayos X, fotocelda, la Tierra como cuerpo negro</td><td>B</td></tr>
+        <tr><td>Ayudantía 7 (5 oct)</td><td>Ion He⁺ (idéntico al C2 2024-2), láser de neón, funciones de onda en un pozo</td><td>B y C</td></tr>
+        <tr><td>Apuntes 15 y 16 de Pablo Solar</td><td>Valor esperado y desviación estándar en el pozo, pozo finito y su ecuación trascendental, escalón con corrientes de probabilidad, coeficientes R y T, efecto túnel con su fórmula, oscilador armónico</td><td>C</td></tr>
+        <tr><td>Ayudantía 8 (19 oct)</td><td>Rocky y Grace (= C2 2026-1 P1), Compton con ángulos iguales, pozo con nodos (= C2 2025-1 P3), pozo finito con $V_0=6E_{\text{base}}$</td><td>A, B y C</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los tres bloques corresponden a cómo se reparten los problemas en los certámenes: <strong>A</strong> relatividad, <strong>B</strong> fotones y átomos, <strong>C</strong> cuántica con el pozo de potencial.</p>
+</section>
+
+<section id="solar">
+  <p class="eyebrow">Empezar aquí · actualizado el 20 de octubre</p>
+  <h2>Lo que dijo Solar</h2>
+  <p class="lead">En la última clase el profesor Pablo Solar confirmó el formato y dejó en la pizarra un resumen de fórmulas y conceptos. Esto manda sobre cualquier predicción hecha con certámenes anteriores.</p>
+  <ul>
+    <li><strong>Tres ejercicios, uno por bloque:</strong> uno de relatividad, uno de fenómenos cuánticos y uno de mecánica cuántica.</li>
+    <li><strong>«Bastante conceptual».</strong> Va a haber cálculo, pero el énfasis está en entender: quién mide lo propio, qué cambia con la intensidad y qué con la frecuencia, qué forma tiene $\psi$ en cada región. Para practicar eso mandó un cuestionario conceptual de 18 preguntas, que está <a href="Ejercicios-C2-FIS140.html#conceptual">resuelto en el archivo de ejercicios</a>.</li>
+    <li><strong>Transformación de coordenadas de Lorentz: «no tan probable».</strong> De relatividad entra seguro tiempo propio, longitud propia, suma de velocidades y problemas de energía y momentum.</li>
+  </ul>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Ejercicio</th><th>Temas según Solar</th><th>Dónde está en esta guía</th></tr></thead>
+      <tbody>
+        <tr><td>1 · Relatividad</td><td>Cinemática relativista, tiempo propio, longitud propia, transformación de velocidades (la de coordenadas, tal vez no); dinámica y energía relativista</td><td>Bloque <a href="#a-propio">A</a>; ejercicios A1 a A15</td></tr>
+        <tr><td>2 · Fenómenos cuánticos</td><td>Radiación de cuerpo negro, efecto fotoeléctrico, efecto Compton. En la pizarra dejó también el Doppler relativista y la fotocorriente</td><td>Bloque <a href="#b-negro">B</a>; ejercicios B1 a B18 y B34</td></tr>
+        <tr><td>3 · Mecánica cuántica</td><td>Función de onda y probabilidad; potenciales y pozos: pozo infinito, pozo finito, escalón y efecto túnel. En la pizarra incluyó además de Broglie, Heisenberg y el átomo de H</td><td>Bloque <a href="#c-psi">C</a>; ejercicios C1 a C11</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Bohr no aparece en la lista de temas que circuló en el grupo, pero sí en la pizarra (con el radio $R_n=a_0n^2/Z$) y en una pregunta del cuestionario sobre ionización. Puede venir como inciso: repásalo, aunque con menos tiempo que lo demás. El láser no está ni en la lista ni en la pizarra.</p>
+  <div class="note"><span class="t">La señal de siempre</span>La Ayudantía 8 de esta semana repitió dos problemas de certámenes: su P1 es el de Rocky y Grace (C2 2026-1, ejercicio A4) y su P3 es el pozo de los nodos (C2 2025-1, ejercicio C3). Los otros dos, un Compton y un pozo finito, están resueltos como B34 y C11.</div>
+</section>
+
+<section id="pizarra">
+  <p class="eyebrow">Empezar aquí · actualizado el 20 de octubre</p>
+  <h2>La pizarra de Solar</h2>
+  <p>Es el resumen que dejó en clases, pasado en limpio y ordenado por ejercicio. Lo que está aquí es lo que él considera central, así que conviene saberlo de memoria aunque venga en el formulario. Tres detalles quedaron mal anotados en la foto; están corregidos y marcados.</p>
+
+  <h3>Ejercicio 1 · Relatividad especial</h3>
+  <div class="fl">
+    <div class="r"><div class="f">$$\Delta t=\gamma\,\Delta t_0$$</div><div class="w">Tiempo propio: los dos eventos ocurren en el mismo punto del espacio.</div></div>
+    <div class="r"><div class="f">$$L_0=\gamma\,L$$</div><div class="w">Longitud propia: la de los extremos en reposo.</div></div>
+    <div class="r"><div class="f">$$\begin{gathered}v'=\frac{v-u}{1-uv/c^2}\\[4pt] v=\frac{v'+u}{1+uv'/c^2}\end{gathered}$$</div><div class="w">Transformación de velocidades.</div></div>
+    <div class="r"><div class="f">$$\begin{gathered}x'=\gamma\,(x-ut),\quad ct'=\gamma\,(ct-\beta x)\\ x=\gamma\,(x'+ut'),\quad ct=\gamma\,(ct'+\beta x')\end{gathered}$$</div><div class="w">Coordenadas, «no tan probable». En la foto quedaron mezcladas: con primas a la derecha el signo es más (S' se mueve a $+u$ respecto de S).</div></div>
+    <div class="r"><div class="f">$$\begin{gathered}E^2=(pc)^2+(mc^2)^2\\ E=\gamma mc^2=mc^2+K\\ K=(\gamma-1)mc^2,\qquad \vec p=\gamma m\vec v\end{gathered}$$</div><div class="w">Problemas de energía y momentum, con conservación de energía y momentum.</div></div>
+  </div>
+
+  <h3>Ejercicio 2 · Fenómenos cuánticos</h3>
+  <div class="fl">
+    <div class="r"><div class="f">$$f'=\sqrt{\frac{c\pm u}{c\mp u}}\;f$$</div><div class="w">Doppler relativista: el signo de arriba si se acercan (sube la frecuencia), el de abajo si se alejan.</div></div>
+    <div class="r"><div class="f">$$\Delta\lambda=\lambda_C\,(1-\cos\theta),\qquad \lambda_C=\frac{h}{m_ec}$$</div><div class="w">Compton. $\theta$ es el ángulo entre el fotón inicial y el final.</div></div>
+    <div class="r"><div class="f">$$\begin{gathered}I=\sigma T^4,\qquad P=I\cdot A\\ \lambda_{\max}T=2{,}9\times10^{-3}\ \text{m·K}\end{gathered}$$</div><div class="w">Cuerpo negro: Stefan-Boltzmann y Wien, con $\sigma=5{,}67\times10^{-8}$ W m⁻² K⁻⁴.</div></div>
+    <div class="r"><div class="f">$$\begin{gathered}E=h\nu\\ eV_0=h\nu-\phi=K_{\max}\\ \phi=h\nu_{\text{umbral}}\end{gathered}$$</div><div class="w">Fotón y fotoeléctrico. $V_0$ es el potencial que detiene al electrón más rápido; $\phi$, la energía mínima para arrancarlo de la placa.</div></div>
+    <div class="r"><div class="f">$$\begin{gathered}P_{\text{recibida}}=I\cdot A=\frac{N_\gamma}{\Delta t}\,h\nu\\ \frac{N_e}{\Delta t}=\varepsilon\,\frac{N_\gamma}{\Delta t},\qquad i=e\,\frac{N_e}{\Delta t}\end{gathered}$$</div><div class="w">Fotocorriente: de la potencia que llega a la placa salen los fotones por segundo; la eficiencia $\varepsilon$ da los electrones y de ahí la corriente. En la foto la eficiencia quedó multiplicando a los electrones; como es un porcentaje, son los electrones los que son una fracción de los fotones (así la usa la Ayudantía 6).</div></div>
+  </div>
+
+  <h3>Ejercicio 3 · Mecánica cuántica</h3>
+  <div class="fl">
+    <div class="r"><div class="f">$$\begin{gathered}E_n=-\frac{13{,}6\ \text{eV}\cdot Z^2}{n^2}\\ R_n=\frac{a_0\,n^2}{Z},\quad a_0=5{,}29\times10^{-11}\ \text{m}\end{gathered}$$</div><div class="w">Átomo de hidrógeno e hidrogenoides ($Z$ = protones del núcleo). Al saltar entre niveles absorbe o emite un fotón.</div></div>
+    <div class="r"><div class="f">$$\begin{gathered}\lambda=\frac hp,\qquad \nu=\frac Eh\\ \Delta x\,\Delta p_x\ge\frac\hbar2,\qquad \Delta t\,\Delta E\ge\frac\hbar2\end{gathered}$$</div><div class="w">De Broglie y Heisenberg.</div></div>
+    <div class="r"><div class="f">$$E\,\psi=-\frac{\hbar^2}{2m}\frac{d^2\psi}{dx^2}+V(x)\,\psi$$</div><div class="w">Schrödinger independiente del tiempo.</div></div>
+    <div class="r"><div class="f">$$\begin{gathered}|\psi|^2=\psi^*\psi,\qquad P(a\le x\le b)=\int_a^b|\psi|^2dx\\ \int_{-\infty}^{\infty}|\psi|^2dx=1\end{gathered}$$</div><div class="w">Densidad de probabilidad, probabilidad en un tramo y normalización.</div></div>
+    <div class="r"><div class="f">$$\begin{gathered}\psi_n=\sqrt{\frac2L}\,\sin\frac{n\pi x}{L}\\ E_n=\frac{n^2\hbar^2\pi^2}{2mL^2}=n^2E_1\end{gathered}$$</div><div class="w">Pozo infinito.</div></div>
+    <div class="r"><div class="f">$$\begin{gathered}E>V_0:\quad A_Ie^{ikx}+A_Re^{-ikx}\ \Big|\ A_Te^{ik'x}\\ E\lt V_0:\quad A_Ie^{ikx}+A_Re^{-ikx}\ \Big|\ A_Te^{-k'x}\end{gathered}$$</div><div class="w">Escalón. A la izquierda, onda incidente y reflejada con $k=\sqrt{2mE}/\hbar$. A la derecha, onda transmitida con $k'=\sqrt{2m(E-V_0)}/\hbar$, o exponencial que decae con $k'=\sqrt{2m(V_0-E)}/\hbar$.</div></div>
+    <div class="r"><div class="f">$$Ae^{\kappa x}\ \Big|\ Be^{ikx}+Ce^{-ikx}\ \Big|\ De^{-\kappa x}$$</div><div class="w">Pozo finito con $E\lt V_0$: exponenciales que decaen hacia afuera y oscilación adentro.</div></div>
+    <div class="r"><div class="f">$$\begin{gathered}A_Ie^{ikx}+A_Re^{-ikx}\ \Big|\ Be^{\kappa x}+Ce^{-\kappa x}\ \Big|\ A_Te^{ikx}\\[4pt] T\approx\frac{16\,E\,(V_0-E)}{V_0^2}\;e^{-2\kappa L}\end{gathered}$$</div><div class="w">Barrera de ancho $L$ con $E\lt V_0$ y su probabilidad de tunelamiento, con $\kappa=\sqrt{2m(V_0-E)}/\hbar$. En la foto el $V_0$ del denominador quedó sin el cuadrado; así aparece en su apunte 16.</div></div>
+  </div>
+</section>
+
+<section id="mapa">
+  <p class="eyebrow">Empezar aquí</p>
+  <h2>Certámenes anteriores y apuesta</h2>
+  <p>Revisé los ocho certámenes de la carpeta. Los de Casa Central son los que más se parecen al tuyo; los de San Joaquín usan otro formulario y otro estilo, pero los temas sirven igual.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Certamen</th><th>Problema 1</th><th>Problema 2</th><th>Problema 3</th><th>Problema 4</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td><strong>2026-1 CC</strong><br><span class="muted">el más parecido</span></td><td>Relatividad: contracción y dos sumas de velocidades</td><td>Relatividad: decaimiento en 3 partículas, $M_0/m_0$</td><td>Pozo infinito: $\lambda$ del fotón, máximos de $n=4$, pared finita</td><td>—</td></tr>
+        <tr><td>2025-2 CC</td><td>Bohr: Li²⁺, excitar e ionizar</td><td>Cuerpo negro: esfera de Dyson</td><td>Pozo: $L$ desde 350 nm, $\lambda$ del electrón, probabilidad</td><td>—</td></tr>
+        <tr><td>2025-1 CC</td><td>Compton con el electrón en movimiento</td><td>He⁺ con fotones de 23,7 nm</td><td>Pozo: nodos, $L$, fotón $3\to5$, probabilidad</td><td>—</td></tr>
+        <tr><td>2024-2 CC</td><td>Cuerpo negro: estrella y planeta</td><td>Fotoeléctrico: gráfico de Millikan</td><td>He⁺ (= Ayudantía 7 P1)</td><td>Pozo: $L$ desde 550 nm, momentum</td></tr>
+        <tr><td>2025-2 SJ</td><td>Relatividad: explosión en dos fragmentos</td><td>Cuerpo negro: Wien y % visible</td><td>Fotoeléctrico: dos materiales</td><td>—</td></tr>
+        <tr><td>2025-1 SJ</td><td>Relatividad: decaimiento beta</td><td>Cuerpo negro: lámpara y anillo</td><td>Fotoeléctrico: dos materiales</td><td>—</td></tr>
+        <tr><td>2022-2</td><td>Fotoeléctrico: tabla de metales</td><td>Relatividad: naves y tiempos</td><td>Choque en el LHC</td><td>Difracción de electrones</td></tr>
+        <tr><td>Certamen online antiguo</td><td colspan="4">Siete preguntas cortas resueltas a mano por un alumno (sin enunciados): Compton, pozo, de Broglie, Be³⁺, fotoeléctrico, incertidumbre</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Lo que se repite</h3>
+  <ul>
+    <li><strong>El pozo infinito salió en los cuatro certámenes de Casa Central, y siempre como último problema.</strong> Es lo más seguro de todo el C2.</li>
+    <li><strong>Bohr con un ion hidrogenoide salió en tres de cuatro</strong> (He⁺ dos veces, Li²⁺ una). La Ayudantía 7 repitió textual el He⁺ de 2024-2, igual que en el C1, donde las ayudantías de la semana previa reciclaron problemas de certámenes.</li>
+    <li><strong>Relatividad salió en uno de cuatro, pero ese uno es el más reciente</strong> y le dio dos de los tres problemas. Este semestre tuvo dos clases completas y una ayudantía entera.</li>
+    <li><strong>Cuerpo negro</strong> salió en dos de cuatro (y en los dos de San Joaquín), y la Ayudantía 6 le dio un problema. <strong>Fotoeléctrico</strong> y <strong>Compton</strong> salieron una vez cada uno.</li>
+    <li><strong>De Broglie casi nunca es un problema completo</strong>, pero aparece como inciso en tres de cuatro: el momentum del electrón en el pozo, la $\lambda$ del electrón arrancado, la $\lambda$ en el estado $n$.</li>
+  </ul>
+
+  <h3>La apuesta para el miércoles 21</h3>
+  <p>Con lo que dijo Solar, el formato ya no es una apuesta: hay un ejercicio por bloque. Lo que sigue es qué tipo de problema es más probable dentro de cada uno, cruzando los certámenes con las Ayudantías 5 a 8.</p>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Ejercicio</th><th>Lo más probable</th><th>Por qué</th></tr></thead>
+      <tbody>
+        <tr><td>1 · Relatividad</td><td>Tiempo y longitud propios con suma de velocidades, tipo Rocky y Grace, más un inciso de energía y momentum o un decaimiento</td><td>El C2 de 2026-1 tuvo dos problemas de esto y la Ayudantía 8 repitió el de Rocky y Grace</td></tr>
+        <tr><td>2 · Fenómenos cuánticos</td><td>Cuerpo negro (estrella y planeta, Dyson) o fotoeléctrico (Millikan, fotocelda con eficiencia), con Compton como alternativa</td><td>Son los tres temas que nombró; la Ayudantía 8 trajo un Compton y la pizarra la fotocorriente</td></tr>
+        <tr><td>3 · Mecánica cuántica</td><td>Pozo infinito (transición, probabilidad, nodos) más un inciso de pozo finito, escalón o túnel</td><td>4 de 4 en Casa Central; la Ayudantía 8 repitió el pozo de 2025-1 y agregó un pozo finito; la pizarra dedicó media superficie al escalón y al túnel</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Una señal que vale la pena mirar: en tu C1 de este semestre los tres problemas salieron de temas que las Ayudantías 3 y 4 habían trabajado la semana anterior, y la Ayudantía 8 volvió a reciclar dos problemas de certámenes.</p>
+  <div class="note"><span class="t">Si te queda poco tiempo</span>Prioriza así: el cuestionario conceptual de Solar, el pozo infinito con el escalón y el túnel, tiempo y longitud propios con velocidades, cuerpo negro y fotoeléctrico, energía y momentum, Compton, de Broglie y Heisenberg. Bohr merece un repaso corto (niveles e ionización). El láser casi seguro queda fuera.</div>
+</section>
+
+<section id="a-idea">
+  <p class="eyebrow">Bloque A · Relatividad · Problema 1 probable</p>
+  <h2>La idea y el factor γ</h2>
+  <p>Einstein partió de dos postulados. Las leyes de la física son las mismas para todos los observadores que se mueven a velocidad constante (los «inerciales»), y <strong>la luz viaja a $c$ para todos ellos</strong>, sin importar cómo se mueva la fuente. El segundo choca con la intuición: si corres detrás de un rayo de luz, igual lo ves alejarse a $c$. Para que eso sea posible, los que se ajustan son el tiempo y el espacio: relojes y reglas en movimiento miden distinto según quién los observe.</p>
+  <p>Todo el bloque gira en torno a un solo número, el <strong>factor de Lorentz</strong>:</p>
+  $$\gamma=\frac{1}{\sqrt{1-v^2/c^2}}=\frac{1}{\sqrt{1-\beta^2}}\ \ge 1,\qquad \beta=\frac{v}{c}.$$
+  <p>A velocidades cotidianas $\gamma\approx1$ y vuelve la física de siempre. Cerca de $c$, $\gamma$ se dispara. Conviene saberse estos valores, porque los certámenes eligen velocidades que dan números «redondos»:</p>
+  <div class="tablewrap">
+    <table class="small num">
+      <thead><tr><th>$v/c$</th><td>0,28</td><td>0,5</td><td>0,6</td><td>0,8</td><td>0,866</td><td>0,9</td><td>0,99</td><td>0,999</td></tr></thead>
+      <tbody><tr><th>$\gamma$</th><td>25/24 = 1,042</td><td>1,155</td><td>5/4 = 1,25</td><td>5/3 = 1,667</td><td>2</td><td>2,294</td><td>7,09</td><td>22,4</td></tr></tbody>
+    </table>
+  </div>
+  <p class="muted">Los de 0,6 y 0,8 salen del triángulo 3-4-5: $\sqrt{1-0{,}6^2}=0{,}8$. El de 0,28 sale del triángulo 7-24-25.</p>
+</section>
+
+<section id="a-propio">
+  <p class="eyebrow">Bloque A · Relatividad</p>
+  <h2>Tiempo propio y longitud propia</h2>
+  <p>Casi todos los problemas de cinemática relativista se resuelven con dos fórmulas cortas. Lo difícil nunca es la fórmula: es decidir <strong>quién mide qué</strong>. Para eso hay que pensar en <strong>eventos</strong>, cosas que pasan en un lugar y un instante (el muón nace, el muón llega al suelo, la nave sale, la nave llega).</p>
+  <ul>
+    <li><strong>Tiempo propio $\Delta t_0$.</strong> Es el intervalo entre dos eventos medido por el observador para quien <em>ambos ocurren en el mismo lugar</em>. Es el reloj que «viaja con» lo que pasa. Es siempre el intervalo más corto.</li>
+    <li><strong>Longitud propia $L_0$.</strong> Es el largo medido por el observador para quien el objeto (o los dos extremos de la distancia) está <em>en reposo</em>. Es siempre la longitud más larga.</li>
+  </ul>
+  <div class="fl">
+    <div class="r"><div class="f">$$\Delta t=\gamma\,\Delta t_0$$</div><div class="w">Dilatación del tiempo. El que ve moverse al reloj mide un intervalo más largo.</div></div>
+    <div class="r"><div class="f">$$L=\frac{L_0}{\gamma}$$</div><div class="w">Contracción de longitudes. Solo en la dirección del movimiento; lo perpendicular no cambia.</div></div>
+  </div>
+  <h4>Receta</h4>
+  <ol>
+    <li>Escribe los dos eventos con palabras.</li>
+    <li>Pregunta: ¿para quién ocurren en el mismo lugar? Ese mide $\Delta t_0$.</li>
+    <li>Pregunta: ¿para quién está quieto el objeto o la distancia? Ese mide $L_0$.</li>
+    <li>Aplica la fórmula y verifica: el tiempo propio debe salir menor y la longitud propia mayor.</li>
+  </ol>
+  <h4>Ejemplo mínimo: el muón (Ayudantía 5, P1)</h4>
+  <p>Un muón nace a 10 km de altura y baja a $0{,}999c$; vive $2{,}20\ \mu$s en su propio marco. Ese $2{,}20\ \mu$s es <strong>tiempo propio</strong>: nacer y decaer le pasan al muón en el mismo lugar (él mismo). Con $\gamma=22{,}4$:</p>
+  <ul>
+    <li>Desde la Tierra: vive $\tau=\gamma\tau_0=49{,}2\ \mu$s y recorre $0{,}999c\cdot49{,}2\ \mu\text{s}=14{,}7$ km. Llega al suelo.</li>
+    <li>Desde el muón: los 10 km son <strong>longitud propia de la Tierra</strong> (la atmósfera está quieta para la Tierra). El muón la ve contraída: $10\text{ km}/22{,}4=447$ m. En $2{,}2\ \mu$s el suelo se le acerca $659$ m. También llega.</li>
+  </ul>
+  <p>Los dos marcos cuentan la historia distinto, pero el resultado físico es el mismo. Esa comparación es lo que suele pedir el inciso c).</p>
+  <div class="warn"><span class="t">Trampas</span>
+    <ul>
+      <li>La distancia Tierra-estrella es longitud propia para la Tierra (las dos están quietas ahí), no para la nave.</li>
+      <li>El tiempo del viaje medido por la nave es propio (sale y llega en su propio origen). El de la Tierra no.</li>
+      <li>Si ninguno de los dos observadores ve los eventos en el mismo lugar, las fórmulas cortas no sirven: usa Lorentz.</li>
+    </ul>
+  </div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#A1">A1 muón</a>, <a href="Ejercicios-C2-FIS140.html#A2">A2 Sirio</a>, <a href="Ejercicios-C2-FIS140.html#A5">A5 naves</a>, <a href="Ejercicios-C2-FIS140.html#A7">A7 la mesa</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=lT4OLf4yyuU" target="_blank" rel="noopener">HOY SÍ que vas a entender la relatividad especial</a> <span class="meta">Date un Vlog · 11 min</span><span class="why">La intuición completa en seis claves, sin fórmulas. Bueno para partir.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=mN1QyLMEtHo" target="_blank" rel="noopener">Relatividad especial de Einstein 1: dilatación del tiempo y contracción de longitud</a> <span class="meta">Física de a Pasos · 8 min</span><span class="why">Deduce las dos fórmulas con el reloj de luz, igual que en la Clase 9.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=NcHqtG7WVkA" target="_blank" rel="noopener">Los muones y la relatividad especial</a> <span class="meta">fisicayquimica · 6 min</span><span class="why">El ejemplo del muón contado desde los dos marcos.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=jjp3cx1rClE" target="_blank" rel="noopener">Relatividad especial: ejercicios resueltos (contracción y dilatación)</a> <span class="meta">física fit · 13 min</span><span class="why">Cinco problemas cortos con marcas de tiempo.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="a-lorentz">
+  <p class="eyebrow">Bloque A · Relatividad</p>
+  <h2>Transformaciones de Lorentz y simultaneidad</h2>
+  <p>Cuando necesitas las coordenadas de un evento en otro marco, o cuando los eventos no ocurren en el mismo lugar para nadie, se usan las transformaciones completas. Si el marco $S'$ se mueve con velocidad $u$ en $+x$ respecto de $S$ y sus orígenes coinciden en $t=t'=0$:</p>
+  $$x'=\gamma\,(x-ut),\qquad t'=\gamma\left(t-\frac{u\,x}{c^2}\right),\qquad y'=y,\quad z'=z.$$
+  <p>Las inversas son las mismas con $u\to-u$: $x=\gamma(x'+ut')$ y $t=\gamma(t'+ux'/c^2)$. Con diferencias entre dos eventos: $\Delta x'=\gamma(\Delta x-u\Delta t)$ y $\Delta t'=\gamma(\Delta t-u\Delta x/c^2)$.</p>
+  <p><strong>La simultaneidad es relativa.</strong> Si dos eventos son simultáneos en $S$ ($\Delta t=0$) pero están separados ($\Delta x\neq0$), en $S'$ no lo son: $\Delta t'=-\gamma u\Delta x/c^2$. Por eso en la Clase 9 los rayos caen a la vez para Stanley pero no para Mavis.</p>
+  <h4>Ejemplo mínimo: llegada a Sirio (Ayudantía 5, P2)</h4>
+  <p>Sirio está a 9 años luz y la nave va a $0{,}8c$ ($\gamma=5/3$). Trabajando en años y años luz, $c=1$ año luz por año. Para la Tierra la llegada es el evento $(t,x)=(11{,}25\text{ años},\ 9\text{ AL})$. Para la nave:</p>
+  $$x'=\tfrac53\,(9-0{,}8\cdot 11{,}25)=0,\qquad t'=\tfrac53\,(11{,}25-0{,}8\cdot 9)=6{,}75\text{ años}.$$
+  <p>Que $x'=0$ tiene sentido: la nave llega en su propio origen. Y $6{,}75=11{,}25/\gamma$: es el tiempo propio, coherente con la sección anterior.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#A2">A2 Sirio</a>, <a href="Ejercicios-C2-FIS140.html#A6">A6 simultaneidad a 50 km</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=aAKanDdRf3M" target="_blank" rel="noopener">Relatividad, Clase 12: transformaciones de Lorentz (ejemplo 1)</a> <span class="meta">Physics Lab · 14 min</span><span class="why">Un problema completo con dos naves que se acercan.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=b7N3g3kHzDw" target="_blank" rel="noopener">El dibujo que te hará entender la relatividad</a> <span class="meta">QuantumFracture · 23 min</span><span class="why">Diagramas de espacio-tiempo: hacen visible por qué la simultaneidad cambia.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="a-vel">
+  <p class="eyebrow">Bloque A · Relatividad</p>
+  <h2>Suma de velocidades</h2>
+  <p>Las velocidades no se suman como en la vida diaria, porque nada puede pasar a $c$. Si en el marco $S$ un objeto va con $u_x$ y un observador $S'$ va con $v$:</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$u'_x=\frac{u_x-v}{1-\dfrac{u_x v}{c^2}}$$</div><div class="w">Velocidad del objeto vista desde $S'$. Es la del formulario.</div></div>
+    <div class="r"><div class="f">$$u_x=\frac{u'_x+v}{1+\dfrac{u'_x v}{c^2}}$$</div><div class="w">La inversa: conoces la velocidad en $S'$ y quieres la de $S$.</div></div>
+  </div>
+  <h4>Receta para no equivocarse con los signos</h4>
+  <ol>
+    <li>Fija un eje $+x$ y escribe <strong>todas</strong> las velocidades con signo, medidas desde un mismo marco $S$.</li>
+    <li>Identifica el objeto ($u_x$) y el nuevo observador ($v$).</li>
+    <li>Aplica la fórmula. Si el resultado sale con $|u'_x|>c$, hay un signo malo.</li>
+    <li>Recuerda la reciprocidad: si B ve a A con $+v$, A ve a B con $-v$ (Ayudantía 5, P3a).</li>
+  </ol>
+  <h4>Ejemplo mínimo: Rocky y Grace (C2 2026-1, P1b)</h4>
+  <p>Toma $+x$ desde la Tierra hacia Rocky. En el marco de la Tierra, Rocky se acerca: $v=-0{,}6c$. Grace sale hacia Rocky: $u_x=+0{,}8c$. Lo que mide Rocky:</p>
+  $$u'_x=\frac{0{,}8c-(-0{,}6c)}{1-(0{,}8)(-0{,}6)}=\frac{1{,}4c}{1{,}48}=0{,}946c.$$
+  <p>Clásicamente habría dado $1{,}4c$, que es imposible.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#A3">A3 galaxias</a>, <a href="Ejercicios-C2-FIS140.html#A4">A4 Rocky y Grace</a>, <a href="Ejercicios-C2-FIS140.html#A5">A5 naves</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=Yq_oUIXwk58" target="_blank" rel="noopener">Deducción de la fórmula de Einstein para la suma de velocidades</a> <span class="meta">Khan Academy Español · 8 min</span><span class="why">De dónde sale la fórmula, paso a paso.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=dJNH19RtEms" target="_blank" rel="noopener">Física Moderna 13: transformación de Lorentz para velocidades</a> <span class="meta">Ramón Carrillo Bastos · 7 min</span><span class="why">Nivel universitario, con la misma notación del curso.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="a-doppler">
+  <p class="eyebrow">Bloque A · Relatividad</p>
+  <h2>Doppler relativista</h2>
+  <p>Si una fuente de luz se acerca, los frentes de onda llegan más juntos (frecuencia mayor, corrimiento al azul); si se aleja, más separados (corrimiento al rojo). A diferencia del sonido, aquí también cuenta la dilatación del tiempo de la fuente, y el resultado depende solo de la velocidad relativa $\beta=v/c$:</p>
+  $$f=f_0\sqrt{\frac{1+\beta}{1-\beta}}\ \text{(se acerca)},\qquad f=f_0\sqrt{\frac{1-\beta}{1+\beta}}\ \text{(se aleja)}.$$
+  <p>En longitud de onda es al revés: si se aleja, $\lambda=\lambda_0\sqrt{(1+\beta)/(1-\beta)}$. Por ejemplo, una galaxia que se aleja a $0{,}1c$ muestra la línea H$\alpha$ de 656,3 nm en 725,6 nm.</p>
+  <div class="note"><span class="t">Cuánto pesa</span>Se pasó en la Clase 9, pero no está en el formulario de 2026-1 y nunca ha salido en un certamen. Basta con saber la fórmula y en qué sentido se corre.</div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#A8">A8 Doppler</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=Xn5SF_M9ACs" target="_blank" rel="noopener">Física Moderna 14: efecto Doppler relativista</a> <span class="meta">Ramón Carrillo Bastos · 8 min</span><span class="why">La deducción completa, igual a la del apunte de Pablo Solar.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="a-energia">
+  <p class="eyebrow">Bloque A · Relatividad</p>
+  <h2>Energía y momentum relativistas</h2>
+  <p>Para que el momentum se conserve en todos los marcos, hay que redefinirlo. La energía cambia igual, y aparece una energía que el cuerpo tiene incluso quieto: su <strong>energía en reposo</strong> $mc^2$.</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$\vec p=\gamma m\vec v$$</div><div class="w">Momentum relativista.</div></div>
+    <div class="r"><div class="f">$$E=\gamma mc^2,\qquad K=E-mc^2=(\gamma-1)mc^2$$</div><div class="w">Energía total y cinética. $K$ es la total menos la de reposo.</div></div>
+    <div class="r"><div class="f">$$E^2=(pc)^2+(mc^2)^2$$</div><div class="w">La relación más útil: une $E$ y $p$ sin pasar por $v$. Para el fotón ($m=0$): $E=pc$.</div></div>
+    <div class="r"><div class="f">$$\frac{v}{c}=\frac{pc}{E},\qquad \gamma=\sqrt{1+\left(\frac{p}{mc}\right)^2}$$</div><div class="w">Para sacar la velocidad o $\gamma$ cuando te dan el momentum (la segunda venía como «útil» en 2026-1).</div></div>
+  </div>
+  <h4>Trabaja en MeV</h4>
+  <p>Escribe las masas en MeV/$c^2$ y los momentum en MeV/$c$. Así $mc^2$ y $pc$ quedan en MeV y todo se suma sin convertir a joules. Masas que vienen en el formulario: $m_ec^2=0{,}511$ MeV, $m_pc^2=938{,}27$ MeV, $m_nc^2=939{,}57$ MeV.</p>
+  <h4>¿Relativista o clásico?</h4>
+  <p>Compara la energía cinética con la de reposo. Si $K\ll mc^2$ (digamos menos del 1&nbsp;%), sirve $K=p^2/2m=\tfrac12 mv^2$. Si son comparables, no. En la Ayudantía 5, un positrón con $K=1{,}2$ MeV tiene $K/mc^2=2{,}35$: claramente relativista ($\gamma=3{,}35$, $v=0{,}954c$).</p>
+  <h4>Ejemplo mínimo</h4>
+  <p>Electrón con $K=1{,}2$ MeV: $E=1{,}711$ MeV, $\gamma=E/mc^2=3{,}35$, $pc=\sqrt{1{,}711^2-0{,}511^2}=1{,}633$ MeV, así que $p=1{,}63$ MeV/$c$ y $v/c=1{,}633/1{,}711=0{,}954$.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=d2LaW-mRuVc" target="_blank" rel="noopener">Física Moderna 15: momentum y masa relativista, E = mc²</a> <span class="meta">Ramón Carrillo Bastos · 17 min</span><span class="why">De dónde salen $\gamma mv$ y $\gamma mc^2$.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=U9RaZpWkqeM" target="_blank" rel="noopener">¿Aumenta la masa con la velocidad?</a> <span class="meta">QuantumFracture · 4 min</span><span class="why">Por qué es mejor no hablar de «masa relativista» (la Clase 10 la menciona).</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="a-conserv">
+  <p class="eyebrow">Bloque A · Relatividad</p>
+  <h2>Decaimientos, choques y creación de pares</h2>
+  <p>En cualquier proceso se conservan la <strong>energía total</strong> (que incluye las energías en reposo) y el <strong>momentum como vector</strong>. Lo que no se conserva es la suma de las masas: en un decaimiento la masa inicial es mayor que la suma de las finales, y la diferencia sale como energía cinética.</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$\sum E_{\text{antes}}=\sum E_{\text{después}},\qquad \sum\vec p_{\text{antes}}=\sum\vec p_{\text{después}}$$</div><div class="w">Siempre las dos. El momentum por componentes.</div></div>
+    <div class="r"><div class="f">$$(Mc^2)^2=\Big(\sum E\Big)^2-\Big|\sum \vec p\,\Big|^2c^2$$</div><div class="w">Masa del sistema. Da lo mismo en todos los marcos (2025-2 SJ).</div></div>
+    <div class="r"><div class="f">$$E_\gamma\ge 2m_ec^2=1{,}022\text{ MeV}$$</div><div class="w">Umbral para crear un par electrón-positrón.</div></div>
+  </div>
+  <h4>Receta del decaimiento desde el reposo (C2 2026-1, P2)</h4>
+  <ol>
+    <li>Si la partícula inicial está quieta, $\sum\vec p=0$: el momentum que falta es $\vec p_3=-(\vec p_1+\vec p_2)$.</li>
+    <li>Saca cada $\gamma_i$ desde su momentum con $\gamma=\sqrt{1+(p/mc)^2}$.</li>
+    <li>Energía: $M_0c^2=\sum\gamma_i m_0c^2$, así que $M_0/m_0=\sum\gamma_i$. Sale mayor que el número de partículas porque cada $\gamma_i>1$: parte de la masa inicial se volvió energía cinética.</li>
+  </ol>
+  <h4>Tres resultados que conviene tener a mano</h4>
+  <ul>
+    <li><strong>Un fotón solo no puede crear un par en el vacío</strong>, y un par no puede aniquilarse en un solo fotón: no se puede conservar el momentum. Hace falta un núcleo cerca que se lleve momentum (Ayudantía 5, P4d), o dos fotones.</li>
+    <li><strong>Si en un choque todo queda en reposo al final</strong>, toda la energía cinética inicial se convirtió en masa. Con dos protones que crean un $\eta^0$: $2K=m_\eta c^2$, así que cada protón trae $K=274$ MeV (apunte 10 de Pablo Solar).</li>
+    <li><strong>La máxima masa que se puede crear</strong> en un choque frontal simétrico es la de productos que quedan en reposo: $2M_Xc^2=2E_p$ (LHC, 2022-2).</li>
+  </ul>
+  <div class="warn"><span class="t">Trampas</span>
+    <ul>
+      <li>Sumar momentum como números cuando son vectores: en 2026-1 venían en $\hat\imath$ y $\hat\jmath$.</li>
+      <li>Olvidar la energía en reposo en el balance: $E=K+mc^2$, no solo $K$.</li>
+      <li>Usar $\tfrac12mv^2$ cuando $K$ es comparable a $mc^2$.</li>
+    </ul>
+  </div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#A9">A9 decaimiento en tres</a>, <a href="Ejercicios-C2-FIS140.html#A10">A10 pares</a>, <a href="Ejercicios-C2-FIS140.html#A11">A11 η⁰</a>, <a href="Ejercicios-C2-FIS140.html#A12">A12 beta</a>, <a href="Ejercicios-C2-FIS140.html#A13">A13 explosión</a>, <a href="Ejercicios-C2-FIS140.html#A14">A14 LHC</a>, <a href="Ejercicios-C2-FIS140.html#A15">A15 choque elástico</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=M6KXXSHiiM4" target="_blank" rel="noopener">Producción de pares</a> <span class="meta">Modesto FISMAT · 10 min</span><span class="why">El fotón que se convierte en electrón y positrón junto a un núcleo, con el umbral.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-negro">
+  <p class="eyebrow">Bloque B · Fotones y átomos · Problema 2 probable</p>
+  <h2>Cuerpo negro</h2>
+  <p>Todo cuerpo caliente emite radiación. Un <strong>cuerpo negro</strong> es el caso ideal: absorbe todo lo que le llega y emite un espectro que depende <em>solo de su temperatura</em>, no del material. Estrellas, filamentos y planetas se modelan así. Al calentarse, primero emite infrarrojo, después se ve rojo, amarillo y blanco: el pico se corre a longitudes de onda menores.</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$I=\sigma T^4,\qquad P=\sigma T^4\cdot 4\pi R^2$$</div><div class="w">Stefan-Boltzmann. $I$ es potencia por unidad de área de la superficie que emite; $P$, la potencia total de una esfera de radio $R$. $T$ en kelvin.</div></div>
+    <div class="r"><div class="f">$$\lambda_{\max}\,T=2{,}9\times10^{-3}\ \text{m·K}$$</div><div class="w">Wien: dónde está el pico. Más caliente, pico más azul.</div></div>
+    <div class="r"><div class="f">$$I(D)=\frac{P}{4\pi D^2}=\sigma T^4\left(\frac{R}{D}\right)^2$$</div><div class="w">Inverso del cuadrado: a distancia $D$ del centro, la potencia se reparte en una esfera de radio $D$.</div></div>
+    <div class="r"><div class="f">$$T_p=T_\star\sqrt{\frac{R_\star}{2D}}$$</div><div class="w">Temperatura de equilibrio de un planeta sin albedo. No viene en el formulario: se deduce (abajo).</div></div>
+  </div>
+  <h4>La receta del balance de energía</h4>
+  <p>Casi todos los problemas de cuerpo negro terminan en «potencia que entra = potencia que sale». Lo único que cambia es el área de cada lado:</p>
+  <ul>
+    <li><strong>Planeta:</strong> recibe por su disco ($\pi r^2$, la sombra que proyecta) y emite por toda su superficie ($4\pi r^2$). Igualando $I\,\pi r^2=\sigma T_p^4\,4\pi r^2$ sale $T_p=(I/4\sigma)^{1/4}=T_\star\sqrt{R_\star/2D}$. El radio del planeta se cancela.</li>
+    <li><strong>Con albedo</strong> (fracción reflejada $a$): entra $(1-a)\,I\,\pi r^2$. Así sale la Tierra a 255 K en la Ayudantía 6.</li>
+    <li><strong>Anillo delgado</strong> (2025-1 SJ): recibe por su cara interna y emite por las dos caras: $I\,A=\sigma T^4\cdot 2A$.</li>
+    <li><strong>Esfera de Dyson</strong> (2025-2 CC): la potencia aprovechable es la que emite la estrella menos la que la cáscara pierde por su cara externa.</li>
+  </ul>
+  <h4>Ejemplo mínimo (C2 2024-2, P1c)</h4>
+  <p>Estrella de radio $7{,}5\times10^{10}$ m a 29 000 K y un planeta a 2500 UA ($3{,}75\times10^{14}$ m):</p>
+  $$T_p=29\,000\ \text{K}\cdot\sqrt{\frac{7{,}5\times10^{10}}{2\cdot3{,}75\times10^{14}}}=29\,000\cdot\sqrt{10^{-4}}=290\ \text{K}.$$
+  <h4>De dónde sale la física cuántica</h4>
+  <p>La teoría clásica predecía que el cuerpo negro emitiría energía infinita a altas frecuencias (la «catástrofe ultravioleta»). Planck lo arregló en 1900 suponiendo que la energía de la radiación de frecuencia $f$ viene en paquetes de $E=hf$. No te van a pedir su fórmula, pero sí saber que de ahí nace todo lo que sigue. Dos datos más que han salido: la energía media de un fotón térmico es cerca de $2{,}7\,k_BT$, y el número de fotones por segundo es $P/(hf)$.</p>
+  <div class="warn"><span class="t">Trampas (salen en la rúbrica)</span>
+    <ul>
+      <li>Diámetro en vez de radio: la rúbrica de 2024-2 lo castiga explícitamente.</li>
+      <li>Usar el radio de la estrella en vez de la distancia $D$ al calcular la intensidad que llega lejos.</li>
+      <li>Temperatura en °C, o elevar mal a la cuarta. Revisa el orden de magnitud: el Sol emite $3{,}8\times10^{26}$ W.</li>
+    </ul>
+  </div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#B1">B1 Beta-A</a>, <a href="Ejercicios-C2-FIS140.html#B2">B2 Dyson</a>, <a href="Ejercicios-C2-FIS140.html#B3">B3 Tierra</a>, <a href="Ejercicios-C2-FIS140.html#B4">B4 anillo</a>, <a href="Ejercicios-C2-FIS140.html#B5">B5 Wien</a>, <a href="Ejercicios-C2-FIS140.html#B6">B6 estrella de 3000 K</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=8YL_QIGtdOc" target="_blank" rel="noopener">El «rayo mortal» que revolucionó la física (catástrofe ultravioleta)</a> <span class="meta">QuantumFracture · 9 min</span><span class="why">Es el que recomienda Pablo Solar en su apunte 11.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=ijHwiF-RU6w" target="_blank" rel="noopener">Física 7.01: hipótesis de Planck, catástrofe ultravioleta, cuerpo negro</a> <span class="meta">Física Explicada · 17 min</span><span class="why">Explicación ordenada y lenta; buena si partes de cero.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=AW0vo79k5oU" target="_blank" rel="noopener">Ejercicios sobre el cuerpo negro</a> <span class="meta">Mainquifi · 12 min</span><span class="why">Wien y Stefan-Boltzmann aplicados a números.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-foton">
+  <p class="eyebrow">Bloque B · Fotones y átomos</p>
+  <h2>El fotón</h2>
+  <p>La luz se propaga como onda, pero intercambia energía con la materia en paquetes indivisibles: los <strong>fotones</strong>. Cada uno es una partícula sin masa que viaja a $c$.</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$E=hf=\frac{hc}{\lambda},\qquad p=\frac{h}{\lambda}=\frac{E}{c}$$</div><div class="w">Energía y momentum de un fotón.</div></div>
+    <div class="r"><div class="f">$$hc=1240\ \text{eV·nm}$$</div><div class="w">La constante más útil del C2: $E[\text{eV}]=1240/\lambda[\text{nm}]$.</div></div>
+    <div class="r"><div class="f">$$I=\frac{N}{t\,A}\,hf=n\,hf\,c$$</div><div class="w">Intensidad de un haz: fotones por segundo por área, por la energía de cada uno ($n$ = fotones por m³).</div></div>
+  </div>
+  <p>Valores para orientarse: rojo 650 nm ≈ 1,9 eV; verde 550 nm ≈ 2,25 eV; violeta 405 nm ≈ 3,06 eV; rayos X de 0,1 nm ≈ 12,4 keV. Menor $\lambda$, más energía. Todos los fotones viajan a $c$ en el vacío, sean del color que sean (una de las preguntas de verdadero o falso de la Clase 11).</p>
+</section>
+
+<section id="b-fotoel">
+  <p class="eyebrow">Bloque B · Fotones y átomos</p>
+  <h2>Efecto fotoeléctrico</h2>
+  <p>Si iluminas un metal, puede soltar electrones. Lo raro es que la energía de esos electrones <strong>no depende de lo intensa que sea la luz, sino de su frecuencia</strong>, y que bajo cierta frecuencia no sale ninguno, por mucha luz que pongas. Einstein lo explicó con fotones: cada fotón le entrega toda su energía a un solo electrón (todo o nada). Parte de esa energía se gasta en sacarlo del metal (la <strong>función trabajo</strong> $\phi$) y el resto queda como energía cinética.</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$K_{\max}=hf-\phi$$</div><div class="w">Ecuación de Einstein. Los electrones más energéticos son los que no pierden nada adicional al salir.</div></div>
+    <div class="r"><div class="f">$$K_{\max}=e\,V_0$$</div><div class="w">El potencial de frenado $V_0$ es el voltaje que detiene justo a los más rápidos. En números: $K_{\max}$ en eV y $V_0$ en volts son el mismo número.</div></div>
+    <div class="r"><div class="f">$$\phi=hf_0=\frac{hc}{\lambda_0}$$</div><div class="w">Frecuencia (o longitud de onda) umbral: el fotón que apenas alcanza para sacar al electrón.</div></div>
+  </div>
+  <h4>Lo conceptual que siempre preguntan</h4>
+  <ul>
+    <li><strong>Más intensidad con la misma frecuencia:</strong> más fotones por segundo, más electrones, más corriente. $K_{\max}$ y $V_0$ no cambian.</li>
+    <li><strong>Más frecuencia:</strong> $K_{\max}$ y $V_0$ suben. Con el mismo número de fotones por segundo, la cantidad de electrones no cambia (la respuesta de la Clase 11); si lo que se mantiene es la potencia, llegan un poco menos de fotones porque cada uno trae más energía.</li>
+    <li><strong>Bajo el umbral ($f\lt f_0$):</strong> no sale ningún electrón, con cualquier intensidad.</li>
+    <li><strong>Gráfico $eV_0$ contra $f$ (Millikan):</strong> es una recta de pendiente $h$, igual para todos los metales; corta el eje de frecuencias en $f_0$ y el eje vertical en $-\phi$. Distintos metales dan rectas paralelas.</li>
+    <li><strong>Gráficos cualitativos (2022-2):</strong> $K_{\max}$ contra intensidad es una recta horizontal; la corriente contra intensidad, una recta que sube desde el origen.</li>
+  </ul>
+  <h4>Fotocorriente (Ayudantía 6, P3)</h4>
+  <p>Fotones por segundo $=P/hf$. Electrones por segundo $=\eta\cdot$ (fotones absorbidos por segundo), donde $\eta$ es la eficiencia cuántica. Corriente $I=e\cdot$ (electrones por segundo). Si parte de la luz se refleja, descuéntala antes.</p>
+  <h4>Ejemplo mínimo</h4>
+  <p>Sodio con $\phi=2{,}3$ eV. Con luz roja de 680 nm, $E=1240/680=1{,}82$ eV $\lt\phi$: no hay emisión. Con luz de 360 nm, $E=3{,}44$ eV y $K_{\max}=1{,}14$ eV, o sea $V_0=1{,}14$ V. El umbral es $\lambda_0=1240/2{,}3=539$ nm.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#B7">B7 Millikan</a>, <a href="Ejercicios-C2-FIS140.html#B8">B8 fotocelda</a>, <a href="Ejercicios-C2-FIS140.html#B9">B9 cesio</a>, <a href="Ejercicios-C2-FIS140.html#B10">B10</a> y <a href="Ejercicios-C2-FIS140.html#B11">B11 dos materiales</a>, <a href="Ejercicios-C2-FIS140.html#B12">B12 tabla de metales</a>, <a href="Ejercicios-C2-FIS140.html#B13">B13 sodio</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=5CLj9uJPQKg" target="_blank" rel="noopener">¿Sabes qué es el efecto fotoeléctrico?</a> <span class="meta">Date un Voltio · 5 min</span><span class="why">La idea, en cinco minutos.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=NiJPv11ax44" target="_blank" rel="noopener">Física 7.02: el efecto fotoeléctrico, interpretación de Einstein</a> <span class="meta">Física Explicada · 17 min</span><span class="why">Umbral, trabajo de extracción y potencial de frenado con calma.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=w-DwH-KIqiU" target="_blank" rel="noopener">Física 7.05: efecto fotoeléctrico, cómo resolver todos los ejercicios</a> <span class="meta">Física Explicada · 15 min</span><span class="why">Un esquema que cubre casi todas las variantes de enunciado.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=L-CAgoiHhSA" target="_blank" rel="noopener">Ejercicio resuelto de efecto fotoeléctrico</a> <span class="meta">Física con Juan · 9 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-rx">
+  <p class="eyebrow">Bloque B · Fotones y átomos</p>
+  <h2>Rayos X de frenado</h2>
+  <p>Es el fotoeléctrico al revés. Electrones acelerados por un voltaje $\Delta V$ chocan contra un metal y, al frenar, emiten rayos X con un espectro continuo (<em>bremsstrahlung</em>, «radiación de frenado»). El fotón más energético posible se lleva toda la energía cinética del electrón:</p>
+  $$e\,\Delta V=hf_{\max}=\frac{hc}{\lambda_{\min}}\qquad\Longrightarrow\qquad \lambda_{\min}[\text{nm}]=\frac{1240}{\Delta V[\text{V}]}.$$
+  <p>Ejemplo (Ayudantía 6, P2): para obtener rayos X de 0,2 nm hay que acelerar con al menos $\Delta V=1240/0{,}2=6200$ V $=6{,}2$ kV. La pauta escribe «62 keV» en un paso intermedio, pero son 6,2 keV.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#B14">B14 rayos X</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=3bFdJMxuA5M" target="_blank" rel="noopener">Cálculo de la longitud de onda de fotones de rayos X</a> <span class="meta">Institweet · 9 min</span><span class="why">Rayos X con la misma energía que electrones acelerados a 20 kV, y electrón contra neutrón: el mismo tipo de la Ayudantía 6.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-compton">
+  <p class="eyebrow">Bloque B · Fotones y átomos</p>
+  <h2>Efecto Compton</h2>
+  <p>Un fotón de rayos X o gamma choca con un electrón libre en reposo y sale desviado con <strong>menos energía</strong> (mayor $\lambda$). La diferencia se la lleva el electrón como energía cinética. Es un choque relativista: se conservan la energía y el momentum, y de ahí sale la fórmula.</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$\lambda'-\lambda=\lambda_C\,(1-\cos\theta),\qquad \lambda_C=\frac{h}{m_ec}=0{,}00243\ \text{nm}$$</div><div class="w">$\theta$ es el ángulo del fotón dispersado respecto de su dirección inicial.</div></div>
+    <div class="r"><div class="f">$$\frac{1}{E'}-\frac{1}{E}=\frac{1-\cos\theta}{m_ec^2}$$</div><div class="w">La misma fórmula en energías. No viene en el formulario; sale de dividir la anterior por $hc$.</div></div>
+    <div class="r"><div class="f">$$K_e=E-E'$$</div><div class="w">Energía cinética del electrón (conservación de energía).</div></div>
+  </div>
+  <h4>Receta</h4>
+  <ol>
+    <li>$\lambda'$ con la fórmula; $E'=1240/\lambda'$ (eV con nm).</li>
+    <li>$K_e=E-E'$.</li>
+    <li>Dirección del electrón: momentum por componentes. Si el fotón sale a 90°, el electrón compensa: $p_{e,x}=p$, $p_{e,y}=-p'$, así que $\tan\delta=p'/p=E'/E$.</li>
+    <li>Si piden si el electrón es relativista, compara $K_e$ con $m_ec^2=511$ keV.</li>
+  </ol>
+  <h4>Ideas que se preguntan</h4>
+  <ul>
+    <li>El fotón dispersado nunca puede tener más energía que el incidente si el electrón estaba quieto. Con eso se descarta una figura imposible (Ayudantía 5, P5a).</li>
+    <li>El corrimiento máximo es $2\lambda_C=0{,}00485$ nm, cuando el fotón rebota ($\theta=180°$). Con luz visible ($\lambda\sim500$ nm) es despreciable; por eso Compton se ve con rayos X y gamma.</li>
+    <li>Si el electrón <em>no</em> está en reposo (2025-1 CC, P1), la fórmula de Compton no sirve: se plantea la conservación de energía y momentum a mano.</li>
+  </ul>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#B15">B15 figuras</a>, <a href="Ejercicios-C2-FIS140.html#B16">B16 choque frontal</a>, <a href="Ejercicios-C2-FIS140.html#B17">B17</a>, <a href="Ejercicios-C2-FIS140.html#B18">B18 detecta el error</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=m2SAIs_MIjE" target="_blank" rel="noopener">Qué es el efecto Compton</a> <span class="meta">Matemáticas con Juan · 5 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=zxbcTT4OIxw" target="_blank" rel="noopener">Efecto Compton: ejercicios resueltos</a> <span class="meta">Física con Juan · 12 min</span><span class="why">Fotón de 0,8 Å dispersado a 90°: $\lambda'$, energía del electrón y su dirección.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=NIhxY5X9Bts" target="_blank" rel="noopener">Física Moderna 17: el efecto Compton</a> <span class="meta">Ramón Carrillo Bastos · 15 min</span><span class="why">La deducción completa con conservación de energía y momentum.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-broglie">
+  <p class="eyebrow">Bloque B · Fotones y átomos</p>
+  <h2>Ondas de materia (de Broglie)</h2>
+  <p>Si la luz, que es onda, se comporta como partícula, ¿por qué la materia no se comportaría como onda? De Broglie propuso en 1924 que toda partícula con momentum $p$ tiene una longitud de onda, y en 1927 Davisson y Germer la midieron difractando electrones en un cristal de níquel.</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$\lambda=\frac{h}{p}$$</div><div class="w">Vale para cualquier partícula. Con un fotón es la de siempre.</div></div>
+    <div class="r"><div class="f">$$\lambda=\frac{h}{\sqrt{2mK}}=\frac{hc}{\sqrt{2\,mc^2\,K}}$$</div><div class="w">Partícula no relativista con energía cinética $K$. En eV y nm: $\lambda=1240/\sqrt{2\cdot 511\,000\cdot K}$.</div></div>
+    <div class="r"><div class="f">$$\lambda[\text{nm}]\approx\frac{1{,}226}{\sqrt{V[\text{volts}]}}$$</div><div class="w">Electrón acelerado desde el reposo por un voltaje $V$ ($K=eV$).</div></div>
+    <div class="r"><div class="f">$$d\sin\theta=m\lambda,\qquad 2d\sin\theta=m\lambda$$</div><div class="w">Filas de átomos como red de difracción (Davisson-Germer, viene en el formulario) y condición de Bragg entre planos (ahí $\theta$ se mide desde los planos).</div></div>
+  </div>
+  <h4>Electrón contra fotón con la misma energía (Ayudantía 6, P1)</h4>
+  <p>Con 120 eV, el electrón tiene $\lambda=0{,}112$ nm y el fotón $\lambda=1240/120=10{,}3$ nm. Con átomos separados 0,235 nm, el electrón difracta (primer máximo a 28,5°) y el fotón no puede: $\sin\theta=10{,}3/0{,}235>1$. Para tener la misma $\lambda$ que el electrón, el fotón necesita unos 11 keV (rayos X). Moraleja: para una misma longitud de onda, la partícula con masa necesita mucha menos energía. Es el principio del microscopio electrónico.</p>
+  <ul>
+    <li>Para que una partícula «muestre su carácter de onda» al pasar por una abertura de tamaño $a$, su $\lambda$ tiene que ser comparable con $a$.</li>
+    <li>Las ondas estacionarias explican la cuantización: en Bohr caben $n$ longitudes de onda en la órbita ($2\pi r=n\lambda$) y en el pozo caben $n$ medias ondas ($L=n\lambda/2$).</li>
+  </ul>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#B19">B19 120 eV</a>, <a href="Ejercicios-C2-FIS140.html#B20">B20 Davisson-Germer</a>, <a href="Ejercicios-C2-FIS140.html#B21">B21 cañón</a>, <a href="Ejercicios-C2-FIS140.html#B22">B22 agujero</a>, <a href="Ejercicios-C2-FIS140.html#B23">B23</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=TbWa3KSfQWA" target="_blank" rel="noopener">Física 7.03: dualidad onda-partícula, hipótesis de de Broglie</a> <span class="meta">Física Explicada · 16 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=LBEq1rhRbC4" target="_blank" rel="noopener">La dualidad onda-partícula es una…</a> <span class="meta">QuantumFracture · 6 min</span><span class="why">Por qué los físicos ya no hablan de «dualidad»; buena para la intuición.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=TGCZxbh3im4" target="_blank" rel="noopener">Longitud de onda de un electrón acelerado por un potencial</a> <span class="meta">física fit · 5 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=-x7r6p2qOOE" target="_blank" rel="noopener">Experimento de Davisson-Germer</a> <span class="meta">Donato Benincasa · 6 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=HpSrcgUXHXM" target="_blank" rel="noopener">Física Moderna 16: difracción de rayos X y la ley de Bragg</a> <span class="meta">Ramón Carrillo Bastos · 12 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-incert">
+  <p class="eyebrow">Bloque B · Fotones y átomos</p>
+  <h2>Principio de incertidumbre</h2>
+  <p>No se pueden conocer a la vez, con precisión arbitraria, la posición y el momentum de una partícula. No es un problema de los instrumentos: es una propiedad de las ondas. Un paquete de ondas muy localizado necesita mezclar muchos momentum distintos.</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$\Delta x\,\Delta p\ \ge\ \frac{\hbar}{2},\qquad \Delta E\,\Delta t\ \ge\ \frac{\hbar}{2}$$</div><div class="w">Así vienen en el formulario. $\hbar c=197$ eV·nm $=197$ MeV·fm.</div></div>
+    <div class="r"><div class="f">$$\Delta v\ \ge\ \frac{\hbar}{2m\,\Delta x}$$</div><div class="w">Uso típico: confinas una partícula en $\Delta x$ y te preguntan la mínima incertidumbre de su velocidad.</div></div>
+  </div>
+  <p>Ejemplo: un protón localizado en $\Delta y=2\times10^{-12}$ m tiene $\Delta v_y\ge 1{,}6\times10^{4}$ m/s. El apunte 12 de Pablo Solar usa $\hbar$ sin el 1/2 y obtiene el doble; en el certamen usa la versión del formulario.</p>
+  <p>La incertidumbre también explica la difracción: al forzar la luz o los electrones a pasar por una rendija estrecha (poca $\Delta y$), aparece una dispersión en $p_y$ y el haz se abre.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#B24">B24 protón</a>, <a href="Ejercicios-C2-FIS140.html#B25">B25 electrón</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=lTQH-muS92Y" target="_blank" rel="noopener">Física 7.04: lo más básico del principio de incertidumbre</a> <span class="meta">Física Explicada · 16 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=JnEAMYltzi0" target="_blank" rel="noopener">HOY SÍ que vas a entender el principio de incertidumbre</a> <span class="meta">Date un Vlog · 16 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-bohr">
+  <p class="eyebrow">Bloque B · Fotones y átomos</p>
+  <h2>Modelo de Bohr e hidrogenoides</h2>
+  <p>Rutherford mostró que el átomo tiene un núcleo diminuto con los electrones alrededor. Pero un electrón girando debería irradiar y caer al núcleo en $10^{-11}$ s, y los gases emiten solo ciertos colores, no un continuo. Bohr (1913) propuso tres reglas: el electrón solo puede estar en ciertas órbitas (momento angular $L=n\hbar$), en ellas no irradia, y al saltar de una a otra absorbe o emite un fotón con <strong>exactamente</strong> la diferencia de energía.</p>
+  <p>El modelo sirve para átomos con <strong>un solo electrón</strong>: hidrógeno ($Z=1$), He⁺ ($Z=2$), Li²⁺ ($Z=3$), Be³⁺ ($Z=4$).</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$E_n=-\frac{13{,}6\ \text{eV}\cdot Z^2}{n^2}$$</div><div class="w">Niveles de energía. Son negativos: el electrón está ligado; $E=0$ es el electrón libre y quieto.</div></div>
+    <div class="r"><div class="f">$$E_\gamma=|E_{n_f}-E_{n_i}|=\frac{hc}{\lambda}$$</div><div class="w">Absorción (sube) o emisión (baja).</div></div>
+    <div class="r"><div class="f">$$E_{\text{ion}}=|E_n|,\qquad K=E_\gamma-|E_n|$$</div><div class="w">Ionizar desde el nivel $n$; si el fotón trae más, el sobrante queda como energía cinética del electrón.</div></div>
+    <div class="r"><div class="f">$$r_n=\frac{n^2a_0}{Z},\qquad a_0=0{,}0529\ \text{nm}$$</div><div class="w">Radio de las órbitas (por si lo piden).</div></div>
+  </div>
+  <div class="tablewrap">
+    <table class="small num">
+      <thead><tr><th>Ion</th><th>$n=1$</th><th>$n=2$</th><th>$n=3$</th><th>$n=4$</th><th>$1\to2$</th><th>$2\to3$</th></tr></thead>
+      <tbody>
+        <tr><td>H ($Z=1$)</td><td>−13,6</td><td>−3,40</td><td>−1,51</td><td>−0,85</td><td>10,2</td><td>1,89</td></tr>
+        <tr><td>He⁺ ($Z=2$)</td><td>−54,4</td><td>−13,6</td><td>−6,04</td><td>−3,40</td><td>40,8</td><td>7,56</td></tr>
+        <tr><td>Li²⁺ ($Z=3$)</td><td>−122,4</td><td>−30,6</td><td>−13,6</td><td>−7,65</td><td>91,8</td><td>17,0</td></tr>
+        <tr><td>Be³⁺ ($Z=4$)</td><td>−217,6</td><td>−54,4</td><td>−24,2</td><td>−13,6</td><td>163,2</td><td>30,2</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted">Todo en eV. Fíjate que el nivel $n$ de un ion con $Z=n$ coincide con el fundamental del hidrógeno: $-13{,}6$ eV.</p>
+  <h4>Receta para los problemas de gas de iones</h4>
+  <ol>
+    <li>Calcula los niveles que pidan, con signo y unidades (la rúbrica de 2024-2 lo exige).</li>
+    <li>Mira en qué nivel <em>están</em> los iones. Solo pueden absorber desde ahí.</li>
+    <li>Energía mínima absorbible: del nivel ocupado al siguiente. Longitud de onda máxima absorbida: esa misma transición.</li>
+    <li>Un fotón cuya energía no calza con ninguna transición no se absorbe (pasa de largo), salvo que alcance para ionizar: ahí cualquier exceso vale.</li>
+  </ol>
+  <div class="warn"><span class="t">Trampas</span>
+    <ul>
+      <li>Los porcentajes de población («el 90&nbsp;% está en $n=2$») solo dicen qué niveles están ocupados. Usarlos dentro de las energías vale 0 puntos según la rúbrica de 2024-2.</li>
+      <li>«Primer estado excitado» es $n=2$; «segundo estado excitado», $n=3$.</li>
+      <li>Desde $n$ un átomo puede emitir $n(n-1)/2$ líneas distintas en cascada.</li>
+    </ul>
+  </div>
+  <p>Del hidrógeno conviene reconocer las series: Lyman (caídas a $n=1$, ultravioleta), Balmer (a $n=2$, visible: 656, 486, 434 y 410 nm, las de la tira del índice) y Paschen (a $n=3$, infrarrojo).</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#B26">B26 He⁺</a>, <a href="Ejercicios-C2-FIS140.html#B27">B27 Li²⁺</a>, <a href="Ejercicios-C2-FIS140.html#B28">B28 23,7 nm</a>, <a href="Ejercicios-C2-FIS140.html#B29">B29 átomo hipotético</a>, <a href="Ejercicios-C2-FIS140.html#B30">B30 hidrógeno</a>, <a href="Ejercicios-C2-FIS140.html#B31">B31 Be³⁺</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=QZh-PCcveuw" target="_blank" rel="noopener">Explicación completa (y sencilla) del modelo atómico de Bohr</a> <span class="meta">Aprueba con Jorge · 6 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=htw88Q2qNjs" target="_blank" rel="noopener">Espectro de emisión del hidrógeno</a> <span class="meta">Khan Academy Español · 10 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=i1GcnAZ9w3Q" target="_blank" rel="noopener">Átomo de Bohr: 4 ejercicios resueltos</a> <span class="meta">física fit · 9 min</span><span class="why">Transiciones, longitudes de onda y frecuencias.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=DUh85iP2nMc" target="_blank" rel="noopener">Física Moderna 21: modelo atómico de Bohr</a> <span class="meta">Ramón Carrillo Bastos · 15 min</span><span class="why">Deducción de $E_n$ y $r_n$ como en la Clase 13.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-laser">
+  <p class="eyebrow">Bloque B · Fotones y átomos</p>
+  <h2>El láser</h2>
+  <p>Láser es la sigla en inglés de «amplificación de luz por emisión estimulada de radiación». Un átomo puede interactuar con la luz de tres maneras:</p>
+  <ul>
+    <li><strong>Absorción:</strong> un fotón con la energía justa sube al electrón de nivel.</li>
+    <li><strong>Emisión espontánea:</strong> el electrón excitado baja solo y emite un fotón en una dirección y fase al azar.</li>
+    <li><strong>Emisión estimulada:</strong> un fotón que pasa junto a un átomo ya excitado lo induce a bajar, y sale un segundo fotón <em>idéntico</em>: misma dirección, fase, polarización y longitud de onda. Así se amplifica la luz.</li>
+  </ul>
+  <p>En equilibrio térmico casi todos los átomos están abajo. La fracción excitada la da Boltzmann:</p>
+  $$\frac{N_2}{N_1}=e^{-(E_2-E_1)/k_BT},\qquad k_B=\frac{1}{12\,000}\ \frac{\text{eV}}{\text{K}}\ \Rightarrow\ k_BT=\frac{T}{12\,000}\ \text{eV}.$$
+  <p>Ese cociente es siempre menor que 1, así que calentar nunca invierte la población. Ejemplo de la Clase 13: un gas a 3000 K y un salto de 2,2 eV da $N_2/N_1=e^{-8{,}8}\approx1{,}5\times10^{-4}$, un átomo excitado cada 6600. La solución es un sistema de <strong>tres niveles</strong>: se bombea a $E_3$ (vida corta, $\sim10^{-8}$ s), que cae rápido a $E_2$ (<strong>metaestable</strong>, vida larga $\sim10^{-3}$ s). Ahí se acumulan los átomos (inversión de población) y el láser opera entre $E_2$ y $E_1$.</p>
+  <p>En la Ayudantía 7 los niveles del neón (0; 1,96; 3,21 eV) dan un láser de $1240/1{,}96=633$ nm, el rojo del láser de helio-neón, con bombeo de 386 nm.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#B32">B32 neón</a>, <a href="Ejercicios-C2-FIS140.html#B33">B33 gas a 3000 K</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=C0KMGbhUH0Q" target="_blank" rel="noopener">¿Qué es un láser? Emisión estimulada</a> <span class="meta">FISICALIMITE · 2 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=8UbnJ3b8YzY" target="_blank" rel="noopener">Funcionamiento de un láser: ¿cómo es por dentro?</a> <span class="meta">OSAL, Óptica USAL · 5 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="c-psi">
+  <p class="eyebrow">Bloque C · Cuántica · Problema 3 casi seguro</p>
+  <h2>La función de onda</h2>
+  <p>En cuántica una partícula no tiene una trayectoria; se describe con una <strong>función de onda</strong> $\Psi(x,t)$. La función en sí no se mide. Lo que tiene sentido físico es su módulo al cuadrado, que da la probabilidad (interpretación de Born):</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$dP=|\Psi(x)|^2\,dx$$</div><div class="w">Probabilidad de encontrar la partícula entre $x$ y $x+dx$. Es la respuesta del inciso a) de la Ayudantía 7, P3.</div></div>
+    <div class="r"><div class="f">$$\int_{-\infty}^{\infty}|\Psi(x)|^2\,dx=1$$</div><div class="w">Normalización: la partícula está en algún lado. De aquí sale la constante $\sqrt{2/L}$ del pozo.</div></div>
+    <div class="r"><div class="f">$$P(a\le x\le b)=\int_a^b|\Psi(x)|^2\,dx$$</div><div class="w">Probabilidad en un tramo.</div></div>
+    <div class="r"><div class="f">$$\langle x\rangle=\int x\,|\Psi(x)|^2\,dx$$</div><div class="w">Valor esperado (Clase 14). En el pozo, por simetría, $\langle x\rangle=L/2$ en todos los estados.</div></div>
+  </div>
+  <p>Una función de onda aceptable tiene que ser continua, finita y de un solo valor, y cumplir la ecuación de Schrödinger. Esas condiciones son las que, en cada problema, eliminan soluciones y obligan a que la energía quede cuantizada.</p>
+  <p>En un estado de energía definida, $\Psi(x,t)=\psi(x)\,e^{-iEt/\hbar}$. Al multiplicar por el conjugado, la parte temporal da 1, así que la densidad de probabilidad no cambia con el tiempo. La pauta de 2026-1 lo usa así.</p>
+</section>
+
+<section id="c-schr">
+  <p class="eyebrow">Bloque C · Cuántica</p>
+  <h2>La ecuación de Schrödinger</h2>
+  <p>Schrödinger la armó con dos ingredientes: la energía se conserva, $E=\dfrac{p^2}{2m}+V$, y la partícula es una onda con $p=\hbar k$. Para estados de energía fija queda la versión independiente del tiempo:</p>
+  $$-\frac{\hbar^2}{2m}\,\frac{d^2\psi}{dx^2}+V(x)\,\psi=E\,\psi.$$
+  <p>No hace falta resolverla en general. Basta con saber qué forma tiene la solución en una región donde $V$ es constante, y hay solo tres casos:</p>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Región</th><th>Solución</th><th>Constante</th></tr></thead>
+      <tbody>
+        <tr><td>$E>V$ (permitida)</td><td>Oscilatoria: $\psi=A\sin kx+B\cos kx$ o $A e^{ikx}+Be^{-ikx}$</td><td>$k=\dfrac{\sqrt{2m(E-V)}}{\hbar}$</td></tr>
+        <tr><td>$E\lt V$ (prohibida clásicamente)</td><td>Exponencial: $\psi=Ce^{\kappa x}+De^{-\kappa x}$</td><td>$\kappa=\dfrac{\sqrt{2m(V-E)}}{\hbar}$</td></tr>
+        <tr><td>$V=\infty$</td><td>$\psi=0$</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Después se aplican las condiciones: la exponencial que crece hacia el infinito se descarta (la función debe ser finita), y en cada frontera $\psi$ debe ser continua (y también $d\psi/dx$, si el potencial es finito ahí). Con eso se contestan todas las preguntas del tipo «escriba $\psi$ en cada región».</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=6pDJeg-Z01Q" target="_blank" rel="noopener">Ecuación de Schrödinger: explicación sencilla pero completa</a> <span class="meta">FísicaPRO · 9 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=4qCSni84A9U" target="_blank" rel="noopener">La función de onda: ¿qué significa realmente?</a> <span class="meta">Mientras, En Físicas · 6 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="c-pozo">
+  <p class="eyebrow">Bloque C · Cuántica · Salió en 4 de 4</p>
+  <h2>Pozo de potencial infinito</h2>
+  <p>Una partícula encerrada entre dos paredes infinitas en $x=0$ y $x=L$, con $V=0$ adentro. Afuera $\psi=0$; adentro es oscilatoria. La continuidad en $x=0$ elimina el coseno, y la continuidad en $x=L$ obliga a $\sin kL=0$, es decir, $kL=n\pi$: <strong>caben un número entero de medias ondas</strong>. Esa sola condición da todo lo demás.</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$\psi_n(x)=\sqrt{\frac{2}{L}}\,\sin\!\left(\frac{n\pi x}{L}\right),\quad n=1,2,3,\dots$$</div><div class="w">Funciones de onda, ya normalizadas.</div></div>
+    <div class="r"><div class="f">$$E_n=\frac{n^2h^2}{8mL^2}=\frac{n^2\pi^2\hbar^2}{2mL^2}=n^2E_1$$</div><div class="w">Energías. Las dos formas son iguales; el formulario trae una.</div></div>
+    <div class="r"><div class="f">$$E_1=\frac{(hc)^2}{8\,mc^2\,L^2}\approx\frac{0{,}376\ \text{eV}}{L^2[\text{nm}]}$$</div><div class="w">Para un electrón, con $hc=1240$ eV·nm y $mc^2=511\,000$ eV.</div></div>
+    <div class="r"><div class="f">$$\lambda_n=\frac{2L}{n},\qquad p_n=\frac{h}{\lambda_n}=\frac{nh}{2L}$$</div><div class="w">Longitud de onda y momentum de de Broglie del electrón en el estado $n$.</div></div>
+  </div>
+  <h4>Leer el estado desde un dibujo o desde los nodos</h4>
+  <ul>
+    <li>$\psi_n$ tiene $n$ «lomos» (medias ondas) y $n-1$ nodos interiores. Contando las paredes, la probabilidad se anula en $n+1$ puntos.</li>
+    <li>Si el enunciado dice «probabilidad cero en los bordes y en otras dos posiciones», hay 2 nodos interiores: $n=3$ (2025-1 CC).</li>
+    <li>Los máximos de $|\psi_n|^2$ están en el centro de cada lomo: $x=\dfrac{(2k-1)L}{2n}$. Para $n=4$: $L/8,\ 3L/8,\ 5L/8,\ 7L/8$ (2026-1).</li>
+    <li>Nombres: estado fundamental $n=1$, primer excitado $n=2$, segundo excitado $n=3$, tercer excitado $n=4$.</li>
+  </ul>
+  <h4>Probabilidad en un tramo</h4>
+  <p>Hay que integrar $\frac2L\sin^2(n\pi x/L)$. El truco es la identidad $\sin^2u=\tfrac12(1-\cos2u)$, que en 2025-1 venía como ayuda en el enunciado. El resultado general, desde 0 hasta $a$, es:</p>
+  $$P(0\le x\le a)=\frac{a}{L}-\frac{1}{2n\pi}\,\sin\!\left(\frac{2n\pi a}{L}\right).$$
+  <p><strong>Atajo de simetría:</strong> cada lomo tiene largo $L/n$ y la misma probabilidad, $1/n$. Medio lomo, $1/(2n)$. Si los límites caen en múltiplos de $L/(2n)$, no hay que integrar. En 2025-2, para $n=5$ el tramo de $L/5$ a $4L/5$ son 3 lomos: $3/5=0{,}6$. En la Ayudantía 7, para $n=5$ el tramo de 0 a $3L/10$ es un lomo y medio: $0{,}3$.</p>
+  <div class="tablewrap">
+    <table class="small num">
+      <thead><tr><th>Estado</th><th>$P(0,\,L/4)$</th><th>$P(0,\,L/3)$</th><th>$P(L/4,\,3L/4)$</th><th>$P(0,\,L/2)$</th></tr></thead>
+      <tbody>
+        <tr><td>$n=1$</td><td>0,091</td><td>0,196</td><td>0,818</td><td>0,5</td></tr>
+        <tr><td>$n=2$</td><td>0,25</td><td>0,402</td><td>0,5</td><td>0,5</td></tr>
+        <tr><td>$n=3$</td><td>0,303</td><td>1/3</td><td>0,394</td><td>0,5</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>Transiciones: la mitad de los problemas parte así</h4>
+  <p>Al bajar de $n_i$ a $n_f$ se emite un fotón con $E_\gamma=(n_i^2-n_f^2)E_1$; al absorber se sube. Los factores que más salen: $1\to2$: $3E_1$; $2\to3$: $5E_1$; $1\to3$: $8E_1$; $3\to5$: $16E_1$. Si te dan la $\lambda$ del fotón de una transición, despejas el ancho:</p>
+  $$L=\sqrt{\frac{(n_f^2-n_i^2)\,(hc)\,\lambda}{8\,mc^2}}.$$
+  <p>Y como todas las energías son múltiplos de $E_1$, las longitudes de onda se relacionan sin calcular $L$: si $1\to2$ absorbe 550 nm, entonces $2\to3$ absorbe $550\cdot 3/5=330$ nm.</p>
+  <h4>Ejemplo mínimo (C2 2025-2, P3)</h4>
+  <p>Un electrón pasa de $n=2$ a $n=3$ absorbiendo 350 nm. Entonces $5E_1=1240/350=3{,}543$ eV, $E_1=0{,}709$ eV, y $L=\sqrt{0{,}376/0{,}709}=0{,}729$ nm. En $n=5$: $\lambda_e=2L/5=0{,}291$ nm.</p>
+  <div class="warn"><span class="t">Trampas</span>
+    <ul>
+      <li>Mezclar unidades: usa $L$ en nm con $hc$ en eV·nm y $mc^2$ en eV, y la energía sale en eV.</li>
+      <li>La pauta de 2024-2 (P4) tiene un error numérico: da $L=0{,}72$ nm y 340 nm. Lo correcto es $L=0{,}708$ nm y 330 nm.</li>
+      <li>Usar $E_n=-13{,}6/n^2$ (el de Bohr) en un pozo: la rúbrica de 2024-2 da 0 puntos por usar «la energía de otro sistema».</li>
+    </ul>
+  </div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#C1">C1 (2026-1)</a>, <a href="Ejercicios-C2-FIS140.html#C2">C2 (2025-2)</a>, <a href="Ejercicios-C2-FIS140.html#C3">C3 (2025-1)</a>, <a href="Ejercicios-C2-FIS140.html#C4">C4 (2024-2)</a>, <a href="Ejercicios-C2-FIS140.html#C5">C5 (Ayudantía 7)</a>, <a href="Ejercicios-C2-FIS140.html#C6">C6 normalización</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=AySAsOb8Qww" target="_blank" rel="noopener">Intro a la Física Moderna, semana 13: pozo de potencial infinito</a> <span class="meta">Taller Los dos Relojes · 29 min</span><span class="why">Clase universitaria chilena, con el mismo enfoque del curso.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=v1VmLquAR6E" target="_blank" rel="noopener">FM21 Mecánica cuántica: pozo de potencial infinito</a> <span class="meta">Ramón Carrillo Bastos · 24 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=4sS7Lueisj4" target="_blank" rel="noopener">Partícula en un pozo de potencial infinito</a> <span class="meta">Física con Juan · 45 min</span><span class="why">Muy detallado: normalización, energías y probabilidades.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="c-finito">
+  <p class="eyebrow">Bloque C · Cuántica</p>
+  <h2>Pozo finito</h2>
+  <p>Ahora las paredes tienen altura finita $V_0$ y la partícula tiene $E\lt V_0$. Adentro la solución sigue siendo oscilatoria, pero afuera ya no es cero: es una exponencial que decae, $\psi\propto e^{-\kappa|x|}$. La creciente se descarta porque explotaría lejos del pozo.</p>
+  <ul>
+    <li><strong>La partícula penetra en la pared</strong>, una zona prohibida para la física clásica. La profundidad típica es $1/\kappa$: para un electrón con $V_0-E=1$ eV, unos 0,2 nm.</li>
+    <li><strong>Las energías son menores que en el pozo infinito del mismo ancho</strong>, porque la onda «se sale» un poco y tiene más espacio: $\lambda$ mayor, $p$ menor, $E$ menor.</li>
+    <li><strong>Hay un número finito de estados ligados.</strong> Los de energía mayor que $V_0$ ya no quedan atrapados.</li>
+  </ul>
+  <h4>Lo que preguntaron en 2026-1 (P3c)</h4>
+  <p>Pared infinita a la izquierda y de altura $V_0$ a la derecha, con $E\lt V_0$:</p>
+  $$\psi_I(x)=0\ \ (x\le0),\qquad \psi_{II}(x)=A\sin kx\ \ (0\lt x\lt L),\qquad \psi_{III}(x)=C\,e^{-\kappa x}\ \ (x\ge L).$$
+  <p>La pauta deja $A'\sin kx+B'\cos kx$ en la región II. Es más completo argumentar que $\psi(0)=0$ anula el coseno. En la III, el término $e^{+\kappa x}$ se descarta porque diverge.</p>
+  <h4>El pozo finito de la Ayudantía 8</h4>
+  <p>Con paredes de altura $V_0=6E_{\text{base}}$ (seis veces la energía del estado fundamental del pozo infinito del mismo ancho) caben solo tres estados ligados: $E_1=0{,}625$, $E_2=2{,}43$ y $E_3=5{,}09$ veces $E_{\text{base}}$. Todas quedan bajo los valores del pozo infinito (1, 4 y 9 veces), y la diferencia crece en los estados altos porque esos penetran más en las paredes. Si la energía supera $V_0$, la partícula deja de estar ligada: la función de onda es oscilatoria en todas partes, con longitud de onda corta dentro del pozo (más energía cinética) y larga fuera.</p>
+  <p>Las energías del pozo finito salen de una ecuación trascendental, $\tan kL=\dfrac{2kk'}{k^2-k'^2}$ (apunte 15), que solo se resuelve numérica o gráficamente; por eso en los problemas vienen dadas.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#C1">C1</a>, <a href="Ejercicios-C2-FIS140.html#C7">C7 pozo finito</a>, <a href="Ejercicios-C2-FIS140.html#C11">C11 pozo finito de la Ayudantía 8</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=MB95SiHIjMo" target="_blank" rel="noopener">Intro a la Física Moderna, semana 13: pozo de potencial finito</a> <span class="meta">Taller Los dos Relojes · 19 min</span><span class="why">Contrasta pozo finito e infinito y la penetración en la pared.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="c-escalon">
+  <p class="eyebrow">Bloque C · Cuántica</p>
+  <h2>Escalón de potencial y efecto túnel</h2>
+  <p>Una partícula llega desde la izquierda a un escalón: $V=0$ para $x\lt0$ y $V=V_0$ para $x>0$.</p>
+  <ul>
+    <li><strong>Si $E\lt V_0$:</strong> se refleja completa ($R=1$, $T=0$), pero la onda igual penetra un poco: $\psi_{II}=De^{-\kappa x}$.</li>
+    <li><strong>Si $E>V_0$:</strong> clásicamente pasaría siempre, pero en cuántica una parte se refleja.</li>
+  </ul>
+  $$R=\left(\frac{k_1-k_2}{k_1+k_2}\right)^2,\qquad T=\frac{4k_1k_2}{(k_1+k_2)^2},\qquad R+T=1,$$
+  <p>con $k_1=\sqrt{2mE}/\hbar$ y $k_2=\sqrt{2m(E-V_0)}/\hbar$. Por ejemplo, con $E=2V_0$ queda $k_2/k_1=1/\sqrt2$, $R=0{,}029$ y $T=0{,}971$. Ojo: $T$ no es $|C/A|^2$ a secas; lleva el factor de velocidades $k_2/k_1$ (Clase 16).</p>
+  <p><strong>Efecto túnel.</strong> Si en vez de un escalón hay una barrera de ancho finito $L$ con $E\lt V_0$, la exponencial decae dentro de la barrera pero no alcanza a llegar a cero, y al otro lado reaparece una onda: la partícula atraviesa una pared que clásicamente no podría cruzar. Por regiones: $A_Ie^{ikx}+A_Re^{-ikx}$ a la izquierda, $Be^{\kappa x}+Ce^{-\kappa x}$ dentro (aquí no se descarta ninguna, porque la región es finita) y solo $A_Te^{ikx}$ a la derecha. En su apunte 16 Solar dedujo la probabilidad de atravesar una barrera ancha ($\kappa L\gg1$), y la dejó en la pizarra:</p>
+  $$T\approx\frac{16\,E\,(V_0-E)}{V_0^2}\;e^{-2\kappa L},\qquad \kappa=\frac{\sqrt{2m(V_0-E)}}{\hbar}.$$
+  <ul>
+    <li><strong>Manda la exponencial.</strong> $T$ cae muy rápido si la barrera es más ancha, si es más alta respecto de $E$ o si la partícula es más pesada ($\kappa\propto\sqrt m$).</li>
+    <li><strong>Al otro lado la partícula tiene la misma energía.</strong> Lo que baja es la amplitud de la onda, es decir, la probabilidad de encontrarla ahí.</li>
+    <li><strong>Ejemplo:</strong> un electrón de 2,0 eV contra una barrera de 3,0 eV tiene $\kappa=5{,}12$ nm⁻¹. Con 0,5 nm de ancho, $T\approx0{,}021$; con 1,0 nm, $T\approx1{,}3\times10^{-4}$. Un protón en la barrera de 0,5 nm tendría $T\sim10^{-95}$.</li>
+  </ul>
+  <p>Así funcionan el microscopio de efecto túnel (STM) de la Clase 16 y el decaimiento alfa.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#C8">C8 escalón</a>, <a href="Ejercicios-C2-FIS140.html#C9">C9 túnel</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=0eD_ODwhEss" target="_blank" rel="noopener">FM22 Mecánica cuántica: escalón de potencial</a> <span class="meta">Ramón Carrillo Bastos · 35 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=CTRua3E8b7A" target="_blank" rel="noopener">FM23 Mecánica cuántica: coeficientes de transmisión y reflexión</a> <span class="meta">Ramón Carrillo Bastos · 19 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=9C6gvxSXj98" target="_blank" rel="noopener">Efecto túnel cuántico: explicación sencilla pero completa</a> <span class="meta">FísicaPRO · 12 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=wLL1VEuwmw8" target="_blank" rel="noopener">Teletransporte y el efecto túnel</a> <span class="meta">QuantumFracture · 6 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="c-osc">
+  <p class="eyebrow">Bloque C · Cuántica</p>
+  <h2>Oscilador armónico cuántico</h2>
+  <p>Con el potencial de un resorte, $V=\tfrac12m\omega^2x^2$, las energías también quedan cuantizadas, pero ahora <strong>igualmente espaciadas</strong>:</p>
+  $$E_n=\left(n+\tfrac12\right)\hbar\omega,\qquad n=0,1,2,\dots$$
+  <ul>
+    <li>La energía más baja es $\tfrac12\hbar\omega$, no cero: la partícula nunca queda quieta en el fondo (es otra cara del principio de incertidumbre).</li>
+    <li>Entre niveles vecinos la diferencia siempre es $\hbar\omega$, así que el fotón emitido en un salto de uno es el mismo para cualquier $n$.</li>
+    <li>$\psi_0$ es una campana de Gauss; $\psi_n$ tiene $n$ nodos. Las funciones usan polinomios de Hermite, que no se piden de memoria.</li>
+  </ul>
+  <p>Este modelo vuelve con fuerza en el C3, con la vibración de las moléculas. Para el C2 basta con la fórmula y estas tres ideas.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C2-FIS140.html#C10">C10 oscilador</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=vWO_1987iJQ" target="_blank" rel="noopener">Niveles de energía del oscilador armónico cuántico</a> <span class="meta">MathArg · 8 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="formulario">
+  <p class="eyebrow">Cierre</p>
+  <h2>Formulario: qué te dan y qué no</h2>
+  <p>El C2 de 2026-1 traía este formulario en la primera hoja, y tu C1 usó el mismo formato, así que lo más probable es que el tuyo sea igual o muy parecido. La columna de la derecha es lo que <strong>no</strong> viene y tienes que saber tú.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Tema</th><th>Viene en el formulario (2026-1)</th><th>Tienes que saberlo tú</th></tr></thead>
+      <tbody>
+        <tr><td>Constantes</td><td>$e$, $c$, $h$ en J·s y eV·s, $hc=1240$ eV·nm, $\hbar c=197$ eV·nm, $k_B=1/12\,000$ eV/K, $\sigma$, $m_e$, $m_p$, $m_n$ en MeV/$c^2$, 1 eV, 1 Å</td><td>$\lambda_C=0{,}00243$ nm (sí viene, en Compton); $a_0=0{,}0529$ nm; $2m_ec^2=1{,}022$ MeV</td></tr>
+        <tr><td>Relatividad</td><td>$E=\gamma mc^2$, $p=\gamma mv$, $\gamma$, $E^2-(pc)^2=(mc^2)^2$, $K=(\gamma-1)mc^2$, $\Delta t=\gamma\Delta t_0$, $L=L_0/\gamma$, Lorentz, suma de velocidades en $x$, $y$, $z$</td><td>Quién mide lo propio; $v/c=pc/E$; $\gamma=\sqrt{1+(p/mc)^2}$; masa del sistema; Doppler relativista; umbral de pares</td></tr>
+        <tr><td>Fotones</td><td>$E=pc=hf=hc/\lambda$, $p=h/\lambda$</td><td>$I=(N/tA)\,hf$; fotones por segundo $=P/hf$</td></tr>
+        <tr><td>Cuerpo negro</td><td>$I=P/A=\sigma T^4$, Wien</td><td>$P=\sigma T^4\,4\pi R^2$; $I(D)=P/4\pi D^2$; el balance del planeta y $T_p=T_\star\sqrt{R/2D}$; $\langle E\rangle\approx2{,}7k_BT$</td></tr>
+        <tr><td>Fotoeléctrico</td><td>$E_{\text{fotón}}=K_{\max}+\phi$, $K_{\max}=|e|V_0$</td><td>$\phi=hf_0$; qué cambia con la intensidad y qué con la frecuencia; pendiente $h$ en el gráfico</td></tr>
+        <tr><td>Rayos X</td><td>—</td><td>$e\Delta V=hc/\lambda_{\min}$</td></tr>
+        <tr><td>Compton</td><td>$\lambda'-\lambda=\frac{h}{mc}(1-\cos\theta)$, $\lambda_C$</td><td>La versión en energías; $K_e=E-E'$; dirección del electrón por momentum</td></tr>
+        <tr><td>De Broglie</td><td>$p=h/\lambda$; difracción de electrones $K=|eV|$, $d\sin\theta=m\lambda$</td><td>$\lambda=hc/\sqrt{2mc^2K}$; Bragg $2d\sin\theta=m\lambda$</td></tr>
+        <tr><td>Incertidumbre</td><td>$\Delta p\Delta x\ge\hbar/2$, $\Delta E\Delta t\ge\hbar/2$</td><td>$\Delta v\ge\hbar/(2m\Delta x)$</td></tr>
+        <tr><td>Bohr</td><td>$E_n=-Z^2E_0/n^2$, $E_0=13{,}6$ eV; $E_\gamma=|\Delta E|=hc/\lambda$</td><td>Ionización $=|E_n|$ y $K=E_\gamma-|E_n|$; número de líneas $n(n-1)/2$; series de H</td></tr>
+        <tr><td>Láser</td><td>Solo $k_B$</td><td>$N_2/N_1=e^{-\Delta E/k_BT}$; los tres niveles y el metaestable</td></tr>
+        <tr><td>Cuántica</td><td>$dP=|\Psi|^2dx$, normalización, Schrödinger con y sin tiempo, $\Psi(x,t)=\Psi(x)e^{-iEt/\hbar}$</td><td>Las tres formas de solución ($\sin/\cos$, $e^{\pm\kappa x}$, cero) y las condiciones de borde</td></tr>
+        <tr><td>Pozo infinito</td><td>$E_n=\hbar^2\pi^2n^2/2mL^2$, $\Psi_n=\sqrt{2/L}\sin(n\pi x/L)$</td><td>$\lambda_n=2L/n$, $p_n=nh/2L$, nodos, máximos, $\sin^2u=\frac12(1-\cos2u)$, el atajo $1/n$ por lomo</td></tr>
+        <tr><td>Escalón, túnel y oscilador</td><td>No venían en 2026-1 (el de 2025-1 CC sí traía $E_n=(n+\frac12)\hbar\omega$)</td><td>$R$ y $T$ del escalón; $T\approx\frac{16E(V_0-E)}{V_0^2}e^{-2\kappa L}$ del túnel (está en la pizarra de Solar); $E_n=(n+\frac12)\hbar\omega$</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="errores">
+  <p class="eyebrow">Cierre</p>
+  <h2>Errores que cuestan puntos</h2>
+  <p>Salen de las rúbricas de 2024-2, de las pautas y de los errores típicos de cada tema. Léelos el día antes.</p>
+  <ol>
+    <li><strong>No poner unidades o el signo de una energía.</strong> La rúbrica baja de 3 a 2 puntos por eso.</li>
+    <li><strong>Confundir quién mide el tiempo o la longitud propia.</strong> Escribe los dos eventos antes de usar $\gamma$.</li>
+    <li><strong>Sumar velocidades como en Galileo.</strong> Si te da más que $c$, falta la fórmula relativista o hay un signo mal.</li>
+    <li><strong>Dejar fuera la energía en reposo</strong> al conservar energía en un decaimiento o un choque.</li>
+    <li><strong>Diámetro en vez de radio</strong> en Stefan-Boltzmann, o el radio de la estrella en vez de la distancia en la ley del inverso del cuadrado.</li>
+    <li><strong>Usar los porcentajes de población dentro de las energías</strong> en los problemas de gas de iones.</li>
+    <li><strong>Creer que más intensidad da electrones más rápidos</strong> en el fotoeléctrico.</li>
+    <li><strong>Olvidar que $E_n$ de Bohr es negativo</strong>: la energía del fotón es la diferencia positiva.</li>
+    <li><strong>Usar la energía del átomo de hidrógeno en un pozo</strong>, o al revés.</li>
+    <li><strong>Confundir «segundo estado excitado» ($n=3$) con $n=2$.</strong></li>
+    <li><strong>Mezclar unidades en el pozo.</strong> Trabaja en eV y nm de principio a fin.</li>
+    <li><strong>Integrar sin la identidad de $\sin^2$</strong> o equivocarse en los límites. Antes de integrar, revisa si el atajo de simetría resuelve el inciso.</li>
+    <li><strong>Usar $\tfrac12mv^2$</strong> cuando la energía cinética es comparable con $mc^2$.</li>
+  </ol>
+</section>
+
+<section id="videos">
+  <p class="eyebrow">Cierre</p>
+  <h2>Todos los videos</h2>
+  <p>Son los mismos de cada sección, reunidos. Revisé que existan, que el audio original sea en español y que el contenido coincida con el título. Los tres que enlazan las diapositivas de clases están en inglés (con doblaje automático), así que no los incluí; la excepción es el de QuantumFracture que recomienda Pablo Solar.</p>
+  <p>Si quieres seguir una sola serie de nivel universitario, la de Física Moderna de Ramón Carrillo Bastos cubre casi todo el temario, con la misma notación del curso.</p>
+
+  <h3>Bloque A · Relatividad</h3>
+  <ul class="videos">
+    <li><a href="https://www.youtube.com/watch?v=lT4OLf4yyuU" target="_blank" rel="noopener">HOY SÍ que vas a entender la relatividad especial</a> <span class="meta">Date un Vlog · 11 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=mN1QyLMEtHo" target="_blank" rel="noopener">Relatividad especial de Einstein 1: dilatación del tiempo y contracción de longitud</a> <span class="meta">Física de a Pasos · 8 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=NcHqtG7WVkA" target="_blank" rel="noopener">Los muones y la relatividad especial</a> <span class="meta">fisicayquimica · 6 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=jjp3cx1rClE" target="_blank" rel="noopener">Relatividad especial: ejercicios resueltos</a> <span class="meta">física fit · 13 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=aAKanDdRf3M" target="_blank" rel="noopener">Relatividad, Clase 12: transformaciones de Lorentz (ejemplo 1)</a> <span class="meta">Physics Lab · 14 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=b7N3g3kHzDw" target="_blank" rel="noopener">El dibujo que te hará entender la relatividad</a> <span class="meta">QuantumFracture · 23 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=Yq_oUIXwk58" target="_blank" rel="noopener">Deducción de la fórmula de Einstein para la suma de velocidades</a> <span class="meta">Khan Academy Español · 8 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=zXfuVOX9Hfk" target="_blank" rel="noopener">Física Moderna 11: relatividad especial de Einstein</a> <span class="meta">Ramón Carrillo Bastos · 27 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=IHd93mY3IG0" target="_blank" rel="noopener">Física Moderna 12: dilatación del tiempo y contracción del espacio</a> <span class="meta">Ramón Carrillo Bastos · 15 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=dJNH19RtEms" target="_blank" rel="noopener">Física Moderna 13: transformación de Lorentz para velocidades</a> <span class="meta">Ramón Carrillo Bastos · 7 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=Xn5SF_M9ACs" target="_blank" rel="noopener">Física Moderna 14: efecto Doppler relativista</a> <span class="meta">Ramón Carrillo Bastos · 8 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=d2LaW-mRuVc" target="_blank" rel="noopener">Física Moderna 15: momentum y masa relativista, E = mc²</a> <span class="meta">Ramón Carrillo Bastos · 17 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=U9RaZpWkqeM" target="_blank" rel="noopener">¿Aumenta la masa con la velocidad?</a> <span class="meta">QuantumFracture · 4 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=M6KXXSHiiM4" target="_blank" rel="noopener">Producción de pares</a> <span class="meta">Modesto FISMAT · 10 min</span></li>
+  </ul>
+
+  <h3>Bloque B · Fotones y átomos</h3>
+  <ul class="videos">
+    <li><a href="https://www.youtube.com/watch?v=8YL_QIGtdOc" target="_blank" rel="noopener">El «rayo mortal» que revolucionó la física (catástrofe ultravioleta)</a> <span class="meta">QuantumFracture · 9 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=ijHwiF-RU6w" target="_blank" rel="noopener">Física 7.01: hipótesis de Planck, catástrofe ultravioleta, cuerpo negro</a> <span class="meta">Física Explicada · 17 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=4OKyBO5Hnys" target="_blank" rel="noopener">Física Moderna 02: radiación térmica y el cuerpo negro</a> <span class="meta">Ramón Carrillo Bastos · 10 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=AW0vo79k5oU" target="_blank" rel="noopener">Ejercicios sobre el cuerpo negro</a> <span class="meta">Mainquifi · 12 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=5CLj9uJPQKg" target="_blank" rel="noopener">¿Sabes qué es el efecto fotoeléctrico?</a> <span class="meta">Date un Voltio · 5 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=NiJPv11ax44" target="_blank" rel="noopener">Física 7.02: el efecto fotoeléctrico</a> <span class="meta">Física Explicada · 17 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=w-DwH-KIqiU" target="_blank" rel="noopener">Física 7.05: efecto fotoeléctrico, cómo resolver todos los ejercicios</a> <span class="meta">Física Explicada · 15 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=L-CAgoiHhSA" target="_blank" rel="noopener">Ejercicio resuelto de efecto fotoeléctrico</a> <span class="meta">Física con Juan · 9 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=L9opHqIpesY" target="_blank" rel="noopener">Física Moderna 06: efecto fotoeléctrico y Einstein</a> <span class="meta">Ramón Carrillo Bastos · 24 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=3bFdJMxuA5M" target="_blank" rel="noopener">Cálculo de la longitud de onda de fotones de rayos X</a> <span class="meta">Institweet · 9 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=m2SAIs_MIjE" target="_blank" rel="noopener">Qué es el efecto Compton</a> <span class="meta">Matemáticas con Juan · 5 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=zxbcTT4OIxw" target="_blank" rel="noopener">Efecto Compton: ejercicios resueltos</a> <span class="meta">Física con Juan · 12 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=NIhxY5X9Bts" target="_blank" rel="noopener">Física Moderna 17: el efecto Compton</a> <span class="meta">Ramón Carrillo Bastos · 15 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=TbWa3KSfQWA" target="_blank" rel="noopener">Física 7.03: dualidad onda-partícula, hipótesis de de Broglie</a> <span class="meta">Física Explicada · 16 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=LBEq1rhRbC4" target="_blank" rel="noopener">La dualidad onda-partícula es una…</a> <span class="meta">QuantumFracture · 6 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=TGCZxbh3im4" target="_blank" rel="noopener">Longitud de onda de un electrón acelerado por un potencial</a> <span class="meta">física fit · 5 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=-x7r6p2qOOE" target="_blank" rel="noopener">Experimento de Davisson-Germer</a> <span class="meta">Donato Benincasa · 6 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=HpSrcgUXHXM" target="_blank" rel="noopener">Física Moderna 16: difracción de rayos X y la ley de Bragg</a> <span class="meta">Ramón Carrillo Bastos · 12 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=lTQH-muS92Y" target="_blank" rel="noopener">Física 7.04: lo más básico del principio de incertidumbre</a> <span class="meta">Física Explicada · 16 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=JnEAMYltzi0" target="_blank" rel="noopener">HOY SÍ que vas a entender el principio de incertidumbre</a> <span class="meta">Date un Vlog · 16 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=QZh-PCcveuw" target="_blank" rel="noopener">Explicación completa (y sencilla) del modelo atómico de Bohr</a> <span class="meta">Aprueba con Jorge · 6 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=htw88Q2qNjs" target="_blank" rel="noopener">Espectro de emisión del hidrógeno</a> <span class="meta">Khan Academy Español · 10 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=i1GcnAZ9w3Q" target="_blank" rel="noopener">Átomo de Bohr: 4 ejercicios resueltos</a> <span class="meta">física fit · 9 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=DUh85iP2nMc" target="_blank" rel="noopener">Física Moderna 21: modelo atómico de Bohr</a> <span class="meta">Ramón Carrillo Bastos · 15 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=C0KMGbhUH0Q" target="_blank" rel="noopener">¿Qué es un láser? Emisión estimulada</a> <span class="meta">FISICALIMITE · 2 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=8UbnJ3b8YzY" target="_blank" rel="noopener">Funcionamiento de un láser: ¿cómo es por dentro?</a> <span class="meta">OSAL, Óptica USAL · 5 min</span></li>
+  </ul>
+
+  <h3>Bloque C · Cuántica</h3>
+  <ul class="videos">
+    <li><a href="https://www.youtube.com/watch?v=6pDJeg-Z01Q" target="_blank" rel="noopener">Ecuación de Schrödinger: explicación sencilla pero completa</a> <span class="meta">FísicaPRO · 9 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=4qCSni84A9U" target="_blank" rel="noopener">La función de onda: ¿qué significa realmente?</a> <span class="meta">Mientras, En Físicas · 6 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=AySAsOb8Qww" target="_blank" rel="noopener">Intro a la Física Moderna, semana 13: pozo de potencial infinito</a> <span class="meta">Taller Los dos Relojes · 29 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=v1VmLquAR6E" target="_blank" rel="noopener">FM21 Mecánica cuántica: pozo de potencial infinito</a> <span class="meta">Ramón Carrillo Bastos · 24 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=4sS7Lueisj4" target="_blank" rel="noopener">Partícula en un pozo de potencial infinito</a> <span class="meta">Física con Juan · 45 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=MB95SiHIjMo" target="_blank" rel="noopener">Intro a la Física Moderna, semana 13: pozo de potencial finito</a> <span class="meta">Taller Los dos Relojes · 19 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=0eD_ODwhEss" target="_blank" rel="noopener">FM22 Mecánica cuántica: escalón de potencial</a> <span class="meta">Ramón Carrillo Bastos · 35 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=CTRua3E8b7A" target="_blank" rel="noopener">FM23 Mecánica cuántica: coeficientes de transmisión y reflexión</a> <span class="meta">Ramón Carrillo Bastos · 19 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=9C6gvxSXj98" target="_blank" rel="noopener">Efecto túnel cuántico: explicación sencilla pero completa</a> <span class="meta">FísicaPRO · 12 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=wLL1VEuwmw8" target="_blank" rel="noopener">Teletransporte y el efecto túnel</a> <span class="meta">QuantumFracture · 6 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=vWO_1987iJQ" target="_blank" rel="noopener">Niveles de energía del oscilador armónico cuántico</a> <span class="meta">MathArg · 8 min</span></li>
+  </ul>
+
+  <h3>Fuentes de las técnicas de estudio</h3>
+  <ul>
+    <li>Dunlosky, J., et al. (2013). <a href="https://www.psychologicalscience.org/news/releases/which-study-strategies-make-the-grade.html" target="_blank" rel="noopener">Improving students' learning with effective learning techniques</a>. <em>Psychological Science in the Public Interest</em>.</li>
+    <li>Samani, J. y Pan, S. C. (2021). <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8589969/" target="_blank" rel="noopener">Interleaved practice enhances memory and problem-solving ability in undergraduate physics</a>. <em>npj Science of Learning</em>.</li>
+    <li>Cepeda, N. J., et al. (2008). <a href="https://pubmed.ncbi.nlm.nih.gov/19076480/" target="_blank" rel="noopener">Spacing effects in learning: a temporal ridgeline of optimal retention</a>. <em>Psychological Science</em>.</li>
+    <li>Sobre el efecto del ejemplo resuelto: <a href="https://en.wikipedia.org/wiki/Worked-example_effect" target="_blank" rel="noopener">resumen y referencias</a> (Sweller, Renkl y otros).</li>
+  </ul>
+  <p class="muted" style="margin-top:40px">Hecha el 9 de octubre de 2026 con el material de la carpeta Material C2: clases 9 a 16, Ayudantías 5 a 7 y ocho certámenes anteriores.</p>
+</section>
+
+</div>
+</main>
+</div>
+<script>
+(function(){
+  var root = document.documentElement;
+  try { var saved = localStorage.getItem('fis140-tema'); if (saved === 'dark' || saved === 'light') root.setAttribute('data-theme', saved); } catch(e) {}
+
+  var themeBtn = document.getElementById('themeBtn');
+  if (themeBtn) themeBtn.addEventListener('click', function(){
+    var cur = root.getAttribute('data-theme');
+    if (!cur) cur = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var next = cur === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('fis140-tema', next); } catch(e) {}
+  });
+
+  var printBtn = document.getElementById('printBtn');
+  if (printBtn) printBtn.addEventListener('click', function(){
+    document.querySelectorAll('details.sol').forEach(function(d){ d.open = true; });
+    window.print();
+  });
+
+  var allBtn = document.getElementById('allBtn');
+  if (allBtn) allBtn.addEventListener('click', function(){
+    var ds = document.querySelectorAll('details.sol');
+    var anyClosed = Array.prototype.some.call(ds, function(d){ return !d.open; });
+    ds.forEach(function(d){ d.open = anyClosed; });
+    allBtn.textContent = anyClosed ? 'Cerrar soluciones' : 'Abrir soluciones';
+  });
+
+  var sidebar = document.getElementById('sidebar'), scrim = document.getElementById('scrim'), menuBtn = document.getElementById('menuToggle');
+  function closeMenu(){ sidebar.classList.remove('open'); scrim.classList.remove('on'); }
+  if (menuBtn) menuBtn.addEventListener('click', function(){ sidebar.classList.toggle('open'); scrim.classList.toggle('on'); });
+  if (scrim) scrim.addEventListener('click', closeMenu);
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('#nav a[href^="#"]'));
+  links.forEach(function(a){ a.addEventListener('click', function(){ if (window.innerWidth <= 920) closeMenu(); }); });
+  var targets = links.map(function(a){ return document.getElementById(a.getAttribute('href').slice(1)); });
+
+  var ticking = false;
+  function sync(){
+    ticking = false;
+    var y = window.scrollY + 140, idx = 0;
+    for (var i = 0; i < targets.length; i++) {
+      if (targets[i] && targets[i].getBoundingClientRect().top + window.scrollY <= y) idx = i;
+    }
+    if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 4) idx = targets.length - 1;
+    links.forEach(function(a, i){ a.classList.toggle('active', i === idx); });
+    var act = links[idx];
+    if (act && sidebar) {
+      var top = act.offsetTop, h = act.offsetHeight;
+      if (top < sidebar.scrollTop + 60 || top + h > sidebar.scrollTop + sidebar.clientHeight - 60) {
+        sidebar.scrollTop = top - sidebar.clientHeight / 2;
+      }
+    }
+  }
+  window.addEventListener('scroll', function(){ if (!ticking) { ticking = true; requestAnimationFrame(sync); } }, { passive: true });
+  window.addEventListener('load', sync);
+  sync();
+
+})();
+</script>
+</body>
+</html>

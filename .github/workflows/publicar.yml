@@ -1,0 +1,49 @@
+# En cada push a main: valida los apuntes y publica el sitio en GitHub Pages.
+# La validación solo avisa (❌ en GitHub); no impide la publicación.
+name: Publicar sitio
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Revisar estructura, autores y enlaces
+        run: python3 scripts/indice.py --check
+
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # el historial completo da autor y fecha de cada apunte
+      - name: Generar apuntes.json
+        run: python3 scripts/indice.py
+      - name: Armar el sitio
+        run: |
+          mkdir _site
+          cp -r index.html css js apuntes apuntes.json _site/
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reemplazo de páginas · SO C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  /* --- agregado para el C2: probabilidad por sección --- */
+  .prio{margin:2px 0 16px;font-size:14.5px;color:var(--muted)}
+  .prio strong{color:var(--ink)}
+  .lv{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    padding:2px 9px;border-radius:999px;border:1px solid var(--line);margin-right:8px;vertical-align:1px;white-space:nowrap}
+  .lv.p3{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lv.p2{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lv.p1{color:var(--muted);border-style:dashed}
+  .lv.p0{color:var(--ex);border-color:var(--ex);background:var(--ex-soft)}
+  td .lv{margin-right:0}
+  nav a{display:flex;align-items:baseline;gap:6px}
+  nav a .nt{flex:1 1 auto;min-width:0}
+  .pd{display:inline-flex;gap:3px;align-items:center;color:var(--muted);vertical-align:1px;flex:0 0 auto}
+  .pd i{display:inline-block;width:6px;height:6px;border-radius:50%;border:1px solid currentColor;box-sizing:border-box}
+  .pd i.on{background:currentColor}
+  .pd.p3{color:var(--accent)} .pd.p2{color:var(--brand)} .pd.p0{color:var(--ex)}
+  /* --- tiras de bloques de memoria --- */
+  .mem{display:flex;flex-wrap:nowrap;gap:0;margin:10px 0 2px;overflow-x:auto;padding-bottom:2px}
+  .mem .c{flex:1 0 46px;min-width:46px;height:44px;border:1px solid var(--line);margin-right:-1px;display:grid;place-items:center;
+    font-size:11.5px;line-height:1.15;text-align:center;background:var(--panel);color:var(--ink)}
+  .mem .c small{display:block;font-size:10px;color:var(--muted)}
+  .mem .c.u1{background:var(--brand-soft);border-color:var(--brand);color:var(--brand);font-weight:700}
+  .mem .c.u2{background:var(--lib-soft);border-color:var(--lib);color:var(--lib);font-weight:700}
+  .mem .c.u3{background:var(--ana-soft);border-color:var(--ana);color:var(--ana);font-weight:700}
+  .mem .c.nw{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
+  .mem .c.fx{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+  .mem .c.os{background:var(--code);color:var(--muted)}
+  .memlab{display:flex;gap:0;font-size:11.5px;color:var(--muted);margin:0 0 10px;overflow-x:auto}
+  .memlab span{flex:1 0 46px;min-width:46px;text-align:center}
+  .memcap{font-size:13px;color:var(--muted);margin:2px 0 14px}
+  /* --- dirección dividida en campos --- */
+  .addr{display:flex;margin:12px auto;max-width:620px;border-radius:9px;overflow:hidden;border:1px solid var(--line);font-size:13.5px;box-shadow:var(--shadow)}
+  .addr div{padding:9px 10px;text-align:center;border-right:1px solid var(--line)}
+  .addr div:last-child{border-right:0}
+  .addr .a1{background:var(--brand-soft);color:var(--brand);font-weight:700}
+  .addr .a2{background:var(--lib-soft);color:var(--lib);font-weight:700}
+  .addr .a3{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  .addr .a4{background:var(--ex-soft);color:var(--ex);font-weight:700}
+  .addr small{display:block;font-weight:500;color:var(--muted);font-size:11.5px}
+  /* --- tablas de páginas y de reemplazo --- */
+  table.pt td,table.pt th{text-align:center;padding:6px 8px;font-variant-numeric:tabular-nums}
+  table.pt td.bad{background:var(--no-soft);color:var(--no);font-weight:700}
+  table.pt td.ok{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  table.rp{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px}
+  table.rp td,table.rp th{text-align:center;padding:4px 6px;min-width:26px}
+  table.rp td.f{background:var(--warn-soft);color:var(--warn);font-weight:700}
+  table.rp td.h{color:var(--accent);font-weight:700}
+  table.rp td.n{color:var(--ink);font-weight:700}
+  table.rp th.rh{text-align:right;color:var(--muted);background:var(--panel)}
+  .tw table.rp{min-width:0}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.93em}
+  .q{font-weight:600}
+  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:14px 0}
+  .tiny{font-size:12.5px;color:var(--muted)}
+  @media (max-width:900px){
+    .layout{align-items:stretch}
+    .content{width:100%;max-width:100%}
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T4</div>
+    <div><h1>Reemplazo de páginas</h1><small>Sistemas Operativos · INF-246 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><a href="0-Guia-de-estudio-C2.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html" class="cur"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, reloj · por confirmar</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 4</div><a href="#t4-inicio"><span class="nt">Antes de leer: por confirmar</span></a><a href="#problema"><span class="nt">El problema: elegir la víctima</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#cadena"><span class="nt">Cadena de referencias y fallos</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#fifo"><span class="nt">FIFO</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#opt"><span class="nt">Óptimo (OPT)</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#lru"><span class="nt">LRU</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#belady"><span class="nt">Anomalía de Belady</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#reloj"><span class="nt">Bit R y reloj (segunda oportunidad)</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#nru"><span class="nt">NRU: clases con U y D</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#conjunto"><span class="nt">Conjunto de trabajo y thrashing</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><div class="grp">Práctica</div><a href="#t4-receta"><span class="nt">Receta: simular una cadena</span></a><a href="#t4-videos"><span class="nt">Videos del tema</span></a><a href="#R1"><span class="nt">R1 · La cadena de Stallings</span></a><a href="#R2"><span class="nt">R2 · LRU no tiene anomalía</span></a><a href="#R3"><span class="nt">R3 · Elegir víctima con U y D</span></a><a href="#R4"><span class="nt">R4 · Conjunto de trabajo</span></a><a href="#R5"><span class="nt">R5 · Thrashing, conceptual</span></a><a href="#t4-preguntas"><span class="nt">Preguntas del tema</span></a></nav>
+</aside>
+<main class="content">
+
+<section id="t4-inicio" data-nav="Antes de leer: por confirmar" data-grp="Tema 4">
+<h2>Tema 4 · Reemplazo de páginas <span class="lv p0">Por confirmar</span></h2>
+<p class="lead">No hay lámina de este tema en tu carpeta de clases. El calendario del ramo le da dos clases dentro de la Unidad 2 (“Reemplazo de Páginas 1/2 y 2/2”, justo antes del repaso y del certamen), y la lámina de memoria virtual lo anuncia dos veces: “Ver capítulo sobre el reemplazo de página para el LRU” y “la paginación necesita un algoritmo para manejar los reemplazos de páginas”. Esta página está armada con Wolf (misma escuela que el profe), Silberschatz y Stallings.</p>
+<div class="hero">
+  <div class="big">Peso en el certamen: depende de si se pasó en clases</div>
+  <div class="sub">Si el profe alcanzó a pasar este capítulo, lo más probable es un ejercicio con una cadena de referencias (FIFO, LRU, óptimo, reloj) y alguna pregunta sobre thrashing. Si no lo pasó, basta con lo que dice la lámina de paginación, resumido en la sección <a class="inl" href="3-Paginacion.html#thrashing">“Reemplazo y thrashing”</a> de la página 3. El C2 2023 no tuvo preguntas de este tema.</div>
+</div>
+<div class="box warn"><div class="bt">Qué hacer con esta página</div>
+<p>Revisa en Moodle si hay una lámina de reemplazo de páginas, o pregúntale a alguien del curso si el profe la pasó. Si existe, mándamela y ajusto esta página a lo que dice él (nombres, convenciones del reloj, qué cuenta como fallo). Mientras tanto, la marca <span class="lv p0">Por confirmar</span> de cada sección significa “léelo solo si el tema entra”.</p></div>
+<div class="cols">
+  <div class="card"><h5>Lo que tendrías que poder hacer</h5>
+    <p>· Simular FIFO, óptimo, LRU y reloj sobre una cadena de referencias y contar los fallos.</p>
+    <p>· Explicar por qué el óptimo no se puede implementar y por qué LRU es caro.</p>
+    <p>· Mostrar la anomalía de Belady con FIFO.</p>
+    <p>· Usar los bits U y D para elegir una víctima.</p>
+    <p>· Explicar el thrashing, el conjunto de trabajo y qué hace el sistema para evitarlo.</p>
+  </div>
+  <div class="card"><h5>Dónde está en los libros</h5>
+    <p><b>Wolf</b>: §5.5.3 “Reemplazo de páginas” (pp. 196-204), §5.5.4 “Asignación de marcos” (p. 204) y §5.5.5 “Hiperpaginación” (p. 208).</p>
+    <p><b>Silberschatz</b> (10.ª ed.): §10.4 <i>Page Replacement</i> (p. 401), §10.5 <i>Allocation of Frames</i> y §10.6 <i>Thrashing</i> (p. 419).</p>
+  </div>
+  <div class="card"><h5>Plan para este tema (≈ 1 h 30)</h5>
+    <p>1. Leer las secciones (45 min).</p>
+    <p>2. Videos del Mtro. Elvira: óptimo, LRU y FIFO (17 min) y el reloj (7 min).</p>
+    <p>3. Ejercicio R1 a mano, sin mirar la tabla, y R2 (30 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="problema" data-nav="El problema: elegir la víctima" data-p="0">
+<h2>El problema: elegir la página víctima</h2>
+<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong> Es la idea que une todos los algoritmos.</p>
+<p>Cuando hay un page fault y no queda ningún marco libre, el sistema tiene que elegir una página para descargar: la <b>víctima</b>. Si la víctima tiene D = 1 hay que escribirla en el disco antes de usar su marco (dos transferencias); si D = 0 basta con marcarla como ausente (una sola transferencia, la de la página nueva).</p>
+<p>El objetivo de un algoritmo de reemplazo es producir <b>la menor cantidad posible de page faults</b> para un patrón de accesos dado. Se apoya en la <b>localidad</b>: durante un rato, un programa usa un conjunto pequeño de páginas (las de un ciclo, un arreglo, la pila), así que el pasado reciente predice bastante bien el futuro cercano.</p>
+<div class="box tip"><div class="bt">El paralelo con la Unidad 1</div>
+<p>Es el mismo esquema del scheduling: hay un algoritmo óptimo que necesita conocer el futuro (como SJN con tiempos exactos), uno simple que no mira nada (FIFO) y aproximaciones baratas que usan información del pasado (como las prioridades dinámicas). El SO “no tiene bola de cristal”.</p></div>
+</section>
+
+<section id="cadena" data-nav="Cadena de referencias y fallos" data-p="0">
+<h2>La cadena de referencias y cómo se cuentan los fallos</h2>
+<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong> Es el formato de cualquier ejercicio de este tema.</p>
+<p>Para comparar algoritmos se usa una <b>cadena de referencias</b>: la lista de los números de página que el proceso va accediendo (varios accesos seguidos a la misma página cuentan como uno). Además hace falta saber <b>cuántos marcos</b> tiene el proceso.</p>
+<ul>
+  <li>Se dibuja una columna por referencia y una fila por marco; se marca F en cada fallo.</li>
+  <li>La memoria parte vacía, así que la primera referencia a cada página es siempre un fallo. Algunos enunciados los cuentan y otros no: <b>di cuál convención usas</b>.</li>
+  <li>Con tantos marcos como páginas distintas, solo hay esos fallos iniciales; con un solo marco, cada cambio de página es un fallo.</li>
+</ul>
+<p>En las tablas de esta página, las celdas naranjas son las que cambiaron por un fallo, y la fila “víctima” dice qué página salió.</p>
+</section>
+
+<section id="fifo" data-nav="FIFO" data-p="0">
+<h2>FIFO: la que llegó primero</h2>
+<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong></p>
+<p>Se reemplaza la página que lleva <b>más tiempo cargada</b>. Se implementa con una cola de las páginas en memoria. Es simple, pero no mira el uso: puede sacar una página que se usa todo el tiempo (por ejemplo, la del ciclo principal, que se cargó al comienzo). Además sufre la anomalía de Belady.</p>
+<p><b>La cadena clásica</b> (Silberschatz y Wolf), con 3 marcos:</p>
+<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">7</td><td class="n">0</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">3</td><td class="n">0</td><td class="n">4</td><td class="n">2</td><td class="n">3</td><td class="n">0</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">1</td><td class="n">7</td><td class="n">0</td><td class="n">1</td></tr><tr><th class="rh">M0</th><td class="f">7</td><td>7</td><td>7</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td class="f">4</td><td>4</td><td>4</td><td class="f">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="f">7</td><td>7</td><td>7</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">0</td><td>0</td><td>0</td><td>0</td><td class="f">3</td><td>3</td><td>3</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="f">0</td><td>0</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">1</td><td>1</td><td>1</td><td>1</td><td class="f">0</td><td>0</td><td>0</td><td class="f">3</td><td>3</td><td>3</td><td>3</td><td>3</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">1</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td></td><td class="f">F</td><td class="f">F</td><td></td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td>7</td><td></td><td>0</td><td>1</td><td>2</td><td>3</td><td>0</td><td>4</td><td></td><td></td><td>2</td><td>3</td><td></td><td></td><td>0</td><td>1</td><td>2</td></tr></table></div><p class="tiny">15 fallos de página en 20 referencias (contando los iniciales).</p>
+</section>
+
+<section id="opt" data-nav="Óptimo (OPT)" data-p="0">
+<h2>Óptimo (OPT o MIN)</h2>
+<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong></p>
+<p>Se reemplaza la página que <b>no se va a usar por más tiempo</b> (o nunca más). Está demostrado que produce el mínimo de fallos posible, pero <b>no se puede implementar</b>: exige conocer el futuro. Sirve como cota: dice qué tan cerca del ideal queda otro algoritmo.</p>
+<p>Para elegir la víctima, mira hacia adelante en la cadena y saca la página cuya próxima referencia está más lejos.</p>
+<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">7</td><td class="n">0</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">3</td><td class="n">0</td><td class="n">4</td><td class="n">2</td><td class="n">3</td><td class="n">0</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">1</td><td class="n">7</td><td class="n">0</td><td class="n">1</td></tr><tr><th class="rh">M0</th><td class="f">7</td><td>7</td><td>7</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">7</td><td>7</td><td>7</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="f">4</td><td>4</td><td>4</td><td class="f">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">1</td><td>1</td><td>1</td><td class="f">3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td class="f">1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td></td><td></td><td class="f">F</td><td></td><td></td><td class="f">F</td><td></td><td></td><td></td><td class="f">F</td><td></td><td></td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td>7</td><td></td><td>1</td><td></td><td>0</td><td></td><td></td><td>4</td><td></td><td></td><td>3</td><td></td><td></td><td></td><td>2</td><td></td><td></td></tr></table></div><p class="tiny">9 fallos de página en 20 referencias (contando los iniciales).</p>
+</section>
+
+<section id="lru" data-nav="LRU" data-p="0">
+<h2>LRU: la usada hace más tiempo</h2>
+<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong> Es el que la lámina de memoria virtual nombra para la TLB.</p>
+<p>Se reemplaza la página que <b>no se ha usado hace más tiempo</b> (<i>Least Recently Used</i>). Usa el pasado reciente para predecir el futuro, apoyándose en la localidad. Para la cadena clásica queda entre OPT y FIFO:</p>
+<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">7</td><td class="n">0</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">3</td><td class="n">0</td><td class="n">4</td><td class="n">2</td><td class="n">3</td><td class="n">0</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">1</td><td class="n">7</td><td class="n">0</td><td class="n">1</td></tr><tr><th class="rh">M0</th><td class="f">7</td><td>7</td><td>7</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td class="f">4</td><td>4</td><td>4</td><td class="f">0</td><td>0</td><td>0</td><td class="f">1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="f">3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td class="f">0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">1</td><td>1</td><td>1</td><td class="f">3</td><td>3</td><td>3</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">7</td><td>7</td><td>7</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td></td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td></td><td></td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td>7</td><td></td><td>1</td><td></td><td>2</td><td>3</td><td>0</td><td>4</td><td></td><td></td><td>0</td><td></td><td>3</td><td></td><td>2</td><td></td><td></td></tr></table></div><p class="tiny">12 fallos de página en 20 referencias (contando los iniciales).</p>
+<p><b>Su problema es el costo.</b> Hay que registrar el momento de <b>cada</b> acceso a memoria (un contador por marco, o una lista que se reordena en cada referencia), y eso solo es viable con apoyo de hardware. Por eso los sistemas usan aproximaciones con el bit de referencia. La TLB sí puede usar LRU de verdad porque tiene muy pocas entradas.</p>
+<div class="box tip"><div class="bt">Truco para hacerlo a mano</div><p>En cada fallo, lee la cadena <b>hacia atrás</b> desde la posición actual: la víctima es la página en memoria cuya última aparición está más lejos. Para OPT es lo mismo, pero leyendo <b>hacia adelante</b>.</p></div>
+</section>
+
+<section id="belady" data-nav="Anomalía de Belady" data-p="0">
+<h2>La anomalía de Belady</h2>
+<p class="prio"><span class="lv p0">Por confirmar</span><strong>Pasar por encima si el tema entra.</strong> Es una pregunta conceptual típica.</p>
+<p>Lo lógico es que con más marcos haya menos fallos. Con <b>FIFO</b> no siempre: con la cadena 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5, tres marcos dan 9 fallos y cuatro marcos dan 10.</p>
+<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">5</td></tr><tr><th class="rh">M0</th><td class="f">1</td><td>1</td><td>1</td><td class="f">4</td><td>4</td><td>4</td><td class="f">5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">2</td><td>2</td><td>2</td><td class="f">1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="f">3</td><td>3</td><td>3</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">3</td><td>3</td><td>3</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">4</td><td>4</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td></td><td class="f">F</td><td class="f">F</td><td></td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td></td><td></td><td>1</td><td>2</td><td></td></tr></table></div><p class="tiny">9 fallos de página en 12 referencias (contando los iniciales).</p>
+<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">5</td></tr><tr><th class="rh">M0</th><td class="f">1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="f">5</td><td>5</td><td>5</td><td>5</td><td class="f">4</td><td>4</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">1</td><td>1</td><td>1</td><td>1</td><td class="f">5</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td class="f">2</td><td>2</td><td>2</td><td>2</td></tr><tr><th class="rh">M3</th><td class="f"></td><td></td><td></td><td class="f">4</td><td>4</td><td>4</td><td>4</td><td>4</td><td>4</td><td class="f">3</td><td>3</td><td>3</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>1</td></tr></table></div><p class="tiny">10 fallos de página en 12 referencias (contando los iniciales).</p>
+<p>LRU y OPT no sufren la anomalía: con n + 1 marcos, las páginas en memoria siempre incluyen a las que habría con n marcos.</p>
+</section>
+
+<section id="reloj" data-nav="Bit R y reloj (segunda oportunidad)" data-p="0">
+<h2>Aproximar LRU: el bit R y el reloj</h2>
+<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong> Usa justo el bit R (Refer) de la tabla de la lámina 23, que se borra cada TICK.</p>
+<p><b>Segunda oportunidad (reloj).</b> Los marcos forman una lista circular con un puntero, la “manecilla”. En un fallo:</p>
+<div class="steps">
+<div class="step">Mira el marco al que apunta el puntero.</div>
+<div class="step">Si su bit de referencia es <b>0</b>, esa es la víctima.</div>
+<div class="step">Si es <b>1</b>, le da una segunda oportunidad: lo pone en 0 y avanza el puntero. Repite.</div>
+<div class="step">La página nueva entra con el bit en 1 y el puntero avanza al marco siguiente.</div>
+</div>
+<p>Si todas las páginas tienen el bit en 1, el puntero da la vuelta completa apagándolos y el algoritmo degenera en FIFO. Con la cadena clásica (el superíndice es el bit de referencia de cada marco después de cada paso):</p>
+<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">7</td><td class="n">0</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">3</td><td class="n">0</td><td class="n">4</td><td class="n">2</td><td class="n">3</td><td class="n">0</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">1</td><td class="n">7</td><td class="n">0</td><td class="n">1</td></tr><tr><th class="rh">M0</th><td class="f">7<sup>1</sup></td><td>7<sup>1</sup></td><td>7<sup>1</sup></td><td class="f">2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td class="f">4<sup>1</sup></td><td>4<sup>1</sup></td><td>4<sup>1</sup></td><td>4<sup>0</sup></td><td class="f">3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>0</sup></td><td>3<sup>0</sup></td><td class="f">0<sup>1</sup></td><td>0<sup>1</sup></td><td>0<sup>0</sup></td><td>0<sup>1</sup></td><td>0<sup>1</sup></td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">0<sup>1</sup></td><td>0<sup>1</sup></td><td>0<sup>0</sup></td><td>0<sup>1</sup></td><td>0<sup>0</sup></td><td>0<sup>1</sup></td><td>0<sup>0</sup></td><td class="f">2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>0</sup></td><td>2<sup>0</sup></td><td>2<sup>1</sup></td><td class="f">1<sup>1</sup></td><td>1<sup>1</sup></td><td>1<sup>1</sup></td><td>1<sup>1</sup></td><td class="f">7<sup>1</sup></td><td>7<sup>1</sup></td><td>7<sup>1</sup></td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">1<sup>1</sup></td><td>1<sup>0</sup></td><td>1<sup>0</sup></td><td class="f">3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>0</sup></td><td>3<sup>0</sup></td><td>3<sup>1</sup></td><td class="f">0<sup>1</sup></td><td>0<sup>1</sup></td><td>0<sup>1</sup></td><td>0<sup>0</sup></td><td class="f">2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>0</sup></td><td>2<sup>0</sup></td><td class="f">1<sup>1</sup></td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td>7</td><td></td><td>1</td><td></td><td>2</td><td>0</td><td></td><td>3</td><td>4</td><td></td><td>2</td><td>0</td><td>3</td><td></td><td>1</td><td></td><td>2</td></tr><tr><th class="rh">puntero</th><td>M1</td><td>M2</td><td>M0</td><td>M1</td><td>M1</td><td>M0</td><td>M0</td><td>M1</td><td>M2</td><td>M2</td><td>M0</td><td>M1</td><td>M1</td><td>M2</td><td>M0</td><td>M1</td><td>M1</td><td>M2</td><td>M2</td><td>M0</td></tr></table></div><p class="tiny">14 fallos de página en 20 referencias (contando los iniciales).</p>
+<p class="tiny">Convención usada: la página nueva entra con bit 1 (como en Stallings), un acierto pone el bit en 1 sin mover el puntero, y el puntero avanza después de cada carga. Hay libros que cargan con bit 0; con otra convención el conteo puede cambiar, así que en un certamen escribe cuál usas.</p>
+</section>
+
+<section id="nru" data-nav="NRU: clases con U y D" data-p="0">
+<h2>Usar los bits U y D: las cuatro clases</h2>
+<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong> Junta lo que dicen las láminas sobre U (U = 0 es buen candidato) y D (D = 1 no es buen candidato).</p>
+<div class="tw"><table class="mini">
+<thead><tr><th>Clase</th><th>U</th><th>D</th><th>Significado</th></tr></thead>
+<tbody>
+<tr><td><b>0</b></td><td>0</td><td>0</td><td>No usada últimamente, limpia: la víctima ideal</td></tr>
+<tr><td><b>1</b></td><td>0</td><td>1</td><td>No usada últimamente, pero sucia: hay que escribirla</td></tr>
+<tr><td><b>2</b></td><td>1</td><td>0</td><td>Usada hace poco, limpia</td></tr>
+<tr><td><b>3</b></td><td>1</td><td>1</td><td>Usada y sucia: la peor víctima</td></tr>
+</tbody></table></div>
+<p>Se elige una víctima de la <b>clase más baja que no esté vacía</b> (dentro de la clase, al azar o en orden FIFO). La clase 1 existe porque el sistema borra el bit de uso periódicamente, pero no el de escritura. Wolf lo llama <b>segunda oportunidad mejorada</b>: el reloj recorre buscando primero (0, 0), después (0, 1), y así.</p>
+</section>
+
+<section id="conjunto" data-nav="Conjunto de trabajo y thrashing" data-p="0">
+<h2>Conjunto de trabajo, thrashing y cómo evitarlo</h2>
+<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong> El thrashing sí está en la lámina de paginación; aquí está su explicación completa.</p>
+<div class="box def"><div class="bt">Conjunto de trabajo W(t, Δ)</div>
+<p>El conjunto de páginas distintas referenciadas en las últimas Δ referencias. Si un proceso tiene su conjunto de trabajo en memoria, casi no produce fallos.</p></div>
+<p><b>Por qué aparece el thrashing.</b> Cuando la suma de los conjuntos de trabajo de los procesos en memoria supera los marcos disponibles, cada proceso le quita marcos a otro, todos producen fallos y la CPU queda esperando al disco. Un sistema ingenuo ve la CPU ociosa y admite más procesos, lo que empeora todo: el colapso que menciona la lámina.</p>
+<p><b>Qué hace el sistema</b> (el “limitar la frecuencia de page faults” de la lámina 31):</p>
+<ul>
+  <li><b>Bajar el grado de multiprogramación</b>: descargar procesos completos (vuelve el swapping) para que a los demás les alcancen los marcos.</li>
+  <li><b>Asignar marcos según el conjunto de trabajo</b> de cada proceso.</li>
+  <li><b>Frecuencia de fallos (PFF)</b>: si un proceso falla demasiado, se le dan más marcos; si falla muy poco, se le quitan.</li>
+</ul>
+<p><b>Reemplazo local o global.</b> Global: la víctima puede ser de cualquier proceso (más flexible, pero un proceso no controla su propia tasa de fallos). Local: solo entre los marcos del mismo proceso.</p>
+</section>
+
+<section id="t4-receta" data-nav="Receta: simular una cadena" data-grp="Práctica">
+<h2>Receta para simular una cadena de referencias</h2>
+<div class="cols">
+<div class="card"><h5>La tabla</h5>
+<p>1. Una columna por referencia, una fila por marco, una fila de fallos.</p>
+<p>2. Si la página ya está: acierto, no cambia nada (en LRU, actualiza su “última vez”; en reloj, su bit queda en 1).</p>
+<p>3. Si no está y hay marco libre: se carga ahí (fallo).</p>
+<p>4. Si no hay marco libre: aplica la regla del algoritmo y anota la víctima.</p></div>
+<div class="card"><h5>La víctima, en una línea</h5>
+<p><b>FIFO:</b> la cargada hace más tiempo.</p>
+<p><b>OPT:</b> la que se usará más tarde (o nunca).</p>
+<p><b>LRU:</b> la usada hace más tiempo.</p>
+<p><b>Reloj:</b> la primera con bit 0 desde el puntero, apagando los 1.</p>
+<p><b>NRU:</b> la de clase (U, D) más baja.</p></div>
+</div>
+</section>
+
+<section id="t4-videos" data-nav="Videos del tema">
+<h2>Videos del tema</h2>
+<p class="lead">Elegidos entre unos cuarenta candidatos. De cada uno se transcribió el audio para comprobar qué explica y en qué minuto; los marcados como recomendados son los que más se parecen a las láminas del profe.</p>
+<div class="box tip"><div class="bt">Cómo ver los videos doblados</div>
+<p>En los marcados “Audio en español (doblaje)”: ⚙ Configuración → <b>Pista de audio</b> → Español. Es un doblaje automático de YouTube; se entiende bien.</p></div>
+<div class="vgrid">
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=Hh6P-s6IwE0" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/Hh6P-s6IwE0/mqdefault.jpg" alt=""><span class="rk">RECOMENDADO</span><span class="dur">17:16</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=Hh6P-s6IwE0" target="_blank" rel="noopener">Sistemas Operativos, Memoria virtual 4 LRU y FIFO</a>
+    <div class="ch">Mtro. José Luis Elvira · 17:16 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Óptimo, LRU y FIFO con la cadena de Stallings (5 páginas, 3 marcos), más la anomalía de Belady. Llega a 7 fallos con LRU y 9 con FIFO, los mismos del ejercicio R1.</p>
+    <div class="ver"><b>Qué ver:</b> Completo. 3:00-7:00 óptimo · 7:00-9:00 LRU · 9:00-13:30 FIFO y Belady · 14:30-17:16 la comparación.</div>
+  </div>
+</div>
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=iv0VFOi7lXM" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/iv0VFOi7lXM/mqdefault.jpg" alt=""><span class="rk">RECOMENDADO</span><span class="dur">6:33</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=iv0VFOi7lXM" target="_blank" rel="noopener">Sistemas Operativos, Memoria virtual 5 Clock</a>
+    <div class="ch">Mtro. José Luis Elvira · 6:33 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>El algoritmo del reloj con bit de uso, sobre la misma cadena: 8 fallos, como en R1.</p>
+    <div class="ver"><b>Qué ver:</b> Completo.</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=4R_GcQ_R0tE" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/4R_GcQ_R0tE/mqdefault.jpg" alt=""><span class="dur">10:43</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=4R_GcQ_R0tE" target="_blank" rel="noopener">Paginación de memoria: reemplazo de páginas FIFO vs LRU</a>
+    <div class="ch">FNE Profesor - Ciencias de la Computación · 10:43 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>LRU y FIFO con 4 marcos y la cadena 0, 7, 2, 7, 5, 8, 9, 2, 4. Curiosidad: con esa cadena FIFO tiene 7 fallos y LRU 8 (verificado con el simulador); LRU no siempre gana.</p>
+    <div class="ver"><b>Qué ver:</b> 2:00-7:00 LRU · 7:00-10:30 FIFO.</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=ubAtKV9siZ8" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/ubAtKV9siZ8/mqdefault.jpg" alt=""><span class="dur">7:00</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=ubAtKV9siZ8" target="_blank" rel="noopener">Paginación en memoria: algoritmo óptimo paso a paso</a>
+    <div class="ch">FNE Profesor - Ciencias de la Computación · 7:00 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>El algoritmo óptimo paso a paso con 4 marcos, incluido qué hacer cuando dos páginas no se vuelven a usar (empate).</p>
+    <div class="ver"><b>Qué ver:</b> Completo.</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=8uzWDwPFLdg" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/8uzWDwPFLdg/mqdefault.jpg" alt=""><span class="dur">5:14</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=8uzWDwPFLdg" target="_blank" rel="noopener">Sistemas Operativos, Memoria virtual 3 reemplazo</a>
+    <div class="ch">Mtro. José Luis Elvira · 5:14 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>La idea del reemplazo de páginas y el óptimo como “bola de cristal”, con una analogía de pronósticos de fútbol.</p>
+    <div class="ver"><b>Qué ver:</b> 2:00-5:00.</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=rUPcHQIASM8" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/rUPcHQIASM8/mqdefault.jpg" alt=""><span class="dur">8:47</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=rUPcHQIASM8" target="_blank" rel="noopener">Sistemas Operativos, Memoria virtual 7 Hiperpaginación</a>
+    <div class="ch">Mtro. José Luis Elvira · 8:47 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Hiperpaginación: la curva de uso de CPU que cae al subir la multiprogramación, el conjunto de trabajo con una ventana Δ y cómo aproximarlo con un timer y el bit de referencia.</p>
+    <div class="ver"><b>Qué ver:</b> 1:00-3:00 thrashing · 3:00-8:46 conjunto de trabajo.</div>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=FJMl7v_x6DI" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/FJMl7v_x6DI/mqdefault.jpg" alt=""><span class="dur">8:16</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=FJMl7v_x6DI" target="_blank" rel="noopener">Sistemas Operativos - algoritmo de reemplazo de página - SEGUNDA OPORTUNIDAD (o clock, o reloj)</a>
+    <div class="ch">Sylvina Enriquez · 8:16 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Un ejercicio completo de segunda oportunidad, marcando bit de uso y puntero en cada paso.</p>
+    <div class="ver"><b>Qué ver:</b> Completo.</div>
+    <p class="oj">Ojo: Revisa su convención para el bit al cargar; puede diferir de la de la página 4.</p>
+  </div>
+</div>
+</div>
+<p class="tiny">Descartado: “Memoria virtual: Thrashing (hiperpaginación)” del canal de Gunnar Wolf: es una exposición de estudiantes, más floja que el video de Elvira.</p>
+</section>
+
+<details class="ex" id="R1" data-nav="R1 · La cadena de Stallings">
+<summary>R1 · Cuatro algoritmos con la cadena de Stallings <span class="tag">verificado con un simulador</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Tres marcos, cadena 2, 3, 2, 1, 5, 2, 4, 5, 3, 2, 5, 2. Cuenta los fallos con FIFO, OPT, LRU y reloj. ¿Cuál queda más cerca del óptimo?</p></div>
+<div class="sol">
+<div class="st">FIFO</div><div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">2</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">5</td><td class="n">2</td><td class="n">4</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">2</td></tr><tr><th class="rh">M0</th><td class="f">2</td><td>2</td><td>2</td><td>2</td><td class="f">5</td><td>5</td><td>5</td><td>5</td><td class="f">3</td><td>3</td><td>3</td><td>3</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">3</td><td>3</td><td>3</td><td>3</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">5</td><td>5</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td></td><td class="f">1</td><td>1</td><td>1</td><td class="f">4</td><td>4</td><td>4</td><td>4</td><td>4</td><td class="f">2</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td></td><td>2</td><td>3</td><td>1</td><td></td><td>5</td><td></td><td>2</td><td>4</td></tr></table></div><p class="tiny">9 fallos de página en 12 referencias (contando los iniciales).</p>
+<div class="st">OPT</div><div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">2</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">5</td><td class="n">2</td><td class="n">4</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">2</td></tr><tr><th class="rh">M0</th><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">4</td><td>4</td><td>4</td><td class="f">2</td><td>2</td><td>2</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td></td><td class="f">1</td><td class="f">5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td></td><td class="f">F</td><td></td><td></td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td></td><td>1</td><td></td><td>2</td><td></td><td></td><td>4</td><td></td><td></td></tr></table></div><p class="tiny">6 fallos de página en 12 referencias (contando los iniciales).</p>
+<div class="st">LRU</div><div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">2</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">5</td><td class="n">2</td><td class="n">4</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">2</td></tr><tr><th class="rh">M0</th><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">3</td><td>3</td><td>3</td><td>3</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">3</td><td>3</td><td>3</td><td class="f">5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td></td><td class="f">1</td><td>1</td><td>1</td><td class="f">4</td><td>4</td><td>4</td><td class="f">2</td><td>2</td><td>2</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td></td><td></td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td></td><td>3</td><td></td><td>1</td><td></td><td>2</td><td>4</td><td></td><td></td></tr></table></div><p class="tiny">7 fallos de página en 12 referencias (contando los iniciales).</p>
+<div class="st">Reloj</div><div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">2</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">5</td><td class="n">2</td><td class="n">4</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">2</td></tr><tr><th class="rh">M0</th><td class="f">2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td class="f">5<sup>1</sup></td><td>5<sup>1</sup></td><td>5<sup>1</sup></td><td>5<sup>1</sup></td><td class="f">3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>1</sup></td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>0</sup></td><td class="f">2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>0</sup></td><td>2<sup>1</sup></td><td>2<sup>0</sup></td><td>2<sup>1</sup></td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td></td><td class="f">1<sup>1</sup></td><td>1<sup>0</sup></td><td>1<sup>0</sup></td><td class="f">4<sup>1</sup></td><td>4<sup>1</sup></td><td>4<sup>0</sup></td><td>4<sup>0</sup></td><td class="f">5<sup>1</sup></td><td>5<sup>1</sup></td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td></td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td></td><td>2</td><td>3</td><td>1</td><td></td><td>5</td><td></td><td>4</td><td></td></tr><tr><th class="rh">puntero</th><td>M1</td><td>M2</td><td>M2</td><td>M0</td><td>M1</td><td>M2</td><td>M0</td><td>M0</td><td>M1</td><td>M1</td><td>M0</td><td>M0</td></tr></table></div><p class="tiny">8 fallos de página en 12 referencias (contando los iniciales).</p>
+<p>OPT 6, LRU 7, reloj 8, FIFO 9 (los mismos de la figura de Stallings). LRU queda más cerca del óptimo, y el reloj, que lo aproxima con un solo bit, queda entre LRU y FIFO.</p>
+</div></div>
+</details>
+
+<details class="ex" id="R2" data-nav="R2 · LRU no tiene anomalía">
+<summary>R2 · La cadena de Belady con LRU <span class="tag">verificado</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Con la cadena 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5, simula LRU con 3 y con 4 marcos. ¿Aparece la anomalía?</p></div>
+<div class="sol">
+<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">5</td></tr><tr><th class="rh">M0</th><td class="f">1</td><td>1</td><td>1</td><td class="f">4</td><td>4</td><td>4</td><td class="f">5</td><td>5</td><td>5</td><td class="f">3</td><td>3</td><td>3</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">2</td><td>2</td><td>2</td><td class="f">1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="f">4</td><td>4</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">3</td><td>3</td><td>3</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">5</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td></td><td></td><td>5</td><td>1</td><td>2</td></tr></table></div><p class="tiny">10 fallos de página en 12 referencias (contando los iniciales).</p>
+<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">5</td></tr><tr><th class="rh">M0</th><td class="f">1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="f">5</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">3</td><td>3</td><td>3</td><td>3</td><td class="f">5</td><td>5</td><td>5</td><td>5</td><td class="f">4</td><td>4</td></tr><tr><th class="rh">M3</th><td class="f"></td><td></td><td></td><td class="f">4</td><td>4</td><td>4</td><td>4</td><td>4</td><td>4</td><td class="f">3</td><td>3</td><td>3</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td></td><td class="f">F</td><td></td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td></td><td></td><td></td><td>3</td><td></td><td></td><td>4</td><td>5</td><td>1</td></tr></table></div><p class="tiny">8 fallos de página en 12 referencias (contando los iniciales).</p>
+<p>Con LRU, pasar de 3 a 4 marcos baja los fallos. No hay anomalía; FIFO, con la misma cadena, subía de 9 a 10.</p>
+</div></div>
+</details>
+
+<details class="ex" id="R3" data-nav="R3 · Elegir víctima con U y D">
+<summary>R3 · Elegir la víctima con los bits U y D <span class="tag">nuevo</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Páginas en memoria (U, D): A (1, 1) · B (0, 1) · C (1, 0) · D (0, 1). a) ¿Qué clase tiene cada una y cuál sale? b) Si además hubiera E (0, 0), ¿cuál saldría? c) ¿Cuántas transferencias de disco cuesta el fallo en cada caso?</p></div>
+<div class="sol">
+<p><b>a)</b> A clase 3, B clase 1, C clase 2, D clase 1. La clase más baja con páginas es la 1: sale <b>B o D</b> (por FIFO, la cargada antes).</p>
+<p><b>b)</b> E, clase 0.</p>
+<p><b>c)</b> Con B o D (sucias): escribir la víctima y leer la nueva, dos transferencias. Con E (limpia): solo leer la nueva.</p>
+</div></div>
+</details>
+
+<details class="ex" id="R4" data-nav="R4 · Conjunto de trabajo">
+<summary>R4 · Calcular el conjunto de trabajo <span class="tag">nuevo</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Cadena (t = 1 a 12): 1, 2, 1, 3, 2, 4, 4, 4, 4, 5, 5, 4. Con Δ = 4: a) W en t = 6. b) W en t = 12. c) Si hay 3 marcos para este proceso, ¿cuándo esperas más fallos?</p></div>
+<div class="sol">
+<p><b>a)</b> Referencias 3 a 6: 1, 3, 2, 4 → W = {1, 2, 3, 4} (4 páginas).</p>
+<p><b>b)</b> Referencias 9 a 12: 4, 5, 5, 4 → W = {4, 5} (2 páginas).</p>
+<p><b>c)</b> Al comienzo, cuando el conjunto de trabajo (4 páginas) no cabe en 3 marcos. Al final el proceso vive en 2 páginas y le sobran marcos.</p>
+</div></div>
+</details>
+
+<details class="ex" id="R5" data-nav="R5 · Thrashing, conceptual">
+<summary>R5 · El sistema que se ahoga <span class="tag">nuevo · pregunta conceptual</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Un sistema tiene la CPU al 15 % y el disco de swap al 100 %. El administrador decide admitir más procesos para “aprovechar la CPU”. ¿Qué está pasando y por qué la decisión es mala? ¿Qué debería hacer el sistema?</p></div>
+<div class="sol">
+<p>Está en <b>thrashing</b>: la suma de los conjuntos de trabajo supera los marcos, así que los procesos pasan el tiempo en page faults (bloqueados esperando al disco). Más procesos significa menos marcos por proceso y todavía más fallos. Hay que hacer lo contrario: bajar el grado de multiprogramación (descargar procesos completos) y repartir los marcos según el conjunto de trabajo o la frecuencia de fallos de cada uno.</p>
+</div></div>
+</details>
+
+<section id="t4-preguntas" data-nav="Preguntas del tema">
+<h2>Preguntas del tema</h2>
+<p class="lead">Tapa la respuesta y contesta en voz alta.</p>
+<details class="ex"><summary>¿Por qué el algoritmo óptimo no se puede implementar?</summary><div class="body"><p>Porque necesita saber cuándo se va a usar cada página en el futuro. Solo sirve como referencia para comparar otros algoritmos.</p></div></details>
+<details class="ex"><summary>¿Por qué LRU es caro y cómo se aproxima?</summary><div class="body"><p>Porque hay que registrar el momento de cada acceso a memoria. Se aproxima con un bit de referencia que pone la MMU y que el sistema borra periódicamente (reloj, NRU).</p></div></details>
+<details class="ex"><summary>¿Qué es la anomalía de Belady?</summary><div class="body"><p>Que con FIFO, para algunas cadenas, aumentar los marcos aumenta los fallos. LRU y OPT no la tienen.</p></div></details>
+<details class="ex"><summary>¿Por qué el reloj se llama “segunda oportunidad”?</summary><div class="body"><p>Porque una página con bit de referencia en 1 no sale: se le apaga el bit y el puntero sigue. Solo sale si en la siguiente pasada sigue con el bit en 0.</p></div></details>
+<details class="ex"><summary>¿Por qué conviene sacar una página limpia antes que una sucia?</summary><div class="body"><p>Porque la limpia no hay que escribirla en el disco: el fallo cuesta una transferencia en vez de dos.</p></div></details>
+<details class="ex"><summary>¿Qué es el thrashing y cómo se evita?</summary><div class="body"><p>El sistema produce page faults todo el tiempo porque los procesos no tienen sus conjuntos de trabajo en memoria. Se evita bajando el grado de multiprogramación y asignando marcos según el conjunto de trabajo o la frecuencia de fallos.</p></div></details>
+</section>
+
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=(localStorage.getItem('so-c2-theme')||localStorage.getItem('so-c2-theme')); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('so-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  var lastBest=-1;
+  function onScroll(){
+    var y=window.scrollY+70, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4) best=secs.length-1;
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+    var sb=document.querySelector('.sidebar'), act=links[best];
+    if(sb && act && window.innerWidth>900 && best!==lastBest){
+      var r=act.getBoundingClientRect(), s=sb.getBoundingClientRect();
+      if(r.top<s.top+40 || r.bottom>s.bottom-40){ sb.scrollTop+=r.top-s.top-sb.clientHeight/2; }
+    }
+    lastBest=best;
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='so-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+</script>
+</body>
+</html>

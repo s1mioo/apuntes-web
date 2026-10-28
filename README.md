@@ -1,71 +1,73 @@
 # Apuntes — panel de estudio
 
-Sitio estático (HTML + CSS + Vanilla JS) que reúne mis resúmenes HTML de
-estudio por ramo, para preparar evaluaciones. Pensado para GitHub Pages: sin
-backend, sin build, sin dependencias que instalar.
+Sitio estático (HTML + CSS + Vanilla JS) que reúne resúmenes, guías y
+ejercicios en HTML para preparar evaluaciones, organizados por ramo y
+evaluación. Se publica en GitHub Pages; lo comparto con amigos que también
+suben sus apuntes.
+
+¿Quieres aportar? Lee [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Estructura del repositorio
 
 ```
 /
-├── index.html              ← página principal (sidebar + inicio + visor)
-├── css/style.css           ← estilos del sitio (no de los apuntes)
-├── js/
-│   ├── ramos.js            ← índice de ramos y apuntes (lo único que se edita)
-│   └── script.js           ← arma el sidebar, las tarjetas y el visor
+├── index.html                  ← página principal (inicio + visor)
+├── css/style.css               ← estilos del sitio (no de los apuntes)
+├── js/script.js                ← rutas, menú, tema y visor
+├── ramos.json                  ← código de ramo → nombre
+├── scripts/indice.py           ← genera apuntes.json y valida
+├── .github/workflows/          ← publica en Pages en cada push
 └── apuntes/
-    ├── inf221-algoco/
-    │   └── c1-resumen.html
-    └── inf236-ads/
-        └── parte1-resumen.html
+    └── <ramo>/<evaluación>/<archivo>.html
+        p. ej. apuntes/inf246/c2/3-Paginacion.html
 ```
 
-## Cómo agregar un ramo o un apunte
-
-1. Copia el `.html` en `apuntes/<ramo>/` (nombres en minúscula, con guiones,
-   sin espacios ni tildes). No hace falta editarlo.
-2. Agrega o completa su entrada en `js/ramos.js`:
-
-```js
-{
-  id: 'inf292',
-  codigo: 'INF292',
-  nombre: 'Optimización',
-  apuntes: [
-    { nombre: 'Branch and Bound', ruta: 'apuntes/inf292-optimizacion/branch-and-bound.html' }
-  ]
-}
-```
-
-El menú lateral y las tarjetas del inicio se generan solos a partir de esa
-lista; no hay que tocar `index.html`.
-
-Los apuntes no deben enlazar a archivos fuera del repo (por ejemplo,
-`../Certamenes/...`): esas rutas no existen en GitHub Pages.
-
-## Por qué un iframe
-
-Cada apunte se carga cambiando el `src` de un `<iframe>`:
-
-- **Aislamiento de estilos.** Los apuntes traen su propio `<head>` con
-  estilos, sidebar interno, tema claro/oscuro y MathJax; dentro del iframe no
-  chocan con el CSS del sitio.
-- **Funciona sin servidor.** Abrir `index.html` con doble clic (`file://`)
-  funciona; un `fetch()` de archivos locales fallaría por CORS.
-- **Scripts internos intactos.** Lo que funciona al abrir el apunte suelto
-  funciona igual en el visor.
+`apuntes.json` (el índice que lee la página) **no se guarda en el repo**: lo
+genera la GitHub Action al publicar, y localmente lo generas tú.
 
 ## Probar localmente
 
-Abre `index.html` en el navegador, o levanta un servidor:
-
 ```bash
-python -m http.server
+python scripts/indice.py      # genera apuntes.json
+python -m http.server         # abre http://localhost:8000
 ```
 
-## Desplegar en GitHub Pages
+El sitio ya no funciona con doble clic sobre `index.html`: necesita servir
+`apuntes.json` por HTTP.
 
-1. Sube el repositorio a GitHub.
-2. *Settings → Pages* → *Source*: rama `main`, carpeta `/ (root)`.
-3. En un par de minutos el sitio queda en
-   `https://tu-usuario.github.io/nombre-repo/`.
+Para revisar los apuntes sin generar nada:
+
+```bash
+python scripts/indice.py --check
+```
+
+Avisa si hay HTML fuera de `apuntes/<ramo>/<evaluación>/`, ramos que no
+están en `ramos.json`, apuntes sin `<meta name="author">` o enlaces relativos
+rotos.
+
+## Cómo funciona
+
+- **Índice automático.** `scripts/indice.py` recorre las carpetas y saca el
+  título de cada `<title>`, el autor de `<meta name="author">` (o del
+  historial de git si falta) y la fecha del commit que agregó el archivo. Los
+  apuntes se ordenan por número (`10-` va después de `9-`).
+- **Visor en iframe.** Cada apunte se carga en un `<iframe>`, así sus estilos
+  y scripts propios (MathJax, temas, navegación interna) no chocan con el
+  sitio.
+- **Direcciones directas.** `#ramo/evaluación/apunte` abre ese apunte; sirve
+  para compartir por WhatsApp. Si dentro de un apunte navegas a otro de la
+  misma serie, la dirección se actualiza sola.
+- **Modo oscuro.** El botón 🌙/☀️ cambia el sitio y el apunte abierto (vía
+  `data-theme` en su `<html>`). La primera vez usa el tema del sistema.
+- **Celular.** Bajo 860px de ancho el menú lateral se vuelve un panel
+  deslizable.
+
+## Publicación
+
+En cada push a `main`, `.github/workflows/publicar.yml`:
+
+1. **validar**: corre `indice.py --check`; si hay problemas marca ❌, pero
+   no frena la publicación.
+2. **publicar**: genera `apuntes.json` y despliega el sitio en GitHub Pages.
+
+Requiere, una sola vez: *Settings → Pages → Source: **GitHub Actions***.

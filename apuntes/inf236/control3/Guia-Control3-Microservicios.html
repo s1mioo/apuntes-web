@@ -1,0 +1,1758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control 3 · Microservicios · INF-236</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --code:#f0f1f4;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:290px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --code:#232733;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --code:#232733;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62;font-size:16.5px;-webkit-font-smoothing:antialiased}
+  .layout{display:flex;align-items:flex-start}
+  .sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;
+    overflow-y:auto;background:var(--panel);border-right:1px solid var(--line);padding:22px 16px 60px}
+  .content{flex:1 1 auto;min-width:0;padding:38px clamp(16px,4vw,64px) 120px;max-width:1000px;margin:0 auto}
+  .brand{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+  .brand .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--ex));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;flex:0 0 auto}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:6px 10px;border-radius:7px;
+    font-size:13.5px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  main a{color:var(--brand);text-underline-offset:2px}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer}
+  .btn:hover{background:var(--brand-soft)}
+  .marcador{margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+    font-size:13px;background:var(--bg)}
+  .marcador b{color:var(--accent);font-size:16px}
+  h2{font-size:26px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:19px;margin:28px 0 6px;scroll-margin-top:20px}
+  h4{font-size:15.5px;margin:18px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:46px}
+  section:first-of-type{border-top:0;margin-top:0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14.5px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-size:13px}
+  .tw{overflow-x:auto}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;margin-bottom:2px}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)}
+  .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)}
+  .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+  .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)}
+  .box.ana .bt{color:var(--ana)}
+  .orig{font-size:12.5px;color:var(--muted);font-weight:600;letter-spacing:.02em}
+  .caso{border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:var(--panel);
+    box-shadow:var(--shadow);margin:18px 0}
+  .caso h4{margin-top:0;color:var(--ana)}
+  .caso p{font-size:15.5px}
+  .q{border-left:3px solid var(--brand);padding:2px 0 2px 14px;margin:22px 0 8px}
+  .q b{color:var(--brand)}
+  details.sol{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:14px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.sol>summary{cursor:pointer;padding:11px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);font-size:14px}
+  details.sol>summary::-webkit-details-marker{display:none}
+  details.sol>summary::before{content:"\25B8";font-size:11px;margin-right:8px;display:inline-block;transition:transform .15s}
+  details.sol[open]>summary::before{transform:rotate(90deg)}
+  details.sol .body{padding:6px 18px 16px}
+  .meta{color:var(--muted);font-size:13.5px}
+  .tiempo{display:inline-block;background:var(--warn-soft);color:var(--warn);border-radius:6px;
+    padding:1px 8px;font-size:12.5px;font-weight:600}
+  /* alternativas interactivas */
+  .mc{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0;
+    background:var(--panel);box-shadow:var(--shadow)}
+  .mc .qt{margin:0 0 8px;font-weight:600;font-size:15.5px}
+  .mc ol.ops{list-style:none;padding:0;margin:0}
+  .mc ol.ops li{border:1px solid var(--line);border-radius:8px;padding:7px 10px;margin:6px 0;
+    cursor:pointer;font-size:15px;display:flex;gap:9px}
+  .mc ol.ops li .k{font-weight:700;color:var(--brand);flex:0 0 auto}
+  .mc ol.ops li:hover{background:var(--brand-soft)}
+  .mc.done ol.ops li{cursor:default}
+  .mc.done ol.ops li:hover{background:transparent}
+  .mc ol.ops li.ok,.mc.done ol.ops li.ok:hover{background:var(--accent-soft);border-color:var(--accent)}
+  .mc ol.ops li.bad,.mc.done ol.ops li.bad:hover{background:var(--warn-soft);border-color:var(--warn)}
+  .mc .exp{display:none;margin-top:10px;font-size:14.5px;border-top:1px dashed var(--line);padding-top:8px}
+  .mc.done .exp{display:block}
+  .mc .exp b{color:var(--accent)}
+  .mc .tag{float:right;font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;margin:0 0 6px 10px;
+    background:var(--brand-soft);color:var(--brand)}
+  .mc .tag.c{background:var(--ana-soft);color:var(--ana)}
+  #modo{display:none;border:1px solid var(--warn);border-left-width:4px;border-radius:10px;padding:12px 16px;
+    margin:16px 0;background:var(--warn-soft)}
+  #modo b{color:var(--warn)}
+  #reloj{font-variant-numeric:tabular-nums;font-weight:700}
+  /* figuras */
+  figure.fig{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;
+    margin:18px 0;box-shadow:var(--shadow)}
+  figure.fig svg{width:100%;height:auto;display:block}
+  figure.fig figcaption{font-size:13px;color:var(--muted);margin-top:8px}
+  .s-t{fill:var(--ink);font-size:13px;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  .s-s{fill:var(--muted);font-size:11px;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  .s-h{fill:var(--ink);font-size:15px;font-weight:700;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  .s-biz{fill:var(--brand-soft);stroke:var(--brand);stroke-width:1.3}
+  .s-sup{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.3}
+  .s-inf{fill:var(--ana-soft);stroke:var(--ana);stroke-width:1.3}
+  .s-ext{fill:var(--warn-soft);stroke:var(--warn);stroke-width:1.3}
+  .s-gr{fill:var(--code);stroke:var(--muted);stroke-width:1.3}
+  .s-core{fill:var(--bg);stroke:var(--muted);stroke-width:1.5}
+  .s-ln{stroke:var(--muted);fill:none;stroke-width:1.4}
+  .s-ah{fill:var(--muted)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:900px){
+    .sidebar{display:none}
+    .grid2{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">C3</div>
+    <div><h1>Control 3 · Lectura</h1><small>INF-236 · Del monolito a los microservicios</small></div>
+  </div>
+  <div class="toolbar">
+    <button class="btn" onclick="tema()">Claro / oscuro</button>
+    <button class="btn" onclick="abrir(true)">Abrir pautas</button>
+    <button class="btn" onclick="abrir(false)">Cerrar pautas</button>
+  </div>
+  <div class="marcador">Alternativas: <b id="pts">0</b> correctas de <span id="tot">0</span> respondidas
+    <div class="toolbar" style="margin-top:8px">
+      <button class="btn" onclick="modoControl()">Modo control (4 al azar)</button>
+      <button class="btn" onclick="barajar()">Barajar</button>
+      <button class="btn" onclick="reiniciar()">Reiniciar</button>
+      <button class="btn" onclick="revelar()">Ver todas</button>
+    </div>
+  </div>
+  <nav>
+    <div class="grp">Antes de partir</div>
+    <a href="#uso">Cómo usar esta guía</a>
+    <a href="#ficha">Ficha y mapa de la lectura</a>
+    <a href="#vocab">Vocabulario inglés–español</a>
+    <div class="grp">La lectura en español</div>
+    <a href="#l1">1 · Introducción</a>
+    <a href="#l2">2 · No es lo mismo que SOA</a>
+    <a href="#l3">3 · Proceso de migración</a>
+    <a href="#l4">4 · El sistema FX Core</a>
+    <a href="#l5">5 · La nueva arquitectura</a>
+    <a href="#l6">6 · Problemas del monolito resueltos</a>
+    <a href="#l7">7 · Conclusiones</a>
+    <div class="grp">Para entenderla de verdad</div>
+    <a href="#comp">Monolito vs. microservicios</a>
+    <a href="#conceptos">Conceptos que el texto da por sabidos</a>
+    <a href="#ramo">Conexión con el ramo</a>
+    <a href="#laminas">La lectura y las láminas de la Parte 2</a>
+    <a href="#previas">Lo que ya se preguntó (2022-1)</a>
+    <div class="grp">Para el control (4 alternativas)</div>
+    <a href="#alt">Alternativas (55) y modo control</a>
+    <a href="#chuleta">Chuleta final</a>
+    <div class="grp">Extra (sirve para el certamen)</div>
+    <a href="#vf">Verdadero o falso justificado</a>
+    <a href="#cortas">Preguntas de respuesta corta</a>
+    <a href="#comente">Comente la frase</a>
+    <a href="#sgm">Aplicación al SGM</a>
+    <a href="#simulacro">Simulacro de desarrollo</a>
+  </nav>
+</aside>
+<main class="content">
+
+<!-- ============================================================ -->
+<section id="uso">
+<h2>Control 3 · Lectura: del monolito a los microservicios</h2>
+<p class="lead">Guía para el control de lectura de <i>From Monolithic to Microservices: An Experience Report from the Banking Domain</i> (Bucchiarone, Dragoni, Dustdar, Larsen y Mazzara, IEEE Software, 2018). Archivo original: <code>_L3_FR_1.PDF</code>.</p>
+
+<div class="box warn">
+  <div class="bt">Formato confirmado: 4 preguntas de alternativas</div>
+  <p>El profesor confirmó que el control son <b>4 preguntas de alternativas</b> sobre la lectura. Cada una vale un cuarto de la nota, así que lo que más rinde es conocer bien las ideas centrales y los datos que se prestan para trampa. Las secciones de desarrollo quedaron al final como extra: no entran en este control, pero la materia de microservicios es de la Parte 2 y puede volver en el certamen.</p>
+</div>
+
+<h3>Cómo usar esta guía</h3>
+<ol>
+  <li><b>Ficha, mapa y vocabulario</b> (10 min). Te deja leer el PDF sin tropezar con los términos.</li>
+  <li><b>La lectura en español</b>, con el PDF al lado. Va apartado por apartado: primero lo que dice el texto y después una explicación en simple. No es una traducción palabra por palabra; para el texto literal está el PDF, y cada apartado indica su página.</li>
+  <li><b>La lectura y las láminas de la Parte 2</b>: la presentación 014 de microservicios es la teoría y la lectura es el caso real. Ahí está qué lámina corresponde a qué parte del artículo y qué palabras cambian de sentido entre uno y otro.</li>
+  <li><b>Alternativas</b>: 55 preguntas que se corrigen al hacer clic. El botón <b>Modo control</b> saca 4 al azar de la lectura y toma el tiempo, igual que en el control real.</li>
+</ol>
+
+<div class="box tip">
+  <div class="bt">Si tienes poco tiempo</div>
+  <p>Lee la <a href="#ficha">ficha</a> y la <a href="#chuleta">chuleta final</a>, y después haz tres o cuatro rondas del <a href="#alt">modo control</a>. Cada respuesta trae la explicación con el apartado de la lectura donde está.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="ficha">
+<h2>Ficha y mapa de la lectura</h2>
+
+<div class="tw"><table>
+<tr><th style="width:160px">Campo</th><th>Detalle</th></tr>
+<tr><td>Título</td><td><i>From Monolithic to Microservices: An Experience Report from the Banking Domain</i>. En español: «Del monolito a los microservicios: un reporte de experiencia del dominio bancario».</td></tr>
+<tr><td>Autores</td><td>Antonio Bucchiarone (Fondazione Bruno Kessler), Nicola Dragoni (Technical University of Denmark y Örebro University), Schahram Dustdar (TU Wien), <b>Stephan T. Larsen (Danske Bank</b>, quien lideró en la práctica la transición del FX Core) y Manuel Mazzara (Innopolis University).</td></tr>
+<tr><td>Publicación</td><td>IEEE Software, mayo/junio 2018, págs. 50–55, sección temática «Focus: Microservices».</td></tr>
+<tr><td>Tipo de texto</td><td><b>Reporte de experiencia</b>: cuenta un caso real de la industria. No es un experimento con mediciones ni un paper teórico.</td></tr>
+<tr><td>Caso</td><td>El <b>FX Core</b> del <b>Danske Bank</b>, el sistema que procesa las operaciones de conversión de divisas (FX = <i>foreign exchange</i>).</td></tr>
+<tr><td>Tesis</td><td>Reimplementar la arquitectura monolítica como microservicios <b>mejoró la escalabilidad</b>, y además simplificó el despliegue, dio control total sobre los accesos y centralizó logs y monitoreo. A cambio, la distribución trajo problemas nuevos: tolerancia a fallos, concurrencia, monitoreo y mucha dependencia de la infraestructura y la automatización.</td></tr>
+<tr><td>Fuentes de los autores</td><td>La documentación del sistema original era escasa: casi todo se obtuvo conversando y entrevistando al equipo del FX Core y revisando el código fuente a mano.</td></tr>
+</table></div>
+
+<h3>El artículo en 60 segundos</h3>
+<ol>
+  <li><b>Qué son los microservicios.</b> Un estilo arquitectónico que viene de SOA: sistemas armados con piezas pequeñas e independientes, cada una con su propia base de datos, que se comunican solo con mensajes. Cada pieza implementa una sola capacidad de negocio.</li>
+  <li><b>Por qué no el monolito.</b> Sus módulos comparten memoria, base de datos y archivos, así que no se pueden ejecutar ni escalar por separado, y cualquier cambio es caro.</li>
+  <li><b>Equipos.</b> Un equipo por microservicio, porque según la ley de Conway la forma en que se comunica la organización termina copiada en el diseño.</li>
+  <li><b>No es SOA con otro nombre.</b> SOA era para integrar empresas (B2B), con orquestación central y sin exigir servicios autocontenidos ni despliegue independiente.</li>
+  <li><b>Cómo migraron.</b> Guiados por el negocio y de afuera hacia adentro: una funcionalidad a la vez, priorizada con los traders. Eso los alejó del código antiguo y evitó un «monolito distribuido».</li>
+  <li><b>El dominio.</b> El mercado de divisas: enorme, descentralizado, abierto 24 horas cinco días a la semana. El FX Core registra operaciones y hace <i>line checks</i> (si el cliente tiene garantía suficiente para operar).</li>
+  <li><b>La arquitectura nueva.</b> Contenedores Docker en un clúster Docker Swarm, pipeline CI/CD por servicio, orquestación con autorreparación y coreografía por mensajes con RabbitMQ.</li>
+  <li><b>Qué se resolvió.</b> Servicios chicos con nombres que dicen lo que hacen; un solo componente compartido (el framework Lambda); despliegue individual; control de todos los accesos; arquitectura políglota; logs y monitoreo centralizados. El mainframe sigue, amortiguado con caché.</li>
+  <li><b>Conclusión.</b> Escalabilidad, bajo acoplamiento y alta cohesión salieron casi gratis; lo difícil pasó a ser lo propio de la distribución. Hacen falta lenguajes que traten al microservicio como entidad de primera clase y técnicas de composición para un mercado que cambia todo el tiempo.</li>
+</ol>
+</section>
+
+<!-- ============================================================ -->
+<section id="vocab">
+<h2>Vocabulario inglés–español</h2>
+<p class="lead">Los términos en el orden en que aparecen. Los que más pueden caer en el control están en negrita.</p>
+<div class="tw"><table>
+<tr><th>En el texto</th><th>En español</th><th>Qué significa</th></tr>
+<tr><td><b>monolithic architecture</b></td><td>arquitectura monolítica</td><td>Toda la aplicación es un solo programa que se compila, despliega y escala como una unidad.</td></tr>
+<tr><td><b>microservice</b></td><td>microservicio</td><td>Servicio pequeño, independiente, con sus propios datos, que hace una sola cosa del negocio.</td></tr>
+<tr><td>SOA (service-oriented architecture)</td><td>arquitectura orientada a servicios</td><td>Estilo anterior, pensado para integrar sistemas de distintas organizaciones.</td></tr>
+<tr><td>back-end</td><td>back-end, parte servidora</td><td>Lo que corre en el servidor: lógica, datos, integraciones.</td></tr>
+<tr><td>FX / forex (foreign exchange)</td><td>mercado de divisas</td><td>Compra y venta de monedas extranjeras.</td></tr>
+<tr><td>building block</td><td>bloque de construcción</td><td>Pieza con la que se arma el sistema.</td></tr>
+<tr><td>persistence tool</td><td>herramienta de persistencia</td><td>La base de datos o almacenamiento propio de cada servicio.</td></tr>
+<tr><td><b>message passing</b></td><td>paso de mensajes</td><td>Los componentes se comunican enviándose mensajes, no compartiendo memoria ni llamándose directamente.</td></tr>
+<tr><td><b>business capability</b></td><td>capacidad de negocio</td><td>Algo que el negocio sabe hacer: registrar una operación, verificar garantías, autenticar…</td></tr>
+<tr><td>release</td><td>entrega, versión</td><td>Cada versión publicada de un servicio.</td></tr>
+<tr><td><b>loosely coupled</b> / loose coupling</td><td>débilmente acoplado / bajo acoplamiento</td><td>Las piezas dependen poco unas de otras.</td></tr>
+<tr><td><b>Conway's law</b></td><td>ley de Conway</td><td>El diseño de un sistema copia la estructura de comunicación de la organización que lo hace.</td></tr>
+<tr><td>self-contained</td><td>autocontenido</td><td>Trae todo lo que necesita: datos, interfaz, persistencia.</td></tr>
+<tr><td>deployment unit</td><td>unidad de despliegue</td><td>Lo que se instala de una vez en producción.</td></tr>
+<tr><td>business-to-business (B2B)</td><td>entre empresas</td><td>Integración entre organizaciones distintas.</td></tr>
+<tr><td>WS-BPEL, BPMN</td><td>(se dejan en inglés)</td><td>Lenguajes para describir y ejecutar procesos de negocio; WS-BPEL los ejecuta sobre servicios web, BPMN los modela gráficamente.</td></tr>
+<tr><td><b>orchestration</b></td><td>orquestación</td><td>Un coordinador central le dice a cada servicio qué hacer y cuándo.</td></tr>
+<tr><td><b>business-driven</b></td><td>guiado por el negocio</td><td>Las decisiones las ordena lo que el negocio necesita, no la tecnología.</td></tr>
+<tr><td><b>outside-in</b></td><td>de afuera hacia adentro</td><td>Se parte por lo que ve y usa el negocio (las funcionalidades) y se avanza hacia lo interno.</td></tr>
+<tr><td>stakeholders</td><td>interesados</td><td>Quienes tienen algo en juego en el sistema; acá, los traders de FX.</td></tr>
+<tr><td><b>distributed monolith</b></td><td>monolito distribuido</td><td>Un sistema partido en servicios que siguen tan amarrados que hay que cambiarlos y desplegarlos juntos.</td></tr>
+<tr><td>trader</td><td>operador, trader</td><td>Quien compra y vende divisas en el mercado.</td></tr>
+<tr><td>over the counter (OTC)</td><td>extrabursátil, «sobre el mostrador»</td><td>Se negocia directamente entre las partes, sin una bolsa central.</td></tr>
+<tr><td>trade</td><td>operación</td><td>Una compra o venta concreta de divisas.</td></tr>
+<tr><td><b>line check</b></td><td>verificación de línea</td><td>Revisar si el cliente tiene garantía suficiente para operar y cómo lo afectará la operación.</td></tr>
+<tr><td>collateral</td><td>garantía, colateral</td><td>Activos que respaldan la operación: acciones, bonos o efectivo.</td></tr>
+<tr><td>post-trade management</td><td>gestión posterior a la operación</td><td>Lo que pasa después de cerrar la operación (liquidación, registro, ajustes).</td></tr>
+<tr><td>C&amp;I (Corporates and Institutions)</td><td>Empresas e Instituciones</td><td>El departamento del banco que atiende a grandes clientes.</td></tr>
+<tr><td><b>containerization</b></td><td>contenerización</td><td>Empaquetar cada servicio con todo lo que necesita en un contenedor.</td></tr>
+<tr><td>container image</td><td>imagen de contenedor</td><td>La «plantilla» desde la que se crean los contenedores.</td></tr>
+<tr><td>Docker Registry</td><td>registro de Docker</td><td>Repositorio central donde se guardan las imágenes.</td></tr>
+<tr><td><b>CI/CD pipeline</b></td><td>flujo de integración y despliegue continuos</td><td>Cadena automática que compila, prueba y despliega cada cambio.</td></tr>
+<tr><td>rolling update</td><td>actualización escalonada</td><td>Actualizar las réplicas de a una para no dejar el servicio caído.</td></tr>
+<tr><td>DevOps</td><td>DevOps</td><td>Cultura y prácticas que juntan desarrollo y operaciones para reducir barreras entre equipos.</td></tr>
+<tr><td><b>self-healing</b></td><td>autorreparación</td><td>Si un servicio se cae, el orquestador lo reinicia solo.</td></tr>
+<tr><td>service discovery</td><td>descubrimiento de servicios</td><td>Encontrar dónde está corriendo cada servicio sin configurarlo a mano.</td></tr>
+<tr><td>load balancing</td><td>balanceo de carga</td><td>Repartir las peticiones entre varias réplicas.</td></tr>
+<tr><td><b>choreography</b></td><td>coreografía</td><td>Sin coordinador central: cada servicio reacciona a los mensajes que le interesan.</td></tr>
+<tr><td>IaaS / PaaS</td><td>infraestructura / plataforma como servicio</td><td>Arrendar servidores virtuales (IaaS) o una plataforma lista para desplegar (PaaS).</td></tr>
+<tr><td>mainframe</td><td>mainframe, computador central</td><td>Computador grande y antiguo donde históricamente corre lo crítico de los bancos.</td></tr>
+<tr><td>clearance</td><td>autorización, permisos</td><td>Los permisos necesarios para actuar sobre información crítica.</td></tr>
+<tr><td>caching</td><td>uso de caché</td><td>Guardar copias de datos de acceso frecuente para no consultar siempre la fuente.</td></tr>
+<tr><td>health check</td><td>chequeo de salud</td><td>Señal periódica de que un servicio está vivo y responde.</td></tr>
+<tr><td><b>polyglot architecture</b></td><td>arquitectura políglota</td><td>Cada servicio puede estar escrito en un lenguaje distinto.</td></tr>
+<tr><td>REST</td><td>REST</td><td>Estilo de API web sobre HTTP (<i>Representational State Transfer</i>).</td></tr>
+<tr><td>logging / monitoring</td><td>registro de eventos / monitoreo</td><td>Guardar lo que pasa (logs) y medir el estado (métricas).</td></tr>
+<tr><td>fault tolerance</td><td>tolerancia a fallos</td><td>Seguir funcionando aunque una parte falle.</td></tr>
+<tr><td>high coherence</td><td>alta cohesión</td><td>Lo que va junto está junto: cada pieza tiene un propósito bien definido. El texto dice <i>coherence</i>, pero el concepto es cohesión.</td></tr>
+<tr><td>first-class entity</td><td>entidad de primera clase</td><td>Que el lenguaje la trate como concepto propio, no como algo armado a mano.</td></tr>
+<tr><td>composition</td><td>composición</td><td>Combinar servicios para armar comportamientos más grandes.</td></tr>
+</table></div>
+<div class="box warn">
+  <div class="bt">Trampa de traducción</div>
+  <p>«<i>Five trillion dollars</i>» son <b>cinco billones de dólares</b> en español (5 × 10<sup>12</sup>). El <i>trillion</i> estadounidense es nuestro billón. Si en una alternativa aparece «cinco mil millones» o «cinco trillones», está mal.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="l1">
+<h2>1 · Introducción</h2>
+<p class="orig">Págs. 50–51 · desde «Microservices are an architectural style…» hasta antes de «Migration Process»</p>
+
+<h4>Lo que dice</h4>
+<ul>
+  <li><b>Origen.</b> Los microservicios son un estilo arquitectónico que nace de SOA. La idea fue traer «a lo pequeño», dentro de una sola aplicación, conceptos que habían funcionado «a lo grande», en los flujos de trabajo entre organizaciones.</li>
+  <li><b>Contexto.</b> El cambio hacia microservicios es un tema delicado: varias empresas están reestructurando sus sistemas de back-end para aprovecharlo. Uno de esos casos es el FX Core del Danske Bank.</li>
+  <li><b>El monolito.</b> Sus módulos se apoyan en compartir recursos de la misma máquina (memoria, bases de datos, archivos), así que los componentes <b>no se pueden ejecutar de forma independiente</b>. Su problema más notorio es la escalabilidad, y en general todo lo que tiene que ver con el cambio.</li>
+  <li><b>Los microservicios.</b> El sistema se arma componiendo bloques pequeños e independientes, cada uno con su propia herramienta de persistencia, que se comunican <b>exclusivamente por paso de mensajes</b>. Con esto, la complejidad se traslada al nivel de la <b>coordinación entre servicios</b>.</li>
+  <li><b>Una capacidad por servicio.</b> Se espera que cada microservicio implemente <b>una sola capacidad de negocio</b>, o sea, una funcionalidad muy acotada, y eso favorece la escalabilidad. Como cada uno se entrega y actualiza por separado, encontrar un error o hacer una mejora menor no impacta a los demás servicios ni a sus versiones.</li>
+  <li><b>Un equipo por servicio.</b> En la práctica también se espera que un solo equipo desarrolle y administre cada servicio. Los autores explican por qué es atractivo: si quieres un sistema modular y poco acoplado, tienes que cuidar la estructura de la organización y cómo se comunica, porque según la <b>ley de Conway</b> eso impacta directamente el diseño. Con un equipo por servicio la comunicación es más eficiente dentro del equipo y en toda la organización, y el diseño sale más modular.</li>
+  <li><b>Fuentes.</b> La documentación del sistema original era escasa. Casi todo lo técnico salió de conversaciones y entrevistas con el equipo del FX Core y de revisar el código a mano.</li>
+</ul>
+
+<div class="box def">
+  <div class="bt">En simple</div>
+  <p>Piensa en un restaurante. El monolito es una cocina donde todos los cocineros comparten la misma mesa, los mismos utensilios y el mismo refrigerador: si quieres cocinar el doble de pizzas, tienes que agrandar la cocina entera, y si alguien reorganiza el refrigerador, afecta a todos. Los microservicios son un patio de comidas: cada local tiene su cocina, su refrigerador y su equipo, y se comunican con pedidos escritos. Si la pizzería tiene mucha demanda, abres otra pizzería y nada más. El costo nuevo es coordinar los pedidos entre locales: ahí se fue la complejidad.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="l2">
+<h2>2 · Los microservicios no son SOA con otro nombre</h2>
+<p class="orig">Pág. 51 · párrafo «Microservices is not just another name for SOA…» y el siguiente</p>
+
+<h4>Lo que dice</h4>
+<ul>
+  <li>En SOA los servicios <b>no tienen que ser autocontenidos</b>: no se les exige traer sus datos, su interfaz de usuario y su propia base de datos.</li>
+  <li>SOA <b>no se enfoca en unidades de despliegue independientes</b> ni en lo que eso implica. Es, más bien, un enfoque para la <b>comunicación entre empresas</b>.</li>
+  <li>La idea de SOA era permitir «programar a nivel de negocio» con motores y lenguajes de procesos como <b>WS-BPEL y BPMN</b>, construidos sobre la literatura de modelado de negocio.</li>
+  <li>El énfasis de SOA estaba en la <b>orquestación de servicios</b>, no en cómo se desarrollan y despliegan.</li>
+</ul>
+
+<div class="tw"><table>
+<tr><th>Aspecto</th><th>SOA</th><th>Microservicios (según la lectura)</th></tr>
+<tr><td>Para qué nació</td><td>Integrar organizaciones distintas (B2B)</td><td>Estructurar por dentro <i>una</i> aplicación</td></tr>
+<tr><td>¿Servicio autocontenido?</td><td>No se exige</td><td>Sí: datos y persistencia propios</td></tr>
+<tr><td>Despliegue independiente</td><td>No es el foco</td><td>Es central: cada servicio se entrega por separado</td></tr>
+<tr><td>Coordinación</td><td>Orquestación (motor central, WS-BPEL/BPMN)</td><td>En el FX Core: coreografía por mensajes</td></tr>
+<tr><td>Énfasis</td><td>Procesos de negocio entre empresas</td><td>Desarrollo, despliegue y escalado de cada pieza</td></tr>
+</table></div>
+
+<div class="box def">
+  <div class="bt">En simple</div>
+  <p>SOA conectaba «edificios» (empresas) con un director de orquesta que decía quién toca cuándo. Los microservicios dividen un edificio en departamentos independientes, cada uno con su llave, sus muebles y su propio contrato de arriendo, que se avisan cosas por mensajes.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="l3">
+<h2>3 · Proceso de migración</h2>
+<p class="orig">Pág. 51 · «Migration Process»</p>
+
+<h4>Lo que dice</h4>
+<ul>
+  <li>La migración fue <b>guiada por el negocio</b> y <b>de afuera hacia adentro</b>: se diseñó e implementó <b>una funcionalidad de negocio a la vez</b>.</li>
+  <li>Las funcionalidades se definieron sobre todo <b>conversando con los stakeholders</b> (los traders de FX) y se fueron agregando en iteraciones, según su prioridad para el negocio.</li>
+  <li>Caso a caso se decidía si una funcionalidad merecía un <b>servicio nuevo</b>. Pasaba cuando:
+    <ul>
+      <li>parecía <b>aislada y suficientemente grande</b>, o</li>
+      <li>era <b>compartida por muchas otras</b> funcionalidades de negocio.</li>
+    </ul>
+  </li>
+  <li>A veces varias funcionalidades partían juntas en un servicio y después se <b>movían a uno propio</b>: cuando la funcionalidad crecía demasiado o cuando varios servicios la necesitaban por igual.</li>
+  <li><b>Beneficio</b>: este enfoque alejó al equipo de la implementación antigua y les hizo difícil terminar <b>reimplementando todo como un monolito distribuido</b>.</li>
+</ul>
+
+<div class="box def">
+  <div class="bt">En simple</div>
+  <p>No tomaron el código viejo para cortarlo en pedazos (eso habría copiado los mismos amarres en una versión distribuida). Partieron por lo que el negocio necesitaba, preguntándoles a los traders, y construyeron cada funcionalidad desde cero, en orden de prioridad. Es lo mismo que haces con historias de usuario y un backlog priorizado.</p>
+</div>
+
+<div class="box ana">
+  <div class="bt">Por qué importa el «monolito distribuido»</div>
+  <p>Si cortas un monolito por donde ya estaba cortado (por capas, por tablas o por clases), los pedazos siguen necesitándose entre sí a cada rato: un cambio obliga a tocar y desplegar varios servicios a la vez. Tienes la lentitud y la fragilidad de la red <i>sin</i> la independencia que justificaba distribuir. Lo peor de los dos mundos.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="l4">
+<h2>4 · El sistema FX Core del Danske Bank</h2>
+<p class="orig">Págs. 51–52 · «Danske Bank's FX Core System» y Figura 1</p>
+
+<h4>Lo que dice</h4>
+<ul>
+  <li><b>Qué abarca FX.</b> Desde transacciones privadas en el extranjero (comprar por internet en otro país, usar la tarjeta de crédito de viaje) hasta corporaciones que pasan activos de una moneda a otra y empresas que exportan o importan.</li>
+  <li><b>Tamaño.</b> FX creció con la globalización y hoy es el <b>mercado financiero más grande del mundo</b>, con un volumen promedio de unos <b>cinco billones de dólares diarios</b>. Hay operaciones de cientos de millones de dólares.</li>
+  <li><b>Sin mercado central.</b> A diferencia de la bolsa de valores, FX es <b>descentralizado y «over the counter»</b>: los traders negocian precios y operan directamente entre ellos. Los traders suelen ser los bancos multinacionales más grandes, que operan para sus clientes o para sí mismos.</li>
+  <li><b>Horario.</b> Por ser descentralizado y global, el mercado está abierto <b>24 horas al día, cinco días a la semana</b>.</li>
+  <li><b>FX IT</b> (Figura 1) es parte del departamento <b>Corporates and Institutions (C&amp;I)</b> y actúa como <b>puerta de enlace</b> entre los mercados internacionales y los clientes y traders del banco. Los clientes de C&amp;I son sobre todo grandes instituciones financieras y corporaciones multinacionales.</li>
+  <li><b>FX Core</b> es parte de FX IT. Maneja las <b>operaciones (trades)</b> y los <b>line checks</b>: revisar si el cliente tiene la garantía financiera necesaria (acciones, bonos o efectivo) para operar y cómo la operación afectará esa garantía. Incluye registro, validación y gestión posterior a la operación.</li>
+  <li><b>Confidencialidad.</b> Para poder publicar, se omitieron nombres de protocolos, de proveedores externos y de servicios específicos, y la lógica interna de algunos componentes no se describe a fondo.</li>
+</ul>
+
+<figure class="fig">
+<svg viewBox="0 0 700 220" role="img" aria-label="Figura 1 redibujada: sistema FX IT">
+  <defs><marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-ah"/></marker></defs>
+  <rect x="20" y="28" width="175" height="54" rx="10" class="s-ext"/>
+  <text x="107" y="60" text-anchor="middle" class="s-t">Clientes externos</text>
+  <rect x="20" y="138" width="175" height="54" rx="10" class="s-ext"/>
+  <text x="107" y="162" text-anchor="middle" class="s-t">Clientes de</text>
+  <text x="107" y="178" text-anchor="middle" class="s-t">Danske Bank</text>
+  <rect x="265" y="18" width="175" height="184" rx="12" class="s-biz"/>
+  <text x="352" y="104" text-anchor="middle" class="s-h">Danske Bank</text>
+  <text x="352" y="124" text-anchor="middle" class="s-h">FX IT</text>
+  <text x="352" y="148" text-anchor="middle" class="s-s">(incluye el FX Core)</text>
+  <rect x="510" y="18" width="170" height="184" rx="12" class="s-ext"/>
+  <text x="595" y="114" text-anchor="middle" class="s-h">Mercados</text>
+  <line x1="197" y1="55" x2="263" y2="55" class="s-ln" marker-start="url(#ah1)" marker-end="url(#ah1)"/>
+  <line x1="197" y1="165" x2="263" y2="165" class="s-ln" marker-start="url(#ah1)" marker-end="url(#ah1)"/>
+  <line x1="442" y1="110" x2="508" y2="110" class="s-ln" marker-start="url(#ah1)" marker-end="url(#ah1)"/>
+</svg>
+<figcaption>Figura 1 redibujada. FX IT hace de puerta de enlace entre los clientes (externos y del banco) y los mercados de divisas; las flechas van en ambos sentidos. Fíjate en que tiene la forma de un <b>diagrama de contexto</b>: el sistema al centro y, alrededor, con quién intercambia información.</figcaption>
+</figure>
+
+<div class="box def">
+  <div class="bt">En simple</div>
+  <p>Un cliente grande (una minera que exporta, un fondo de inversión) quiere cambiar, por ejemplo, 50 millones de dólares a euros. El FX Core registra la operación y, antes de cerrarla, hace el <i>line check</i>: ¿este cliente tiene suficientes acciones, bonos o efectivo de respaldo? ¿Cómo queda su respaldo después de esta operación? Con montos así, un error cuesta caro, y por eso el mainframe y los permisos pesan tanto en la sección 6.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="l5">
+<h2>5 · La nueva arquitectura de microservicios del FX Core</h2>
+<p class="orig">Págs. 52–53 · «FX Core Microservice Architecture» y Figura 2</p>
+
+<h4>Lo que dice</h4>
+<p>La nueva arquitectura se basa en el estilo de microservicios y debe <b>reemplazar por completo</b> la arquitectura monolítica antigua. Los autores la presentan como un ejemplo de cómo implementar este estilo en un entorno empresarial y destacan cuatro mejoras, tanto de arquitectura como de procesos de la empresa:</p>
+
+<div class="tw"><table>
+<tr><th style="width:150px">Mejora</th><th>Qué se hizo</th><th>Qué ganaron</th></tr>
+<tr><td><b>Contenerización / Docker</b></td><td>Todos los servicios corren en <b>contenedores Linux</b> sobre un clúster <b>Docker Swarm</b>. Las imágenes viven en un <b>Docker Registry interno</b> (repositorio central); una imagen nueva se sube cuando el sistema de integración continua construyó y probó con éxito la nueva versión.</td><td>Usar las herramientas de Docker. Con <b>Docker Compose</b> se despliega toda la arquitectura <b>con un solo comando</b>; antes todo eso se hacía a mano.</td></tr>
+<tr><td><b>Automatización</b></td><td>Cada servicio tiene su propio <b>pipeline de CI/CD</b> automatizado. Docker Swarm trae una API para automatizar tareas de infraestructura, como las <b>actualizaciones escalonadas</b> (<i>rolling updates</i>), dentro del pipeline.</td><td>Aplicar prácticas modernas de DevOps, con automatización completa, siguiendo la filosofía corporativa de <b>reducir barreras entre equipos</b>.</td></tr>
+<tr><td><b>Orquestación</b></td><td>Docker Swarm orquesta los contenedores.</td><td>Los servicios caídos se <b>reinician solos</b> (autorreparación); además hay <b>descubrimiento de servicios</b> y <b>balanceo de carga</b>.</td></tr>
+<tr><td><b>Integración</b></td><td>Los servicios se integran por <b>coreografía de paso de mensajes</b>, con <b>RabbitMQ</b> como sistema de mensajería.</td><td>Bajo acoplamiento (se profundiza en la sección 6).</td></tr>
+</table></div>
+
+<p><b>Hoja de ruta.</b> El departamento de TI planea adoptar <b>Red Hat OpenShift</b> (plataforma IaaS/PaaS) para sus centros de datos. <b>Por ahora</b>, la infraestructura son <b>máquinas virtuales</b> que se piden por un portal web y que el propio equipo del FX Core configura a mano. O sea: los contenedores corren sobre máquinas virtuales.</p>
+
+<figure class="fig">
+<svg viewBox="0 0 990 500" role="img" aria-label="Figura 2 redibujada: arquitectura de microservicios del FX Core">
+  <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-ah"/></marker></defs>
+  <!-- proveedores externos -->
+  <ellipse cx="480" cy="40" rx="105" ry="27" class="s-ext"/>
+  <text x="480" y="45" text-anchor="middle" class="s-t">Proveedores externos</text>
+  <!-- núcleo -->
+  <rect x="235" y="112" width="490" height="318" rx="24" class="s-core"/>
+  <rect x="380" y="95" width="200" height="34" rx="8" class="s-ext"/>
+  <text x="480" y="117" text-anchor="middle" class="s-t">APIs de proveedores externos</text>
+  <line x1="440" y1="95" x2="440" y2="69" class="s-ln" marker-end="url(#ah2)"/>
+  <line x1="480" y1="95" x2="480" y2="69" class="s-ln" marker-end="url(#ah2)"/>
+  <line x1="520" y1="95" x2="520" y2="69" class="s-ln" marker-end="url(#ah2)"/>
+  <!-- servicios izquierda -->
+  <rect x="250" y="145" width="175" height="34" rx="7" class="s-biz"/><text x="337" y="167" text-anchor="middle" class="s-t">ResponsibilityService</text>
+  <rect x="250" y="191" width="175" height="34" rx="7" class="s-biz"/><text x="337" y="213" text-anchor="middle" class="s-t">AuthService</text>
+  <rect x="250" y="247" width="175" height="34" rx="7" class="s-sup"/><text x="337" y="269" text-anchor="middle" class="s-t">TracingService</text>
+  <rect x="250" y="303" width="175" height="34" rx="7" class="s-sup"/><text x="337" y="325" text-anchor="middle" class="s-t">MonitoringService</text>
+  <rect x="250" y="359" width="175" height="34" rx="7" class="s-sup"/><text x="337" y="381" text-anchor="middle" class="s-t">LoggingService</text>
+  <!-- servicios derecha -->
+  <rect x="535" y="145" width="175" height="34" rx="7" class="s-biz"/><text x="622" y="167" text-anchor="middle" class="s-t">LinecheckService</text>
+  <rect x="535" y="191" width="175" height="34" rx="7" class="s-biz"/><text x="622" y="213" text-anchor="middle" class="s-t">TradingService</text>
+  <rect x="535" y="247" width="175" height="34" rx="7" class="s-sup"/><text x="622" y="269" text-anchor="middle" class="s-t">DataSyncService</text>
+  <rect x="535" y="303" width="175" height="34" rx="7" class="s-sup"/><text x="622" y="325" text-anchor="middle" class="s-t">FailoverService</text>
+  <rect x="535" y="359" width="175" height="34" rx="7" class="s-sup"/><text x="622" y="381" text-anchor="middle" class="s-t">ConfigurationService</text>
+  <!-- centro -->
+  <ellipse cx="480" cy="205" rx="48" ry="32" class="s-inf"/><text x="480" y="210" text-anchor="middle" class="s-t">RabbitMQ</text>
+  <path d="M442,293 L442,347 A38,8 0 0 0 518,347 L518,293" class="s-inf"/><ellipse cx="480" cy="293" rx="38" ry="8" class="s-inf"/>
+  <text x="480" y="320" text-anchor="middle" class="s-t">Redis</text><text x="480" y="336" text-anchor="middle" class="s-s">caché</text>
+  <rect x="420" y="452" width="120" height="32" rx="7" class="s-inf"/><text x="480" y="473" text-anchor="middle" class="s-t">cAdvisor</text>
+  <!-- almacenes izquierda -->
+  <path d="M30,148 L30,202 A65,8 0 0 0 160,202 L160,148" class="s-inf"/><ellipse cx="95" cy="148" rx="65" ry="8" class="s-inf"/>
+  <text x="95" y="182" text-anchor="middle" class="s-t">PostgreSQL</text>
+  <path d="M30,240 L30,290 A65,8 0 0 0 160,290 L160,240" class="s-inf"/><ellipse cx="95" cy="240" rx="65" ry="8" class="s-inf"/>
+  <text x="95" y="272" text-anchor="middle" class="s-t">Cassandra</text>
+  <rect x="30" y="306" width="130" height="30" rx="7" class="s-inf"/><text x="95" y="326" text-anchor="middle" class="s-t">Icinga</text>
+  <path d="M30,360 L30,410 A65,8 0 0 0 160,410 L160,360" class="s-inf"/><ellipse cx="95" cy="360" rx="65" ry="8" class="s-inf"/>
+  <text x="95" y="392" text-anchor="middle" class="s-t">ElasticSearch</text>
+  <rect x="30" y="448" width="130" height="30" rx="7" class="s-inf"/><text x="95" y="468" text-anchor="middle" class="s-t">Kibana</text>
+  <line x1="95" y1="448" x2="95" y2="421" class="s-ln" marker-end="url(#ah2)"/>
+  <polyline points="250,162 163,162" class="s-ln" marker-end="url(#ah2)"/>
+  <polyline points="250,208 205,208 205,162" class="s-ln"/>
+  <polyline points="250,264 163,264" class="s-ln" marker-end="url(#ah2)"/>
+  <polyline points="250,320 210,320 210,321 163,321" class="s-ln" marker-end="url(#ah2)"/>
+  <polyline points="250,376 210,376 210,386 163,386" class="s-ln" marker-end="url(#ah2)"/>
+  <!-- almacenes derecha -->
+  <rect x="800" y="135" width="140" height="52" rx="6" class="s-gr"/><text x="870" y="166" text-anchor="middle" class="s-t">Mainframe</text>
+  <path d="M800,233 L800,283 A70,8 0 0 0 940,283 L940,233" class="s-gr"/><ellipse cx="870" cy="233" rx="70" ry="8" class="s-gr"/>
+  <text x="870" y="260" text-anchor="middle" class="s-t">DB2</text><text x="870" y="276" text-anchor="middle" class="s-s">(mainframe)</text>
+  <path d="M800,340 L800,392 A70,8 0 0 0 940,392 L940,340" class="s-inf"/><ellipse cx="870" cy="340" rx="70" ry="8" class="s-inf"/>
+  <text x="870" y="374" text-anchor="middle" class="s-t">PostgreSQL</text>
+  <polyline points="710,162 797,162" class="s-ln" marker-end="url(#ah2)"/>
+  <polyline points="710,203 750,203 750,162" class="s-ln"/>
+  <polyline points="710,214 772,214 772,376" class="s-ln"/>
+  <polyline points="710,264 797,264" class="s-ln" marker-end="url(#ah2)"/>
+  <polyline points="710,320 760,320 760,376" class="s-ln"/>
+  <polyline points="710,376 797,376" class="s-ln" marker-end="url(#ah2)"/>
+  <path d="M940,165 C972,180 972,230 943,250" class="s-ln" marker-end="url(#ah2)"/>
+</svg>
+<figcaption>Figura 2 redibujada (la arquitectura nueva). Dentro del recuadro gris están los microservicios, RabbitMQ y la caché Redis. Las flechas van de cada servicio a su almacenamiento o herramienta. Colores: <span style="color:var(--brand)">azul</span> son los servicios ligados a funciones del negocio y de acceso; <span style="color:var(--accent)">verde</span>, los servicios transversales de operación; <span style="color:var(--ana)">rosado</span>, herramientas de terceros e infraestructura; gris, el sistema heredado. Esa lectura de los colores es mía: el artículo no trae leyenda.</figcaption>
+</figure>
+
+<h4>Cómo leer la Figura 2</h4>
+<div class="tw"><table>
+<tr><th>Pieza</th><th>Qué hace (según el texto y la figura)</th></tr>
+<tr><td>TradingService, LinecheckService</td><td>Las dos funciones centrales del FX Core: registrar operaciones y hacer line checks. Todavía hablan con el <b>mainframe</b>.</td></tr>
+<tr><td>ResponsibilityService, AuthService</td><td>Responsabilidades y autenticación; guardan en PostgreSQL.</td></tr>
+<tr><td>DataSyncService</td><td>Sincroniza datos con DB2, la base del mainframe.</td></tr>
+<tr><td>FailoverService, ConfigurationService</td><td>Conmutación ante fallas y configuración; guardan en PostgreSQL.</td></tr>
+<tr><td>TracingService → Cassandra</td><td>Trazas de lo que ocurre en el sistema.</td></tr>
+<tr><td>LoggingService → ElasticSearch ← Kibana</td><td><b>Logging centralizado</b>: ElasticSearch guarda e indexa los logs y Kibana los visualiza.</td></tr>
+<tr><td>MonitoringService → Icinga, más cAdvisor</td><td><b>Monitoreo centralizado</b> de métricas; cAdvisor mide el uso de recursos de los contenedores.</td></tr>
+<tr><td>RabbitMQ</td><td>El bus de mensajes: la <b>única</b> vía de integración interna entre servicios.</td></tr>
+<tr><td>Redis (caché)</td><td>La figura la muestra en el núcleo; el texto dice que el impacto del mainframe se redujo con caché.</td></tr>
+<tr><td>APIs de proveedores externos</td><td>La frontera hacia proveedores externos, que se comunican por protocolos propietarios (a futuro, REST).</td></tr>
+</table></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="l6">
+<h2>6 · Cómo se resolvieron los problemas del monolito</h2>
+<p class="orig">Págs. 53–55 · «Solving Monolithic Problems»</p>
+
+<h4>Lo que dice</h4>
+<ol>
+  <li><b>Componentes grandes y amarrados → servicios chicos e independientes.</b> El monolito tenía componentes grandes, muy acoplados, con <b>responsabilidades superpuestas</b> e integrados de muchas formas distintas. Se reemplazaron por varios microservicios independientes, en general mucho más pequeños, cuyos <b>nombres ya revelan su responsabilidad</b>. Como no se integran directamente, hay menos acoplamiento y menos riesgo de que dos servicios terminen haciendo lo mismo. <i>Ejemplo:</i> en el monolito, el registro de operaciones y los line checks los manejaban <b>a la vez ForexAPI y RequestService</b>; ahora <b>TradingService</b> y <b>LineCheckService</b> se encargan cada uno de lo suyo.</li>
+  <li><b>Muchos componentes compartidos → uno solo.</b> El único componente compartido que queda es el <b>framework Lambda</b>: muy mínimo, solo sirve para conectarse con la infraestructura y entregar métodos de formato estándar para mensajes, logs y <i>health checks</i>.</li>
+  <li><b>El mainframe sigue, por ahora.</b> Por lo crítico de la información y los permisos que se necesitan para actuar sobre ella, el mainframe seguirá conectado un tiempo. Con los años, sus funciones se irán implementando como servicios nuevos hasta extraer todo lo de FX y <b>desacoplarlo por completo</b>. Mientras tanto, su impacto se reduce con <b>caché</b>.</li>
+  <li><b>Despliegue individual.</b> Como los servicios son independientes, poco acoplados y aislados, se despliegan <b>uno por uno sin afectar a los demás</b>. Docker y los contenedores Linux garantizan que cada servicio corra en el <b>mismo entorno</b> en las pruebas locales, en los servidores de prueba y en producción.</li>
+  <li><b>Control de los accesos.</b> La reimplementación permitió «matar» <b>todos los caminos de entrada al sistema que el equipo no controlaba</b>. Como el equipo maneja toda la infraestructura con Docker (incluidas las bases de datos y los puertos abiertos a clientes externos), puede eliminar cualquier acceso no deseado. Eso le permitió ofrecer <b>APIs abiertas</b> a clientes y traders del banco y <b>eliminar las consultas directas a la base de datos</b>. El equipo queda como dueño total de sus detalles internos.</li>
+  <li><b>Integración solo por mensajes.</b> Internamente, los servicios se integran <b>únicamente</b> por mensajería en RabbitMQ. Al ser una coreografía basada en mensajes, los servicios <b>no se llaman directamente</b>: el acoplamiento es muy bajo y <b>no hay interfaces que violar</b>. Hacia afuera sí usan otros mecanismos: protocolos propietarios con los proveedores externos y, a futuro, APIs REST.</li>
+  <li><b>Arquitectura políglota.</b> Ya no dependen de la plataforma <b>.NET</b> ni de bases de datos <b>MS SQL</b>: cada servicio puede escribirse en el lenguaje que el equipo quiera. Los autores se adelantan a la objeción («¿no pasan a depender de Docker?») y responden que los contenedores Linux se están volviendo un estándar gracias a la <b>Open Container Initiative</b>.</li>
+  <li><b>Logs y monitoreo centralizados.</b> Logging con <b>LoggingService, ElasticSearch y Kibana</b>, que junta los logs de todos los servicios. Monitoreo con <b>MonitoringService, Icinga y cAdvisor</b>, que junta las métricas. Con ambos centralizados el equipo tiene una visión completa del estado del sistema y puede <b>actuar de forma proactiva</b> ante comportamientos sospechosos o fallas.</li>
+</ol>
+
+<div class="tw"><table>
+<tr><th>Problema del monolito</th><th>Cómo lo resolvió el FX Core</th></tr>
+<tr><td>Componentes grandes, acoplados, con responsabilidades superpuestas (ForexAPI y RequestService hacían lo mismo)</td><td>Servicios pequeños con una responsabilidad cada uno (TradingService, LineCheckService)</td></tr>
+<tr><td>Muchos componentes compartidos</td><td>Un solo componente compartido: el framework Lambda</td></tr>
+<tr><td>Dependencia fuerte del mainframe</td><td>Se mantiene por criticidad; caché por ahora y migración gradual a servicios</td></tr>
+<tr><td>Despliegue difícil, todo junto</td><td>Despliegue individual; mismo entorno en local, pruebas y producción</td></tr>
+<tr><td>Accesos que el equipo no controlaba, consultas directas a la BD</td><td>APIs abiertas; el equipo controla bases de datos y puertos</td></tr>
+<tr><td>Integración de muchas formas distintas</td><td>Solo mensajería en RabbitMQ (coreografía)</td></tr>
+<tr><td>Atados a .NET y MS SQL</td><td>Arquitectura políglota</td></tr>
+<tr><td>Poca visibilidad del estado</td><td>Logs y métricas centralizados y agregados</td></tr>
+</table></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="l7">
+<h2>7 · Conclusiones</h2>
+<p class="orig">Pág. 55 · el apartado sin título que empieza con «We have all learned…»</p>
+
+<h4>Lo que dice</h4>
+<ul>
+  <li><b>La distribución trae problemas nuevos.</b> Meter tanta distribución en un sistema abre una gama completa de problemas por resolver.</li>
+  <li><b>Lo que vino casi gratis:</b> <b>escalabilidad</b>, <b>bajo acoplamiento</b> y <b>alta cohesión</b> (más otros beneficios de los microservicios), porque basta con <b>replicar servicios para escalar</b> y porque están divididos según los <b>límites del dominio</b>.</li>
+  <li><b>Lo que ahora importa cada vez más:</b> mecanismos de <b>tolerancia a fallos</b>, manejo de <b>concurrencia</b> y <b>monitoreo</b>. Los autores lo ven como algo <b>valioso</b>: al resolver esos aspectos se crea valor en el sistema.</li>
+  <li><b>Con el monolito</b> esos problemas nunca aparecieron. Los problemas de antes eran resolver la complejidad orientada a objetos y desplegar «semejante monstruo».</li>
+  <li><b>Infraestructura y automatización</b> resultaron clave: hay demasiadas piezas móviles que administrar y conectar.</li>
+  <li><b>Futuro: lenguajes para microservicios.</b> Esperan más atención a estos temas y lenguajes de programación pensados para el paradigma. Esos lenguajes deberían modelar los microservicios de forma uniforme y con un nivel de abstracción que facilite interconectarlos. En un sistema como el FX Core, remodelar una parte sería mucho más simple si el lenguaje ofreciera el microservicio como <b>entidad de primera clase</b>, sobre todo considerando que existen componentes grandes y muy acoplados.</li>
+  <li><b>Técnicas de composición.</b> Hacen falta técnicas para componer microservicios, y deben usarse cuando:
+    <ol>
+      <li>los microservicios se revisan con frecuencia,</li>
+      <li>cambian las funcionalidades que ya se ofrecen (el comportamiento de un microservicio), y</li>
+      <li>hay que ajustar políticas y objetivos de negocio (los requisitos de composición).</li>
+    </ol>
+    Es justo lo que pasa en un mercado dinámico como FX, donde las políticas cambian todo el tiempo.</li>
+</ul>
+
+<div class="box def">
+  <div class="bt">En simple</div>
+  <p>El balance es honesto: no venden los microservicios como gratis. Lo que antes era difícil (escalar, cambiar una parte sin romper otra) se volvió fácil; lo que antes no existía (que un servicio se caiga a mitad de una operación, que dos mensajes lleguen en desorden, saber qué está pasando entre 15 piezas) pasó a ser el trabajo principal. Es un intercambio, un <i>trade-off</i>, igual que el de los requisitos no funcionales que viste en clases.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="comp">
+<h2>Monolito vs. microservicios</h2>
+
+<figure class="fig">
+<svg viewBox="0 0 760 270" role="img" aria-label="Comparación entre monolito y microservicios">
+  <text x="180" y="22" text-anchor="middle" class="s-h">Monolito</text>
+  <rect x="20" y="36" width="320" height="140" rx="14" class="s-core"/>
+  <rect x="40" y="54" width="130" height="44" rx="7" class="s-biz"/><text x="105" y="81" text-anchor="middle" class="s-t">Operaciones</text>
+  <rect x="190" y="54" width="130" height="44" rx="7" class="s-biz"/><text x="255" y="81" text-anchor="middle" class="s-t">Line check</text>
+  <rect x="40" y="114" width="130" height="44" rx="7" class="s-biz"/><text x="105" y="141" text-anchor="middle" class="s-t">Autenticación</text>
+  <rect x="190" y="114" width="130" height="44" rx="7" class="s-biz"/><text x="255" y="141" text-anchor="middle" class="s-t">Reportes</text>
+  <path d="M120,200 L120,246 A60,8 0 0 0 240,246 L240,200" class="s-inf"/><ellipse cx="180" cy="200" rx="60" ry="8" class="s-inf"/>
+  <text x="180" y="232" text-anchor="middle" class="s-t">BD compartida</text>
+  <line x1="180" y1="176" x2="180" y2="192" class="s-ln"/>
+  <text x="180" y="266" text-anchor="middle" class="s-s">un proceso, un despliegue, memoria y BD compartidas</text>
+
+  <text x="575" y="22" text-anchor="middle" class="s-h">Microservicios</text>
+  <rect x="400" y="40" width="350" height="28" rx="8" class="s-inf"/>
+  <text x="575" y="59" text-anchor="middle" class="s-t">Mensajería (RabbitMQ)</text>
+  <rect x="400" y="100" width="80" height="38" rx="7" class="s-biz"/><text x="440" y="123" text-anchor="middle" class="s-s">Operaciones</text>
+  <rect x="490" y="100" width="80" height="38" rx="7" class="s-biz"/><text x="530" y="123" text-anchor="middle" class="s-s">Line check</text>
+  <rect x="580" y="100" width="80" height="38" rx="7" class="s-biz"/><text x="620" y="123" text-anchor="middle" class="s-s">Auth</text>
+  <rect x="670" y="100" width="80" height="38" rx="7" class="s-sup"/><text x="710" y="123" text-anchor="middle" class="s-s">Logging</text>
+  <line x1="440" y1="68" x2="440" y2="100" class="s-ln"/><line x1="530" y1="68" x2="530" y2="100" class="s-ln"/>
+  <line x1="620" y1="68" x2="620" y2="100" class="s-ln"/><line x1="710" y1="68" x2="710" y2="100" class="s-ln"/>
+  <g>
+    <path d="M415,170 L415,200 A25,6 0 0 0 465,200 L465,170" class="s-inf"/><ellipse cx="440" cy="170" rx="25" ry="6" class="s-inf"/>
+    <path d="M505,170 L505,200 A25,6 0 0 0 555,200 L555,170" class="s-inf"/><ellipse cx="530" cy="170" rx="25" ry="6" class="s-inf"/>
+    <path d="M595,170 L595,200 A25,6 0 0 0 645,200 L645,170" class="s-inf"/><ellipse cx="620" cy="170" rx="25" ry="6" class="s-inf"/>
+    <path d="M685,170 L685,200 A25,6 0 0 0 735,200 L735,170" class="s-inf"/><ellipse cx="710" cy="170" rx="25" ry="6" class="s-inf"/>
+  </g>
+  <line x1="440" y1="138" x2="440" y2="164" class="s-ln"/><line x1="530" y1="138" x2="530" y2="164" class="s-ln"/>
+  <line x1="620" y1="138" x2="620" y2="164" class="s-ln"/><line x1="710" y1="138" x2="710" y2="164" class="s-ln"/>
+  <text x="575" y="236" text-anchor="middle" class="s-s">cada servicio: una capacidad de negocio, su propia BD,</text>
+  <text x="575" y="252" text-anchor="middle" class="s-s">su propio despliegue; solo se hablan por mensajes</text>
+</svg>
+<figcaption>Esquema general (no es una figura del artículo). Los nombres de los módulos del monolito son ilustrativos.</figcaption>
+</figure>
+
+<div class="tw"><table>
+<tr><th>Criterio</th><th>Monolito</th><th>Microservicios</th></tr>
+<tr><td>Unidad de despliegue</td><td>Toda la aplicación</td><td>Cada servicio</td></tr>
+<tr><td>Recursos</td><td>Comparten memoria, BD y archivos de la misma máquina</td><td>Cada uno con su persistencia</td></tr>
+<tr><td>Comunicación interna</td><td>Llamadas en memoria (rápidas)</td><td>Mensajes por la red (más lentos, pueden fallar)</td></tr>
+<tr><td>Escalar</td><td>Se replica todo, aunque solo una parte tenga carga</td><td>Se replica solo el servicio que lo necesita</td></tr>
+<tr><td>Un cambio pequeño</td><td>Recompilar, probar y desplegar todo</td><td>Desplegar solo el servicio afectado</td></tr>
+<tr><td>Tecnología</td><td>Una sola (en el FX Core: .NET y MS SQL)</td><td>Políglota</td></tr>
+<tr><td>Dónde está la complejidad</td><td>Dentro del código (complejidad OO)</td><td>En la coordinación entre servicios</td></tr>
+<tr><td>Problemas típicos</td><td>Escalabilidad, todo lo relacionado con el cambio</td><td>Tolerancia a fallos, concurrencia, monitoreo, infraestructura</td></tr>
+<tr><td>Organización</td><td>Equipos por capa o especialidad</td><td>Un equipo por servicio (Conway)</td></tr>
+</table></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="conceptos">
+<h2>Conceptos que el texto da por sabidos</h2>
+<p class="lead">Un repaso corto de la base teórica. Algunos ya los viste en la Parte 1 (orientación a objetos, reuso); otros son nuevos.</p>
+
+<h3>Acoplamiento y cohesión</h3>
+<p>Son las dos medidas clásicas de un buen diseño modular, y la lectura las usa sin definirlas.</p>
+<ul>
+  <li><b>Acoplamiento</b>: cuánto depende un módulo de otro. Alto acoplamiento = si cambias A, tienes que cambiar B. En el monolito del FX Core, ForexAPI y RequestService hacían las mismas tareas: tocar la lógica de line check obligaba a tocar los dos. Se busca <b>bajo acoplamiento</b>.</li>
+  <li><b>Cohesión</b>: qué tan relacionadas están las cosas <i>dentro</i> de un módulo. Alta cohesión = todo lo que hay en el módulo sirve a un mismo propósito. «TradingService» solo hace operaciones: alta cohesión. Se busca <b>alta cohesión</b>.</li>
+  <li>Regla para recordar: <b>bajo acoplamiento entre piezas, alta cohesión dentro de cada pieza</b>. Los microservicios llevan esta idea de las clases al nivel de servicios desplegables.</li>
+</ul>
+
+<h3>Ley de Conway (1968)</h3>
+<p>Melvin Conway observó que las organizaciones que diseñan sistemas terminan produciendo diseños que copian su propia estructura de comunicación. Si un sistema lo hacen tres equipos que casi no se hablan, el sistema tendrá tres partes con interfaces pobres entre ellas.</p>
+<p>La lectura usa la ley al revés, como herramienta: si quieres servicios independientes, organiza <b>un equipo por servicio</b>. Ojo con no confundirla con la <b>ley de Brooks</b> («agregar gente a un proyecto atrasado lo atrasa más»), que viste en la clase de introducción.</p>
+
+<h3>Parnas y la descomposición en módulos (1972)</h3>
+<p>La lectura cita a Parnas junto a la idea de un equipo por servicio. Su aporte clásico es el <b>ocultamiento de información</b>: un módulo debe esconder una decisión de diseño que puede cambiar, y exponer solo una interfaz estable. Cuando el FX Core elimina las consultas directas a la base de datos y ofrece APIs, está aplicando exactamente eso.</p>
+
+<h3>Contenedor vs. máquina virtual</h3>
+<div class="tw"><table>
+<tr><th></th><th>Máquina virtual (VM)</th><th>Contenedor</th></tr>
+<tr><td>Qué virtualiza</td><td>El hardware completo; cada VM trae su propio sistema operativo</td><td>Solo el espacio de usuario; comparte el kernel del sistema anfitrión</td></tr>
+<tr><td>Peso y arranque</td><td>Pesada (GB), arranca en minutos</td><td>Liviano (MB), arranca en segundos</td></tr>
+<tr><td>Aislamiento</td><td>Mayor</td><td>Menor, pero suficiente para separar procesos</td></tr>
+<tr><td>En el FX Core</td><td>Las VM se piden por un portal web y se configuran a mano</td><td>Los servicios corren en contenedores Docker sobre esas VM</td></tr>
+</table></div>
+<p>Son soluciones alternativas a un problema parecido (aislar y empaquetar software) y <b>se pueden combinar</b>: el FX Core es justo un ejemplo de contenedores corriendo sobre máquinas virtuales. Esto se preguntó en el certamen 2022-1.</p>
+
+<h3>Docker en cuatro piezas</h3>
+<ul>
+  <li><b>Imagen</b>: la plantilla con el servicio y todo lo que necesita. <b>Contenedor</b>: una imagen en ejecución.</li>
+  <li><b>Docker Registry</b>: el repositorio donde se guardan las imágenes (como un GitHub de imágenes).</li>
+  <li><b>Docker Compose</b>: describe varios contenedores en un archivo y los levanta juntos con un comando. Tu proyecto base del SGM lo usa.</li>
+  <li><b>Docker Swarm</b>: une varias máquinas en un clúster y <b>orquesta</b> contenedores: los reparte, los reinicia si se caen, balancea la carga.</li>
+</ul>
+
+<h3>Orquestación vs. coreografía</h3>
+<figure class="fig">
+<svg viewBox="0 0 760 230" role="img" aria-label="Orquestación versus coreografía">
+  <defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-ah"/></marker></defs>
+  <text x="185" y="20" text-anchor="middle" class="s-h">Orquestación (estilo SOA)</text>
+  <rect x="95" y="38" width="180" height="42" rx="8" class="s-ext"/>
+  <text x="185" y="64" text-anchor="middle" class="s-t">Orquestador central</text>
+  <rect x="20" y="160" width="100" height="38" rx="7" class="s-biz"/><text x="70" y="184" text-anchor="middle" class="s-t">Servicio A</text>
+  <rect x="135" y="160" width="100" height="38" rx="7" class="s-biz"/><text x="185" y="184" text-anchor="middle" class="s-t">Servicio B</text>
+  <rect x="250" y="160" width="100" height="38" rx="7" class="s-biz"/><text x="300" y="184" text-anchor="middle" class="s-t">Servicio C</text>
+  <line x1="150" y1="80" x2="80" y2="157" class="s-ln" marker-end="url(#ah3)"/>
+  <line x1="185" y1="80" x2="185" y2="157" class="s-ln" marker-end="url(#ah3)"/>
+  <line x1="220" y1="80" x2="290" y2="157" class="s-ln" marker-end="url(#ah3)"/>
+  <text x="96" y="125" text-anchor="middle" class="s-s">1</text><text x="194" y="125" text-anchor="middle" class="s-s">2</text><text x="272" y="125" text-anchor="middle" class="s-s">3</text>
+  <text x="185" y="220" text-anchor="middle" class="s-s">uno manda y conoce a todos</text>
+
+  <text x="580" y="20" text-anchor="middle" class="s-h">Coreografía (FX Core)</text>
+  <rect x="420" y="100" width="320" height="30" rx="8" class="s-inf"/>
+  <text x="580" y="120" text-anchor="middle" class="s-t">RabbitMQ</text>
+  <rect x="430" y="36" width="130" height="38" rx="7" class="s-biz"/><text x="495" y="60" text-anchor="middle" class="s-t">TradingService</text>
+  <line x1="495" y1="74" x2="495" y2="97" class="s-ln" marker-end="url(#ah3)"/>
+  <text x="585" y="62" class="s-s">publica «operación registrada»</text>
+  <rect x="430" y="160" width="130" height="38" rx="7" class="s-sup"/><text x="495" y="184" text-anchor="middle" class="s-t">LoggingService</text>
+  <rect x="600" y="160" width="130" height="38" rx="7" class="s-biz"/><text x="665" y="184" text-anchor="middle" class="s-t">otro servicio</text>
+  <line x1="495" y1="130" x2="495" y2="157" class="s-ln" marker-end="url(#ah3)"/>
+  <line x1="665" y1="130" x2="665" y2="157" class="s-ln" marker-end="url(#ah3)"/>
+  <text x="580" y="220" text-anchor="middle" class="s-s">cada uno reacciona a los mensajes que le interesan</text>
+</svg>
+<figcaption>En la orquestación, un coordinador central llama a cada servicio en orden. En la coreografía nadie manda: un servicio publica un mensaje y los interesados reaccionan, sin que el emisor sepa quiénes son.</figcaption>
+</figure>
+<div class="box warn">
+  <div class="bt">No te confundas con la palabra «orquestación»</div>
+  <p>La lectura usa «orquestación» en dos sentidos. Cuando habla de SOA, es <b>orquestación de servicios de negocio</b> (un motor de procesos que coordina). Cuando habla de Docker Swarm, es <b>orquestación de contenedores</b>, que es infraestructura: dónde corre cada contenedor, reiniciarlo si se cae, balancear la carga. El FX Core usa orquestación de contenedores <b>y</b> coreografía para integrar los servicios. No hay contradicción.</p>
+</div>
+
+<h3>CI/CD y DevOps</h3>
+<ul>
+  <li><b>Integración continua (CI)</b>: cada cambio se compila y se prueba automáticamente apenas se sube.</li>
+  <li><b>Despliegue continuo (CD)</b>: lo que pasa las pruebas se despliega automáticamente. En el FX Core, la imagen nueva llega al registro solo si el sistema de CI la construyó y probó con éxito.</li>
+  <li><b>DevOps</b>: juntar desarrollo y operaciones, automatizar y bajar las barreras entre equipos.</li>
+</ul>
+
+<h3>Escalar replicando</h3>
+<p>Escalar <b>verticalmente</b> es comprar una máquina más grande. Escalar <b>horizontalmente</b> es poner más copias. En un monolito, la copia es de todo el sistema; con microservicios replicas solo el servicio con carga. Por eso los autores dicen que la escalabilidad salió «casi de regalo»: si TradingService se satura, se levantan más réplicas de TradingService.</p>
+
+<h3>Mainframe y caché</h3>
+<p>El <b>mainframe</b> es el computador central donde los bancos históricamente guardan lo crítico. Es confiable, pero caro de consultar y difícil de cambiar. Una <b>caché</b> (como Redis) guarda copias de los datos que se consultan seguido, para no ir al mainframe cada vez. Es una solución de transición mientras se migran sus funciones.</p>
+
+<h3>Fuera de la lectura, pero ya preguntado: consistencia eventual y SAGA</h3>
+<p>No aparecen en el artículo, pero salieron en el certamen 2022-1, así que conviene tenerlos claros.</p>
+<ul>
+  <li>Si cada servicio tiene su propia base de datos, ya no existe una transacción única que actualice todo a la vez. Los datos de los distintos servicios quedan coherentes <b>después de un rato</b>, cuando los mensajes se propagan: eso es la <b>consistencia eventual</b>. Es un <b>costo</b> de la distribución, no una ventaja ni un patrón.</li>
+  <li><b>SAGA</b> es un patrón para manejarla: una operación larga se divide en transacciones locales, una por servicio, y si un paso falla se ejecutan <b>acciones compensatorias</b> para deshacer los anteriores.</li>
+</ul>
+</section>
+
+<!-- ============================================================ -->
+<section id="ramo">
+<h2>Conexión con el ramo</h2>
+
+<div class="tw"><table>
+<tr><th style="width:190px">Lo visto en clases</th><th>Dónde aparece en la lectura</th></tr>
+<tr><td><b>Diagrama de contexto</b> (clase 002)</td><td>La Figura 1 es prácticamente un diagrama de contexto: FX IT al centro y clientes y mercados alrededor. Y cuando el equipo «mata los caminos que no controla», está redefiniendo los <b>límites del sistema</b>.</td></tr>
+<tr><td><b>Modelo de dominio</b> (clase 003)</td><td>Los servicios se cortan por <b>límites del dominio</b> y por capacidades de negocio, no por tablas ni por capas. El modelo de dominio es justo la herramienta para ver dónde están esos límites.</td></tr>
+<tr><td><b>Historias de usuario</b> (clase 004)</td><td>La migración fue guiada por el negocio: funcionalidades definidas conversando con los traders y agregadas en iteraciones según prioridad. Es la lógica de un backlog de HU.</td></tr>
+<tr><td><b>Reuso, frameworks y patrones</b> (clase 007)</td><td>La lámina de patrones nombra los <b>microservicios como un «lenguaje de patrones»</b> y apunta a microservices.io. El <b>framework Lambda</b> es un framework mínimo compartido. La mensajería de RabbitMQ funciona como el patrón <b>Observer / publish-subscribe</b>.</td></tr>
+<tr><td><b>MVC y capas</b> (clase 008, Fowler cap. 1)</td><td>Un monolito suele cortarse en <b>capas horizontales</b> (presentación, negocio, datos). Los microservicios cortan en <b>rebanadas verticales</b> por capacidad de negocio; cada una puede tener sus propias capas por dentro.</td></tr>
+<tr><td><b>Requisitos no funcionales y trade-off</b></td><td>La conclusión es un trade-off: se gana escalabilidad y mantenibilidad, se paga en tolerancia a fallos, concurrencia, monitoreo e infraestructura.</td></tr>
+<tr><td><b>Libro guía: Fowler, cap. 7</b></td><td>Ver el recuadro de abajo.</td></tr>
+</table></div>
+
+<div class="box ana">
+  <div class="bt">Fowler (2003) vs. la lectura (2018)</div>
+  <p>En el capítulo 7 del libro guía («Distribution Strategies»), Fowler enuncia su <b>Primera Ley del Diseño de Objetos Distribuidos: «no distribuyas tus objetos»</b>. Su argumento: una llamada entre procesos es órdenes de magnitud más lenta que una local, y si distribuyes <i>por clases</i> (clientes en un nodo, pedidos en otro) terminas con muchísimas llamadas remotas y un sistema lento y difícil de cambiar. Él recomienda <b>clustering</b>: replicar la aplicación entera en varios nodos.</p>
+  <p>¿Se contradicen? No del todo. Fowler critica distribuir <b>por clase</b>, con interfaces finas y llamadas síncronas. Los microservicios distribuyen <b>por capacidad de negocio</b>, con poca comunicación y por mensajes asíncronos. Y la propia lectura le da la razón a Fowler en algo: <b>la distribución tiene un costo</b>, y lo dicen en la conclusión.</p>
+</div>
+
+<div class="box tip">
+  <div class="bt">Tu proyecto ya tiene algo de esto</div>
+  <p>El proyecto base del SGM corre en Docker con varias APIs separadas (API_TRAMITACION y API_VALIDACIONES), cada una con su propia base (BD17_TRAMITACION y BD17_VALIDACIONES), y se levanta con Docker Compose. Es una estructura parecida en espíritu. Pero, como dice la pauta de 2022-1, tener contenedores no garantiza nada: lo que importa es <b>por dónde se corta</b> el sistema.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="laminas">
+<h2>La lectura y las láminas de la Parte 2</h2>
+<p class="lead">Revisé las presentaciones 014 (Microservicios), 015 (Contenedores e imágenes), 015b (APIs) y 016 (Patrones de microservicios). La 021 (Patrones IoT) no tiene relación con la lectura. Las otras cuatro sí, y bastante: la 014 es la teoría y la lectura es un caso real que la aplica casi punto por punto.</p>
+
+<div class="box def">
+  <div class="bt">La definición del profesor (014, lámina 29)</div>
+  <p>«Es un estilo de arquitectura que permite desarrollar una aplicación basado en varios servicios “pequeños” débilmente acoplados, con un alcance bien definido, los cuales utilizan medios de comunicación livianos.» En las láminas 30 y 31 desarma los términos: <b>débilmente acoplado</b> significa que los servicios se relacionan mediante interfaces bien definidas que minimizan las dependencias, y el <b>servicio</b> es la unidad granular de composición, el equivalente de los componentes en un monolito.</p>
+</div>
+
+<h3>Qué lámina corresponde a qué parte de la lectura</h3>
+<div class="tw"><table>
+<tr><th style="width:120px">Lámina</th><th>Qué dice</th><th>Dónde aparece en la lectura</th></tr>
+<tr><td>014, 22–24</td><td>El monolito: funcionalidades en <i>n</i> capas y una o más bases de datos compartidas por todas. Ventajas: sirve para negocios acotados, se desarrolla rápido y el acceso a los datos es único. Pero: ¿y si el negocio crece, cambia un subnegocio o aumenta el uso en ciertos períodos?</td><td>Sección 1: el problema del monolito es la escalabilidad y todo lo relacionado con el cambio. El FX es justo un mercado de alto volumen.</td></tr>
+<tr><td>014, 27–31</td><td>Definiciones: servicios pequeños, autónomos, que responden a un objetivo de negocio; débilmente acoplados; comunicación liviana.</td><td>Sección 1: bloques pequeños e independientes, una capacidad de negocio por servicio, comunicación solo por mensajes.</td></tr>
+<tr><td>014, 32</td><td>Los microservicios se organizan en torno a las capacidades de negocio, igual que los equipos responsables de ellos. Ventaja: mantenibilidad. Desventaja: latencia de red.</td><td>Sección 1: una capacidad por servicio y un equipo por servicio (ley de Conway).</td></tr>
+<tr><td>014, 13–20 y 33</td><td>DDD: dividir el modelo en <b>contextos acotados</b> (<i>bounded contexts</i>) que evolucionan por separado. Para migrar hay que responder: cómo definir un microservicio, dónde poner sus límites, cómo conversan y qué partes del monolito lo son.</td><td>Secciones 3 y 7: el criterio para crear un servicio (aislado y grande, o compartido por muchas funcionalidades) y la división «según los límites del dominio».</td></tr>
+<tr><td>014, 34–38</td><td>La base de datos se separa según el ámbito de cada microservicio. <b>Precauciones</b>: un microservicio no es lo mismo que un servicio o una base de datos; hay que respetar la independencia; <b>cada MS es dueño de sus datos</b> y se debe evitar entrar a la base de otro.</td><td>Secciones 1 y 6: persistencia propia para cada servicio, eliminación de las consultas directas a la base de datos, APIs abiertas en su lugar.</td></tr>
+<tr><td>014, 39–40</td><td>API y Gateway: los clientes web y móviles entran por un gateway que reparte las peticiones a los microservicios.</td><td>Sección 6: APIs abiertas para clientes y traders; en la Figura 2, las APIs hacia proveedores externos. Ojo con la palabra «gateway» (recuadro de abajo).</td></tr>
+<tr><td>014, 41 y 016, 8</td><td>Ventajas: poco código, un solo propósito, despliegue y escalado independientes, independencia tecnológica, pipeline más rápido, mejor aislamiento ante fallas. Desventajas: lo propio de lo distribuido (CAP, consistencia eventual), información del negocio repartida, difíciles de administrar «pero existen herramientas», observabilidad.</td><td>Secciones 5, 6 y 7: despliegue individual, réplicas para escalar, arquitectura políglota, CI/CD por servicio, autorreparación. Las desventajas son los problemas nuevos de la conclusión, y las herramientas son Docker Swarm, ElasticSearch/Kibana, Icinga y cAdvisor.</td></tr>
+<tr><td>014, 42–59 y 016, 51–83</td><td>Datos y consistencia: replicación, consistencia eventual, teorema CAP, commit de dos fases y <b>SAGA</b> con transacciones compensatorias. Dos formas de coordinar: un <b>coordinador</b> (orquestación) o <b>eventos</b> (AMQP, coreografía).</td><td>La lectura no habla de consistencia ni de SAGA. Sí usa <b>eventos</b>: los servicios se integran por mensajes en RabbitMQ, un broker que implementa AMQP. Y reconoce la concurrencia y la tolerancia a fallos como problemas nuevos.</td></tr>
+<tr><td>014, 60–61</td><td>No saturar de mensajes, porque aumenta el tiempo para llegar a un estado consistente. Es un mundo asíncrono.</td><td>Sección 7: la complejidad se fue a la coordinación entre servicios.</td></tr>
+<tr><td>015</td><td>Máquinas virtuales vs. contenedores (estos comparten el kernel del anfitrión), imagen vs. contenedor, Dockerfile. <b>docker-compose es «una forma de orquestación»</b>; para sistemas grandes, Kubernetes o Docker Swarm.</td><td>Sección 5: contenedores Linux en un clúster Docker Swarm, que corren sobre máquinas virtuales; Docker Compose despliega todo con un comando; registro de imágenes interno.</td></tr>
+<tr><td>015b</td><td>APIs web y REST (Fielding, 2000): recursos con URI manipulados con verbos HTTP. «Pensar en microservicios: desacoplar es más importante que reusar.» Patrón API Layer.</td><td>Secciones 5 y 6: REST se menciona como el futuro para comunicarse con sistemas externos, y las APIs abiertas reemplazan el acceso directo a la base de datos.</td></tr>
+<tr><td>016, 9</td><td>«Microservices Architecture is not a Silver Bullet»: recomendarlos siempre es un mal consejo, y no recomendarlos nunca también.</td><td>Sección 7: la conclusión es un balance, no una celebración. La distribución trae problemas que el monolito no tenía.</td></tr>
+<tr><td>016, 21–22</td><td>Comunicación síncrona (llamada y respuesta) vs. asíncrona (avisar sin esperar). Orquestar vs. coreografiar.</td><td>Sección 6: los servicios no se llaman directamente; coreografía por mensajes.</td></tr>
+</table></div>
+
+<div class="box ana">
+  <div class="bt">Lo que las láminas agregan y la lectura no trae</div>
+  <p>DDD en detalle (lenguaje ubicuo, contextos acotados), el teorema CAP, la consistencia eventual, el commit de dos fases, SAGA, API Composition, CQRS, el patrón API Gateway y el detalle de REST. En un control de lectura esto suele aparecer como <b>distractor</b>: una alternativa que dice que el FX Core usa SAGA, commit de dos fases o Kubernetes es falsa, porque la lectura no lo dice, aunque sea materia de clases.</p>
+</div>
+
+<div class="box warn">
+  <div class="bt">Palabras que cambian de sentido entre la lectura y las clases</div>
+  <ul>
+    <li><b>Gateway.</b> La lectura dice que FX IT actúa como <i>gateway</i> entre los mercados y los clientes del banco: es una puerta de enlace en sentido de negocio. No es el patrón API Gateway de la lámina 40 (un punto de entrada único entre las aplicaciones cliente y los microservicios).</li>
+    <li><b>Orquestación.</b> Tiene tres sentidos: la de SOA (un motor de procesos de negocio), la de contenedores (docker-compose, Docker Swarm, Kubernetes) y la de una SAGA orquestada (un coordinador que envía mensajes-comando). El FX Core usa la de contenedores y, para integrar sus servicios, coreografía.</li>
+    <li><b>Coherence.</b> La conclusión dice <i>high coherence</i>, pero se refiere a <b>alta cohesión</b>, no a consistencia de datos.</li>
+    <li><b>Registry.</b> Es el repositorio de imágenes de Docker, no un registro de eventos.</li>
+  </ul>
+</div>
+
+<div class="box tip">
+  <div class="bt">Un detalle del anexo de la 014</div>
+  <p>Las pruebas del anexo (láminas 63 a 68) muestran gráficos de colas y de un exchange con tasas de publicación, entrega y confirmación. Por cómo se ven, son del panel de administración de RabbitMQ: el ejemplo del profesor usa el mismo broker de mensajería que el FX Core.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="previas">
+<h2>Lo que ya se preguntó: certamen 2022-1</h2>
+<p class="lead">En <code>cer1-2022-1.pdf</code> hay cuatro preguntas sobre microservicios y contenedores. Muestran qué tipo de razonamiento premia el profesor. Las dos alternativas también están en el banco de abajo, para que las practiques con clic.</p>
+
+<div class="q"><b>Alternativa 5.</b> «Consistencia eventual» en microservicios: ¿es una ventaja, algo propio del monolito, una consecuencia de SAGA o un patrón para BD no relacionales? <b>Respuesta oficial: E, ninguna es correcta.</b> Es un costo de que cada servicio tenga sus propios datos; SAGA es una forma de manejarla, no su causa.</div>
+
+<div class="q"><b>Alternativa 6.</b> Contenedores y máquinas virtuales. <b>Respuesta oficial: B, son soluciones alternativas a un mismo problema e incluso podrían combinarse.</b></div>
+
+<div class="q"><b>Comente la frase 2.</b> «Hay patrones para preservar la consistencia que, sumados a los contenedores, hacen que ya no haya que preocuparse por este problema.» <b>Idea de la pauta:</b> esos enfoques existen y sirven cuando es necesario, pero lo primordial es <b>preservar la independencia entre microservicios</b>; usarlos en exceso va contra ese principio.</div>
+
+<div class="q"><b>Aplicación 3.</b> «¿De qué manera los microservicios, junto con contenedores, permitirían limitar el alcance de los cambios? Use su modelamiento actual.» <b>Idea de la pauta:</b> los contenedores <b>por sí solos no aseguran nada</b>; depende del diseño. Si se divide según el negocio (cada familia de datos en su servicio, cada servicio en un contenedor), los cambios no deberían afectar todo el sistema. Hay que apoyarse en el diseño propio del grupo.</div>
+
+<div class="box tip">
+  <div class="bt">El patrón que se repite</div>
+  <p>El profesor premia dos ideas: <b>la independencia entre servicios es el principio que manda</b>, y <b>la tecnología (contenedores, patrones) no reemplaza al diseño</b>. Si en el control te piden opinar, apóyate en esas dos.</p>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="alt">
+<h2>Alternativas</h2>
+<p class="lead">Haz clic en la opción que elijas: se marca y aparece la explicación. El marcador de la barra lateral lleva la cuenta. Hay 55 preguntas: 42 solo de la lectura y 13 que la cruzan con las clases (marcadas con otro color). Las 2 del certamen 2022-1 están entre estas últimas.</p>
+
+<div class="box tip">
+  <div class="bt">Modo control</div>
+  <p>El botón <b>Modo control (4 al azar)</b> de la barra lateral deja visibles solo 4 preguntas de la lectura, elegidas al azar, y toma el tiempo. Al responder la cuarta te muestra el resultado. Repítelo varias veces: cada ronda sale distinta.</p>
+</div>
+
+<div class="box warn">
+  <div class="bt">Cómo enfrentar las alternativas de este profesor</div>
+  <ol>
+    <li><b>Fíjate si dice «según la lectura» o «según lo visto en clases».</b> Algo puede ser cierto en clases (SAGA, CAP, API Gateway) y no aparecer en la lectura.</li>
+    <li><b>Busca el sujeto cambiado.</b> Muchas alternativas falsas son una frase correcta con el sujeto invertido: SOA por microservicios, monolito por microservicios, ventaja por desventaja, «hoy» por «a futuro».</li>
+    <li><b>«Ninguna» y «Todas» sí salen.</b> En el certamen 2022-1, dos de las ocho alternativas tenían como respuesta «Ninguna».</li>
+    <li><b>Con afirmaciones I, II y III,</b> marca cada una como V o F por separado antes de mirar las opciones.</li>
+    <li><b>Desconfía de los datos exactos:</b> 5 días a la semana, billones (no millones), OpenShift y REST son a futuro, el mainframe sigue conectado.</li>
+  </ol>
+</div>
+
+<div id="modo">
+  <b>Modo control:</b> 4 preguntas al azar de la lectura. Tiempo: <span id="reloj">0:00</span>. <span id="resmodo"></span>
+  <div class="toolbar"><button class="btn" onclick="modoControl()">Otras 4</button><button class="btn" onclick="salirModo()">Volver al banco completo</button></div>
+</div>
+
+<div id="banco">
+
+<div class="mc" data-g="L" data-ok="B"><p class="qt">Según la lectura, los microservicios tienen su origen en:</p><ol class="ops">
+<li><span class="k">A)</span>La orientación a objetos aplicada a sistemas bancarios.</li>
+<li><span class="k">B)</span>La arquitectura orientada a servicios (SOA), llevando a lo pequeño ideas que funcionaron a gran escala.</li>
+<li><span class="k">C)</span>Los mainframes, como forma de repartir su carga.</li>
+<li><span class="k">D)</span>Docker, que hizo posible ejecutar servicios aislados.</li>
+<li><span class="k">E)</span>El patrón MVC, al separar Modelo, Vista y Controlador en procesos distintos.</li>
+</ol><div class="exp"><b>B.</b> La primera frase del artículo: los microservicios vienen de SOA y traen «a lo pequeño», dentro de una aplicación, lo que funcionó «a lo grande», entre organizaciones. (Sección 1)</div></div>
+
+<div class="mc" data-g="L" data-ok="C"><p class="qt">En una arquitectura monolítica, según el texto, los componentes no se pueden ejecutar de forma independiente porque:</p><ol class="ops">
+<li><span class="k">A)</span>Están escritos en un solo lenguaje de programación.</li>
+<li><span class="k">B)</span>Dependen de un mainframe.</li>
+<li><span class="k">C)</span>Su modularización se basa en compartir recursos de la misma máquina: memoria, bases de datos o archivos.</li>
+<li><span class="k">D)</span>No tienen pruebas automatizadas.</li>
+<li><span class="k">E)</span>Se comunican exclusivamente por paso de mensajes.</li>
+</ol><div class="exp"><b>C.</b> Es la definición que da el texto. La E describe justamente lo contrario: los microservicios. (Sección 1)</div></div>
+
+<div class="mc" data-g="L" data-ok="D"><p class="qt">Según la lectura, en el paradigma de microservicios la complejidad:</p><ol class="ops">
+<li><span class="k">A)</span>Desaparece, porque cada servicio es pequeño.</li>
+<li><span class="k">B)</span>Se concentra en la base de datos compartida.</li>
+<li><span class="k">C)</span>Queda alojada en el mainframe.</li>
+<li><span class="k">D)</span>Se traslada al nivel de la coordinación entre servicios.</li>
+<li><span class="k">E)</span>Crece dentro de cada servicio, porque cada uno implementa varias capacidades.</li>
+</ol><div class="exp"><b>D.</b> La complejidad no desaparece, cambia de lugar. No hay BD compartida (B) y cada servicio implementa una sola capacidad (E). (Sección 1)</div></div>
+
+<div class="mc" data-g="L" data-ok="E"><p class="qt">¿Qué se espera que implemente cada microservicio?</p><ol class="ops">
+<li><span class="k">A)</span>Una capa completa de la aplicación: presentación, negocio o datos.</li>
+<li><span class="k">B)</span>Una sola clase del modelo de dominio.</li>
+<li><span class="k">C)</span>Todas las funcionalidades de un departamento del banco.</li>
+<li><span class="k">D)</span>Un conjunto de tablas de la base de datos.</li>
+<li><span class="k">E)</span>Una sola capacidad de negocio, es decir, una funcionalidad muy acotada del sistema.</li>
+</ol><div class="exp"><b>E.</b> «A single business capability». Cortar por capas (A), por clases (B) o por tablas (D) es la receta del monolito distribuido. (Sección 1)</div></div>
+
+<div class="mc" data-g="L" data-ok="A"><p class="qt">La lectura cita la ley de Conway para justificar que:</p><ol class="ops">
+<li><span class="k">A)</span>La estructura de la organización y sus patrones de comunicación impactan directamente el diseño, por lo que conviene un equipo por servicio.</li>
+<li><span class="k">B)</span>Todo sistema aumenta su complejidad salvo que se trabaje para reducirla.</li>
+<li><span class="k">C)</span>Agregar personas a un proyecto atrasado lo atrasa todavía más.</li>
+<li><span class="k">D)</span>Los servicios deben comunicarse solo por mensajes.</li>
+<li><span class="k">E)</span>Los equipos más grandes producen diseños más modulares.</li>
+</ol><div class="exp"><b>A.</b> La C es la ley de Brooks, de la clase de introducción: es el distractor típico. (Sección 1)</div></div>
+
+<div class="mc" data-g="L" data-ok="E"><p class="qt">¿Cuál de las siguientes NO es una diferencia entre SOA y microservicios según la lectura?</p><ol class="ops">
+<li><span class="k">A)</span>En SOA no se exige que los servicios sean autocontenidos, con datos, interfaz y persistencia propios.</li>
+<li><span class="k">B)</span>SOA no se enfoca en unidades de despliegue independientes.</li>
+<li><span class="k">C)</span>SOA es un enfoque para la comunicación entre empresas.</li>
+<li><span class="k">D)</span>SOA pone el énfasis en la orquestación de servicios más que en su desarrollo y despliegue.</li>
+<li><span class="k">E)</span>SOA prohíbe usar lenguajes de procesos de negocio como BPMN.</li>
+</ol><div class="exp"><b>E.</b> Es al revés: SOA buscaba programar a nivel de negocio justamente con WS-BPEL y BPMN. Las otras cuatro sí las dice el texto. (Sección 2)</div></div>
+
+<div class="mc" data-g="L" data-ok="B"><p class="qt">El proceso de migración del FX Core se describe como:</p><ol class="ops">
+<li><span class="k">A)</span>De una sola vez: se reescribió todo y se reemplazó en un día.</li>
+<li><span class="k">B)</span>Guiado por el negocio y de afuera hacia adentro, implementando una funcionalidad de negocio a la vez.</li>
+<li><span class="k">C)</span>Guiado por la tecnología: primero la infraestructura Docker y después el negocio.</li>
+<li><span class="k">D)</span>De adentro hacia afuera, partiendo por la base de datos.</li>
+<li><span class="k">E)</span>Automático, con herramientas que convierten el código monolítico en servicios.</li>
+</ol><div class="exp"><b>B.</b> «Business-driven and outside-in». (Sección 3)</div></div>
+
+<div class="mc" data-g="L" data-ok="C"><p class="qt">¿Con quiénes se definieron principalmente las funcionalidades de negocio durante la migración?</p><ol class="ops">
+<li><span class="k">A)</span>Con los proveedores externos.</li>
+<li><span class="k">B)</span>Con los clientes corporativos del banco.</li>
+<li><span class="k">C)</span>Con los stakeholders, en particular los traders de FX.</li>
+<li><span class="k">D)</span>Con el equipo de infraestructura de Red Hat.</li>
+<li><span class="k">E)</span>Con los autores académicos del artículo.</li>
+</ol><div class="exp"><b>C.</b> Se definieron conversando con los stakeholders (los traders de FX) y se agregaron según su prioridad para el negocio. (Sección 3)</div></div>
+
+<div class="mc" data-g="L" data-ok="D"><p class="qt">Según el criterio de la lectura, una funcionalidad de negocio pasaba a ser un servicio nuevo cuando:</p><ol class="ops">
+<li><span class="k">A)</span>Superaba cierta cantidad de líneas de código.</li>
+<li><span class="k">B)</span>Usaba una base de datos distinta a la del mainframe.</li>
+<li><span class="k">C)</span>La pedía un cliente externo.</li>
+<li><span class="k">D)</span>Parecía aislada y suficientemente grande, o era compartida por muchas otras funcionalidades.</li>
+<li><span class="k">E)</span>Se podía escribir en un lenguaje distinto de .NET.</li>
+</ol><div class="exp"><b>D.</b> Son los dos criterios del texto. Apréndetelos tal cual: sirven para cualquier pregunta de «cómo dividirías…». (Sección 3)</div></div>
+
+<div class="mc" data-g="L" data-ok="E"><p class="qt">¿Qué beneficio atribuye el texto a migrar una funcionalidad a la vez?</p><ol class="ops">
+<li><span class="k">A)</span>Permitió reutilizar todo el código del monolito.</li>
+<li><span class="k">B)</span>Eliminó de inmediato la dependencia del mainframe.</li>
+<li><span class="k">C)</span>Redujo a uno el número de equipos.</li>
+<li><span class="k">D)</span>Hizo innecesaria la documentación.</li>
+<li><span class="k">E)</span>Alejó al equipo de la implementación antigua y dificultó que terminaran reimplementando todo como un monolito distribuido.</li>
+</ol><div class="exp"><b>E.</b> Es el beneficio explícito. La A es lo contrario: se alejaron del código viejo. (Sección 3)</div></div>
+
+<div class="mc" data-g="L" data-ok="A"><p class="qt">Un «monolito distribuido» es:</p><ol class="ops">
+<li><span class="k">A)</span>Un sistema dividido en servicios tan acoplados entre sí que hay que cambiarlos y desplegarlos juntos: paga el costo de la distribución sin recibir sus beneficios.</li>
+<li><span class="k">B)</span>Un monolito replicado en varios servidores con balanceo de carga.</li>
+<li><span class="k">C)</span>Un mainframe conectado a varios servicios.</li>
+<li><span class="k">D)</span>Un sistema donde cada servicio tiene su propia base de datos.</li>
+<li><span class="k">E)</span>Una arquitectura SOA con orquestación.</li>
+</ol><div class="exp"><b>A.</b> La B es <i>clustering</i>, lo que recomienda Fowler en el cap. 7: replicar el monolito no lo «distribuye» en servicios. (Sección 3 y conceptos)</div></div>
+
+<div class="mc" data-g="L" data-ok="B"><p class="qt">¿Qué hace el FX Core dentro de FX IT?</p><ol class="ops">
+<li><span class="k">A)</span>Es el portal web donde los clientes compran divisas.</li>
+<li><span class="k">B)</span>Maneja las operaciones y los line checks: si el cliente tiene garantía para operar y cómo la operación la afectará.</li>
+<li><span class="k">C)</span>Administra los cajeros automáticos del banco.</li>
+<li><span class="k">D)</span>Calcula el tipo de cambio oficial de Dinamarca.</li>
+<li><span class="k">E)</span>Gestiona las cuentas personales de los clientes minoristas.</li>
+</ol><div class="exp"><b>B.</b> Incluye registro, validación y gestión posterior a la operación. (Sección 4)</div></div>
+
+<div class="mc" data-g="L" data-ok="C"><p class="qt">Un «line check» en el FX Core consiste en:</p><ol class="ops">
+<li><span class="k">A)</span>Revisar la línea de código que provoca un error.</li>
+<li><span class="k">B)</span>Verificar la conexión de red con el mercado.</li>
+<li><span class="k">C)</span>Verificar si el cliente tiene garantía financiera (acciones, bonos o efectivo) para hacer la operación y cómo esta la afectaría.</li>
+<li><span class="k">D)</span>Controlar la fila de mensajes pendientes en RabbitMQ.</li>
+<li><span class="k">E)</span>Validar la identidad del trader con AuthService.</li>
+</ol><div class="exp"><b>C.</b> «Line» viene de línea de crédito o de riesgo, no de código. (Sección 4)</div></div>
+
+<div class="mc" data-g="L" data-ok="D"><p class="qt">Sobre el mercado de divisas, según la lectura es correcto que:</p><ol class="ops">
+<li><span class="k">A)</span>Es un mercado centralizado, como la bolsa de valores.</li>
+<li><span class="k">B)</span>Opera 24 horas, los 7 días de la semana.</li>
+<li><span class="k">C)</span>Mueve diariamente alrededor de cinco millones de dólares.</li>
+<li><span class="k">D)</span>Es descentralizado y «over the counter»: los traders negocian precios y operan directamente entre ellos.</li>
+<li><span class="k">E)</span>Solo participan en él bancos daneses.</li>
+</ol><div class="exp"><b>D.</b> Trampas: abre 24 horas pero <b>cinco</b> días a la semana (B), y el volumen es de unos cinco <b>billones</b> de dólares diarios (C). (Sección 4)</div></div>
+
+<div class="mc" data-g="L" data-ok="E"><p class="qt">La Figura 1 (FX IT al centro, con clientes y mercados alrededor) se parece más, de lo visto en el ramo, a:</p><ol class="ops">
+<li><span class="k">A)</span>Un modelo de dominio.</li>
+<li><span class="k">B)</span>Un diagrama de secuencia.</li>
+<li><span class="k">C)</span>Un diagrama de estados.</li>
+<li><span class="k">D)</span>Un diagrama de clases de diseño.</li>
+<li><span class="k">E)</span>Un diagrama de contexto: el sistema al centro y los actores o sistemas externos con los que intercambia información.</li>
+</ol><div class="exp"><b>E.</b> No muestra conceptos del negocio (A), ni mensajes en el tiempo (B), ni estados (C). (Sección 4 y conexión con el ramo)</div></div>
+
+<div class="mc" data-g="L" data-ok="A"><p class="qt">¿Para qué se usa Docker Compose en la nueva arquitectura?</p><ol class="ops">
+<li><span class="k">A)</span>Para desplegar la arquitectura completa con un solo comando, algo que antes se hacía a mano.</li>
+<li><span class="k">B)</span>Para escribir los mensajes que viajan por RabbitMQ.</li>
+<li><span class="k">C)</span>Para reemplazar al mainframe.</li>
+<li><span class="k">D)</span>Para monitorear las métricas de los contenedores.</li>
+<li><span class="k">E)</span>Para guardar los logs centralizados.</li>
+</ol><div class="exp"><b>A.</b> Las métricas son de cAdvisor e Icinga (D) y los logs de ElasticSearch (E). (Sección 5)</div></div>
+
+<div class="mc" data-g="L" data-ok="B"><p class="qt">¿Qué es el Docker Registry interno que menciona el texto?</p><ol class="ops">
+<li><span class="k">A)</span>Un servicio de autenticación.</li>
+<li><span class="k">B)</span>Un repositorio central de imágenes de contenedores; una imagen nueva llega ahí cuando el sistema de integración continua la construye y prueba con éxito.</li>
+<li><span class="k">C)</span>La base de datos DB2 del mainframe.</li>
+<li><span class="k">D)</span>Un registro de errores de los servicios.</li>
+<li><span class="k">E)</span>Un catálogo de clientes del banco.</li>
+</ol><div class="exp"><b>B.</b> «Registry» acá es repositorio, no registro de eventos. (Sección 5)</div></div>
+
+<div class="mc" data-g="L" data-ok="C"><p class="qt">Según la lectura, la orquestación que entrega Docker Swarm permite:</p><ol class="ops">
+<li><span class="k">A)</span>Que los servicios se llamen directamente entre ellos.</li>
+<li><span class="k">B)</span>Describir procesos de negocio en BPMN.</li>
+<li><span class="k">C)</span>Reiniciar automáticamente los servicios caídos (autorreparación), además de descubrimiento de servicios y balanceo de carga.</li>
+<li><span class="k">D)</span>Prescindir de las pruebas.</li>
+<li><span class="k">E)</span>Traducir los protocolos propietarios a REST.</li>
+</ol><div class="exp"><b>C.</b> Es orquestación de <b>contenedores</b>, no de procesos de negocio (B). (Sección 5)</div></div>
+
+<div class="mc" data-g="L" data-ok="D"><p class="qt">¿Cómo se integran entre sí los microservicios del FX Core?</p><ol class="ops">
+<li><span class="k">A)</span>Con llamadas remotas directas entre servicios.</li>
+<li><span class="k">B)</span>Compartiendo una única base de datos PostgreSQL.</li>
+<li><span class="k">C)</span>Mediante un motor central de orquestación de procesos.</li>
+<li><span class="k">D)</span>Por coreografía basada en paso de mensajes, con RabbitMQ.</li>
+<li><span class="k">E)</span>Mediante archivos compartidos en el mainframe.</li>
+</ol><div class="exp"><b>D.</b> Internamente, solo mensajería en RabbitMQ. (Secciones 5 y 6)</div></div>
+
+<div class="mc" data-g="L" data-ok="A"><p class="qt">El texto dice que, gracias a la coreografía por mensajes, «no hay interfaces que violar». Eso significa que:</p><ol class="ops">
+<li><span class="k">A)</span>Ningún servicio depende de la interfaz interna de otro, porque no se llaman directamente; solo publican y consumen mensajes, así que el acoplamiento es muy bajo.</li>
+<li><span class="k">B)</span>Los servicios no ofrecen ninguna API hacia afuera.</li>
+<li><span class="k">C)</span>Las interfaces están protegidas con contraseña.</li>
+<li><span class="k">D)</span>Todos los servicios comparten la misma interfaz gráfica.</li>
+<li><span class="k">E)</span>Se eliminaron los formatos de los mensajes.</li>
+</ol><div class="exp"><b>A.</b> La B es falsa: el equipo justamente creó APIs abiertas para clientes y traders. (Sección 6)</div></div>
+
+<div class="mc" data-g="L" data-ok="E"><p class="qt">La arquitectura nueva conserva un único componente compartido. ¿Cuál es y para qué sirve?</p><ol class="ops">
+<li><span class="k">A)</span>El mainframe, que guarda todos los datos.</li>
+<li><span class="k">B)</span>RabbitMQ, que guarda el estado de todos los servicios.</li>
+<li><span class="k">C)</span>Una base PostgreSQL común a todos los servicios.</li>
+<li><span class="k">D)</span>Redis, que reemplaza a las bases de datos.</li>
+<li><span class="k">E)</span>El framework Lambda: mínimo, sirve para conectarse a la infraestructura y entregar formatos estándar para mensajes, logs y health checks.</li>
+</ol><div class="exp"><b>E.</b> Dato puntual muy preguntable. (Sección 6)</div></div>
+
+<div class="mc" data-g="L" data-ok="B"><p class="qt">¿Por qué el mainframe sigue conectado a la arquitectura de microservicios?</p><ol class="ops">
+<li><span class="k">A)</span>Porque Docker no funciona sin un mainframe.</li>
+<li><span class="k">B)</span>Por lo crítico de la información y los permisos necesarios para actuar sobre ella; mientras tanto, su impacto se reduce con caché.</li>
+<li><span class="k">C)</span>Porque es más rápido que los microservicios.</li>
+<li><span class="k">D)</span>Porque el banco decidió no migrar nunca esas funciones.</li>
+<li><span class="k">E)</span>Porque RabbitMQ solo funciona con DB2.</li>
+</ol><div class="exp"><b>B.</b> La D es falsa: el plan es migrar sus funciones a servicios hasta desacoplarlo por completo. (Sección 6)</div></div>
+
+<div class="mc" data-g="L" data-ok="C"><p class="qt">En el monolito, el registro de operaciones y los line checks los hacían tanto ForexAPI como RequestService. Este ejemplo ilustra:</p><ol class="ops">
+<li><span class="k">A)</span>Alta cohesión.</li>
+<li><span class="k">B)</span>Escalabilidad horizontal.</li>
+<li><span class="k">C)</span>Responsabilidades superpuestas y alto acoplamiento, resuelto en microservicios con TradingService y LineCheckService, cada uno a cargo de lo suyo.</li>
+<li><span class="k">D)</span>El uso correcto del patrón Observer.</li>
+<li><span class="k">E)</span>Una arquitectura políglota.</li>
+</ol><div class="exp"><b>C.</b> Es el único ejemplo concreto del monolito que da el artículo: apréndete los cuatro nombres. (Sección 6)</div></div>
+
+<div class="mc" data-g="L" data-ok="D"><p class="qt">¿Qué significa que la nueva arquitectura sea «políglota»?</p><ol class="ops">
+<li><span class="k">A)</span>Que atiende a clientes en varios idiomas.</li>
+<li><span class="k">B)</span>Que todos los servicios deben escribirse en el mismo lenguaje.</li>
+<li><span class="k">C)</span>Que usa varias bases de datos del mainframe.</li>
+<li><span class="k">D)</span>Que no depende de una tecnología: cada servicio puede escribirse en el lenguaje que el equipo quiera, sin atarse a .NET ni a MS SQL.</li>
+<li><span class="k">E)</span>Que los servicios se traducen automáticamente entre lenguajes.</li>
+</ol><div class="exp"><b>D.</b> (Sección 6)</div></div>
+
+<div class="mc" data-g="L" data-ok="A"><p class="qt">Ante la objeción de que el equipo ahora depende de Docker, los autores responden que:</p><ol class="ops">
+<li><span class="k">A)</span>Los contenedores Linux se están volviendo un estándar a través de la Open Container Initiative.</li>
+<li><span class="k">B)</span>Docker es software desarrollado por el propio banco.</li>
+<li><span class="k">C)</span>Docker es gratuito, así que la dependencia no importa.</li>
+<li><span class="k">D)</span>Volverán a .NET si Docker falla.</li>
+<li><span class="k">E)</span>La dependencia es temporal, hasta volver al mainframe.</li>
+</ol><div class="exp"><b>A.</b> (Sección 6)</div></div>
+
+<div class="mc" data-g="L" data-ok="B"><p class="qt">LoggingService + ElasticSearch + Kibana, y MonitoringService + Icinga + cAdvisor, sirven para:</p><ol class="ops">
+<li><span class="k">A)</span>Autenticar a los usuarios.</li>
+<li><span class="k">B)</span>Centralizar y agregar logs y métricas de todos los servicios, con una visión completa del estado del sistema para actuar de forma proactiva.</li>
+<li><span class="k">C)</span>Ejecutar las operaciones de divisas.</li>
+<li><span class="k">D)</span>Reemplazar a RabbitMQ.</li>
+<li><span class="k">E)</span>Construir las imágenes de Docker.</li>
+</ol><div class="exp"><b>B.</b> (Sección 6)</div></div>
+
+<div class="mc" data-g="L" data-ok="C"><p class="qt">Según las conclusiones, ¿qué beneficios se obtuvieron «casi de regalo» desde el comienzo?</p><ol class="ops">
+<li><span class="k">A)</span>Tolerancia a fallos y manejo de concurrencia.</li>
+<li><span class="k">B)</span>Monitoreo y logging.</li>
+<li><span class="k">C)</span>Escalabilidad, bajo acoplamiento y alta cohesión, porque los servicios se replican para escalar y están divididos según los límites del dominio.</li>
+<li><span class="k">D)</span>La eliminación del mainframe.</li>
+<li><span class="k">E)</span>Menos componentes que administrar.</li>
+</ol><div class="exp"><b>C.</b> La A y la B son justamente lo que se volvió <i>difícil</i>. La E es falsa: ahora hay «muchas piezas móviles». (Sección 7)</div></div>
+
+<div class="mc" data-g="L" data-ok="D"><p class="qt">Según los autores, ¿qué pasó a ser cada vez más importante con la distribución?</p><ol class="ops">
+<li><span class="k">A)</span>Resolver la complejidad orientada a objetos.</li>
+<li><span class="k">B)</span>Desplegar «semejante monstruo».</li>
+<li><span class="k">C)</span>Documentar el sistema original.</li>
+<li><span class="k">D)</span>Los mecanismos de tolerancia a fallos, el manejo de concurrencia y el monitoreo.</li>
+<li><span class="k">E)</span>La dependencia de .NET.</li>
+</ol><div class="exp"><b>D.</b> La A y la B eran los problemas del monolito. (Sección 7)</div></div>
+
+<div class="mc" data-g="L" data-ok="E"><p class="qt">¿Cómo valoran los autores la aparición de esos problemas nuevos?</p><ol class="ops">
+<li><span class="k">A)</span>Como un error de diseño que los obligará a volver al monolito.</li>
+<li><span class="k">B)</span>Como algo irrelevante.</li>
+<li><span class="k">C)</span>Como un costo sin ningún beneficio.</li>
+<li><span class="k">D)</span>Como algo que solo afecta a los sistemas bancarios.</li>
+<li><span class="k">E)</span>Como algo valioso, porque al resolverlos se crea valor en el sistema.</li>
+</ol><div class="exp"><b>E.</b> (Sección 7)</div></div>
+
+<div class="mc" data-g="L" data-ok="A"><p class="qt">¿Cuándo dicen los autores que se necesitan técnicas de composición de microservicios?</p><ol class="ops">
+<li><span class="k">A)</span>Cuando hay revisión frecuente de los microservicios, cambios en las funcionalidades ofrecidas y ajustes de políticas y objetivos de negocio.</li>
+<li><span class="k">B)</span>Solo cuando se migra desde un mainframe.</li>
+<li><span class="k">C)</span>Cuando el sistema tiene menos de diez servicios.</li>
+<li><span class="k">D)</span>Cuando se usa SOA.</li>
+<li><span class="k">E)</span>Cuando no se usan contenedores.</li>
+</ol><div class="exp"><b>A.</b> Son las tres viñetas del final, y lo relacionan con lo dinámico del mercado FX. (Sección 7)</div></div>
+
+<div class="mc" data-g="C" data-ok="B"><p class="qt">Fowler, en el libro guía, enuncia la ley «no distribuyas tus objetos». ¿Cómo se concilia con la lectura?</p><ol class="ops">
+<li><span class="k">A)</span>No se concilian: el artículo demuestra que Fowler estaba equivocado.</li>
+<li><span class="k">B)</span>Fowler critica distribuir por clases (muchas llamadas remotas finas y lentas); los microservicios cortan por capacidad de negocio y se comunican por mensajes, y aun así la lectura reconoce que distribuir trae problemas nuevos.</li>
+<li><span class="k">C)</span>Fowler habla de mainframes, no de servicios.</li>
+<li><span class="k">D)</span>Dicen lo mismo: ambos recomiendan poner cada clase en un nodo.</li>
+<li><span class="k">E)</span>El FX Core usa clustering, que es lo que recomienda Fowler, así que no hay distribución.</li>
+</ol><div class="exp"><b>B.</b> Pregunta de conexión con el ramo. (Conexión con el ramo)</div></div>
+
+<div class="mc" data-g="C" data-ok="D"><p class="qt">Un servicio publica un mensaje y los interesados reaccionan sin que el emisor sepa quiénes son. De los patrones GoF vistos en clases, esto se parece a:</p><ol class="ops">
+<li><span class="k">A)</span>Abstract Factory.</li>
+<li><span class="k">B)</span>Decorator.</li>
+<li><span class="k">C)</span>Template Method.</li>
+<li><span class="k">D)</span>Observer (publish-subscribe).</li>
+<li><span class="k">E)</span>Front Controller.</li>
+</ol><div class="exp"><b>D.</b> La lámina 007 lo define: uno a muchos, los dependientes son avisados cuando cambia el estado; también se le llama publish-subscribe. (Conexión con el ramo)</div></div>
+
+<div class="mc" data-g="C" data-ok="A"><p class="qt">El texto habla de «orquestación» con Docker Swarm y de «coreografía» para integrar los servicios. ¿Qué afirmación es correcta?</p><ol class="ops">
+<li><span class="k">A)</span>La orquestación de Docker Swarm es de contenedores (dónde corren, reiniciarlos, balancear), mientras la coreografía describe cómo colaboran los servicios sin un coordinador central.</li>
+<li><span class="k">B)</span>Son sinónimos.</li>
+<li><span class="k">C)</span>La coreografía requiere un motor central como WS-BPEL.</li>
+<li><span class="k">D)</span>La orquestación de Docker Swarm es la misma orquestación de servicios de SOA.</li>
+<li><span class="k">E)</span>La coreografía solo existe en los mainframes.</li>
+</ol><div class="exp"><b>A.</b> (Conceptos: orquestación vs. coreografía)</div></div>
+
+<div class="mc" data-g="C" data-ok="C"><p class="qt">Un equipo de 12 personas está organizado por especialidad (base de datos, backend, interfaz). Según la ley de Conway, si construyen un sistema nuevo:</p><ol class="ops">
+<li><span class="k">A)</span>El sistema quedará dividido en microservicios por capacidad de negocio.</li>
+<li><span class="k">B)</span>La organización no tendrá ningún efecto en el diseño.</li>
+<li><span class="k">C)</span>El diseño tenderá a reflejar esa división técnica en capas, no una división por capacidades de negocio.</li>
+<li><span class="k">D)</span>El sistema será políglota.</li>
+<li><span class="k">E)</span>Habrá consistencia eventual.</li>
+</ol><div class="exp"><b>C.</b> Aplicación directa de Conway. Para tener servicios por capacidad, la lectura propone un equipo por servicio. (Conceptos)</div></div>
+
+<div class="mc" data-g="L" data-ok="C"><p class="qt">Considere las siguientes afirmaciones sobre el proceso de migración del FX Core:<br>I. Se implementó una funcionalidad de negocio a la vez, agregándolas según su prioridad para el negocio.<br>II. Las funcionalidades se identificaron principalmente a partir de la documentación del sistema original.<br>III. Una funcionalidad que partió junto a otras dentro de un servicio podía pasar después a un servicio propio.<br>Es (son) correcta(s):</p><ol class="ops">
+<li><span class="k">A)</span>Solo I.</li>
+<li><span class="k">B)</span>Solo II.</li>
+<li><span class="k">C)</span>Solo I y III.</li>
+<li><span class="k">D)</span>Solo II y III.</li>
+<li><span class="k">E)</span>I, II y III.</li>
+</ol><div class="exp"><b>C.</b> La II es falsa: la documentación del sistema original era escasa, y las funcionalidades se definieron conversando con los traders. (Secciones 1 y 3)</div></div>
+
+<div class="mc" data-g="L" data-ok="D"><p class="qt">Respecto de SOA, según la lectura es correcto afirmar que:</p><ol class="ops">
+<li><span class="k">A)</span>Exige que cada servicio sea autocontenido, con sus datos, su interfaz y su propia base de datos.</li>
+<li><span class="k">B)</span>Nació para estructurar internamente una sola aplicación.</li>
+<li><span class="k">C)</span>Su foco principal es el despliegue independiente de cada servicio.</li>
+<li><span class="k">D)</span>Buscaba programar a nivel de negocio con motores y lenguajes de procesos como WS-BPEL y BPMN, con énfasis en la orquestación.</li>
+<li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>D.</b> La A, la B y la C describen a los microservicios con el sujeto cambiado: es el tipo de trampa más común. (Sección 2)</div></div>
+
+<div class="mc" data-g="L" data-ok="A"><p class="qt">Según la lectura, un problema notable de las arquitecturas monolíticas es:</p><ol class="ops">
+<li><span class="k">A)</span>La escalabilidad y, en general, todos los aspectos relacionados con el cambio.</li>
+<li><span class="k">B)</span>La seguridad, porque cualquier usuario puede entrar a la base de datos.</li>
+<li><span class="k">C)</span>Que obligan a usar un mainframe.</li>
+<li><span class="k">D)</span>Que no permiten usar orientación a objetos.</li>
+<li><span class="k">E)</span>Que sus componentes se comunican solo por mensajes.</li>
+</ol><div class="exp"><b>A.</b> Es la frase de la introducción. La E describe a los microservicios. (Sección 1)</div></div>
+
+<div class="mc" data-g="L" data-ok="E"><p class="qt">La lectura señala que cada microservicio se entrega y actualiza de forma independiente. Según el texto, esto implica que:</p><ol class="ops">
+<li><span class="k">A)</span>Todos los servicios deben actualizarse el mismo día.</li>
+<li><span class="k">B)</span>Cada servicio necesita su propio mainframe.</li>
+<li><span class="k">C)</span>El sistema deja de tener errores.</li>
+<li><span class="k">D)</span>Los servicios no se pueden escalar por separado.</li>
+<li><span class="k">E)</span>Encontrar un error o agregar una mejora menor no impacta a los demás servicios ni a sus entregas.</li>
+</ol><div class="exp"><b>E.</b> (Sección 1)</div></div>
+
+<div class="mc" data-g="L" data-ok="C"><p class="qt">De acuerdo con la lectura y la Figura 1, el sistema FX IT del Danske Bank:</p><ol class="ops">
+<li><span class="k">A)</span>Es una bolsa de valores centralizada donde se transan divisas.</li>
+<li><span class="k">B)</span>Pertenece a la banca de personas y atiende principalmente a clientes minoristas.</li>
+<li><span class="k">C)</span>Es parte del departamento C&amp;I y actúa como puerta de enlace entre los mercados internacionales y los clientes y traders del banco.</li>
+<li><span class="k">D)</span>Es un proveedor externo que el FX Core consulta mediante REST.</li>
+<li><span class="k">E)</span>Fue reemplazado por completo por el FX Core.</li>
+</ol><div class="exp"><b>C.</b> Los clientes de C&amp;I son grandes instituciones financieras y multinacionales (B es falsa), y el FX Core es una parte de FX IT, no su reemplazo (E). (Sección 4)</div></div>
+
+<div class="mc" data-g="L" data-ok="B"><p class="qt">Respecto de la infraestructura sobre la que corre hoy el FX Core, es correcto afirmar que:</p><ol class="ops">
+<li><span class="k">A)</span>Corre sobre Red Hat OpenShift desde el inicio de la migración.</li>
+<li><span class="k">B)</span>Son máquinas virtuales que se piden por un portal web y que el propio equipo configura a mano; OpenShift está en la hoja de ruta.</li>
+<li><span class="k">C)</span>Corre directamente sobre el mainframe.</li>
+<li><span class="k">D)</span>Usa Kubernetes administrado por un proveedor externo.</li>
+<li><span class="k">E)</span>No usa contenedores, solo máquinas virtuales.</li>
+</ol><div class="exp"><b>B.</b> Kubernetes no aparece en la lectura (D), y los servicios sí corren en contenedores, sobre esas máquinas virtuales (E). (Sección 5)</div></div>
+
+<div class="mc" data-g="L" data-ok="A"><p class="qt">Según la lectura, ¿qué ventaja entregan Docker y los contenedores Linux al desplegar los servicios?</p><ol class="ops">
+<li><span class="k">A)</span>Que cada servicio corre en el mismo entorno en las pruebas locales, en los servidores de prueba y en producción.</li>
+<li><span class="k">B)</span>Que los servicios ya no necesitan pruebas.</li>
+<li><span class="k">C)</span>Que todos los servicios deben escribirse en .NET.</li>
+<li><span class="k">D)</span>Que los servicios pueden compartir la misma base de datos sin quedar acoplados.</li>
+<li><span class="k">E)</span>Que el mainframe deja de ser necesario de inmediato.</li>
+</ol><div class="exp"><b>A.</b> (Sección 6, junto con el despliegue individual)</div></div>
+
+<div class="mc" data-g="L" data-ok="B"><p class="qt">Que el equipo pudiera «matar todos los caminos de entrada que no controla» le permitió, según la lectura:</p><ol class="ops">
+<li><span class="k">A)</span>Cerrarles el sistema a los clientes y traders del banco.</li>
+<li><span class="k">B)</span>Ofrecer APIs abiertas a clientes y traders y eliminar las consultas directas a la base de datos, quedando como dueño de sus detalles internos.</li>
+<li><span class="k">C)</span>Compartir la base de datos con los clientes.</li>
+<li><span class="k">D)</span>Volver a la plataforma .NET.</li>
+<li><span class="k">E)</span>Prescindir de RabbitMQ.</li>
+</ol><div class="exp"><b>B.</b> Es lo mismo que pide la lámina 38 de la 014: cada microservicio dueño de sus datos. (Sección 6)</div></div>
+
+<div class="mc" data-g="L" data-ok="A"><p class="qt">Mirando hacia el futuro, los autores plantean que:</p><ol class="ops">
+<li><span class="k">A)</span>Hacen falta lenguajes de programación que traten al microservicio como entidad de primera clase, lo que haría más simple remodelar partes del sistema.</li>
+<li><span class="k">B)</span>Los microservicios dejarán de usarse en la banca.</li>
+<li><span class="k">C)</span>Los sistemas deberían volver a los mainframes.</li>
+<li><span class="k">D)</span>SOA reemplazará a los microservicios.</li>
+<li><span class="k">E)</span>Docker basta para resolver la composición de servicios.</li>
+</ol><div class="exp"><b>A.</b> Además piden técnicas de composición de microservicios. (Sección 7)</div></div>
+
+<div class="mc" data-g="L" data-ok="D"><p class="qt">Considere las siguientes afirmaciones sobre las conclusiones de la lectura:<br>I. La escalabilidad, el bajo acoplamiento y la alta cohesión se obtuvieron casi desde el comienzo.<br>II. Los problemas de tolerancia a fallos y de concurrencia ya existían en el monolito.<br>III. La infraestructura y la automatización resultaron fundamentales por la cantidad de piezas que hay que administrar.<br>Es (son) correcta(s):</p><ol class="ops">
+<li><span class="k">A)</span>Solo I.</li>
+<li><span class="k">B)</span>Solo III.</li>
+<li><span class="k">C)</span>Solo I y II.</li>
+<li><span class="k">D)</span>Solo I y III.</li>
+<li><span class="k">E)</span>I, II y III.</li>
+</ol><div class="exp"><b>D.</b> La II es falsa: los autores dicen que con el monolito esos problemas nunca aparecieron; los de antes eran la complejidad orientada a objetos y desplegar un sistema enorme. (Sección 7)</div></div>
+
+<div class="mc" data-g="L" data-ok="E"><p class="qt">¿Cuál(es) de las siguientes destacan los autores como mejoras logradas con la migración?</p><ol class="ops">
+<li><span class="k">A)</span>Contenerización con Docker.</li>
+<li><span class="k">B)</span>Automatización con pipelines de integración y despliegue continuos.</li>
+<li><span class="k">C)</span>Orquestación con Docker Swarm.</li>
+<li><span class="k">D)</span>Integración por coreografía de mensajes con RabbitMQ.</li>
+<li><span class="k">E)</span>Todas las anteriores.</li>
+</ol><div class="exp"><b>E.</b> Son las cuatro viñetas de la sección de la arquitectura nueva. (Sección 5)</div></div>
+
+<div class="mc" data-g="L" data-ok="E"><p class="qt">Respecto del mainframe en la nueva arquitectura, es correcto afirmar que:</p><ol class="ops">
+<li><span class="k">A)</span>Fue reemplazado por PostgreSQL.</li>
+<li><span class="k">B)</span>Todas sus funciones ya se migraron a microservicios.</li>
+<li><span class="k">C)</span>Se mantendrá para siempre porque es más rápido que los microservicios.</li>
+<li><span class="k">D)</span>Los servicios lo consultan siempre en forma directa, sin ningún mecanismo que reduzca su carga.</li>
+<li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>E.</b> Sigue conectado por lo crítico de la información y los permisos, su impacto se reduce con caché, y sus funciones se irán migrando hasta desacoplarlo. Ninguna de las cuatro lo dice bien. (Sección 6)</div></div>
+
+<div class="mc" data-g="C" data-ok="B"><p class="qt">En la clase de microservicios se vieron dos formas de coordinar los servicios: un «coordinador» y los «eventos» (AMQP). La integración del FX Core descrita en la lectura corresponde a:</p><ol class="ops">
+<li><span class="k">A)</span>Un coordinador central que le indica a cada servicio qué hacer.</li>
+<li><span class="k">B)</span>Eventos: los servicios publican y consumen mensajes en RabbitMQ, un broker que implementa AMQP, sin llamarse directamente.</li>
+<li><span class="k">C)</span>Un commit de dos fases entre todas las bases de datos.</li>
+<li><span class="k">D)</span>Una base de datos compartida entre todos los servicios.</li>
+<li><span class="k">E)</span>El patrón API Composition.</li>
+</ol><div class="exp"><b>B.</b> Láminas 52 y 53 de la 014 frente a la sección 6 de la lectura: coreografía por mensajes.</div></div>
+
+<div class="mc" data-g="C" data-ok="C"><p class="qt">Las láminas insisten en «respetar la independencia» y en que «cada MS es dueño de sus datos». ¿Qué parte de la lectura va en esa línea?</p><ol class="ops">
+<li><span class="k">A)</span>Que el mainframe siga conectado.</li>
+<li><span class="k">B)</span>Que todos los servicios usen el framework Lambda.</li>
+<li><span class="k">C)</span>Que cada servicio tenga su propia herramienta de persistencia y que se hayan eliminado las consultas directas a la base de datos, reemplazándolas por APIs.</li>
+<li><span class="k">D)</span>Que el mercado FX sea descentralizado.</li>
+<li><span class="k">E)</span>Que los servicios corran sobre máquinas virtuales.</li>
+</ol><div class="exp"><b>C.</b> 014, láminas 37 y 38, frente a las secciones 1 y 6 de la lectura.</div></div>
+
+<div class="mc" data-g="C" data-ok="A"><p class="qt">En la presentación de patrones se afirma que los microservicios «no son una bala de plata». ¿Qué parte de la lectura es coherente con esa idea?</p><ol class="ops">
+<li><span class="k">A)</span>La conclusión: la distribución trae problemas nuevos (tolerancia a fallos, concurrencia, monitoreo) y vuelve clave la infraestructura y la automatización.</li>
+<li><span class="k">B)</span>La descripción del mercado FX.</li>
+<li><span class="k">C)</span>La biografía de los autores.</li>
+<li><span class="k">D)</span>La afirmación de que el monolito no tenía ningún problema.</li>
+<li><span class="k">E)</span>Ninguna: la lectura presenta los microservicios como una solución sin costos.</li>
+</ol><div class="exp"><b>A.</b> 016, lámina 9, frente a la sección 7 de la lectura.</div></div>
+
+<div class="mc" data-g="C" data-ok="D"><p class="qt">DDD propone dividir un modelo grande en contextos acotados (<i>bounded contexts</i>) que evolucionan de forma independiente. En la lectura, la idea equivalente aparece cuando los autores dicen que:</p><ol class="ops">
+<li><span class="k">A)</span>Los servicios se integran solo por mensajes.</li>
+<li><span class="k">B)</span>El mercado FX está abierto las 24 horas.</li>
+<li><span class="k">C)</span>Se usa Docker Compose para desplegar.</li>
+<li><span class="k">D)</span>Los servicios están divididos según los límites del dominio, lo que les dio bajo acoplamiento y alta cohesión.</li>
+<li><span class="k">E)</span>El framework Lambda es el único componente compartido.</li>
+</ol><div class="exp"><b>D.</b> 014, láminas 17 a 20, frente a la sección 7 de la lectura.</div></div>
+
+<div class="mc" data-g="C" data-ok="E"><p class="qt">En clases se vio el patrón SAGA para mantener la consistencia entre microservicios. Respecto de la lectura, es correcto afirmar que:</p><ol class="ops">
+<li><span class="k">A)</span>Describe en detalle cómo el FX Core implementa SAGA con transacciones compensatorias.</li>
+<li><span class="k">B)</span>Afirma que el FX Core usa commit de dos fases entre sus bases de datos.</li>
+<li><span class="k">C)</span>Presenta la consistencia eventual como la principal ventaja del FX Core.</li>
+<li><span class="k">D)</span>Indica que RabbitMQ garantiza transacciones ACID entre servicios.</li>
+<li><span class="k">E)</span>No describe cómo se mantiene la consistencia entre servicios; solo reconoce que la concurrencia y la tolerancia a fallos pasaron a ser problemas importantes.</li>
+</ol><div class="exp"><b>E.</b> Pregunta de lectura atenta: SAGA, commit de dos fases y consistencia eventual son materia de clases, pero el artículo no los menciona.</div></div>
+
+<div class="mc" data-g="C" data-ok="C"><p class="qt">En la clase de contenedores, docker-compose se presenta como «una forma de orquestación», y se mencionan Docker Swarm o Kubernetes para sistemas grandes. En el FX Core:</p><ol class="ops">
+<li><span class="k">A)</span>Se usa Kubernetes para todo.</li>
+<li><span class="k">B)</span>No se usan herramientas de orquestación.</li>
+<li><span class="k">C)</span>Docker Compose despliega toda la arquitectura con un solo comando y Docker Swarm orquesta los contenedores en un clúster (autorreparación, descubrimiento de servicios y balanceo de carga).</li>
+<li><span class="k">D)</span>Docker Compose reemplaza a RabbitMQ.</li>
+<li><span class="k">E)</span>Docker Swarm sirve solo para guardar imágenes.</li>
+</ol><div class="exp"><b>C.</b> 015, lámina 44, frente a la sección 5 de la lectura. Las imágenes se guardan en el registro interno, no en Swarm (E).</div></div>
+
+<div class="mc" data-g="C" data-ok="E"><p class="qt">(Certamen 2022-1) Respecto al concepto de «consistencia eventual» en el contexto de microservicios, es correcto afirmar que:</p><ol class="ops">
+<li><span class="k">A)</span>Es una de las principales ventajas de una implementación basada en microservicios.</li>
+<li><span class="k">B)</span>Es una característica propia de los sistemas monolíticos, y que se pretende solucionar con una implementación basada en microservicios.</li>
+<li><span class="k">C)</span>Es una de las consecuencias de implementar SAGA.</li>
+<li><span class="k">D)</span>Es un patrón de diseño que se utiliza para el acceso a las bases de datos no relacionales.</li>
+<li><span class="k">E)</span>Ninguna de las afirmaciones es correcta.</li>
+</ol><div class="exp"><b>E</b> (respuesta oficial). La consistencia eventual aparece al repartir los datos entre servicios (teorema CAP), antes de elegir cualquier patrón; SAGA es una forma de manejarla, no su causa. No es una ventaja (A) ni algo del monolito, que tiene una sola base de datos (B).</div></div>
+
+<div class="mc" data-g="C" data-ok="B"><p class="qt">(Certamen 2022-1) Respecto al uso de contenedores y máquinas virtuales, es correcto afirmar que:</p><ol class="ops">
+<li><span class="k">A)</span>Los contenedores son máquinas virtuales, pero con un sistema operativo liviano.</li>
+<li><span class="k">B)</span>Son soluciones alternativas a un mismo problema, incluso podrían combinarse.</li>
+<li><span class="k">C)</span>Las máquinas virtuales son contenedores, cuando se hace necesario poder orquestarlos.</li>
+<li><span class="k">D)</span>Un contenedor es un concepto teórico, una máquina virtual es una de las formas de implementarlo en la práctica.</li>
+<li><span class="k">E)</span>Ninguna de las alternativas es correcta.</li>
+</ol><div class="exp"><b>B</b> (respuesta oficial). Según la 015, los contenedores comparten el kernel del anfitrión y las máquinas virtuales emulan un sistema operativo completo. El FX Core los combina: contenedores sobre máquinas virtuales.</div></div>
+
+<div class="mc" data-g="C" data-ok="D"><p class="qt">La lectura menciona que, a futuro, la comunicación con sistemas externos se hará con APIs REST. Según lo visto en clases, REST es:</p><ol class="ops">
+<li><span class="k">A)</span>Un lenguaje de programación para microservicios.</li>
+<li><span class="k">B)</span>Un protocolo de mensajería, como AMQP.</li>
+<li><span class="k">C)</span>Un producto de Red Hat.</li>
+<li><span class="k">D)</span>Un estilo de arquitectura (Fielding, 2000) para sistemas distribuidos, en el que se manipulan recursos identificados por URI mediante verbos HTTP.</li>
+<li><span class="k">E)</span>Un tipo de base de datos.</li>
+</ol><div class="exp"><b>D.</b> 015b, láminas 10 a 15. La lectura solo da la sigla: <i>Representational State Transfer</i>.</div></div>
+
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="chuleta">
+<h2>Chuleta final</h2>
+<div class="grid2">
+<div class="box def">
+  <div class="bt">Las ideas</div>
+  <ul>
+    <li>Microservicios: vienen de SOA; bloques pequeños, independientes, <b>persistencia propia</b>, <b>solo mensajes</b>, <b>una capacidad de negocio</b> cada uno.</li>
+    <li>Monolito: comparte memoria, BD y archivos; no se ejecuta ni escala por partes.</li>
+    <li>La complejidad se traslada a la <b>coordinación</b>.</li>
+    <li><b>Conway</b>: la organización se copia en el diseño, así que un equipo por servicio.</li>
+    <li>SOA ≠ microservicios: B2B, no autocontenidos, sin foco en despliegue, orquestación (WS-BPEL, BPMN).</li>
+    <li>Migración <b>guiada por el negocio</b>, <b>de afuera hacia adentro</b>, una funcionalidad a la vez, con los traders.</li>
+    <li>Servicio nuevo si es <b>aislado y grande</b> o <b>compartido por muchas</b>.</li>
+    <li>Así evitaron el <b>monolito distribuido</b>.</li>
+    <li>Ganancia casi gratis: escalabilidad, bajo acoplamiento, alta cohesión. Costo: tolerancia a fallos, concurrencia, monitoreo, infraestructura.</li>
+  </ul>
+</div>
+<div class="box tip">
+  <div class="bt">Los datos duros</div>
+  <ul>
+    <li><b>FX</b>: divisas; ~5 billones USD/día; descentralizado, OTC; <b>24 h, 5 días</b>.</li>
+    <li><b>FX IT</b>: en C&amp;I, puerta de enlace entre mercados y clientes/traders.</li>
+    <li><b>FX Core</b>: trades + <b>line checks</b> (garantía: acciones, bonos, efectivo).</li>
+    <li>Monolito: <b>ForexAPI</b> y <b>RequestService</b> se superponían → <b>TradingService</b> y <b>LineCheckService</b>.</li>
+    <li>Único componente compartido: <b>framework Lambda</b>.</li>
+    <li>Mensajería: <b>RabbitMQ</b> (coreografía).</li>
+    <li>Contenedores: <b>Docker Swarm</b>; <b>Compose</b> = un comando; <b>Registry</b> interno.</li>
+    <li>Logs: LoggingService + <b>ElasticSearch</b> + <b>Kibana</b>. Monitoreo: MonitoringService + <b>Icinga</b> + <b>cAdvisor</b>.</li>
+    <li>Antes: <b>.NET + MS SQL</b>. Ahora políglota; estándar: <b>Open Container Initiative</b>.</li>
+    <li>Mainframe sigue (criticidad, permisos) + <b>caché</b>. Futuro: <b>OpenShift</b>; hoy, VM manuales.</li>
+  </ul>
+</div>
+</div>
+<div class="box ana">
+  <div class="bt">La lectura y las clases, en una línea cada una</div>
+  <ul>
+    <li>Una capacidad de negocio por servicio y un equipo por servicio = lámina 32 de la 014.</li>
+    <li>División «según los límites del dominio» = contextos acotados de DDD.</li>
+    <li>Persistencia propia y sin consultas directas a la BD = «cada MS dueño de sus datos».</li>
+    <li>Coreografía con RabbitMQ = «eventos» (AMQP). El «coordinador» sería orquestación.</li>
+    <li>Arquitectura políglota = «independientes de la tecnología entre sí».</li>
+    <li>Problemas nuevos de la conclusión = desventajas de las láminas y «no es una bala de plata».</li>
+    <li>Docker Compose y Docker Swarm = orquestación de contenedores (015, lámina 44).</li>
+    <li>La lectura <b>no</b> habla de SAGA, CAP, consistencia eventual, commit de dos fases, CQRS, API Gateway ni Kubernetes.</li>
+  </ul>
+</div>
+<div class="box warn">
+  <div class="bt">Trampas típicas</div>
+  <ul>
+    <li>5 días a la semana, no 7. Billones, no millones.</li>
+    <li>Conway ≠ Brooks.</li>
+    <li>Orquestación de contenedores (Docker Swarm) ≠ orquestación de servicios (SOA). La integración del FX Core es <b>coreografía</b>.</li>
+    <li>REST es <b>a futuro</b> y hacia afuera; adentro solo RabbitMQ.</li>
+    <li>OpenShift está en la <b>hoja de ruta</b>, no implementado.</li>
+    <li>El mainframe <b>no</b> se eliminó.</li>
+    <li>Contenedor ≠ microservicio: sin un buen corte por negocio hay monolito distribuido.</li>
+    <li>Los problemas nuevos no son un fracaso: los autores dicen que resolverlos crea valor.</li>
+  </ul>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="vf">
+<div class="box def">
+  <div class="bt">Desde aquí, preparación extra</div>
+  <p>El control son 4 alternativas, así que lo que sigue no entra en ese formato. Sirve para entender mejor la lectura (justificar un V o F obliga a saber por qué) y para el certamen, donde el profesor suele pedir «comente la frase» y aplicación al proyecto.</p>
+</div>
+
+<h2>Verdadero o falso justificado</h2>
+<p class="lead">Responde V o F y <b>justifica en una línea</b>. En los controles de este ramo la justificación es lo que da puntaje.</p>
+<ol>
+  <li>«Microservicios es solo un nombre nuevo para SOA.»</li>
+  <li>«En el FX Core, todos los servicios comparten una sola base de datos.»</li>
+  <li>«El mercado FX está abierto 24 horas, los siete días de la semana.»</li>
+  <li>«La principal fuente de los autores fue la documentación del sistema original.»</li>
+  <li>«Docker Swarm reinicia automáticamente los servicios que se caen.»</li>
+  <li>«Internamente, los servicios del FX Core se llaman directamente entre sí por REST.»</li>
+  <li>«El mainframe ya fue eliminado de la arquitectura.»</li>
+  <li>«Usar contenedores garantiza, por sí solo, que un cambio quede acotado a un servicio.»</li>
+  <li>«Los autores reconocen que la distribución introduce problemas nuevos.»</li>
+  <li>«Hoy la infraestructura del FX Core corre sobre Red Hat OpenShift.»</li>
+  <li>«Una funcionalidad que partía dentro de un servicio podía después pasar a un servicio propio.»</li>
+  <li>«Con los proveedores externos, los servicios se comunican solo mediante RabbitMQ.»</li>
+</ol>
+<details class="sol"><summary>Pauta · verdadero o falso</summary><div class="body">
+<ol>
+  <li><b>F.</b> El texto lo dice explícitamente: en SOA los servicios no son autocontenidos, no hay foco en el despliegue independiente y el énfasis está en la orquestación entre empresas.</li>
+  <li><b>F.</b> El principio es que cada servicio tenga su propia persistencia, y la Figura 2 muestra varios almacenes (PostgreSQL, Cassandra, ElasticSearch, DB2).</li>
+  <li><b>F.</b> 24 horas, pero cinco días a la semana.</li>
+  <li><b>F.</b> La documentación era escasa; usaron conversaciones, entrevistas y revisión manual del código.</li>
+  <li><b>V.</b> Es la autorreparación que entrega la orquestación de Docker Swarm.</li>
+  <li><b>F.</b> Internamente solo se integran por mensajes en RabbitMQ y no se llaman directamente. REST se menciona como opción <i>futura</i> hacia sistemas externos.</li>
+  <li><b>F.</b> Sigue conectado por lo crítico de la información y los permisos; su impacto se reduce con caché y se migrará de a poco.</li>
+  <li><b>F.</b> Es la idea de la pauta 2022-1: el contenedor es un mecanismo de despliegue; acotar los cambios depende de por dónde se corta el sistema.</li>
+  <li><b>V.</b> Tolerancia a fallos, concurrencia y monitoreo pasan a ser cada vez más importantes.</li>
+  <li><b>F.</b> OpenShift está en la hoja de ruta. Hoy son máquinas virtuales pedidas por un portal y configuradas a mano por el equipo.</li>
+  <li><b>V.</b> Pasaba cuando la funcionalidad crecía demasiado o cuando varios servicios la necesitaban por igual.</li>
+  <li><b>F.</b> Hacia afuera usan protocolos propietarios (y a futuro REST). RabbitMQ es para la integración interna.</li>
+</ol>
+</div></details>
+</section>
+
+<!-- ============================================================ -->
+<section id="cortas">
+<h2>Preguntas de respuesta corta</h2>
+<p class="lead">Respóndelas por escrito en 3 a 5 líneas antes de abrir la pauta. Así se entrena lo que piden en desarrollo.</p>
+
+<div class="q"><b>1.</b> Según la lectura, ¿qué diferencia a una arquitectura monolítica de una de microservicios? Da dos rasgos de cada una.</div>
+<details class="sol"><summary>Respuesta modelo</summary><div class="body">
+<p>En el monolito, los módulos comparten recursos de la misma máquina (memoria, base de datos, archivos), por lo que no se pueden ejecutar ni escalar por separado, y cualquier cambio afecta al conjunto. En los microservicios, el sistema se compone de bloques pequeños e independientes, cada uno con su propia persistencia y una sola capacidad de negocio, que se comunican solo por mensajes y se despliegan por separado. La complejidad pasa del código a la coordinación entre servicios.</p>
+</div></details>
+
+<div class="q"><b>2.</b> ¿Qué criterio usó el equipo para decidir si una funcionalidad merecía su propio servicio? Da un ejemplo inventado.</div>
+<details class="sol"><summary>Respuesta modelo</summary><div class="body">
+<p>Caso a caso: se creaba un servicio cuando la funcionalidad parecía aislada y suficientemente grande, o cuando la compartían muchas otras funcionalidades. Si partía junto a otras y después crecía o la necesitaban varios servicios, se separaba. Ejemplo: en una tienda online, el envío de notificaciones lo usan las compras, los despachos y las devoluciones, así que conviene un servicio de notificaciones propio.</p>
+</div></details>
+
+<div class="q"><b>3.</b> ¿Por qué los autores mencionan la ley de Conway?</div>
+<details class="sol"><summary>Respuesta modelo</summary><div class="body">
+<p>Porque la estructura de la organización y la forma en que se comunica impactan directamente el diseño que se produce. Si se quiere un sistema modular y poco acoplado, conviene organizar un equipo por servicio: la comunicación se vuelve más eficiente dentro del equipo y en la organización, y el diseño resultante es más modular.</p>
+</div></details>
+
+<div class="q"><b>4.</b> Nombra las cuatro mejoras de la migración que destacan los autores y explica una en detalle.</div>
+<details class="sol"><summary>Respuesta modelo</summary><div class="body">
+<p>Contenerización con Docker, automatización (CI/CD), orquestación e integración por mensajes. Por ejemplo, la orquestación: Docker Swarm reinicia solos los servicios caídos (autorreparación), encuentra dónde corre cada servicio y reparte la carga entre réplicas, cosas que antes dependían de intervención manual.</p>
+</div></details>
+
+<div class="q"><b>5.</b> ¿Por qué sigue el mainframe y cómo se reduce su impacto?</div>
+<details class="sol"><summary>Respuesta modelo</summary><div class="body">
+<p>Por lo crítico de la información y los permisos que se necesitan para actuar sobre ella. Su impacto se reduce con caché, y con el tiempo sus funciones se implementarán como servicios nuevos hasta desacoplarlo del todo. Es una migración gradual, no de una vez.</p>
+</div></details>
+
+<div class="q"><b>6.</b> ¿Qué significa que el equipo pudo «matar todos los caminos que no controla»? ¿Qué beneficio tiene?</div>
+<details class="sol"><summary>Respuesta modelo</summary><div class="body">
+<p>Como el equipo administra toda la infraestructura con Docker, incluidas las bases de datos y los puertos abiertos, puede cerrar cualquier acceso no deseado. Eso le permitió ofrecer APIs abiertas a clientes y traders y eliminar las consultas directas a la base de datos. El beneficio es control total de los detalles internos: pueden cambiarlos sin que nadie de afuera dependa de ellos, y además ganan en seguridad.</p>
+</div></details>
+
+<div class="q"><b>7.</b> ¿Qué problemas nuevos trae la distribución y por qué los autores los ven como algo positivo?</div>
+<details class="sol"><summary>Respuesta modelo</summary><div class="body">
+<p>Tolerancia a fallos, manejo de concurrencia y monitoreo pasan a ser centrales, y crece la dependencia de la infraestructura y la automatización por la cantidad de piezas. Los autores lo valoran porque al resolver esos aspectos se crea valor en el sistema, mientras que los problemas del monolito (complejidad orientada a objetos, desplegar un sistema enorme) no aportaban nada.</p>
+</div></details>
+
+<div class="q"><b>8.</b> ¿Qué proponen los autores hacia el futuro?</div>
+<details class="sol"><summary>Respuesta modelo</summary><div class="body">
+<p>Lenguajes de programación pensados para microservicios, que los modelen de forma uniforme y los traten como entidades de primera clase, para que remodelar partes del sistema sea más simple. Y técnicas de composición de microservicios para cuando los servicios se revisan seguido, cambian sus funcionalidades o cambian las políticas del negocio, algo típico de un mercado dinámico como FX.</p>
+</div></details>
+</section>
+
+<!-- ============================================================ -->
+<section id="comente">
+<h2>Comente la frase</h2>
+<p class="lead">Formato de los certámenes del ramo: definir los términos, tomar posición y fundamentar. El mero acuerdo o desacuerdo vale 0 puntos.</p>
+
+<div class="q"><b>Frase 1.</b> «Basta con meter cada módulo del monolito en un contenedor Docker para tener una arquitectura de microservicios.»</div>
+<details class="sol"><summary>Pauta</summary><div class="body">
+<p><b>Desacuerdo, con matices.</b> Un contenedor es un mecanismo para empaquetar y desplegar; no define cómo se divide el sistema. Según la lectura, un microservicio implementa una sola capacidad de negocio, tiene su propia persistencia, se comunica solo por mensajes y se despliega de forma independiente. Si los módulos del monolito siguen compartiendo la base de datos o llamándose entre sí a cada rato, lo que resulta es un <b>monolito distribuido</b>: los costos de la red sin la independencia. Por eso el FX Core migró funcionalidad por funcionalidad, alejándose de la implementación antigua. Los contenedores sí aportan (mismo entorno en todas partes, despliegue con un comando, autorreparación), pero son la herramienta, no el diseño. Es lo mismo que dice la pauta 2022-1: «el uso de contenedores por sí solo no asegura nada».</p>
+<p class="meta">Puntos clave: definir microservicio y contenedor · monolito distribuido · migración por funcionalidad · los contenedores ayudan, pero no reemplazan al diseño.</p>
+</div></details>
+
+<div class="q"><b>Frase 2.</b> «Con microservicios desaparecen los problemas del monolito, así que es una arquitectura superior en cualquier caso.»</div>
+<details class="sol"><summary>Pauta</summary><div class="body">
+<p><b>Desacuerdo.</b> La lectura muestra que los microservicios resolvieron problemas concretos del FX Core (escalabilidad, componentes acoplados, despliegue, control de accesos), pero que la complejidad <b>se traslada</b> a la coordinación entre servicios. Los mismos autores reconocen que aparecen problemas que en el monolito no existían: tolerancia a fallos, concurrencia, monitoreo, y una fuerte dependencia de la infraestructura y la automatización. Es un trade-off. En un dominio como FX, con un volumen enorme, operación 24/5 y políticas que cambian constantemente, el intercambio conviene; en un sistema pequeño, con poca carga y un solo equipo, el costo de distribuir puede superar el beneficio (es lo que advierte Fowler con su ley de no distribuir los objetos).</p>
+<p class="meta">Puntos clave: complejidad trasladada · problemas nuevos según la conclusión · trade-off · depende del contexto.</p>
+</div></details>
+
+<div class="q"><b>Frase 3.</b> «Migrar a microservicios es un problema puramente técnico; el negocio y la organización no tienen nada que decir.»</div>
+<details class="sol"><summary>Pauta</summary><div class="body">
+<p><b>Desacuerdo.</b> En el FX Core la migración fue <b>guiada por el negocio</b>: las funcionalidades se definieron con los traders y se priorizaron según su valor, y los servicios se cortaron por <b>capacidades de negocio</b> y límites del dominio, no por criterios técnicos. Además, la lectura insiste en lo organizacional: por la ley de Conway, un equipo por servicio produce un diseño más modular, y la automatización sigue la filosofía DevOps de reducir barreras entre equipos. La parte técnica (Docker, RabbitMQ, CI/CD) es necesaria, pero la decisión de por dónde cortar es de negocio y de organización.</p>
+<p class="meta">Puntos clave: business-driven · capacidades de negocio · Conway · DevOps.</p>
+</div></details>
+
+<div class="q"><b>Frase 4.</b> «Como los microservicios se comunican por mensajes y no se llaman directamente, el diseño de las interfaces deja de importar.»</div>
+<details class="sol"><summary>Pauta</summary><div class="body">
+<p><b>Parcialmente de acuerdo.</b> Es cierto que, al integrarse solo por mensajes en RabbitMQ, los servicios no dependen de la interfaz interna de los demás: por eso los autores dicen que «no hay interfaces que violar» y que el acoplamiento es muy bajo. Pero el diseño no deja de importar: se mueve al <b>contenido y formato de los mensajes</b>, que todos los servicios deben entender (por algo el framework Lambda estandariza formatos de mensajes y logs), y a las <b>APIs abiertas</b> que el equipo creó para clientes y traders, que sí son contratos hacia afuera. Esta última parte es interpretación mía de la lectura, no algo que diga literalmente.</p>
+<p class="meta">Puntos clave: coreografía y bajo acoplamiento · el contrato pasa a ser el mensaje · las APIs externas siguen siendo interfaces.</p>
+</div></details>
+</section>
+
+<!-- ============================================================ -->
+<section id="sgm">
+<h2>Aplicación al SGM (tu proyecto)</h2>
+<p class="lead">Del mismo estilo que la pregunta 3 de la parte aplicada del certamen 2022-1. Usa el modelo de dominio del Hito 2 (10 clases: Memorista, Campus, Dirección, Profesor, Propuesta de tema, Revisión, Memoria, Reunión de avance, Correferencia, Examen de título).</p>
+
+<div class="q"><b>Pregunta A.</b> Si el SGM se implementara con microservicios, ¿cómo lo dividirías? Usa el criterio de la lectura para justificar cada servicio y apóyate en tu modelo de dominio.</div>
+<details class="sol"><summary>Respuesta modelo</summary><div class="body">
+<p>Cortaría por capacidades de negocio, siguiendo los límites del modelo de dominio:</p>
+<div class="tw"><table>
+<tr><th>Servicio</th><th>Capacidad de negocio</th><th>Clases del modelo</th><th>Criterio de la lectura</th></tr>
+<tr><td>PropuestaService</td><td>Postular un tema y que lo revisen</td><td>Propuesta de tema, Revisión</td><td>Aislada y grande</td></tr>
+<tr><td>SeguimientoService</td><td>Seguir el avance de la memoria</td><td>Memoria, Reunión de avance, Dirección</td><td>Aislada y grande</td></tr>
+<tr><td>EvaluacionService</td><td>Correferencia y examen de título</td><td>Correferencia, Examen de título</td><td>Aislada</td></tr>
+<tr><td>PersonasService</td><td>Saber quién es quién y su rol</td><td>Memorista, Profesor, Campus</td><td>Compartida por todas</td></tr>
+<tr><td>NotificacionService</td><td>Avisar a los actores</td><td>(no es concepto del dominio)</td><td>Compartida por muchas</td></tr>
+</table></div>
+<p>Se integrarían por mensajes: cuando PropuestaService publica «propuesta aprobada», SeguimientoService crea la Memoria y NotificacionService avisa al memorista y al guía, sin que PropuestaService sepa quién escucha. Cada servicio tiene su propia base, como ya pasa con BD17_TRAMITACION y BD17_VALIDACIONES en el proyecto base. La verificación con IA y la Dirección de Estudios quedan como sistemas externos, detrás de un adaptador, igual que las APIs de proveedores externos del FX Core.</p>
+<p>Lo que hay que mencionar sí o sí: que los contenedores no bastan, que el corte es por negocio y no por tablas o capas, y que esto trae costos (consistencia entre servicios, monitoreo), así que para un sistema del tamaño del SGM habría que justificar si vale la pena.</p>
+</div></details>
+
+<div class="q"><b>Pregunta B.</b> Cambio hipotético: la coordinación pide que, cada vez que se apruebe una propuesta de tema, se avise por correo al memorista, al profesor guía y al jefe de carrera. (i) En la división anterior, ¿qué servicios cambian? (ii) ¿Cambia el modelo de dominio? (iii) ¿Se justifica una HU nueva?</div>
+<details class="sol"><summary>Respuesta modelo</summary><div class="body">
+<p><b>(i)</b> Si PropuestaService ya publica el evento «propuesta aprobada», solo cambia NotificacionService, que se suscribe a ese evento y consulta a PersonasService quiénes son los destinatarios. PropuestaService no se toca: es la ventaja de la coreografía, donde un emisor no sabe quién escucha.</p>
+<p><b>(ii)</b> No. Un aviso por correo es un mecanismo, no un concepto nuevo del negocio. Las pautas del ramo descuentan por agregar al modelo de dominio algo que no es concepto del negocio.</p>
+<p><b>(iii)</b> Sí, porque es una necesidad nueva de los actores: «Como memorista, quiero recibir un correo cuando se apruebe mi propuesta de tema, para saber que puedo empezar a trabajar en la memoria.» Criterio de aceptación: «Dado que mi propuesta está en revisión, cuando el coordinador la aprueba, entonces recibo un correo con el nombre del tema y del profesor guía.»</p>
+</div></details>
+</section>
+
+<!-- ============================================================ -->
+<section id="simulacro">
+<h2>Simulacro de desarrollo</h2>
+<p><span class="tiempo">35 minutos</span> <span class="pill">Texto + 4 preguntas</span> <span class="pill a">Desarrollo</span></p>
+<p class="lead">Con el formato del Control 2. No es el formato de este control (que es de alternativas), pero sirve como práctica para el certamen. Cronométrate, escribe en papel y corrige con la pauta.</p>
+
+<div class="caso">
+<h4>Texto de contexto · El sistema académico de la Universidad del Pacífico</h4>
+<p>La Universidad del Pacífico (ficticia) usa desde 2009 un único sistema, escrito en Java, para todo lo académico: inscripción de asignaturas, registro de notas, solicitud de certificados y pago de aranceles. Todos los módulos comparten una misma base de datos Oracle y se despliegan juntos, como un solo archivo, en un servidor del campus. El equipo de TI tiene doce personas, organizadas por especialidad: tres en base de datos, cuatro en «backend», tres en interfaz y dos en infraestructura.</p>
+<p>Dos veces al año, durante la inscripción de asignaturas, el sistema colapsa: unos 15 mil estudiantes intentan inscribirse en la misma hora y el servidor no da abasto. Como todo corre en un solo proceso, mientras dura la caída tampoco se pueden emitir certificados ni pagar aranceles, aunque esos módulos casi no tienen uso esos días. El año pasado se quiso agregar una «lista de espera» a la inscripción: el cambio tocó once archivos de cuatro módulos, rompió el cálculo de aranceles (que leía directamente la tabla de inscripciones) y obligó a desplegar el sistema completo un viernes a medianoche.</p>
+<p>La nueva directora de TI propone migrar a microservicios «para que la inscripción escale sola». Un consultor externo opina distinto: «metan cada módulo actual en un contenedor Docker y listo, ya tienen microservicios». La Dirección de Finanzas, por su parte, exige que el módulo de aranceles siga leyendo los datos de inscripción directamente desde la base de inscripciones, «en tiempo real», porque así funciona hoy su conciliación.</p>
+</div>
+
+<h3>Preguntas sobre el texto</h3>
+<div class="q"><b>Pregunta 1.</b> Identifique en el texto tres síntomas que la lectura de Bucchiarone et al. asocia a una arquitectura monolítica. Para cada uno, explique cómo se abordó ese problema en el FX Core del Danske Bank.</div>
+<div class="q"><b>Pregunta 2.</b> Evalúe la propuesta del consultor. ¿Qué riesgo, descrito en la lectura, aplica aquí? ¿Qué le falta a su propuesta para ser una arquitectura de microservicios?</div>
+<div class="q"><b>Pregunta 3.</b> A partir de la ley de Conway, analice la organización actual del equipo de TI y proponga cómo reorganizarlo si se adoptan microservicios.</div>
+<div class="q"><b>Pregunta 4.</b> ¿Es compatible la exigencia de Finanzas con lo que plantea la lectura? Explique y proponga una alternativa basada en cómo se integran los servicios del FX Core.</div>
+
+<h3>Parte de desarrollo</h3>
+<div class="box tip">
+  <div class="bt">Proponga la arquitectura</div>
+  <p>Proponga una descomposición en <b>al menos cuatro microservicios</b> aplicando el criterio de la lectura. Para cada uno indique: un nombre que revele su responsabilidad, la capacidad de negocio que implementa, los datos que son suyos y al menos un mensaje que publique o consuma. Haga un diagrama simple. Luego indique qué servicio replicaría durante la inscripción y por qué, y nombre dos problemas nuevos que traerá la migración según las conclusiones de la lectura.</p>
+</div>
+
+<details class="sol"><summary>Pauta del simulacro</summary><div class="body">
+<h4>Pregunta 1 (25 %)</h4>
+<ul>
+  <li><b>No escala por partes:</b> la inscripción colapsa y arrastra a certificados y aranceles, porque todo comparte proceso y recursos. En el FX Core, cada capacidad es un servicio que se replica por separado: la escalabilidad salió «casi de regalo».</li>
+  <li><b>Alto acoplamiento:</b> un cambio tocó once archivos de cuatro módulos, y aranceles leía la tabla de inscripciones. En el FX Core, componentes grandes y superpuestos (ForexAPI y RequestService) se reemplazaron por servicios pequeños con una sola responsabilidad que no se integran directamente.</li>
+  <li><b>Despliegue todo-o-nada:</b> hubo que redesplegar el sistema entero. En el FX Core cada servicio se despliega por separado, con pipeline CI/CD y Docker garantizando el mismo entorno.</li>
+  <li class="meta">Vale también: base de datos compartida, una sola tecnología (Java/Oracle frente a .NET/MS SQL).</li>
+</ul>
+<p class="meta">Descuentos sugeridos: síntoma sin cita al texto −5; sin conexión con el FX Core −10 cada uno.</p>
+
+<h4>Pregunta 2 (25 %)</h4>
+<p>El riesgo es terminar con un <b>monolito distribuido</b>. Si se mete cada módulo actual en un contenedor sin cambiar cómo se relacionan, siguen compartiendo la base Oracle y leyéndose las tablas: la lista de espera seguiría rompiendo aranceles, ahora a través de la red. Le falta: cortar por <b>capacidades de negocio</b>, darle a cada servicio su <b>propia persistencia</b>, integrarlos <b>solo por mensajes</b> y desplegarlos de forma <b>independiente</b>. El FX Core evitó este riesgo migrando funcionalidad por funcionalidad, alejándose del código antiguo. Los contenedores ayudan, pero no son el diseño.</p>
+<p class="meta">Descuentos: no nombrar el monolito distribuido o algo equivalente −10; decir que los contenedores no sirven para nada −5 (sí sirven, pero no bastan).</p>
+
+<h4>Pregunta 3 (25 %)</h4>
+<p>Hoy el equipo está organizado por capas técnicas (BD, backend, interfaz, infraestructura). Por la ley de Conway, el sistema reproduce esa división: capas horizontales que hay que tocar todas para cualquier cambio de negocio (la lista de espera atravesó varias). Con microservicios, la lectura propone <b>un equipo por servicio</b>: por ejemplo, equipos pequeños de inscripción, aranceles y certificados, cada uno con alguien de datos, de lógica y de interfaz, más el enfoque DevOps de reducir barreras con infraestructura.</p>
+<p class="meta">Descuentos: confundir Conway con Brooks −15; proponer reorganización sin justificar con Conway −10.</p>
+
+<h4>Pregunta 4 (25 %)</h4>
+<p><b>No es compatible.</b> En la lectura cada servicio es dueño de sus datos y los servicios se integran solo por mensajes; el equipo del FX Core justamente eliminó las consultas directas a la base de datos y ofreció APIs. Si aranceles lee la tabla de inscripciones, ambos quedan acoplados (es lo que rompió el sistema con la lista de espera). Alternativa: el servicio de inscripción publica un mensaje (por ejemplo, «asignatura inscrita») y el de aranceles lo consume y mantiene su propia copia de lo que necesita; o bien inscripción ofrece una API de consulta. Matiz: el dato ya no está «en tiempo real», sino que se actualiza cuando llega el mensaje (consistencia eventual); hay que validar con Finanzas si unos segundos de retraso son aceptables para la conciliación.</p>
+<p class="meta">Descuentos: no detectar el acoplamiento por BD −15; no proponer alternativa −10.</p>
+
+<h4>Desarrollo</h4>
+<p>Una propuesta válida:</p>
+<div class="tw"><table>
+<tr><th>Servicio</th><th>Capacidad</th><th>Datos propios</th><th>Mensajes</th></tr>
+<tr><td>InscripcionService</td><td>Inscribir asignaturas y manejar la lista de espera</td><td>Inscripciones, cupos, lista de espera</td><td>Publica «asignatura inscrita», «cupo liberado»</td></tr>
+<tr><td>ArancelService</td><td>Calcular y cobrar aranceles</td><td>Cargos, pagos</td><td>Consume «asignatura inscrita»; publica «pago registrado»</td></tr>
+<tr><td>NotaService</td><td>Registrar y consultar calificaciones</td><td>Notas, actas</td><td>Consume «asignatura inscrita» (para crear el acta)</td></tr>
+<tr><td>CertificadoService</td><td>Emitir certificados</td><td>Solicitudes, certificados emitidos</td><td>Consume «pago registrado» (si el certificado se paga)</td></tr>
+<tr><td>EstudianteService</td><td>Identidad y datos del estudiante</td><td>Estudiantes, carreras</td><td>Compartido por todos (criterio «compartida por muchas»)</td></tr>
+</table></div>
+<p>Se replica <b>InscripcionService</b> durante la toma de ramos, porque es el único con esa carga puntual; los demás quedan con una réplica, y si inscripción se satura, certificados y aranceles siguen funcionando. Problemas nuevos (de la conclusión): tolerancia a fallos (¿qué pasa si aranceles está caído cuando llega el mensaje?), concurrencia (dos estudiantes por el último cupo), monitoreo centralizado de muchas piezas y dependencia de infraestructura y automatización.</p>
+<p class="meta">Rúbrica sugerida: cuatro servicios cortados por negocio (40) · datos propios y mensajes coherentes (25) · replicación justificada (15) · dos problemas nuevos de la lectura (20). Cortar por capas (servicio «BD», servicio «interfaz») −30.</p>
+</div></details>
+</section>
+
+
+</main>
+</div>
+<script>
+function tema(){
+  var r=document.documentElement;
+  var actual=r.getAttribute("data-theme");
+  if(!actual){
+    var oscuro=window.matchMedia("(prefers-color-scheme: dark)").matches;
+    actual=oscuro?"dark":"light";
+  }
+  r.setAttribute("data-theme", actual==="dark"?"light":"dark");
+}
+function abrir(v){
+  var ds=document.querySelectorAll("details.sol");
+  for(var i=0;i<ds.length;i++){ ds[i].open=v; }
+}
+function numerar(){
+  var qs=document.querySelectorAll("#banco .mc");
+  var k=0;
+  for(var i=0;i<qs.length;i++){
+    if(qs[i].style.display==="none") continue;
+    k++;
+    var qt=qs[i].querySelector(".qt");
+    var n=qt.querySelector(".n");
+    if(!n){ n=document.createElement("span"); n.className="n"; qt.insertBefore(n,qt.firstChild); }
+    n.textContent=k+". ";
+  }
+}
+function etiquetar(){
+  var qs=document.querySelectorAll("#banco .mc");
+  for(var i=0;i<qs.length;i++){
+    var t=document.createElement("span");
+    var cruce=qs[i].getAttribute("data-g")==="C";
+    t.className=cruce?"tag c":"tag";
+    t.textContent=cruce?"Lectura + clases":"Lectura";
+    qs[i].insertBefore(t,qs[i].firstChild);
+  }
+}
+var modoTimer=null, modoInicio=0;
+function enModo(){ return document.getElementById("modo").style.display==="block"; }
+function modoControl(){
+  var b=document.getElementById("banco");
+  var todas=b.querySelectorAll(".mc");
+  for(var k=0;k<todas.length;k++){ todas[k].style.display=""; }
+  reiniciar();
+  var qs=Array.prototype.slice.call(b.querySelectorAll('.mc[data-g="L"]'));
+  for(var i=qs.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=qs[i]; qs[i]=qs[j]; qs[j]=t; }
+  for(var m=0;m<todas.length;m++){ todas[m].style.display="none"; }
+  for(var n=3;n>=0;n--){ qs[n].style.display=""; b.insertBefore(qs[n],b.firstChild); }
+  numerar();
+  document.getElementById("modo").style.display="block";
+  document.getElementById("resmodo").textContent="";
+  document.getElementById("reloj").textContent="0:00";
+  modoInicio=Date.now();
+  clearInterval(modoTimer);
+  modoTimer=setInterval(function(){
+    var s=Math.floor((Date.now()-modoInicio)/1000);
+    document.getElementById("reloj").textContent=Math.floor(s/60)+":"+("0"+(s%60)).slice(-2);
+  },1000);
+  document.getElementById("alt").scrollIntoView();
+}
+function salirModo(){
+  var todas=document.querySelectorAll("#banco .mc");
+  for(var k=0;k<todas.length;k++){ todas[k].style.display=""; }
+  document.getElementById("modo").style.display="none";
+  clearInterval(modoTimer);
+  numerar();
+}
+function revisarModo(){
+  if(!enModo()) return;
+  var qs=document.querySelectorAll("#banco .mc");
+  var vis=0, hechas=0, buenas=0;
+  for(var i=0;i<qs.length;i++){
+    if(qs[i].style.display==="none") continue;
+    vis++;
+    if(qs[i].classList.contains("done")){ hechas++; if(qs[i].getAttribute("data-res")==="1") buenas++; }
+  }
+  if(vis>0 && hechas===vis){
+    clearInterval(modoTimer);
+    document.getElementById("resmodo").textContent="Resultado: "+buenas+" de "+vis+".";
+  }
+}
+function contar(){
+  var hechas=document.querySelectorAll("#banco .mc.done:not(.rev)");
+  var buenas=0;
+  for(var i=0;i<hechas.length;i++){ if(hechas[i].getAttribute("data-res")==="1") buenas++; }
+  document.getElementById("pts").textContent=buenas;
+  document.getElementById("tot").textContent=hechas.length;
+}
+function marcar(mc,elegida){
+  var ok=mc.getAttribute("data-ok");
+  var lis=mc.querySelectorAll("ol.ops li");
+  for(var i=0;i<lis.length;i++){
+    var k=lis[i].querySelector(".k").textContent.charAt(0);
+    if(k===ok) lis[i].classList.add("ok");
+    else if(lis[i]===elegida) lis[i].classList.add("bad");
+  }
+  mc.classList.add("done");
+}
+document.addEventListener("click",function(e){
+  var li=e.target.closest("#banco .mc ol.ops li");
+  if(!li) return;
+  var mc=li.closest(".mc");
+  if(mc.classList.contains("done")) return;
+  var k=li.querySelector(".k").textContent.charAt(0);
+  mc.setAttribute("data-res", k===mc.getAttribute("data-ok")?"1":"0");
+  marcar(mc,li);
+  contar();
+  revisarModo();
+});
+function reiniciar(){
+  var qs=document.querySelectorAll("#banco .mc");
+  for(var i=0;i<qs.length;i++){
+    qs[i].classList.remove("done","rev");
+    qs[i].removeAttribute("data-res");
+    var lis=qs[i].querySelectorAll("li");
+    for(var j=0;j<lis.length;j++){ lis[j].classList.remove("ok","bad"); }
+  }
+  contar();
+}
+function revelar(){
+  var qs=document.querySelectorAll("#banco .mc");
+  for(var i=0;i<qs.length;i++){
+    if(!qs[i].classList.contains("done")){ qs[i].classList.add("rev"); marcar(qs[i],null); }
+  }
+  contar();
+}
+function barajar(){
+  if(enModo()) salirModo();
+  var b=document.getElementById("banco");
+  var qs=Array.prototype.slice.call(b.querySelectorAll(".mc"));
+  for(var i=qs.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=qs[i]; qs[i]=qs[j]; qs[j]=t; }
+  for(var k=0;k<qs.length;k++){ b.appendChild(qs[k]); }
+  reiniciar();
+  numerar();
+}
+etiquetar();
+numerar();
+var navLinks=[].slice.call(document.querySelectorAll("nav a"));
+var secciones=[].slice.call(document.querySelectorAll("main section[id]"));
+var barra=document.querySelector(".sidebar");
+var seccionActual=null;
+function espiar(){
+  if(!secciones.length) return;
+  var y=window.scrollY+140, id=secciones[0].id;
+  for(var i=0;i<secciones.length;i++){ if(secciones[i].offsetTop<=y) id=secciones[i].id; }
+  if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4) id=secciones[secciones.length-1].id;
+  if(id===seccionActual) return;
+  seccionActual=id;
+  var activo=null;
+  navLinks.forEach(function(a){
+    var on=a.getAttribute("href")==="#"+id;
+    a.classList.toggle("active",on);
+    if(on) activo=a;
+  });
+  if(activo && barra){
+    var r=activo.getBoundingClientRect(), s=barra.getBoundingClientRect();
+    if(r.top<s.top+60 || r.bottom>s.bottom-40){ barra.scrollTop+=(r.top-s.top)-barra.clientHeight/3; }
+  }
+}
+window.addEventListener("scroll",espiar,{passive:true});
+window.addEventListener("resize",function(){ seccionActual=null; espiar(); });
+espiar();
+</script>
+</body>
+</html>

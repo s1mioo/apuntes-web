@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Segmentación · SO C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  /* --- agregado para el C2: probabilidad por sección --- */
+  .prio{margin:2px 0 16px;font-size:14.5px;color:var(--muted)}
+  .prio strong{color:var(--ink)}
+  .lv{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    padding:2px 9px;border-radius:999px;border:1px solid var(--line);margin-right:8px;vertical-align:1px;white-space:nowrap}
+  .lv.p3{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lv.p2{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lv.p1{color:var(--muted);border-style:dashed}
+  .lv.p0{color:var(--ex);border-color:var(--ex);background:var(--ex-soft)}
+  td .lv{margin-right:0}
+  nav a{display:flex;align-items:baseline;gap:6px}
+  nav a .nt{flex:1 1 auto;min-width:0}
+  .pd{display:inline-flex;gap:3px;align-items:center;color:var(--muted);vertical-align:1px;flex:0 0 auto}
+  .pd i{display:inline-block;width:6px;height:6px;border-radius:50%;border:1px solid currentColor;box-sizing:border-box}
+  .pd i.on{background:currentColor}
+  .pd.p3{color:var(--accent)} .pd.p2{color:var(--brand)} .pd.p0{color:var(--ex)}
+  /* --- tiras de bloques de memoria --- */
+  .mem{display:flex;flex-wrap:nowrap;gap:0;margin:10px 0 2px;overflow-x:auto;padding-bottom:2px}
+  .mem .c{flex:1 0 46px;min-width:46px;height:44px;border:1px solid var(--line);margin-right:-1px;display:grid;place-items:center;
+    font-size:11.5px;line-height:1.15;text-align:center;background:var(--panel);color:var(--ink)}
+  .mem .c small{display:block;font-size:10px;color:var(--muted)}
+  .mem .c.u1{background:var(--brand-soft);border-color:var(--brand);color:var(--brand);font-weight:700}
+  .mem .c.u2{background:var(--lib-soft);border-color:var(--lib);color:var(--lib);font-weight:700}
+  .mem .c.u3{background:var(--ana-soft);border-color:var(--ana);color:var(--ana);font-weight:700}
+  .mem .c.nw{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
+  .mem .c.fx{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+  .mem .c.os{background:var(--code);color:var(--muted)}
+  .memlab{display:flex;gap:0;font-size:11.5px;color:var(--muted);margin:0 0 10px;overflow-x:auto}
+  .memlab span{flex:1 0 46px;min-width:46px;text-align:center}
+  .memcap{font-size:13px;color:var(--muted);margin:2px 0 14px}
+  /* --- dirección dividida en campos --- */
+  .addr{display:flex;margin:12px auto;max-width:620px;border-radius:9px;overflow:hidden;border:1px solid var(--line);font-size:13.5px;box-shadow:var(--shadow)}
+  .addr div{padding:9px 10px;text-align:center;border-right:1px solid var(--line)}
+  .addr div:last-child{border-right:0}
+  .addr .a1{background:var(--brand-soft);color:var(--brand);font-weight:700}
+  .addr .a2{background:var(--lib-soft);color:var(--lib);font-weight:700}
+  .addr .a3{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  .addr .a4{background:var(--ex-soft);color:var(--ex);font-weight:700}
+  .addr small{display:block;font-weight:500;color:var(--muted);font-size:11.5px}
+  /* --- tablas de páginas y de reemplazo --- */
+  table.pt td,table.pt th{text-align:center;padding:6px 8px;font-variant-numeric:tabular-nums}
+  table.pt td.bad{background:var(--no-soft);color:var(--no);font-weight:700}
+  table.pt td.ok{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  table.rp{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px}
+  table.rp td,table.rp th{text-align:center;padding:4px 6px;min-width:26px}
+  table.rp td.f{background:var(--warn-soft);color:var(--warn);font-weight:700}
+  table.rp td.h{color:var(--accent);font-weight:700}
+  table.rp td.n{color:var(--ink);font-weight:700}
+  table.rp th.rh{text-align:right;color:var(--muted);background:var(--panel)}
+  .tw table.rp{min-width:0}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.93em}
+  .q{font-weight:600}
+  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:14px 0}
+  .tiny{font-size:12.5px;color:var(--muted)}
+  @media (max-width:900px){
+    .layout{align-items:stretch}
+    .content{width:100%;max-width:100%}
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T2</div>
+    <div><h1>Segmentación</h1><small>Sistemas Operativos · INF-246 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><a href="0-Guia-de-estudio-C2.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html" class="cur"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, reloj · por confirmar</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 2</div><a href="#t2-inicio"><span class="nt">Qué pesa y qué estudiar</span></a><a href="#objetivos"><span class="nt">Por qué memoria virtual</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#mmu-vm"><span class="nt">La MMU revisa cada acceso</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#segmento"><span class="nt">Qué es un segmento</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#tablas-seg"><span class="nt">Tabla global y tabla por proceso</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#mmu-seg"><span class="nt">La MMU de segmentación</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#bitv"><span class="nt">Bit V: segment fault</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#bitu"><span class="nt">Bit U: ¿se usó?</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#bitd"><span class="nt">Bit D: ¿se escribió?</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#compartir"><span class="nt">Segmentos compartidos</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#mmu-completa"><span class="nt">Los cuatro controles de la MMU</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#problemas-seg"><span class="nt">Problemas de la segmentación sola</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><div class="grp">Práctica</div><a href="#t2-receta"><span class="nt">Receta: traducir (s, d)</span></a><a href="#t2-videos"><span class="nt">Videos del tema</span></a><a href="#S1"><span class="nt">S1 · Traducir y detectar errores</span></a><a href="#S2"><span class="nt">S2 · Elegir qué descargar</span></a><a href="#S3"><span class="nt">S3 · Las tablas de la lámina 18</span></a><a href="#S4"><span class="nt">S4 · Bits de segmento y de offset</span></a><a href="#t2-preguntas"><span class="nt">Preguntas del tema</span></a></nav>
+</aside>
+<main class="content">
+
+<section id="t2-inicio" data-nav="Qué pesa y qué estudiar" data-grp="Tema 2">
+<h2>Tema 2 · Memoria virtual y segmentación</h2>
+<p class="lead">Primera mitad de la lámina <code>VirtualMemory</code> (diapositivas 2 a 21): los objetivos de la memoria virtual, el segmento, las tablas global y por proceso, los bits V, U y D, los segmentos compartidos y los cuatro controles de la MMU.</p>
+<div class="hero">
+  <div class="big">Peso en el certamen: alto, por los bits V, U y D</div>
+  <div class="sub">Los bits V, U y D se explican en esta lámina (con segmentos) y se repiten igual en la paginación: el C2 2023 pidió su rol (4.2) y encontrar el error en una tabla que los usa (4.3). La 1.6 del mismo certamen preguntó cuándo ocurre un SEGMENTATION VIOLATION. Lo demás de este tema es la base para entender la paginación y la segmentación paginada.</div>
+</div>
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder hacer</h5>
+    <p>· Decir los dos objetivos de la memoria virtual y qué problemas de lo lineal resuelve.</p>
+    <p>· Traducir una dirección (s, d) con la tabla de segmentos y decidir si hay error.</p>
+    <p>· Explicar quién pone en 0 y quién pone en 1 cada bit (V, U, D) y para qué los usa el sistema.</p>
+    <p>· Distinguir <i>segment fault</i> (se recupera), <i>segmentation violation</i> y <i>permission denied</i>.</p>
+    <p>· Explicar por qué compartir segmentos ahorra memoria, con los tres ejemplos de la lámina.</p>
+  </div>
+  <div class="card"><h5>Dónde está en los libros</h5>
+    <p><b>Wolf</b>: §5.3 “Segmentación”, con permisos e intercambio parcial (pp. 178-182). Su §5.5 explica la memoria virtual en general (p. 191).</p>
+    <p><b>Silberschatz</b> (10.ª ed.): la segmentación pura casi desapareció de esta edición; queda en §9.6 como parte del ejemplo IA-32. Para este tema sirve más Wolf.</p>
+  </div>
+  <div class="card"><h5>Plan para este tema (≈ 1 h 15)</h5>
+    <p>1. Leer las secciones (45 min). Lo más importante: los bits y los cuatro controles.</p>
+    <p>2. Video del Mtro. Elvira sobre segmentación (11 min).</p>
+    <p>3. Ejercicios S1 y S2 (20 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="objetivos" data-nav="Por qué memoria virtual" data-p="2">
+<h2>Por qué hace falta la memoria virtual</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Las preguntas de “¿por qué…?” del profe suelen apoyarse en esta lista; es la otra cara de la conclusión de memoria lineal.</p>
+<div class="box def"><div class="bt">Los dos objetivos principales (lámina 2)</div>
+<p>1. <b>Transparencia de la ubicación</b> de los procesos en la memoria: el proceso no sabe ni necesita saber dónde está en la RAM.</p>
+<p>2. <b>Protección</b> de los espacios de trabajo de los procesos y del sistema operativo.</p></div>
+<h4>Lo que falla en la gestión lineal</h4>
+<ul>
+  <li>Los espacios de trabajo son <b>monolíticos</b>: no es práctico.</li>
+  <li><b>No hay estructuración</b>: código, pila y asignación dinámica (<code>malloc()</code>) van todos mezclados en una zona.</li>
+  <li>Hay que <b>cargar el proceso completo</b> en memoria: la memoria se sobrecarga rápido, cuesta encontrar lugar y aparecen los costos de compactar y del swapping.</li>
+  <li>Para la programación paralela y cooperativa, el intercambio de mensajes es poco eficiente: <b>es mejor compartir partes</b> de los espacios de trabajo.</li>
+  <li>El espacio de trabajo es <b>dinámico</b>, puede ser demasiado grande para cargarlo entero, y algunas de sus partes casi no se usan.</li>
+</ul>
+<p>De ahí la meta: <b>asegurar la eficiencia de los accesos a las partes más usadas</b> de los espacios de trabajo.</p>
+<div class="box tip"><div class="bt">La solución, en cuatro líneas (lámina 4)</div>
+<p>· Espacios de trabajo <b>no monolíticos</b>.</p>
+<p>· Direcciones <b>virtuales relativas al espacio de trabajo</b> de cada proceso.</p>
+<p>· Verificar que el proceso <b>no salga</b> de su espacio virtual.</p>
+<p>· Verificar que tenga <b>derecho</b> a acceder a cada dirección; rechazar los accesos no autorizados con un error (<b>TRAP</b>).</p></div>
+</section>
+
+<section id="mmu-vm" data-nav="La MMU revisa cada acceso" data-p="2">
+<h2>La MMU transforma y verifica en cada acceso</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Pasar por encima.</strong> Es la misma idea de la MMU lineal, aplicada a la memoria virtual; la conclusión de la lámina (lo que hace el hardware) es lo que conviene recordar.</p>
+<ul>
+  <li>La transformación y la verificación de direcciones se hacen <b>en cada acceso a memoria</b>: el fetch de cada instrucción y cada lectura o escritura de variables.</li>
+  <li>El tiempo que toman debe ser <b>pequeño frente al tiempo de acceso a la memoria</b>.</li>
+  <li>Transformar y verificar se pueden hacer <b>en paralelo</b>.</li>
+  <li>Por eso se necesita hardware, la MMU, que transforma y verifica la dirección virtual <b>antes</b> del acceso real a la memoria física.</li>
+</ul>
+<div class="box tip"><div class="bt">La conclusión de la lámina, que vale para los temas 2 y 3</div>
+<p>La gran mayoría del trabajo la hace el <b>hardware</b>: verificar la presencia y los derechos, calcular las direcciones reales, generar los TRAPs y actualizar los bits de modificación (D) y de uso (U). El sistema operativo entra en juego solo cuando hay un TRAP: cargar lo que falta, decidir qué descargar o terminar un proceso que hizo algo ilegal.</p></div>
+</section>
+
+<section id="segmento" data-nav="Qué es un segmento" data-p="3">
+<h2>Qué es un segmento</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Todo el tema y la segmentación paginada se apoyan en esta definición.</p>
+<div class="box def"><div class="bt">Segmento (lámina 6)</div>
+<p>Un segmento está definido por una <b>BASE</b> (la dirección donde empieza en la RAM) y un <b>LÍMITE</b> (su tamaño en bytes).</p></div>
+<p>El espacio de trabajo de un proceso es un <b>conjunto de segmentos</b>. En UNIX/Linux, por ejemplo: uno para el <b>código ejecutable</b>, uno para los <b>datos</b> (variables estáticas) y uno para la <b>pila de ejecución y la asignación dinámica</b> (stack y heap).</p>
+<p>Una dirección virtual segmentada tiene dos partes: el <b>número de segmento</b> y el <b>offset</b> dentro de él.</p>
+<div class="addr"><div class="a1" style="flex:1">Segmento s</div><div class="a2" style="flex:2">Offset d</div></div>
+<div class="form"><b>@(s, d) → @Real = BASE<sub>s</sub> + d</b> &nbsp; con d &lt; LÍMITE<sub>s</sub><span class="n">Es la MMU de la memoria lineal, pero con un par BASE/LÍMITE por cada segmento en vez de uno por proceso.</span></div>
+<div class="box ana"><div class="bt">Analogía · las carpetas de un archivador</div>
+<p>En la memoria lineal, todo el proceso es un único fajo de hojas que hay que guardar junto. Con segmentos, el proceso es un archivador con carpetas separadas: código, datos y pila. Cada carpeta puede estar en un cajón distinto, se puede prestar (compartir) o guardar en bodega (swap) sin tocar las demás. Para encontrar una hoja dices “carpeta 2, hoja 37”.</p></div>
+</section>
+
+<section id="tablas-seg" data-nav="Tabla global y tabla por proceso" data-p="3">
+<h2>La tabla global de segmentos y la tabla por proceso</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Las tablas de las láminas son el formato en que el profe dibuja los ejercicios (como la tabla de páginas del C2 2023).</p>
+<p>El sistema mantiene dos tipos de tabla:</p>
+<ul>
+  <li>Una <b>tabla global de segmentos</b>, con todos los segmentos del sistema: su bit V, su BASE, su LÍMITE y sus bits U y D.</li>
+  <li>Una <b>tabla por proceso</b> (local), con los derechos de acceso: cada segmento local apunta a un segmento de la tabla global, con sus derechos <b>R</b> (read), <b>W</b> (write) y <b>X</b> (execute).</li>
+</ul>
+<div class="two">
+<div><div class="tw"><table class="pt mini">
+<thead><tr><th>Segment</th><th>V</th><th>BASE</th><th>LIMIT</th><th>U</th><th>D</th></tr></thead>
+<tbody>
+<tr><td>S0</td><td>1</td><td>B0</td><td>L0</td><td>1</td><td>1</td></tr>
+<tr><td>S1</td><td>1</td><td>B1</td><td>L1</td><td>1</td><td>0</td></tr>
+<tr><td>S2</td><td>0</td><td>B2</td><td>L2</td><td>0</td><td>0</td></tr>
+<tr><td>S3</td><td>1</td><td>B3</td><td>L3</td><td>0</td><td>0</td></tr>
+</tbody></table></div>
+<p class="memcap">Tabla global de la lámina 10. S2 existe pero no está cargado (V = 0).</p></div>
+<div><div class="tw"><table class="pt mini">
+<thead><tr><th>Proceso</th><th>Seg. local</th><th>R W X</th><th>Global</th></tr></thead>
+<tbody>
+<tr><td rowspan="3">P0</td><td>0</td><td>1 1 1</td><td>S1</td></tr>
+<tr><td>1</td><td>1 1 0</td><td>S3</td></tr>
+<tr><td>2</td><td>1 0 0</td><td>S2</td></tr>
+<tr><td rowspan="3">P1</td><td>0</td><td>1 1 1</td><td>S0</td></tr>
+<tr><td>1</td><td>1 1 0</td><td>S3</td></tr>
+<tr><td>2</td><td>1 1 0</td><td>S2</td></tr>
+</tbody></table></div>
+<p class="memcap">Tablas por proceso de la lámina 18: P0 y P1 comparten S3 y S2.</p></div>
+</div>
+<p><b>Cómo se lee:</b> cuando P0 usa su segmento local 1, la MMU mira la tabla de P0, ve que corresponde al global S3 con derechos RW, y en la tabla global encuentra la BASE B3 y el LÍMITE L3. El número que usa el proceso (0, 1, 2) es local; el sistema lo conecta con el segmento real.</p>
+</section>
+
+<section id="mmu-seg" data-nav="La MMU de segmentación" data-p="3">
+<h2>La MMU de segmentación</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Es el diagrama de la lámina 9: hay que poder contarlo paso a paso.</p>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 760 270" width="760" role="img" aria-label="MMU de segmentación: el segmento indexa la tabla, se suma la base al offset y se verifica límite y derechos">
+ <defs><marker id="ar6" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <rect x="10" y="10" width="560" height="220" rx="12" fill="var(--code)" stroke="var(--line)"/>
+  <text x="24" y="220" fill="var(--muted)" font-size="11">Memory Management Unit</text>
+  <rect x="24" y="110" width="90" height="34" fill="var(--brand-soft)" stroke="var(--brand)"/><text x="69" y="132" text-anchor="middle" fill="var(--brand)" font-weight="700">Segmento</text>
+  <rect x="114" y="110" width="90" height="34" fill="var(--lib-soft)" stroke="var(--lib)"/><text x="159" y="132" text-anchor="middle" fill="var(--lib)" font-weight="700">Offset</text>
+  <rect x="150" y="22" width="110" height="54" fill="var(--panel)" stroke="var(--line)"/>
+  <line x1="150" y1="40" x2="260" y2="40" stroke="var(--line)"/><line x1="150" y1="58" x2="260" y2="58" stroke="var(--line)"/>
+  <rect x="150" y="40" width="110" height="18" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="205" y="92" text-anchor="middle" fill="var(--muted)" font-size="10.5">tabla de segmentos</text>
+  <rect x="300" y="22" width="90" height="28" rx="5" fill="var(--warn-soft)" stroke="var(--warn)"/><text x="345" y="41" text-anchor="middle" fill="var(--warn)" font-weight="700">BASE</text>
+  <rect x="300" y="176" width="90" height="28" rx="5" fill="var(--warn-soft)" stroke="var(--warn)"/><text x="345" y="195" text-anchor="middle" fill="var(--warn)" font-weight="700">LÍMITE</text>
+  <rect x="430" y="40" width="110" height="28" rx="5" fill="var(--ex-soft)" stroke="var(--ex)"/><text x="485" y="59" text-anchor="middle" fill="var(--ex)" font-weight="700">DERECHOS</text>
+  <circle cx="345" cy="127" r="18" fill="var(--panel)" stroke="var(--warn)"/><text x="345" y="134" text-anchor="middle" fill="var(--warn)" font-size="19" font-weight="700">+</text>
+  <rect x="380" y="148" width="40" height="26" rx="13" fill="var(--no-soft)" stroke="var(--no)"/><text x="400" y="166" text-anchor="middle" fill="var(--no)" font-weight="700">&lt;</text>
+  <polygon points="485,135 525,161 485,187 445,161" fill="var(--no-soft)" stroke="var(--no)"/><text x="485" y="165" text-anchor="middle" fill="var(--no)" font-size="11" font-weight="700">AND</text>
+  <rect x="610" y="20" width="130" height="150" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="675" y="100" text-anchor="middle" fill="var(--accent)" font-weight="700">RAM</text>
+  <rect x="415" y="236" width="140" height="28" rx="5" fill="var(--lib-soft)" stroke="var(--lib)"/><text x="485" y="255" text-anchor="middle" fill="var(--lib)" font-weight="700">TRAP → SO</text>
+  <g stroke="var(--muted)" fill="none" marker-end="url(#ar6)">
+   <path d="M69,110 L69,49 L146,49"/><path d="M260,36 L296,36"/><path d="M260,52 L280,52 L280,190 L296,190"/><path d="M240,22 L240,14 L485,14 L485,36"/>
+   <path d="M204,127 L323,127"/><path d="M345,50 L345,105"/><path d="M345,145 L345,161 L376,161"/>
+   <path d="M390,190 L400,190 L400,178"/><path d="M420,161 L441,161"/><path d="M485,68 L485,131"/>
+   <path d="M485,187 L485,232"/>
+  </g>
+  <path d="M363,127 L606,127" stroke="var(--accent)" stroke-width="2.5" fill="none" marker-end="url(#ar6)"/>
+  <path d="M525,161 L560,161 L560,132" stroke="var(--accent)" fill="none" stroke-dasharray="4 3"/>
+  <text x="545" y="178" text-anchor="middle" fill="var(--accent)" font-size="10">OK</text>
+  <text x="492" y="214" fill="var(--no)" font-size="10.5">NOK</text>
+  <text x="430" y="120" text-anchor="middle" fill="var(--ink)" font-size="10.5" font-weight="700">dirección física</text>
+ </g>
+</svg>
+</div>
+<figcaption>Redibujado de la lámina 9. El número de segmento elige una fila de la tabla; la BASE se suma al offset; el resultado se compara con el LÍMITE (en la lámina 8 el límite marca dónde termina el segmento, que es lo mismo que pedir offset &lt; tamaño) y la operación se compara con los DERECHOS. Si ambas cosas están bien (AND), el acceso pasa a la RAM; si no, TRAP.</figcaption>
+</figure>
+</section>
+
+<section id="bitv" data-nav="Bit V: segment fault" data-p="3">
+<h2>Bit V (Valid): ¿está cargado?</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Los tres bits fueron la 4.2 del C2 2023 y sostienen la 4.3 (la tabla con errores).</p>
+<ul>
+  <li><b>V = 1</b>: el segmento está cargado en memoria y disponible.</li>
+  <li><b>V = 0</b>: el segmento <b>existe</b>, pero no está cargado.</li>
+</ul>
+<p>En cada acceso a una dirección virtual, la MMU mira el bit de presencia. Si vale 1, hace el acceso. Si vale 0 ocurre un <b>Segment Fault</b>:</p>
+<div class="steps">
+<div class="step"><b>TRAP</b>: la MMU interrumpe y entra el sistema operativo.</div>
+<div class="step">El sistema <b>carga el segmento</b> (swap-in) y pone V = 1.</div>
+<div class="step"><b>RETURN</b>: la ejecución sigue, y el acceso a la dirección virtual se hace de nuevo, ahora con éxito.</div>
+</div>
+<div class="box warn"><div class="bt">Ojo con los nombres: segment fault ≠ segmentation violation</div>
+<p>El <b>segment fault</b> del profe es normal y se recupera: el segmento solo estaba en el disco. Una <b>segmentation violation</b> es un acceso ilegal (segmento que no existe o fuera del límite) y es un error del proceso. El famoso mensaje de Linux <code>Segmentation fault (core dumped)</code> corresponde a la <b>violación</b>, no al segment fault del profe. En el certamen usa los nombres de las láminas.</p></div>
+</section>
+
+<section id="bitu" data-nav="Bit U: ¿se usó?" data-p="3">
+<h2>Bit U (Used): ¿se usó?</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Mismo motivo que el bit V.</p>
+<ul>
+  <li><b>U = 1</b>: el segmento fue leído o escrito. <b>U = 0</b>: no tuvo acceso.</li>
+  <li>El <b>sistema</b> lo pone en 0 cuando carga el segmento.</li>
+  <li>La <b>MMU</b> lo pone en 1 en cada acceso.</li>
+  <li>El sistema lo puede volver a 0 cada cierto tiempo, para saber qué se usó <b>últimamente</b>.</li>
+</ul>
+<p><b>Para qué sirve:</b> cuando la memoria está saturada, el sistema mira el bit U de cada segmento. Un segmento con <b>U = 0 es un buen candidato para un swap-out</b>: es poco útil, porque nadie lo ha usado.</p>
+<p class="tiny">Detalle: en la lámina 10 el recuadro dice “acceso en lectura” para U y “en escritura” para D; el texto de la lámina 12 dice “leído o escrito” para U. La respuesta segura es la del texto: U marca cualquier acceso.</p>
+</section>
+
+<section id="bitd" data-nav="Bit D: ¿se escribió?" data-p="3">
+<h2>Bit D (Dirty): ¿se escribió?</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Mismo motivo que el bit V; además el C2 2023 tenía una tabla con un bit D imposible.</p>
+<ul>
+  <li><b>D = 1</b>: el segmento fue escrito al menos una vez. <b>D = 0</b>: no fue modificado.</li>
+  <li>El <b>sistema</b> lo pone en 0 cuando carga el segmento.</li>
+  <li>La <b>MMU</b> lo pone en 1 en cada escritura.</li>
+</ul>
+<p><b>Para qué sirve, al hacer swapping:</b></p>
+<ul>
+  <li>Si <b>D = 1</b>, el sistema debe <b>escribir el segmento en la zona de swap</b> durante el swap-out, porque la copia del disco quedó vieja. No es un buen candidato.</li>
+  <li>Si <b>D = 0</b>, no hay que escribir nada: la copia que está en la zona de swap no cambió, o el segmento es el <b>original</b> (parte del ejecutable). Sacarlo es casi gratis: basta con poner V = 0.</li>
+</ul>
+<div class="tw"><table class="mini">
+<thead><tr><th>U, D</th><th>Qué significa</th><th>Como víctima de un swap-out</th></tr></thead>
+<tbody>
+<tr><td><b>0, 0</b></td><td>Nadie lo usó y no cambió</td><td>El mejor: poco útil y sale sin escribir en disco</td></tr>
+<tr><td><b>0, 1</b></td><td>No se usó últimamente, pero se modificó</td><td>Aceptable, aunque hay que escribirlo</td></tr>
+<tr><td><b>1, 0</b></td><td>Se está usando, pero está limpio</td><td>Malo: probablemente se vuelva a necesitar pronto</td></tr>
+<tr><td><b>1, 1</b></td><td>Se usa y está sucio</td><td>El peor: se necesita y además hay que escribirlo</td></tr>
+</tbody></table></div>
+<p class="tiny">Las láminas dicen solo “U = 0 es buen candidato” y “D = 1 no es buen candidato”. La tabla combina las dos reglas; es el mismo orden que usa el algoritmo NRU y la segunda oportunidad mejorada (página 4).</p>
+<div class="box warn"><div class="bt">Cómo responder “explicar el rol de los bits V, U y D” (C2 2023, 4.2)</div>
+<p><b>V</b> indica si la página (o el segmento) está presente en memoria; la MMU lo revisa en cada acceso y si vale 0 genera un page fault (segment fault) para que el sistema la cargue. <b>U</b> indica si tuvo acceso desde que se cargó o desde el último reset: el sistema lo pone en 0 al cargar, la MMU en 1 en cada acceso, y sirve para elegir qué descargar (U = 0 es buen candidato). <b>D</b> indica si fue escrita: el sistema lo pone en 0 al cargar, la MMU en 1 en cada escritura, y sirve para saber si al descargarla hay que escribirla en la zona de swap (D = 1) o no (D = 0).</p></div>
+</section>
+
+<section id="compartir" data-nav="Segmentos compartidos" data-p="2">
+<h2>Segmentos y procesos: compartir</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Es la ventaja más concreta de la segmentación y la idea se repite con las páginas compartidas.</p>
+<p>La segmentación permite <b>estructurar</b> el espacio de trabajo (código, datos, pila/heap), y con eso:</p>
+<ul>
+  <li>Cargar <b>solo los segmentos útiles</b> del proceso y descargar los inútiles.</li>
+  <li>Optimizar el costo del swapping: no todos los segmentos tienen que estar en memoria, y es más fácil y menos costoso liberar memoria.</li>
+</ul>
+<p><b>Compartir.</b> Varios procesos pueden compartir segmentos: sus tablas locales apuntan <b>al mismo segmento de la tabla global</b>. Eso ahorra memoria en tres casos (lámina 19):</p>
+<ol>
+  <li><b>Un segmento de código</b>: varios procesos que ejecutan el mismo programa; el código se carga una sola vez.</li>
+  <li><b>Un segmento de datos</b>: para procesos cooperativos y para la llamada de sistema <code>fork()</code>.</li>
+  <li><b>Las bibliotecas de programación</b>: cada una se carga una sola vez en un segmento (la LibC, por ejemplo) y todos los procesos hacen referencia al segmento global.</li>
+</ol>
+<div class="box tip"><div class="bt">Los derechos son de cada proceso, no del segmento</div>
+<p>En la lámina 18, P0 tiene el segmento global S2 con derechos <b>1 0 0</b> (solo lectura) y P1 lo tiene con <b>1 1 0</b> (lectura y escritura). El mismo segmento, con permisos distintos según quién lo usa. Por eso los derechos están en la tabla por proceso y no en la global.</p></div>
+</section>
+
+<section id="mmu-completa" data-nav="Los cuatro controles de la MMU" data-p="3">
+<h2>Dirección segmentada y los cuatro controles de la MMU</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer S1.</strong> De aquí sale la respuesta a la 1.6 del C2 2023 (cuándo ocurre un SEGMENTATION VIOLATION).</p>
+<p>En una arquitectura de 64 bits, la dirección segmentada usa <b>S bits</b> para el número de segmento y los <b>K = 64 − S</b> restantes para el offset.</p>
+<div class="addr"><div class="a1" style="flex:1">Segmento<small>S bits</small></div><div class="a2" style="flex:3">Offset<small>K = 64 − S bits</small></div></div>
+<p>Con S bits el proceso puede tener hasta 2<sup>S</sup> segmentos, y cada uno puede medir hasta 2<sup>64−S</sup> bytes. Antes de dejar pasar el acceso, la MMU hace cuatro preguntas, en orden:</p>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 790 300" width="790" role="img" aria-label="Cuatro controles: segmento en la tabla, válido, offset menor que límite, derechos">
+ <defs><marker id="ar7" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <polygon points="85,22 147,60 85,98 23,60" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="85" y="57" text-anchor="middle" fill="var(--brand)" font-size="11" font-weight="700">¿Está en</text><text x="85" y="71" text-anchor="middle" fill="var(--brand)" font-size="11" font-weight="700">la tabla?</text>
+  <polygon points="265,22 327,60 265,98 203,60" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="265" y="57" text-anchor="middle" fill="var(--brand)" font-size="11" font-weight="700">¿Válido?</text><text x="265" y="71" text-anchor="middle" fill="var(--brand)" font-size="11" font-weight="700">(V = 1)</text>
+  <polygon points="445,22 507,60 445,98 383,60" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="445" y="57" text-anchor="middle" fill="var(--brand)" font-size="11" font-weight="700">¿offset &lt;</text><text x="445" y="71" text-anchor="middle" fill="var(--brand)" font-size="11" font-weight="700">límite?</text>
+  <polygon points="625,22 687,60 625,98 563,60" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="625" y="57" text-anchor="middle" fill="var(--warn)" font-size="11" font-weight="700">¿Derechos</text><text x="625" y="71" text-anchor="middle" fill="var(--warn)" font-size="11" font-weight="700">RWX ok?</text>
+  <rect x="712" y="38" width="72" height="44" rx="6" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="748" y="57" text-anchor="middle" fill="var(--accent)" font-weight="700">ACCESO</text><text x="748" y="73" text-anchor="middle" fill="var(--accent)" font-size="10">BASE + d</text>
+  <rect x="15" y="142" width="140" height="42" rx="6" fill="var(--no-soft)" stroke="var(--no)"/><text x="85" y="160" text-anchor="middle" fill="var(--no)" font-weight="700">Segmentation</text><text x="85" y="176" text-anchor="middle" fill="var(--no)" font-weight="700">violation</text>
+  <rect x="195" y="142" width="140" height="42" rx="6" fill="var(--ex-soft)" stroke="var(--ex)"/><text x="265" y="160" text-anchor="middle" fill="var(--ex)" font-weight="700">Segment fault</text><text x="265" y="176" text-anchor="middle" fill="var(--ex)" font-size="10.5">(no presente)</text>
+  <rect x="375" y="142" width="140" height="42" rx="6" fill="var(--no-soft)" stroke="var(--no)"/><text x="445" y="160" text-anchor="middle" fill="var(--no)" font-weight="700">Segmentation</text><text x="445" y="176" text-anchor="middle" fill="var(--no)" font-weight="700">violation</text>
+  <rect x="555" y="142" width="140" height="42" rx="6" fill="var(--no-soft)" stroke="var(--no)"/><text x="625" y="160" text-anchor="middle" fill="var(--no)" font-weight="700">Permission</text><text x="625" y="176" text-anchor="middle" fill="var(--no)" font-weight="700">denied</text>
+  <rect x="15" y="222" width="680" height="56" rx="8" fill="var(--lib-soft)" stroke="var(--lib)"/>
+  <text x="355" y="244" text-anchor="middle" fill="var(--lib)" font-weight="700">TRAP → sistema operativo</text>
+  <text x="355" y="264" text-anchor="middle" fill="var(--ink)" font-size="11">violation y permission denied: error del proceso · segment fault: el SO hace swap-in del segmento y el acceso se reintenta</text>
+  <g stroke="var(--muted)" fill="none" marker-end="url(#ar7)">
+   <path d="M147,60 L199,60"/><path d="M327,60 L379,60"/><path d="M507,60 L559,60"/><path d="M687,60 L708,60"/>
+   <path d="M85,98 L85,138"/><path d="M265,98 L265,138"/><path d="M445,98 L445,138"/><path d="M625,98 L625,138"/>
+   <path d="M85,184 L85,218"/><path d="M265,184 L265,218"/><path d="M445,184 L445,218"/><path d="M625,184 L625,218"/>
+  </g>
+  <g fill="var(--muted)" font-size="10.5"><text x="173" y="52" text-anchor="middle">sí</text><text x="353" y="52" text-anchor="middle">sí</text><text x="533" y="52" text-anchor="middle">sí</text><text x="697" y="52" text-anchor="middle">sí</text>
+  <text x="96" y="122">no</text><text x="276" y="122">no</text><text x="456" y="122">no</text><text x="636" y="122">no</text></g>
+ </g>
+</svg>
+</div>
+<figcaption>Redibujado de la lámina 20 (“Dirección segmentada y MMU”).</figcaption>
+</figure>
+<div class="tw"><table>
+<thead><tr><th>Error</th><th>Cuándo</th><th>¿Se recupera?</th></tr></thead>
+<tbody>
+<tr><td><b>Segmentation violation</b></td><td>El segmento no está en la tabla del proceso, o el offset no es menor que el límite</td><td>No: es un acceso ilegal, error del proceso</td></tr>
+<tr><td><b>Segment fault</b></td><td>El segmento existe pero V = 0 (está en el disco)</td><td>Sí: swap-in y se reintenta; el programa ni se entera</td></tr>
+<tr><td><b>Permission denied</b></td><td>La operación (leer, escribir, ejecutar) no está permitida en los derechos RWX</td><td>No: error del proceso</td></tr>
+</tbody></table></div>
+<div class="box warn"><div class="bt">Cómo responder la 1.6 del C2 2023</div>
+<p>“En segmentación paginada, ¿cuándo ocurre el error SEGMENTATION VIOLATION?” Cuando el proceso usa una dirección (s, d) cuyo segmento <b>no existe en su tabla de segmentos</b>, o cuyo offset d <b>sale del límite</b> (tamaño) del segmento. No se confunde con el page fault (la página existe pero no está en memoria: se carga y se sigue) ni con el permission denied (la operación no está permitida por los derechos).</p></div>
+</section>
+
+<section id="problemas-seg" data-nav="Problemas de la segmentación sola" data-p="2">
+<h2>Los problemas de la segmentación sola</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Justifica la paginación y la segmentación paginada; es una buena pregunta de “¿por qué?”.</p>
+<p>Con espacios de trabajo grandes (lámina 21):</p>
+<ul>
+  <li><b>Varios segmentos grandes</b>: la asignación de memoria es difícil, porque hay que buscar un espacio contiguo grande. Es el problema de la memoria lineal otra vez, ahora por segmento: fragmentación externa y FIRST/BEST/WORST FIT.</li>
+  <li><b>Segmentos más grandes que la memoria real</b>: no se pueden manejar solo con segmentación.</li>
+  <li><b>Costo de las transferencias con el disco</b>: con segmentos grandes se querría cargar y descargar solo las <b>sub-partes útiles</b>.</li>
+  <li><b>Limitaciones de la memoria real</b>: se quiere un espacio de direccionamiento más grande que la memoria física.</li>
+</ul>
+<div class="box def"><div class="bt">La solución</div><p>Cortar los espacios de trabajo en <b>partes de tamaño igual: las páginas</b> (tema 3).</p></div>
+</section>
+
+<section id="t2-receta" data-nav="Receta: traducir (s, d)" data-grp="Práctica">
+<h2>Receta: traducir una dirección segmentada</h2>
+<div class="cols">
+<div class="card"><h5>Los pasos</h5>
+<p>1. Con s, busca la fila en la <b>tabla del proceso</b>. ¿No está? Segmentation violation.</p>
+<p>2. Sigue a la tabla global. ¿V = 0? Segment fault (se carga y se reintenta).</p>
+<p>3. ¿d &lt; LÍMITE? Si no, segmentation violation.</p>
+<p>4. ¿La operación está en RWX? Si no, permission denied.</p>
+<p>5. @física = BASE + d. Si fue acceso, U = 1; si fue escritura, también D = 1.</p></div>
+<div class="card"><h5>Los bits de la dirección</h5>
+<p>S bits de segmento → hasta 2<sup>S</sup> segmentos.</p>
+<p>K = 64 − S bits de offset → segmentos de hasta 2<sup>K</sup> bytes.</p></div>
+</div>
+</section>
+
+<section id="t2-videos" data-nav="Videos del tema">
+<h2>Videos del tema</h2>
+<p class="lead">Elegidos entre unos cuarenta candidatos. De cada uno se transcribió el audio para comprobar qué explica y en qué minuto; los marcados como recomendados son los que más se parecen a las láminas del profe.</p>
+<div class="box tip"><div class="bt">Cómo ver los videos doblados</div>
+<p>En los marcados “Audio en español (doblaje)”: ⚙ Configuración → <b>Pista de audio</b> → Español. Es un doblaje automático de YouTube; se entiende bien.</p></div>
+<div class="vgrid">
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=idC9f_srtKA" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/idC9f_srtKA/mqdefault.jpg" alt=""><span class="rk">RECOMENDADO</span><span class="dur">11:10</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=idC9f_srtKA" target="_blank" rel="noopener">Sistemas Operativos, Manejo de la memoria 8 Segmentación</a>
+    <div class="ch">Mtro. José Luis Elvira · 11:10 min</div>
+    <div class="tags"><span class="lt es">Español</span></div>
+    <p>Segmentación como la explica el profe: el programa es una colección de segmentos de distinto tamaño, la tabla de segmentos con base y límite, un ejemplo de traducción en hexadecimal y otro con un offset que se sale del segmento. Cierra con la fragmentación externa, los permisos por segmento y los segmentos compartidos.</p>
+    <div class="ver"><b>Qué ver:</b> Completo. Lo central: 3:00-6:45 la traducción y el offset inválido · 8:15-11:10 fragmentación, permisos y compartir.</div>
+    <p class="oj">Ojo: Llama STBR y STLR a los registros que apuntan a la tabla de segmentos; el profe no los nombra.</p>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=04Xs185vtqc" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/04Xs185vtqc/mqdefault.jpg" alt=""><span class="dur">13:20</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=04Xs185vtqc" target="_blank" rel="noopener">Paging and Segmentation 4: Virtual Memory Segmentation</a>
+    <div class="ch">Jacob Schrum · 13:20 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Segmentación con memoria virtual: segmentos en el disco, la tabla con <b>bit de presencia, bit de modificado</b>, base y largo, una traducción en hexadecimal y, en la segunda mitad, la segmentación combinada con paginación.</p>
+    <div class="ver"><b>Qué ver:</b> 0:00-6:30 segmentación y la traducción · 7:00-13:19 segmentación paginada (adelanta el tema 3).</div>
+  </div>
+</div>
+</div>
+</section>
+
+<details class="ex" id="S1" data-nav="S1 · Traducir y detectar errores">
+<summary>S1 · Seis accesos con una tabla de segmentos <span class="tag">nuevo · el más parecido a un ejercicio del profe</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div>
+<p>Tabla global: S0 (V=1, BASE=10 000, LÍMITE=4 000) · S1 (V=0, LÍMITE=2 000) · S2 (V=1, BASE=50 000, LÍMITE=8 000) · S3 (V=1, BASE=80 000, LÍMITE=1 000). El proceso P tiene: segmento 0 → S0 con R-X (1 0 1), segmento 1 → S2 con RW- (1 1 0), segmento 2 → S1 con RW- (1 1 0).</p>
+<p>¿Qué pasa en cada acceso? a) ejecutar en (0, 300) · b) escribir en (0, 300) · c) leer (1, 7 999) · d) leer (1, 8 000) · e) escribir en (2, 100) · f) leer (3, 10). ¿Qué bits cambian?</p></div>
+<div class="sol">
+<p><b>a)</b> 300 &lt; 4 000 y X = 1 → <b>10 300</b>. U(S0) = 1.</p>
+<p><b>b)</b> 300 &lt; 4 000, pero W = 0 → <b>permission denied</b>.</p>
+<p><b>c)</b> 7 999 &lt; 8 000 y R = 1 → <b>57 999</b>. U(S2) = 1.</p>
+<p><b>d)</b> 8 000 no es menor que 8 000 → <b>segmentation violation</b>.</p>
+<p><b>e)</b> S1 tiene V = 0 → <b>segment fault</b>: el SO carga S1 (le asigna una BASE), pone V = 1, U = 0, D = 0 y la instrucción se reintenta; 100 &lt; 2 000 y W = 1 → acceso, y la MMU pone U = 1 y D = 1.</p>
+<p><b>f)</b> El proceso no tiene segmento 3 en su tabla → <b>segmentation violation</b>, aunque S3 exista en la tabla global. P no tiene acceso a él.</p>
+</div></div>
+</details>
+
+<details class="ex" id="S2" data-nav="S2 · Elegir qué descargar">
+<summary>S2 · Elegir qué segmento descargar con los bits U y D <span class="tag">nuevo</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>La memoria está saturada. Segmentos (V, U, D): A (1, 0, 0) · B (1, 1, 1) · C (1, 0, 1) · D (1, 1, 0) · E (0, 0, 0). ¿Cuál descargas primero y por qué? ¿Cuál nunca podrías elegir?</p></div>
+<div class="sol">
+<p><b>A</b>: no se ha usado (U = 0), así que es poco útil, y no fue modificado (D = 0), así que se descarga sin escribir en disco. Después C (no se usa, pero hay que escribirlo), luego D (limpio, pero en uso) y al final B.</p>
+<p><b>E</b> no se puede elegir: con V = 0 ya no está en memoria.</p>
+</div></div>
+</details>
+
+<details class="ex" id="S3" data-nav="S3 · Las tablas de la lámina 18">
+<summary>S3 · Preguntas sobre las tablas de P0 y P1 <span class="tag">nuevo · con la lámina 18</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Con las <a class="inl" href="#tablas-seg">tablas de la lámina 18</a>: a) ¿Qué segmentos se comparten? b) ¿P0 puede escribir en su segmento 2? c) ¿Qué pasa si P1 lee su segmento 2? d) ¿Por qué conviene compartir la LibC?</p></div>
+<div class="sol">
+<p><b>a)</b> S3 (los dos con RW) y S2 (P0 solo lectura, P1 lectura y escritura).</p>
+<p><b>b)</b> No: P0 tiene derechos 1 0 0 sobre S2. Que P1 sí pueda escribirlo no importa: los derechos son de cada proceso.</p>
+<p><b>c)</b> S2 tiene V = 0 → segment fault: el SO lo carga, pone V = 1 y se reintenta. Desde ahí P0 también lo encuentra cargado.</p>
+<p><b>d)</b> Porque se carga una sola vez en memoria en vez de una copia por proceso; todos los procesos apuntan al mismo segmento global.</p>
+</div></div>
+</details>
+
+<details class="ex" id="S4" data-nav="S4 · Bits de segmento y de offset">
+<summary>S4 · ¿Cuántos segmentos y de qué tamaño? <span class="tag">nuevo · cálculo corto</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Direcciones de 64 bits. a) Con S = 16 bits de segmento, ¿cuántos segmentos puede tener un proceso y de qué tamaño máximo? b) ¿Y con S = 8? c) ¿Qué se gana y qué se pierde al aumentar S?</p></div>
+<div class="sol">
+<p><b>a)</b> 2<sup>16</sup> = 65 536 segmentos de hasta 2<sup>48</sup> B = 256 TB.</p>
+<p><b>b)</b> 2<sup>8</sup> = 256 segmentos de hasta 2<sup>56</sup> B = 64 PB.</p>
+<p><b>c)</b> Más bits de segmento dan más segmentos, pero cada uno puede ser más chico (el offset tiene menos bits). Además la tabla de segmentos puede crecer.</p>
+</div></div>
+</details>
+
+<section id="t2-preguntas" data-nav="Preguntas del tema">
+<h2>Preguntas del tema</h2>
+<p class="lead">Tapa la respuesta y contesta en voz alta.</p>
+<details class="ex"><summary>¿Cuáles son los dos objetivos principales de la memoria virtual?</summary><div class="body"><p>La transparencia de la ubicación de los procesos en memoria y la protección de los espacios de trabajo de los procesos y del sistema operativo.</p></div></details>
+<details class="ex"><summary>¿Qué define a un segmento?</summary><div class="body"><p>Una BASE (dónde empieza en la RAM) y un LÍMITE (su tamaño en bytes).</p></div></details>
+<details class="ex"><summary>¿Qué guarda la tabla global y qué guarda la tabla por proceso?</summary><div class="body"><p>La global: V, BASE, LÍMITE, U y D de cada segmento del sistema. La del proceso: a qué segmento global apunta cada segmento local y con qué derechos (R, W, X).</p></div></details>
+<details class="ex"><summary>¿Quién pone en 0 y quién pone en 1 los bits U y D?</summary><div class="body"><p>El sistema los pone en 0 al cargar el segmento (y puede resetear U cada cierto tiempo). La MMU pone U en 1 en cada acceso y D en 1 en cada escritura.</p></div></details>
+<details class="ex"><summary>¿Por qué un segmento con D = 0 es barato de descargar?</summary><div class="body"><p>Porque su copia en disco sigue siendo correcta (está en la zona de swap sin cambios o es el original del ejecutable): no hay que escribirlo, basta marcarlo como no presente.</p></div></details>
+<details class="ex"><summary>¿Qué pasa en un segment fault, paso a paso?</summary><div class="body"><p>La MMU ve V = 0 y genera un TRAP; el sistema carga el segmento y pone V = 1; con el RETURN la ejecución sigue y el acceso se repite con éxito.</p></div></details>
+<details class="ex"><summary>¿Cuándo ocurre una segmentation violation?</summary><div class="body"><p>Cuando el segmento no está en la tabla del proceso o cuando el offset no es menor que el límite del segmento.</p></div></details>
+<details class="ex"><summary>Da tres ejemplos de segmentos compartidos.</summary><div class="body"><p>El código de un programa que ejecutan varios procesos, los datos de procesos cooperativos o después de un <code>fork()</code>, y las bibliotecas como la LibC.</p></div></details>
+<details class="ex"><summary>¿Por qué la segmentación sola no basta?</summary><div class="body"><p>Porque cada segmento sigue siendo una zona contigua: los segmentos grandes son difíciles de ubicar (fragmentación externa), no puede haber segmentos más grandes que la RAM y hay que transferir segmentos completos al disco. La solución es cortar en páginas de tamaño igual.</p></div></details>
+</section>
+
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=(localStorage.getItem('so-c2-theme')||localStorage.getItem('so-c2-theme')); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('so-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  var lastBest=-1;
+  function onScroll(){
+    var y=window.scrollY+70, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4) best=secs.length-1;
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+    var sb=document.querySelector('.sidebar'), act=links[best];
+    if(sb && act && window.innerWidth>900 && best!==lastBest){
+      var r=act.getBoundingClientRect(), s=sb.getBoundingClientRect();
+      if(r.top<s.top+40 || r.bottom>s.bottom-40){ sb.scrollTop+=r.top-s.top-sb.clientHeight/2; }
+    }
+    lastBest=best;
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='so-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía de estudio · Infosoc C1</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">C1</div>
+    <div><h1>Guía de estudio</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 1</small></div>
+  </div>
+  <div class="pages"><a href="0-Guia-de-estudio-C1.html" class="cur"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 3</small></span></a><a href="1-Proyectos.html"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></a><a href="2-Definiciones.html"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></a><a href="3-Falacias.html"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></a><a href="4-Sesgos-cognitivos.html"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></a><a href="5-Pensamiento-critico.html"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></a><a href="6-Resolver-problemas.html"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></a><a href="7-Etica-y-moral.html"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></a><a href="8-Etica-antiguedad.html"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></a><a href="9-Etica-moderna.html"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></a><a href="10-Sociedades.html"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></a><a href="11-Metodo-cientifico.html"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></a><a href="12-Ingenieria.html"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></a><a href="13-Computacion.html"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></a><a href="14-Ejercicios.html"><b>14</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">El certamen</div><a href="#g-datos">Fecha, hora y formato</a><a href="#g-temario">Qué entra y cuánto pesa</a><a href="#g-formato">Cómo es el certamen</a><div class="grp">Estudiar</div><a href="#g-plan">Plan día por día</a><a href="#g-check">Checklist sin mirar</a><a href="#g-sala">En la sala</a><div class="grp">Repaso final</div><a href="#chuleta">Chuleta</a><a href="#g-relampago">Repaso relámpago</a><a href="#errores">Errores típicos</a><a href="#erratas">Erratas (puntos extra)</a><a href="#g-videos">Todos los videos</a><a href="#glosario">Glosario</a><a href="#g-fuentes">Fuentes</a></nav>
+</aside>
+<main class="content">
+<section id="g-datos">
+<h2>Certamen 1 · Ingeniería, Informática y Sociedad</h2>
+<p class="lead">Guía para llegar al sábado con lo que más puntaje da. La materia está separada por clase en las páginas 1 a 13 (menú de la izquierda), cada una con la materia explicada, lo que pidió la pauta del profe, videos revisados y preguntas de repaso. La página 14 tiene todas las preguntas de certámenes anteriores, ordenadas de la más a la menos probable, con respuesta modelo.</p>
+
+<div class="kpis">
+  <div class="kpi"><b>Sáb 3 oct</b><span>certamen 1</span></div>
+  <div class="kpi"><b>9:40 – 12:15</b><span>certamen de 2 horas, con holgura</span></div>
+  <div class="kpi"><b>125 pts</b><span>sobre 100 (lo extra es nota extra)</span></div>
+  <div class="kpi"><b>~6 preguntas</b><span>de desarrollo, de 15 a 30 pts</span></div>
+  <div class="kpi"><b>20 %</b><span>de la nota final</span></div>
+</div>
+
+<div class="box def"><div class="bt">Lo que dice la presentación del ramo</div>
+<p>Profesor <b>Horst H. von Brand</b> (INF-276). El C1 cubre la materia hasta la primera prueba y pesa 20 %; el C2 cubre todo y pesa 25 %; el proyecto 35 %, tareas 15 % y ayudantías 5 %. No hay examen. Los certámenes “generalmente tienen 125 puntos sobre 100”: hay temas más allá de lo exigido que dan nota extra. Cada pregunta se entrega <b>en hoja separada, identificada con nombre, rol, certamen y ramo</b>; si no respondes una, se entrega la hoja en blanco igual.</p></div>
+
+<div class="box warn"><div class="bt">Revisa en Aula antes del sábado</div>
+<p><b>1.</b> La sala (no aparece en el material del zip). <b>2.</b> Si el profe alcanzó a pasar en clases <b>propiedad intelectual</b> o <b>ética profesional</b>: en el C1 2026-1 entraron, pero este semestre sus diapositivas no vienen en el zip (ver “Qué entra”). <b>3.</b> Cualquier anuncio en el foro del ramo, que es donde el profe publica lo importante.</p></div>
+</section>
+
+<section id="g-temario">
+<h2>Qué entra y cuánto pesa</h2>
+<p class="lead">Las 13 clases del zip. La columna “certámenes” cuenta en cuántos de los nueve certámenes disponibles (C1, C2 y recuperativo de 2025-1, 2025-2 y 2026-1) salió el tema.</p>
+<div class="tw"><table>
+<thead><tr><th>Clase</th><th>Peso</th><th>Certámenes</th><th>Lo esencial</th></tr></thead>
+<tbody>
+<tr><td><a class="inl" href="1-Proyectos.html">1 · Proyectos</a></td><td><span class="pill w">Alto</span></td><td>4</td><td>7 razones de falla con su solución; SMART; criterios del objetivo.</td></tr>
+<tr><td><a class="inl" href="2-Definiciones.html">2 · Definiciones</a></td><td><span class="pill">Medio</span></td><td>(vía 11 y 12)</td><td>Ciencia, teoría, hipótesis; ingeniería; Ockham; informática sui generis.</td></tr>
+<tr><td><a class="inl" href="3-Falacias.html">3 · Razonamiento y falacias</a></td><td><span class="pill w">Muy alto</span></td><td>5</td><td>Definición de falacia; 3 falacias con ejemplo; válido vs sólido.</td></tr>
+<tr><td><a class="inl" href="4-Sesgos-cognitivos.html">4 · Sesgos cognitivos</a></td><td><span class="pill w">Muy alto</span></td><td>5</td><td>Definición; 3 sesgos con ejemplo; disonancia cognitiva y sus 3 defensas.</td></tr>
+<tr><td><a class="inl" href="5-Pensamiento-critico.html">5 · Pensamiento crítico</a></td><td><span class="pill w">Medio-alto</span></td><td>2</td><td>Definición; 6 habilidades; 7 pasos; por qué cuestionar supuestos.</td></tr>
+<tr><td><a class="inl" href="6-Resolver-problemas.html">6 · Resolver problemas</a></td><td><span class="pill w">Medio-alto</span></td><td>2</td><td>Los 4 principios de Pólya; heurísticas; paradoja del inventor.</td></tr>
+<tr><td><a class="inl" href="7-Etica-y-moral.html">7 · Ética y moral</a></td><td><span class="pill">Medio</span></td><td>1</td><td>Ēthikós = carácter (Grecia), morālis = costumbre (Roma, Cicerón).</td></tr>
+<tr><td><a class="inl" href="8-Etica-antiguedad.html">8 · Ética de la antigüedad</a></td><td><span class="pill w">Alto</span></td><td>2</td><td>Árbol de escuelas; cínicos, cirenaicos, Aristóteles, Epicuro, estoicos.</td></tr>
+<tr><td><a class="inl" href="9-Etica-moderna.html">9 · Ética moderna</a></td><td><span class="pill w">Alto</span></td><td>2 (+ casos)</td><td>Kant e imperativo categórico; utilitarismo de Bentham y Mill.</td></tr>
+<tr><td><a class="inl" href="10-Sociedades.html">10 · Sociedades</a></td><td><span class="pill a">Bajo</span></td><td>0</td><td>4 tradiciones sociológicas; humanismo y sus críticos.</td></tr>
+<tr><td><a class="inl" href="11-Metodo-cientifico.html">11 · Método científico</a></td><td><span class="pill w">Muy alto</span></td><td>5</td><td>Hecho, hipótesis, teoría; método en 4 pasos; falsabilidad.</td></tr>
+<tr><td><a class="inl" href="12-Ingenieria.html">12 · Ingeniería</a></td><td><span class="pill w">Medio-alto</span></td><td>3</td><td>Definición y frase del profe; historia en 4 bloques.</td></tr>
+<tr><td><a class="inl" href="13-Computacion.html">13 · Computación</a></td><td><span class="pill">Medio</span></td><td>1 (TI)</td><td>Las 5 generaciones; TI positiva y negativa.</td></tr>
+</tbody></table></div>
+<div class="box warn"><div class="bt">Lo que salió en el C1 2026-1 y no está en el zip</div>
+<p>El C1 del semestre pasado incluyó <b>propiedad intelectual</b> (30 pts) y <b>responsabilidades éticas del profesional</b> (20 pts). Este semestre esas clases no vienen en el zip, que llega hasta “Computación”, así que probablemente quedan para el C2. Por si acaso, están resumidas al final de los ejercicios: <a class="inl" href="14-Ejercicios.html#e22">E22</a> y <a class="inl" href="14-Ejercicios.html#e23">E23</a>.</p></div>
+</section>
+
+<section id="g-formato">
+<h2>Cómo es el certamen</h2>
+<p class="lead">Los tres últimos C1 tienen la misma forma: seis preguntas de desarrollo, casi todas del tipo “defina X y explique tres Y”. No hay cálculos.</p>
+<div class="tw"><table class="mini">
+<thead><tr><th>C1 2025-1 (10 may)</th><th>C1 2025-2 (6 sep)</th><th>C1 2026-1 (16 may)</th></tr></thead>
+<tbody>
+<tr><td>Ética antigua vs moderna · 20</td><td>Tres razones de falla de proyectos y cómo evitarlas · 30</td><td>Ética (Grecia) vs moral (Roma) · 20</td></tr>
+<tr><td>Método científico · 20</td><td>Falacia: definición y tres · 15</td><td>Disonancia cognitiva y dos defensas · 15</td></tr>
+<tr><td>Tres falacias · 15</td><td>Sesgo cognitivo: definición y tres · 15</td><td>Puntos de vista alternativos y suposiciones · 20</td></tr>
+<tr><td>Historia de la ingeniería · 20</td><td>Criterios del objetivo de un proyecto · 25</td><td>Ciencia vs ingeniería · 20</td></tr>
+<tr><td>Caso ético: la colega · 30</td><td>Habilidades del pensamiento crítico · 20</td><td>Propiedad intelectual · 30</td></tr>
+<tr><td>TI: positivo y negativo · 20</td><td>Estrategia de Pólya · 20</td><td>Responsabilidades éticas del profesional · 20</td></tr>
+<tr><td>Funciones del ayudante · 0 (broma)</td><td></td><td></td></tr>
+</tbody></table></div>
+<div class="box tip"><div class="bt">Lo que se repite (y probablemente se repita el sábado)</div>
+<p><b>Falacias o sesgos</b>: al menos uno de los dos en los tres C1. <b>Ciencia</b>: en dos de tres (método científico; ciencia vs ingeniería). <b>Ética</b>: en dos de tres (antigua vs moderna; ética vs moral), más el caso ético de 2025-1. <b>Pensamiento crítico</b>: en dos de tres. Esas familias sumaron entre 50 y 85 de los 125 puntos de cada C1; proyectos, Pólya e ingeniería completan casi todo el resto.</p></div>
+<div class="box pauta"><div class="bt"><span class="chk"></span>Cómo corrige el profe</div>
+<p>Las pautas son <b>listas con puntaje por ítem</b>: “definición 3, cada falacia 4”; “cada razón 5, cada solución 5”; “origen de ética 6, de moral 6, por qué son sinónimos 3”. Se gana puntaje <b>nombrando cada ítem y explicándolo</b>, no escribiendo mucho. Y él mismo advierte en el zip que las soluciones publicadas son “muchas veces más extensas de lo que realmente se pide”.</p></div>
+</section>
+
+<section id="g-plan">
+<h2>Plan día por día</h2>
+<p class="lead">Desde el jueves 1 en la tarde hasta el sábado 3 en la mañana: unas 7 horas en total, con lo de más puntaje primero. Las casillas se guardan en este navegador.</p>
+<div class="bar"><i></i></div><p class="barlbl" style="font-size:12.5px;color:var(--muted);margin:2px 0 0"></p>
+
+<div class="day"><h4>Jueves 1 · tarde y noche</h4><div class="when">≈ 2,5 h · lo que más se repite</div>
+<ul class="check">
+<li><input type="checkbox" data-k="p1"><span>Leer esta guía completa (15 min).</span></li>
+<li><input type="checkbox" data-k="p2"><span>Tema 3, falacias: definición, válido/sólido y elegir tus 4 falacias (35 min).</span></li>
+<li><input type="checkbox" data-k="p3"><span>Tema 4, sesgos: definición, tus 4 sesgos y disonancia cognitiva (35 min).</span></li>
+<li><input type="checkbox" data-k="p4"><span>Ejercicios E1, E2, E3 y E12 escritos a mano, sin mirar (30 min).</span></li>
+<li><input type="checkbox" data-k="p5"><span>Tema 11, método científico: términos, método en 4 pasos y falsabilidad (30 min).</span></li>
+</ul></div>
+
+<div class="day"><h4>Viernes 2</h4><div class="when">≈ 4 h · ética, pensamiento crítico, proyectos e ingeniería</div>
+<ul class="check">
+<li><input type="checkbox" data-k="p6"><span>Temas 7, 8 y 9: ética y moral, escuelas griegas, Kant y utilitarismo (60 min).</span></li>
+<li><input type="checkbox" data-k="p7"><span>Ejercicios E5, E9 y el caso ético E6 con el método de 5 pasos (35 min).</span></li>
+<li><input type="checkbox" data-k="p8"><span>Tema 5, pensamiento crítico + ejercicios E10 y E11 (30 min).</span></li>
+<li><input type="checkbox" data-k="p9"><span>Tema 1, proyectos + ejercicios E7 y E14 (35 min).</span></li>
+<li><input type="checkbox" data-k="p10"><span>Temas 2 y 12: definiciones e ingeniería + ejercicios E4, E8 y E15 (35 min).</span></li>
+<li><input type="checkbox" data-k="p11"><span>Tema 6, Pólya + ejercicio E13 (20 min).</span></li>
+<li><input type="checkbox" data-k="p12"><span>Temas 10 y 13, una lectura rápida (25 min).</span></li>
+</ul></div>
+
+<div class="day"><h4>Sábado 3 · antes del certamen</h4><div class="when">≈ 45 min · repasar, nada nuevo</div>
+<ul class="check">
+<li><input type="checkbox" data-k="p13"><span>Escribir la chuleta de memoria en una hoja (15 min).</span></li>
+<li><input type="checkbox" data-k="p14"><span>Repaso relámpago y errores típicos de esta página (20 min).</span></li>
+<li><input type="checkbox" data-k="p15"><span>Releer las “15 frases” (10 min). Llegar con tiempo: empieza a las 9:40.</span></li>
+</ul></div>
+
+<div class="box tip"><div class="bt">Si solo alcanzas a estudiar 3 horas</div>
+<p>Ordenado por puntos por hora: <b>1.</b> Falacias y sesgos con sus ejercicios E1-E3 (60 min). <b>2.</b> Método científico y ciencia vs ingeniería, E4 y E8 (30 min). <b>3.</b> Ética: E5 y E9, más el método del caso ético (40 min). <b>4.</b> Pensamiento crítico: E10 y E11 (20 min). <b>5.</b> La chuleta (15 min).</p></div>
+</section>
+
+<section id="g-check">
+<h2>Checklist: lo que tienes que poder escribir sin mirar</h2>
+<p class="lead">Si algo queda sin marcar el viernes en la noche, eso es lo único que conviene repasar el sábado.</p>
+<ul class="check">
+<li><input type="checkbox" data-k="c1"><span>La definición de falacia (paso ilógico en un argumento; qué es un argumento).</span></li>
+<li><input type="checkbox" data-k="c2"><span>Tres falacias con nombre en latín o inglés, traducción, ejemplo y dónde está el error.</span></li>
+<li><input type="checkbox" data-k="c3"><span>La diferencia entre argumento válido y sólido, con un ejemplo de cada.</span></li>
+<li><input type="checkbox" data-k="c4"><span>La definición de sesgo cognitivo y tres sesgos con ejemplo.</span></li>
+<li><input type="checkbox" data-k="c5"><span>Disonancia cognitiva y sus tres mecanismos (evitar, deslegitimar, limitar impacto).</span></li>
+<li><input type="checkbox" data-k="c6"><span>Qué tienen en común y en qué difieren falacia y sesgo.</span></li>
+<li><input type="checkbox" data-k="c7"><span>Las definiciones de ciencia, teoría, hipótesis y hecho.</span></li>
+<li><input type="checkbox" data-k="c8"><span>El método científico en 4 pasos y la falsabilidad (con su asimetría).</span></li>
+<li><input type="checkbox" data-k="c9"><span>La navaja de Ockham (la explicación completa más simple).</span></li>
+<li><input type="checkbox" data-k="c10"><span>La definición de ingeniería, la frase del profe y la diferencia con la ciencia.</span></li>
+<li><input type="checkbox" data-k="c11"><span>La historia de la ingeniería en 4 bloques: militar, civil, mecánica, diversificación.</span></li>
+<li><input type="checkbox" data-k="c12"><span>Ética (ēthikós, carácter) vs moral (morālis, costumbre, Cicerón) y por qué son sinónimos.</span></li>
+<li><input type="checkbox" data-k="c13"><span>Ética antigua (persona, buena vida) vs moderna (relaciones, cómo actuar).</span></li>
+<li><input type="checkbox" data-k="c14"><span>Qué es el bien y qué es el placer para cínicos, cirenaicos, Aristóteles, Epicuro y estoicos.</span></li>
+<li><input type="checkbox" data-k="c15"><span>Imperativo hipotético vs categórico; universalidad y humanidad como fin.</span></li>
+<li><input type="checkbox" data-k="c16"><span>Bentham (cuantitativo) vs Mill (cualitativo); “la máxima felicidad del mayor número”.</span></li>
+<li><input type="checkbox" data-k="c17"><span>Las 6 habilidades del pensamiento crítico.</span></li>
+<li><input type="checkbox" data-k="c18"><span>Por qué considerar otros puntos de vista y cuestionar supuestos (evitar sesgos, información completa).</span></li>
+<li><input type="checkbox" data-k="c19"><span>Los 4 principios de Pólya con una frase cada uno.</span></li>
+<li><input type="checkbox" data-k="c20"><span>Cuándo un proyecto es fallido y 3 razones de falla, cada una con su medida.</span></li>
+<li><input type="checkbox" data-k="c21"><span>SMART y los criterios del objetivo (claro, medible, realista, fijo).</span></li>
+<li><input type="checkbox" data-k="c22"><span>El método de 5 pasos para un caso ético.</span></li>
+<li><input type="checkbox" data-k="c23"><span>Las 5 generaciones de computadores (tecnología de cada una).</span></li>
+<li><input type="checkbox" data-k="c24"><span>Las 4 tradiciones de la sociología.</span></li>
+</ul>
+</section>
+
+<section id="g-sala">
+<h2>En la sala: el tiempo y cómo responder</h2>
+<p class="lead">Son unos 125 puntos en 2 horas: más o menos <b>1 minuto por punto</b>. Una pregunta de 20 puntos merece unos 18 minutos; la de 30, unos 25.</p>
+<div class="tw"><table class="mini">
+<thead><tr><th>Minutos</th><th>Qué hacer</th></tr></thead>
+<tbody>
+<tr><td>0-5</td><td>Leer el certamen completo. Al lado de cada pregunta, anotar en el borrador las palabras clave que se te vienen (las listas de la chuleta).</td></tr>
+<tr><td>5-60</td><td>Primero las preguntas que sabes de memoria (falacias, sesgos, Pólya, definiciones). Son puntos rápidos.</td></tr>
+<tr><td>60-100</td><td>Las de discusión y el caso ético, con el método de 5 pasos.</td></tr>
+<tr><td>100-115</td><td>Lo que quedó. Mejor algo que nada: cada ítem nombrado suma.</td></tr>
+<tr><td>115-120</td><td>Revisar: ¿cada pregunta en su hoja, con nombre, rol, certamen y ramo? ¿Contesté todas las letras? ¿Entregué hoja en blanco de las que no respondí?</td></tr>
+</tbody></table></div>
+<div class="box tip"><div class="bt">La forma de respuesta que calza con las pautas</div>
+<p><b>1. Definición</b> primero, en una o dos frases (casi siempre vale puntos aparte). <b>2. Los ítems pedidos</b> (“tres falacias”, “dos técnicas”), cada uno con <b>nombre en negrita mental</b>: nombre → qué es → ejemplo. <b>3. Una frase de cierre</b> que conecte con otro tema (falsabilidad ↔ sesgo de confirmación; ética antigua ↔ moderna). Si la pregunta tiene dos partes (“defina y distinga”, “qué tienen en común”), contesta las dos explícitamente.</p></div>
+</section>
+
+<section id="chuleta">
+<h2>Chuleta</h2>
+<p class="lead">Lo que deberías poder escribir de memoria en una hoja en blanco el sábado en la mañana.</p>
+<div class="cols">
+<div class="card"><h5>Proyectos</h5><p>Fallido: no cumple objetivos · no hay producto · fuera de plazo.</p><p>7 razones: objetivos poco claros · ampliación del alcance (34 %) · expectativas irreales · recursos limitados · comunicación pobre · retrasos de agenda · falta de transparencia.</p><p>SMART: específico, medible, alcanzable, realista, con plazo. Pauta: claro, medible, realista, fijo.</p><p>Ítem de acción: verbo + entregable + un responsable + fecha.</p></div>
+<div class="card"><h5>Razonamiento</h5><p>Válido: premisas ⇒ conclusión. Sólido: válido + premisas verdaderas. Inducción: no es deductivamente válida (cisnes negros, 1697).</p><p>Falacia: paso ilógico en un argumento. Argumento: conclusión + razones.</p><p>Mis 4: ad hominem · post hoc · hombre de paja · falso dilema.</p></div>
+<div class="card"><h5>Sesgos</h5><p>Sesgo: patrón sistemático de desviarse de la racionalidad al juzgar. Útil si importa la rapidez.</p><p>Mis 4: confirmación · costo hundido · efecto halo · representatividad (Linda).</p><p>Disonancia: dos creencias contradictorias. Defensas: evitar · deslegitimar · limitar impacto. Solución: cambiar conducta o creencia.</p><p>Hábitos: objetividad · cuestionarse · humildad epistémica (Dunning-Kruger).</p></div>
+<div class="card"><h5>Pensamiento crítico</h5><p>Cuestionar, analizar, interpretar, evaluar, juzgar. Kritikós: capaz de juzgar.</p><p>6 habilidades: propósito y contexto · cuestionar fuentes · identificar argumentos · analizar · evaluar ajenos · crear propios.</p><p>7 pasos: problema · información · analizar datos · <b>puntos de vista</b> · <b>conclusiones</b> · comunicar · reflexionar.</p></div>
+<div class="card"><h5>Pólya (How to Solve It, 1945)</h5><p>1 Entender · 2 Plan · 3 Ejecutar · 4 Reflexionar.</p><p>Heurísticas: analogía, generalizar, especializar, inducción, problema auxiliar, trabajar en reversa, dibujar.</p><p>Paradoja del inventor: demostrar algo más general es a veces más fácil.</p></div>
+<div class="card"><h5>Ética</h5><p>Ēthikós = carácter (Grecia). Morālis = costumbre (Cicerón). Traducción imprecisa ⇒ sinónimos.</p><p>Antigua: la persona, buena vida. Moderna: relaciones, cómo actuar.</p><p>Sócrates → Platón → Aristóteles (virtud, función = razonar) · Aristipo (cirenaicos, placer ya) → Epicuro (evitar dolor) · Antístenes (cínicos, solo virtud) → Zenón (estoicos, ataraxia).</p></div>
+<div class="card"><h5>Kant y utilitarismo</h5><p>Kant: buena voluntad; deberes perfectos/imperfectos; hipotético vs categórico. Formulaciones: universalidad · humanidad como fin · autonomía · reino de los fines.</p><p>Utilitarismo: consecuencias · felicidad · máxima felicidad del mayor número · maximizar. Bentham 1789 cuantitativo; Mill 1863 cualitativo. Directo (actos) vs indirecto (reglas).</p></div>
+<div class="card"><h5>Ciencia</h5><p>Ciencia: estudio sistemático del mundo natural por observación, experimentación y contraste con evidencia.</p><p>Hecho · hipótesis (evidencia limitada, refutable) · teoría (comprobada repetidamente) · especulación · evidencia.</p><p>Método: observar → hipótesis → deducir lo que la refutaría → experimentar.</p><p>Popper: falsabilidad, asimétrica. Ockham: la explicación completa más simple.</p></div>
+<div class="card"><h5>Ingeniería y computación</h5><p>“Un ingeniero halla soluciones viables en plazo y a costo aceptables a problemas prácticos.”</p><p>Historia: máquinas simples → militar (engineer, 1325) → civil → mecánica (vapor) → eléctrica, química, electrónica, aeronáutica, informática.</p><p>Generaciones: tubos (45) · transistores (55) · circuito integrado (65) · microprocesador (74) · ULSI (90).</p><p>Sociología: funcionalismo · conflicto · interaccionismo simbólico · elección racional.</p></div>
+</div>
+
+<h3>Las 15 frases que hay que poder escribir</h3>
+<ol>
+<li>Una falacia es un paso ilógico en un argumento; que un argumento sea falaz no prueba que su conclusión sea falsa.</li>
+<li>Un argumento es sólido si es válido y sus premisas son verdaderas.</li>
+<li>Un sesgo cognitivo es un patrón sistemático de desviarse de la norma o la racionalidad al momento de juzgar.</li>
+<li>Creemos en falacias porque apelan a nuestros sesgos.</li>
+<li>La disonancia cognitiva es mantener dos creencias contradictorias a la vez.</li>
+<li>El pensamiento crítico es juzgar en forma confiable basado en información fidedigna.</li>
+<li>Cuestionar las suposiciones propias es necesario para evitar sesgos cognitivos.</li>
+<li>Una hipótesis debe poder refutarse; la falsabilidad es lo que distingue a la ciencia.</li>
+<li>La evidencia puede refutar una teoría, pero nunca demostrarla definitivamente: toda teoría es provisoria.</li>
+<li>La ciencia busca nuevo conocimiento; la ingeniería resuelve problemas concretos usando el conocimiento acopiado.</li>
+<li>Un ingeniero halla soluciones viables en plazo y a costo aceptables a problemas prácticos.</li>
+<li>Ēthikós significa carácter; morālis, costumbre; la traducción imprecisa de Cicerón los volvió sinónimos.</li>
+<li>La ética antigua se centra en la persona y la buena vida; la moderna, en las relaciones con los demás y cómo actuar.</li>
+<li>Obra solo según una máxima que puedas querer que se torne ley universal.</li>
+<li>Un proyecto falla si no cumple sus objetivos, no obtiene el producto o no termina a tiempo.</li>
+</ol>
+</section>
+
+<section id="g-relampago">
+<h2>Repaso relámpago</h2>
+<p class="lead">Diez preguntas de una línea para el sábado en la mañana. Menos de 30 segundos cada una.</p>
+<div class="q">
+<details><summary>1 · ¿Qué falacia es “después de esto, luego por esto”?</summary><p><b>Post hoc, ergo propter hoc</b>: confundir una relación temporal con una causal.</p></details>
+<details><summary>2 · ¿Qué sesgo explica que creamos más probable “cajera y feminista” que “cajera”?</summary><p><b>Representatividad</b> (el problema de Linda): la descripción se parece al estereotipo, aunque el caso particular no puede ser más probable que el general.</p></details>
+<details><summary>3 · ¿Cuál es la diferencia entre hipótesis y teoría?</summary><p>La hipótesis se basa en evidencia limitada y es punto de partida; la teoría fue comprobada repetidas veces y está corroborada por evidencia (pero sigue siendo provisoria).</p></details>
+<details><summary>4 · ¿Quién usó “moral” para traducir “ética”?</summary><p><b>Cicerón</b>, el filósofo romano.</p></details>
+<details><summary>5 · ¿Qué es la ataraxia y de qué escuela?</summary><p>Estar libre de pasiones, una vida contenida en sí misma: la felicidad para los <b>estoicos</b>.</p></details>
+<details><summary>6 · Bentham o Mill: ¿quién distingue placeres mentales y físicos?</summary><p><b>Mill</b> (hedonismo cualitativo). Bentham propone el cálculo hedonista (cuantitativo).</p></details>
+<details><summary>7 · ¿Cuáles son los 4 pasos de Pólya?</summary><p>Entender el problema, armar un plan, ejecutar el plan, reflexionar sobre lo hecho.</p></details>
+<details><summary>8 · ¿Qué es la ampliación del alcance y su solución?</summary><p>Que los entregables cambien mientras avanza el proyecto (<i>scope creep</i>). Se evita con un alcance documentado y un proceso de control de cambios.</p></details>
+<details><summary>9 · ¿Qué tres mecanismos usan las personas para evadir la disonancia cognitiva?</summary><p>Evitar, deslegitimar y limitar el impacto.</p></details>
+<details><summary>10 · ¿Qué tecnología define la 3ª generación de computadores?</summary><p>El <b>circuito integrado</b> (1965–1974): minicomputadores, IBM 360, Unix.</p></details>
+</div>
+</section>
+
+<section id="errores">
+<h2>Errores típicos</h2>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>El error</th><th>Lo correcto</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Responder “ética vs moral” con la distinción de internet (moral = normas sociales, ética = reflexión).</td><td>El profe pregunta por el origen: carácter (Grecia) vs costumbre (Roma, Cicerón), unidos por una traducción imprecisa.</td></tr>
+<tr><td>2</td><td>Dar falacias sin definir “falacia”.</td><td>La definición tiene puntaje propio (3 a 5 puntos). Siempre va primero.</td></tr>
+<tr><td>3</td><td>Confundir falacia con sesgo.</td><td>La falacia está en el argumento y se disfraza de lógica; el sesgo está en quien juzga y a menudo ni se plantea como razonamiento.</td></tr>
+<tr><td>4</td><td>Decir que en ciencia se busca “confirmar” la hipótesis.</td><td>Se busca <b>refutarla</b> (falsabilidad). Un cuarto del puntaje del C1 2025-1 era eso.</td></tr>
+<tr><td>5</td><td>Llamar “teoría” a una idea sin probar.</td><td>En ciencia, teoría es una explicación comprobada repetidas veces y corroborada por evidencia.</td></tr>
+<tr><td>6</td><td>Confundir válido con sólido.</td><td>Válido: la forma lógica funciona. Sólido: además las premisas son verdaderas.</td></tr>
+<tr><td>7</td><td>Atribuir a Epicuro el “placer del momento”.</td><td>Ese es Aristipo (cirenaicos). Epicuro busca evitar el dolor y placeres duraderos, controlando los deseos.</td></tr>
+<tr><td>8</td><td>Decir que los estoicos vienen de Aristóteles.</td><td>Vienen de los cínicos (Antístenes → Zenón). Los epicúreos vienen de los cirenaicos.</td></tr>
+<tr><td>9</td><td>Mezclar las 6 habilidades, los 8 componentes y los 7 pasos del pensamiento crítico.</td><td>“Habilidades centrales” = las 6 habilidades (lo que usó la pauta).</td></tr>
+<tr><td>10</td><td>En “razones de falla”, describir el problema y olvidar la medida.</td><td>La pauta del C1 2025-2 da 5 puntos por razón y 5 por solución.</td></tr>
+<tr><td>11</td><td>Usar “utilitarismo” igual en ética y en sociología.</td><td>En ética: máxima felicidad del mayor número. En sociología: elección racional, cada uno maximiza su interés propio.</td></tr>
+<tr><td>12</td><td>Contar la historia de la ingeniería como lista de inventos.</td><td>La pauta premia la evolución de la profesión: militar → civil → mecánica → diversificación.</td></tr>
+<tr><td>13</td><td>En un caso ético, dar solo una opinión.</td><td>Nombrar el dilema y los valores en conflicto, analizar con dos lentes (Kant, utilitarismo), tomar posición y contestar cada letra.</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="erratas">
+<h2>Erratas del material (hasta 5 puntos extra)</h2>
+<p class="lead">La presentación del ramo dice que reportar errores del apunte o las transparencias (“de tipeo, gramática, matemáticos…”) tiene un premio de <b>hasta 5 puntos en la nota final</b>, divididos entre los autores. Estos son errores que encontramos al leer las diapositivas del zip. <b>Verifícalos tú antes de reportarlos</b>: si uno está mal, mejor no mandarlo.</p>
+<div class="tw"><table>
+<thead><tr><th>Archivo</th><th>Dice</th><th>Debería decir</th></tr></thead>
+<tbody>
+<tr><td><code>13-computación</code></td><td>“Blaise Pascal en <b>1632</b> diseñó y construyó la primera calculadora”</td><td><b>1642</b> (la Pascalina). En 1632 Pascal tenía 9 años.</td></tr>
+<tr><td><code>13-computación</code></td><td>Mark I: “<b>Completamente electrónico</b>, usaba relés”</td><td>Era <b>electromecánico</b>: los relés son interruptores mecánicos. La frase se contradice.</td></tr>
+<tr><td><code>13-computación</code></td><td>“Universidad de <b>Harward</b>”</td><td>Harvard.</td></tr>
+<tr><td><code>12-ingeniería</code></td><td>“Newcomen construyó la primera máquina a vapor en <b>1716</b>”</td><td>La máquina de Newcomen es de <b>1712</b>.</td></tr>
+<tr><td><code>12-ingeniería</code></td><td>“Arquímides”</td><td>Arquímedes.</td></tr>
+<tr><td><code>11-metodo-cientifico</code></td><td>“William <b>Bechel</b>”</td><td>William <b>Bechtel</b>.</td></tr>
+<tr><td><code>09-etica-moderna</code></td><td>“Desarrollada por Immanuel Kant en, es una teoría…”</td><td>Falta el año (la <i>Fundamentación</i> es de 1785).</td></tr>
+<tr><td><code>09-etica-moderna</code></td><td>“utilarianismo”</td><td>utilitarismo (o utilitarianismo, como en el resto del texto).</td></tr>
+<tr><td><code>08-etica-antiguedad</code></td><td>“el placer <b>el el</b> bien más preciado”; “proponente <b>de</b> más prominente”; “el argumento de Aristóteles <b>dela</b> función”</td><td>“es el”; “el proponente más prominente”; “de la”.</td></tr>
+<tr><td><code>03-razonar</code></td><td>“casos <b>pariculares</b>”</td><td>particulares.</td></tr>
+</tbody></table></div>
+<div class="box warn"><div class="bt">Discutibles (no las reportes sin revisar)</div>
+<p><b>Mark Twain</b> atribuía “lies, damned lies, and statistics” a Disraeli. En “sesgo de imprimación” la clase dice “influencia de la primera impresión”; en psicología, imprimación (<i>priming</i>) es que un estímulo previo influya en la respuesta a otro, y la primera impresión se suele llamar efecto de primacía. Sobre <b>Colossus</b>, el diseño fue de Tommy Flowers; Turing influyó en el trabajo de Bletchley Park, pero no lo diseñó. <b>BASIC</b> se diseñó en 1963, pero su primer programa corrió en Dartmouth en 1964. <b>Ethernet</b> se inventó en Xerox PARC en 1973 y el estándar de 1980 fue de DEC, Intel y Xerox (la clase omite a DEC).</p></div>
+</section>
+
+<section id="g-videos">
+<h2>Todos los videos</h2>
+<p class="lead">De cada video se transcribió el audio para comprobar qué explica y en qué minuto. Los marcados como recomendados son los que más se parecen a lo que pide el profe. Ningún video reemplaza las listas de la clase: el profe corrige con sus definiciones, no con las de YouTube.</p>
+<div class="box tip"><div class="bt">Cómo ver estos videos en español</div>
+<p><b>Audio en español (doblaje):</b> ⚙ Configuración → <b>Pista de audio</b> → Español. <b>Subtítulos:</b> en los que están solo en inglés, activa CC y luego ⚙ → Subtítulos → <b>Traducir automáticamente</b> → Español.</p></div>
+<div class="tw"><table class="vlist mini"><thead><tr><th>Tema</th><th>Video</th><th>Min</th><th>Idioma</th><th>Qué ver</th></tr></thead><tbody><tr><td><a class="inl" href="1-Proyectos.html#t1-videos">1 · Proyectos</a></td><td><a href="https://www.youtube.com/watch?v=DsYPBfT3NbE" target="_blank" rel="noopener">¿Por qué fracasan los proyectos?</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">Daniel M</small></td><td>5:23</td><td><span class="lt es">En español</span></td><td>Completo (5 min).</td></tr>
+<tr><td><a class="inl" href="1-Proyectos.html#t1-videos">1 · Proyectos</a></td><td><a href="https://www.youtube.com/watch?v=mfzUazFbXyM" target="_blank" rel="noopener">¿Cómo hacer un objetivo SMART?</a><br><small style="color:var(--muted)">Marketing 2.0</small></td><td>5:34</td><td><span class="lt es">En español</span></td><td>Completo; lo central está entre 1:00 y 4:30.</td></tr>
+<tr><td><a class="inl" href="1-Proyectos.html#t1-videos">1 · Proyectos</a></td><td><a href="https://www.youtube.com/watch?v=J9nBIvT8OjU" target="_blank" rel="noopener">Cómo hacer reuniones efectivas</a><br><small style="color:var(--muted)">Daniel Colombo</small></td><td>3:02</td><td><span class="lt es">En español</span></td><td>Completo.</td></tr>
+<tr><td><a class="inl" href="1-Proyectos.html#t1-videos">1 · Proyectos</a></td><td><a href="https://www.youtube.com/watch?v=pTtt4Ui1OA4" target="_blank" rel="noopener">What is Scope Creep? Explained in 2 minutes</a><br><small style="color:var(--muted)">Productivity Guy</small></td><td>2:26</td><td><span class="lt no">Solo en inglés</span></td><td>Opcional, completo.</td></tr>
+<tr><td><a class="inl" href="2-Definiciones.html#t2-videos">2 · Definiciones</a></td><td><a href="https://www.youtube.com/watch?v=-MOR3rFj8Ec" target="_blank" rel="noopener">Diferencia entre ciencia e ingeniería</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">eduVector</small></td><td>4:59</td><td><span class="lt es">En español</span></td><td>Completo (5 min).</td></tr>
+<tr><td><a class="inl" href="2-Definiciones.html#t2-videos">2 · Definiciones</a></td><td><a href="https://www.youtube.com/watch?v=nJchTW5olw0" target="_blank" rel="noopener">Ingeniería vs ciencia</a><br><small style="color:var(--muted)">Tu Amiga Ingeniera</small></td><td>3:24</td><td><span class="lt es">En español</span></td><td>Opcional, completo.</td></tr>
+<tr><td><a class="inl" href="3-Falacias.html#t3-videos">3 · Razonamiento y falacias</a></td><td><a href="https://www.youtube.com/watch?v=qYxeSGMw7t0" target="_blank" rel="noopener">¿Cómo detectar mentiras? Las falacias (parte 1)</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">CuriosaMente</small></td><td>7:25</td><td><span class="lt es">En español</span></td><td>Completo. Es el que más se parece a la clase.</td></tr>
+<tr><td><a class="inl" href="3-Falacias.html#t3-videos">3 · Razonamiento y falacias</a></td><td><a href="https://www.youtube.com/watch?v=eoYeKJNxvHE" target="_blank" rel="noopener">¿Cómo detectar mentiras? Las falacias (parte 2)</a><br><small style="color:var(--muted)">CuriosaMente</small></td><td>6:05</td><td><span class="lt es">En español</span></td><td>Hasta 5:15; lo demás es publicidad.</td></tr>
+<tr><td><a class="inl" href="3-Falacias.html#t3-videos">3 · Razonamiento y falacias</a></td><td><a href="https://www.youtube.com/watch?v=_XWsvlKFUHU" target="_blank" rel="noopener">Evaluando argumentos: validez, verdad, solidez</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">Melisa Vivanco</small></td><td>5:18</td><td><span class="lt es">En español</span></td><td>Completo. Sirve para la distinción válido/sólido de la clase.</td></tr>
+<tr><td><a class="inl" href="3-Falacias.html#t3-videos">3 · Razonamiento y falacias</a></td><td><a href="https://www.youtube.com/watch?v=2hvWnst9qX8" target="_blank" rel="noopener">Las 15 falacias más comunes</a><br><small style="color:var(--muted)">Pablo Molinari</small></td><td>18:32</td><td><span class="lt es">En español</span></td><td>Opcional. Si lo ves, a 1,5×.</td></tr>
+<tr><td><a class="inl" href="4-Sesgos-cognitivos.html#t4-videos">4 · Sesgos cognitivos</a></td><td><a href="https://www.youtube.com/watch?v=3hG4gwIPwDs" target="_blank" rel="noopener">¿Cómo nos engañan? Parte 1: los sesgos cognitivos</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">CuriosaMente</small></td><td>5:13</td><td><span class="lt es">En español</span></td><td>Completo.</td></tr>
+<tr><td><a class="inl" href="4-Sesgos-cognitivos.html#t4-videos">4 · Sesgos cognitivos</a></td><td><a href="https://www.youtube.com/watch?v=dYdjDb3a_d8" target="_blank" rel="noopener">Disonancia cognitiva: cómo te engañas a ti mismo</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">Píldoras de Psicología</small></td><td>7:30</td><td><span class="lt es">En español</span></td><td>Hasta 6:50. Sirve para la pregunta del C1 2026-1.</td></tr>
+<tr><td><a class="inl" href="4-Sesgos-cognitivos.html#t4-videos">4 · Sesgos cognitivos</a></td><td><a href="https://www.youtube.com/watch?v=2JkC9G3bVdo" target="_blank" rel="noopener">¿Por qué las personas incompetentes creen que son increíbles?</a><br><small style="color:var(--muted)">TED-Ed (Sé Curioso), con David Dunning</small></td><td>5:07</td><td><span class="lt es">En español</span></td><td>Completo.</td></tr>
+<tr><td><a class="inl" href="4-Sesgos-cognitivos.html#t4-videos">4 · Sesgos cognitivos</a></td><td><a href="https://www.youtube.com/watch?v=uuontKQdoiw" target="_blank" rel="noopener">El sesgo de confirmación</a><br><small style="color:var(--muted)">Sprouts Español</small></td><td>4:53</td><td><span class="lt es">En español</span></td><td>Hasta 3:30; lo demás es publicidad del canal.</td></tr>
+<tr><td><a class="inl" href="4-Sesgos-cognitivos.html#t4-videos">4 · Sesgos cognitivos</a></td><td><a href="https://www.youtube.com/watch?v=LRsOgXNug_Q" target="_blank" rel="noopener">Saber abandonar y la falacia del costo hundido</a><br><small style="color:var(--muted)">Platonto</small></td><td>9:02</td><td><span class="lt es">En español</span></td><td>Opcional: 3:30-5:45.</td></tr>
+<tr><td><a class="inl" href="5-Pensamiento-critico.html#t5-videos">5 · Pensamiento crítico</a></td><td><a href="https://www.youtube.com/watch?v=YO4pwpaH8Fo" target="_blank" rel="noopener">5 consejos para mejorar su pensamiento crítico</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">TED-Ed (Sé Curioso), Samantha Agoos</small></td><td>4:37</td><td><span class="lt es">En español</span></td><td>Completo. Sirve para la pregunta del C1 2026-1.</td></tr>
+<tr><td><a class="inl" href="5-Pensamiento-critico.html#t5-videos">5 · Pensamiento crítico</a></td><td><a href="https://www.youtube.com/watch?v=i-htv81L04g" target="_blank" rel="noopener">¿Cómo desarrollar el pensamiento crítico?</a><br><small style="color:var(--muted)">CuriosaMente</small></td><td>8:11</td><td><span class="lt es">En español</span></td><td>De 1:50 a 6:00.</td></tr>
+<tr><td><a class="inl" href="6-Resolver-problemas.html#t6-videos">6 · Resolver problemas</a></td><td><a href="https://www.youtube.com/watch?v=odXMHOhcmQA" target="_blank" rel="noopener">George Pólya: estrategias de resolución de problemas</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">Fernando Faundez</small></td><td>6:11</td><td><span class="lt es">En español</span></td><td>Hasta 4:00 es lo que pide el certamen; lo demás son consejos.</td></tr>
+<tr><td><a class="inl" href="7-Etica-y-moral.html#t7-videos">7 · Ética y moral</a></td><td><a href="https://www.youtube.com/watch?v=ABZwNy_zhtg" target="_blank" rel="noopener">Ética y moral: ¿qué significan y cuáles son sus diferencias?</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">Universidad de Deusto</small></td><td>2:44</td><td><span class="lt es">En español</span></td><td>Completo (menos de 3 min).</td></tr>
+<tr><td><a class="inl" href="7-Etica-y-moral.html#t7-videos">7 · Ética y moral</a></td><td><a href="https://www.youtube.com/watch?v=eHIDwx6J-lA" target="_blank" rel="noopener">Moral y ética: ¿cuáles son sus diferencias?</a><br><small style="color:var(--muted)">Astraway</small></td><td>10:34</td><td><span class="lt es">En español</span></td><td>Solo 1:50-2:10 y 6:55-7:10.</td></tr>
+<tr><td><a class="inl" href="8-Etica-antiguedad.html#t8-videos">8 · Ética de la antigüedad</a></td><td><a href="https://www.youtube.com/watch?v=VY2osqEbvfY" target="_blank" rel="noopener">Escuelas helenísticas</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">Unboxing Philosophy</small></td><td>9:45</td><td><span class="lt es">En español</span></td><td>Hasta 8:15; los escépticos no entran en la clase.</td></tr>
+<tr><td><a class="inl" href="8-Etica-antiguedad.html#t8-videos">8 · Ética de la antigüedad</a></td><td><a href="https://www.youtube.com/watch?v=9M8iMIQ-BSc" target="_blank" rel="noopener">Resumiendo la ética de Aristóteles en Minecraft</a><br><small style="color:var(--muted)">Platonto</small></td><td>6:11</td><td><span class="lt es">En español</span></td><td>Hasta 5:15.</td></tr>
+<tr><td><a class="inl" href="8-Etica-antiguedad.html#t8-videos">8 · Ética de la antigüedad</a></td><td><a href="https://www.youtube.com/watch?v=9ldXznMe1W8" target="_blank" rel="noopener">La filosofía del estoicismo</a><br><small style="color:var(--muted)">TED-Ed (Sé Curioso), Massimo Pigliucci</small></td><td>5:24</td><td><span class="lt es">En español</span></td><td>Opcional, completo.</td></tr>
+<tr><td><a class="inl" href="8-Etica-antiguedad.html#t8-videos">8 · Ética de la antigüedad</a></td><td><a href="https://www.youtube.com/watch?v=r5yHL_gTNns" target="_blank" rel="noopener">Cínicos, escépticos, epicúreos, estoicos</a><br><small style="color:var(--muted)">Monitor fantasma</small></td><td>12:07</td><td><span class="lt es">En español</span></td><td>Opcional: 2:15-5:15 y 7:45-11:00.</td></tr>
+<tr><td><a class="inl" href="8-Etica-antiguedad.html#t8-videos">8 · Ética de la antigüedad</a></td><td><a href="https://www.youtube.com/watch?v=hsM9UgZgmtM" target="_blank" rel="noopener">¿Qué es el hedonismo? Aristipo de Cirene</a><br><small style="color:var(--muted)">El Picalibro</small></td><td>15:06</td><td><span class="lt es">En español</span></td><td>Opcional: 0:00-1:30 y 5:00-6:30.</td></tr>
+<tr><td><a class="inl" href="9-Etica-moderna.html#t9-videos">9 · Ética moderna</a></td><td><a href="https://www.youtube.com/watch?v=Lq0ZGcqn-Zg" target="_blank" rel="noopener">La ética en Kant</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">Unboxing Philosophy</small></td><td>5:55</td><td><span class="lt es">En español</span></td><td>Completo.</td></tr>
+<tr><td><a class="inl" href="9-Etica-moderna.html#t9-videos">9 · Ética moderna</a></td><td><a href="https://www.youtube.com/watch?v=DhokuTlfDcU" target="_blank" rel="noopener">El imperativo categórico de Kant, súper fácil</a><br><small style="color:var(--muted)">Daniel Talavera</small></td><td>5:14</td><td><span class="lt es">En español</span></td><td>Desde 1:20.</td></tr>
+<tr><td><a class="inl" href="9-Etica-moderna.html#t9-videos">9 · Ética moderna</a></td><td><a href="https://www.youtube.com/watch?v=6kwyNd6CnVI" target="_blank" rel="noopener">¿Qué es el utilitarismo?</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">Cuaderno de Historia</small></td><td>8:01</td><td><span class="lt es">En español</span></td><td>Completo.</td></tr>
+<tr><td><a class="inl" href="9-Etica-moderna.html#t9-videos">9 · Ética moderna</a></td><td><a href="https://www.youtube.com/watch?v=6ipr7vueNxo" target="_blank" rel="noopener">Resumiendo la ética de Kant con Minecraft</a><br><small style="color:var(--muted)">Platonto</small></td><td>7:00</td><td><span class="lt es">En español</span></td><td>Hasta 6:30.</td></tr>
+<tr><td><a class="inl" href="9-Etica-moderna.html#t9-videos">9 · Ética moderna</a></td><td><a href="https://www.youtube.com/watch?v=KEl0s5NZbh4" target="_blank" rel="noopener">La historia de la ética, de la antigüedad al siglo XX</a><br><small style="color:var(--muted)">Astraway</small></td><td>11:40</td><td><span class="lt es">En español</span></td><td>Opcional: 3:20-6:40 y 9:20-10:20.</td></tr>
+<tr><td><a class="inl" href="10-Sociedades.html#t10-videos">10 · Sociedades</a></td><td><a href="https://www.youtube.com/watch?v=1X3BdbgJsTk" target="_blank" rel="noopener">Perspectivas teóricas: funcionalismo, conflicto e interaccionismo simbólico</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">The Sociology Professor</small></td><td>3:32</td><td><span class="lt no">Solo en inglés</span></td><td>Completo.</td></tr>
+<tr><td><a class="inl" href="10-Sociedades.html#t10-videos">10 · Sociedades</a></td><td><a href="https://www.youtube.com/watch?v=h3hTGJThmuo" target="_blank" rel="noopener">¿Qué es la sociología?</a><br><small style="color:var(--muted)">En Minutos</small></td><td>4:42</td><td><span class="lt es">En español</span></td><td>Completo.</td></tr>
+<tr><td><a class="inl" href="10-Sociedades.html#t10-videos">10 · Sociedades</a></td><td><a href="https://www.youtube.com/watch?v=rBO1SHSMiUY" target="_blank" rel="noopener">Paradigmas de la sociología: consenso vs conflicto</a><br><small style="color:var(--muted)">Resúmenes Entelekia</small></td><td>10:32</td><td><span class="lt es">En español</span></td><td>Opcional: 4:40-9:30.</td></tr>
+<tr><td><a class="inl" href="11-Metodo-cientifico.html#t11-videos">11 · Método científico</a></td><td><a href="https://www.youtube.com/watch?v=QR6odHb24Qs" target="_blank" rel="noopener">El falsacionismo de Karl Popper</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">unProfesor</small></td><td>3:33</td><td><span class="lt es">En español</span></td><td>Completo. Es la falsabilidad de la pauta en 3 minutos.</td></tr>
+<tr><td><a class="inl" href="11-Metodo-cientifico.html#t11-videos">11 · Método científico</a></td><td><a href="https://www.youtube.com/watch?v=21tnGFf1fXo" target="_blank" rel="noopener">Hipótesis, teoría y ley: ¿cuál es la diferencia?</a><br><small style="color:var(--muted)">Monitor fantasma</small></td><td>6:31</td><td><span class="lt es">En español</span></td><td>Completo.</td></tr>
+<tr><td><a class="inl" href="11-Metodo-cientifico.html#t11-videos">11 · Método científico</a></td><td><a href="https://www.youtube.com/watch?v=Jcw5KBZ5Y28" target="_blank" rel="noopener">La navaja de Ockham</a><br><small style="color:var(--muted)">Monitor fantasma</small></td><td>4:19</td><td><span class="lt es">En español</span></td><td>Completo.</td></tr>
+<tr><td><a class="inl" href="11-Metodo-cientifico.html#t11-videos">11 · Método científico</a></td><td><a href="https://www.youtube.com/watch?v=KoSqT2msJE4" target="_blank" rel="noopener">¿Qué es el falsacionismo? Karl Popper</a><br><small style="color:var(--muted)">La Marmota Filosófica</small></td><td>12:39</td><td><span class="lt es">En español</span></td><td>Opcional: 1:20-5:30 y 9:20-11:00.</td></tr>
+<tr><td><a class="inl" href="11-Metodo-cientifico.html#t11-videos">11 · Método científico</a></td><td><a href="https://www.youtube.com/watch?v=Q-SkO1coeRA" target="_blank" rel="noopener">El experimento de la lámina de oro de Rutherford</a><br><small style="color:var(--muted)">Khan Academy Español</small></td><td>11:14</td><td><span class="lt es">En español</span></td><td>Opcional: 3:20-8:40.</td></tr>
+<tr><td><a class="inl" href="12-Ingenieria.html#t12-videos">12 · Ingeniería</a></td><td><a href="https://www.youtube.com/watch?v=otB-xjxqHT8" target="_blank" rel="noopener">Historia de la ingeniería</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">ING. HERIBERTO</small></td><td>10:11</td><td><span class="lt es">En español</span></td><td>Completo. Sigue el mismo orden que la pauta del C1 2025-1.</td></tr>
+<tr><td><a class="inl" href="12-Ingenieria.html#t12-videos">12 · Ingeniería</a></td><td><a href="https://www.youtube.com/watch?v=abP624mvjzw" target="_blank" rel="noopener">Las 6 máquinas simples</a><br><small style="color:var(--muted)">RONIN Educación</small></td><td>3:14</td><td><span class="lt es">En español</span></td><td>Completo.</td></tr>
+<tr><td><a class="inl" href="12-Ingenieria.html#t12-videos">12 · Ingeniería</a></td><td><a href="https://www.youtube.com/watch?v=ailRl_hUUEE" target="_blank" rel="noopener">Qué es el mecanismo de Anticitera</a><br><small style="color:var(--muted)">BBC News Mundo</small></td><td>4:41</td><td><span class="lt es">En español</span></td><td>Opcional, completo.</td></tr>
+<tr><td><a class="inl" href="12-Ingenieria.html#t12-videos">12 · Ingeniería</a></td><td><a href="https://www.youtube.com/watch?v=49wummqW380" target="_blank" rel="noopener">James Watt y la máquina de vapor</a><br><small style="color:var(--muted)">UBUinvestiga</small></td><td>6:32</td><td><span class="lt es">En español</span></td><td>Opcional: 1:30-3:00.</td></tr>
+<tr><td><a class="inl" href="13-Computacion.html#t13-videos">13 · Computación</a></td><td><a href="https://www.youtube.com/watch?v=a8Q2xpI7hbs" target="_blank" rel="noopener">Historia de la computadora (generaciones)</a> <span class="pill w">recomendado</span><br><small style="color:var(--muted)">Saussure Figueroa</small></td><td>9:23</td><td><span class="lt es">En español</span></td><td>Completo.</td></tr>
+<tr><td><a class="inl" href="13-Computacion.html#t13-videos">13 · Computación</a></td><td><a href="https://www.youtube.com/watch?v=wD8yJnIG7gI" target="_blank" rel="noopener">Historia y evolución de las computadoras y sus generaciones</a><br><small style="color:var(--muted)">Periférico</small></td><td>6:55</td><td><span class="lt es">En español</span></td><td>Completo.</td></tr>
+<tr><td><a class="inl" href="13-Computacion.html#t13-videos">13 · Computación</a></td><td><a href="https://www.youtube.com/watch?v=O1BSFbsha6A" target="_blank" rel="noopener">Charles Babbage y la máquina analítica</a><br><small style="color:var(--muted)">Computación</small></td><td>1:35</td><td><span class="lt es">En español</span></td><td>Completo.</td></tr>
+<tr><td><a class="inl" href="13-Computacion.html#t13-videos">13 · Computación</a></td><td><a href="https://www.youtube.com/watch?v=yV4l7IpuQA4" target="_blank" rel="noopener">La evolución de las computadoras</a><br><small style="color:var(--muted)">Pablo Molinari</small></td><td>20:01</td><td><span class="lt es">En español</span></td><td>Opcional: 1:30-6:00.</td></tr>
+<tr><td><a class="inl" href="13-Computacion.html#t13-videos">13 · Computación</a></td><td><a href="https://www.youtube.com/watch?v=LvhhcsLrHDw" target="_blank" rel="noopener">Por qué las primeras computadoras estaban hechas de bombillas</a><br><small style="color:var(--muted)">Veritasium en español</small></td><td>17:17</td><td><span class="lt es">En español</span></td><td>Opcional. Ideal si quieres entender la primera generación.</td></tr></tbody></table></div>
+</section>
+
+<section id="glosario">
+<h2>Glosario</h2>
+<div class="tw"><table class="mini">
+<thead><tr><th>Término</th><th>Significado en el ramo</th><th>Tema</th></tr></thead>
+<tbody>
+<tr><td><b>Ad hominem</b></td><td>Falacia: atacar a la persona en vez del argumento.</td><td>3</td></tr>
+<tr><td><b>Argumento</b></td><td>Conclusión o afirmación con supuestos o razones que la apoyan.</td><td>3</td></tr>
+<tr><td><b>Ataraxia</b></td><td>Estar libre de pasiones; la felicidad para los estoicos.</td><td>8</td></tr>
+<tr><td><b>Costo hundido</b></td><td>Sesgo: valorar más aquello en lo que ya invertimos.</td><td>4</td></tr>
+<tr><td><b>Deontología</b></td><td>Parte de la ética que trata de los deberes (Kant).</td><td>9</td></tr>
+<tr><td><b>Disonancia cognitiva</b></td><td>Mantener dos creencias contradictorias a la vez.</td><td>4</td></tr>
+<tr><td><b>Dunning-Kruger</b></td><td>Los novatos se sobreestiman; los expertos se evalúan ajustado.</td><td>4</td></tr>
+<tr><td><b>Falacia</b></td><td>Paso ilógico en un argumento.</td><td>3</td></tr>
+<tr><td><b>Falsabilidad</b></td><td>Que una hipótesis pueda ser refutada por evidencia (Popper).</td><td>11</td></tr>
+<tr><td><b>Hecho</b></td><td>Dato verdadero, verificado por observación o medición repetida.</td><td>11</td></tr>
+<tr><td><b>Heurística</b></td><td>Regla práctica para encontrar una solución (Pólya).</td><td>6</td></tr>
+<tr><td><b>Hipótesis</b></td><td>Explicación propuesta con evidencia limitada; debe ser comprobable.</td><td>2, 11</td></tr>
+<tr><td><b>Imperativo categórico</b></td><td>Obligación moral incondicional, basada en la razón (Kant).</td><td>9</td></tr>
+<tr><td><b>Inducción</b></td><td>Generalizar desde casos particulares; no es deductivamente válida.</td><td>3</td></tr>
+<tr><td><b>Navaja de Ockham</b></td><td>Preferir la explicación completa más simple.</td><td>2</td></tr>
+<tr><td><b>Paradoja del inventor</b></td><td>A veces es más fácil demostrar algo más general.</td><td>6</td></tr>
+<tr><td><b>Peripatéticos</b></td><td>La escuela de Aristóteles.</td><td>8</td></tr>
+<tr><td><b>Scope creep</b></td><td>Ampliación del alcance: los entregables cambian durante el proyecto.</td><td>1</td></tr>
+<tr><td><b>Sesgo cognitivo</b></td><td>Patrón sistemático de desviarse de la racionalidad al juzgar.</td><td>4</td></tr>
+<tr><td><b>SMART</b></td><td>Objetivo específico, medible, alcanzable, realista y con plazo.</td><td>1</td></tr>
+<tr><td><b>Sólido</b></td><td>Argumento válido con premisas verdaderas.</td><td>3</td></tr>
+<tr><td><b>Teleología</b></td><td>Estudio de los fines; base de la falacia teleológica y del utilitarismo como teoría teleológica.</td><td>3, 9</td></tr>
+<tr><td><b>Teoría</b></td><td>Explicación comprobada repetidas veces y corroborada por evidencia.</td><td>2, 11</td></tr>
+<tr><td><b>Utilitarismo</b></td><td>Ética: máxima felicidad del mayor número. Sociología: elección racional.</td><td>9, 10</td></tr>
+<tr><td><b>Válido</b></td><td>Argumento cuyas premisas implican la conclusión.</td><td>3</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="g-fuentes">
+<h2>Fuentes</h2>
+<ul>
+<li><b>Diapositivas del zip</b> <code>C1_Infosoc.zip</code>: <code>00-fechas-2026-2</code>, <code>00-presentacion</code> y las clases <code>01</code> a <code>13</code> (Horst H. von Brand, INF-276, USM).</li>
+<li><b>Certámenes y pautas</b> del zip: C1, C2 y recuperativo de 2025-1, 2025-2 y 2026-1 (el C2 y el recuperativo de 2026-1 vienen sin pauta o con pauta parcial). El profe advierte que “los contenidos han ido cambiando” y que las soluciones son “muchas veces más extensas de lo que realmente se pide”.</li>
+<li><b>Para profundizar:</b> <a class="inl" href="https://iep.utm.edu/fallacy/" target="_blank" rel="noopener">Internet Encyclopedia of Philosophy, “Fallacies”</a> · <a class="inl" href="https://writingcenter.unc.edu/tips-and-tools/fallacies/" target="_blank" rel="noopener">UNC Writing Center, “Fallacies”</a> · <a class="inl" href="https://plato.stanford.edu/entries/popper/" target="_blank" rel="noopener">Stanford Encyclopedia, “Karl Popper”</a> · <a class="inl" href="https://en.wikipedia.org/wiki/How_to_Solve_It" target="_blank" rel="noopener">“How to Solve It”</a> · <a class="inl" href="https://dle.rae.es" target="_blank" rel="noopener">Diccionario de la RAE</a>.</li>
+<li>Los ejemplos marcados como propios, las analogías y las preguntas “inventadas” son de este resumen, no del profe.</li>
+</ul>
+</section>
+
+<div class="pnav"><a class="nx" href="1-Proyectos.html"><small>Siguiente →</small>Proyectos</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c1-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c1-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c1-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ejercicios por pregunta · SO C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  /* --- agregado para el C2: probabilidad por sección --- */
+  .prio{margin:2px 0 16px;font-size:14.5px;color:var(--muted)}
+  .prio strong{color:var(--ink)}
+  .lv{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    padding:2px 9px;border-radius:999px;border:1px solid var(--line);margin-right:8px;vertical-align:1px;white-space:nowrap}
+  .lv.p3{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lv.p2{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lv.p1{color:var(--muted);border-style:dashed}
+  .lv.p0{color:var(--ex);border-color:var(--ex);background:var(--ex-soft)}
+  td .lv{margin-right:0}
+  nav a{display:flex;align-items:baseline;gap:6px}
+  nav a .nt{flex:1 1 auto;min-width:0}
+  .pd{display:inline-flex;gap:3px;align-items:center;color:var(--muted);vertical-align:1px;flex:0 0 auto}
+  .pd i{display:inline-block;width:6px;height:6px;border-radius:50%;border:1px solid currentColor;box-sizing:border-box}
+  .pd i.on{background:currentColor}
+  .pd.p3{color:var(--accent)} .pd.p2{color:var(--brand)} .pd.p0{color:var(--ex)}
+  /* --- tiras de bloques de memoria --- */
+  .mem{display:flex;flex-wrap:nowrap;gap:0;margin:10px 0 2px;overflow-x:auto;padding-bottom:2px}
+  .mem .c{flex:1 0 46px;min-width:46px;height:44px;border:1px solid var(--line);margin-right:-1px;display:grid;place-items:center;
+    font-size:11.5px;line-height:1.15;text-align:center;background:var(--panel);color:var(--ink)}
+  .mem .c small{display:block;font-size:10px;color:var(--muted)}
+  .mem .c.u1{background:var(--brand-soft);border-color:var(--brand);color:var(--brand);font-weight:700}
+  .mem .c.u2{background:var(--lib-soft);border-color:var(--lib);color:var(--lib);font-weight:700}
+  .mem .c.u3{background:var(--ana-soft);border-color:var(--ana);color:var(--ana);font-weight:700}
+  .mem .c.nw{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
+  .mem .c.fx{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+  .mem .c.os{background:var(--code);color:var(--muted)}
+  .memlab{display:flex;gap:0;font-size:11.5px;color:var(--muted);margin:0 0 10px;overflow-x:auto}
+  .memlab span{flex:1 0 46px;min-width:46px;text-align:center}
+  .memcap{font-size:13px;color:var(--muted);margin:2px 0 14px}
+  /* --- dirección dividida en campos --- */
+  .addr{display:flex;margin:12px auto;max-width:620px;border-radius:9px;overflow:hidden;border:1px solid var(--line);font-size:13.5px;box-shadow:var(--shadow)}
+  .addr div{padding:9px 10px;text-align:center;border-right:1px solid var(--line)}
+  .addr div:last-child{border-right:0}
+  .addr .a1{background:var(--brand-soft);color:var(--brand);font-weight:700}
+  .addr .a2{background:var(--lib-soft);color:var(--lib);font-weight:700}
+  .addr .a3{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  .addr .a4{background:var(--ex-soft);color:var(--ex);font-weight:700}
+  .addr small{display:block;font-weight:500;color:var(--muted);font-size:11.5px}
+  /* --- tablas de páginas y de reemplazo --- */
+  table.pt td,table.pt th{text-align:center;padding:6px 8px;font-variant-numeric:tabular-nums}
+  table.pt td.bad{background:var(--no-soft);color:var(--no);font-weight:700}
+  table.pt td.ok{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  table.rp{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px}
+  table.rp td,table.rp th{text-align:center;padding:4px 6px;min-width:26px}
+  table.rp td.f{background:var(--warn-soft);color:var(--warn);font-weight:700}
+  table.rp td.h{color:var(--accent);font-weight:700}
+  table.rp td.n{color:var(--ink);font-weight:700}
+  table.rp th.rh{text-align:right;color:var(--muted);background:var(--panel)}
+  .tw table.rp{min-width:0}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.93em}
+  .q{font-weight:600}
+  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:14px 0}
+  .tiny{font-size:12.5px;color:var(--muted)}
+  @media (max-width:900px){
+    .layout{align-items:stretch}
+    .content{width:100%;max-width:100%}
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">P</div>
+    <div><h1>Ejercicios por pregunta</h1><small>Sistemas Operativos · INF-246 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><a href="0-Guia-de-estudio-C2.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, reloj · por confirmar</small></span></a><a href="5-Ejercicios-por-pregunta.html" class="cur"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Cómo se armó</div><a href="#pred-inicio"><span class="nt">La predicción y las etiquetas</span></a><div class="grp">Pregunta 1</div><a href="#p1"><span class="nt">P1 · Conocimiento</span></a><div class="grp">Pregunta 2</div><a href="#p2"><span class="nt">P2 · La plantilla</span></a><div class="grp">Pregunta 3</div><a href="#p3"><span class="nt">P3 · La plantilla</span></a><div class="grp">Pregunta 4</div><a href="#p4"><span class="nt">P4 · Reemplazo (por confirmar)</span></a><div class="grp">Final</div><a href="#simulacro"><span class="nt">Simulacro de 70 minutos</span></a></nav>
+</aside>
+<main class="content">
+
+<section id="pred-inicio" data-nav="La predicción y las etiquetas" data-grp="Cómo se armó">
+<h2>Ejercicios por pregunta del certamen</h2>
+<p class="lead">Todo el material de memoria (las dos láminas, el C2 2023-1 y las preguntas de memoria de los certámenes 2014, 2015 y 2016) ordenado según la pregunta del certamen en que probablemente caería. Dentro de cada pregunta, primero lo que ya salió.</p>
+<div class="box def"><div class="bt">De dónde sale la predicción</div>
+<p>El único Certamen 2 del profe que tenemos es el de <b>2023-1</b> (70 minutos, 105 puntos): conocimiento (7 preguntas de 4 puntos), gestión del tiempo (que este año fue al C1), memoria lineal (3 de 5 puntos) y memoria segmentada paginada (35 puntos). Los certámenes de 2014-2016 muestran qué más le gusta preguntar de memoria, porque entonces iba en el C1. Y en el C1 de este año el formato fue de tres partes de 35 puntos. Sin la gestión del tiempo, lo más probable es:</p></div>
+<div class="tw"><table>
+<thead><tr><th>Pregunta</th><th>Qué es</th><th>C2 2023-1</th><th>2014-2016</th></tr></thead><tbody>
+<tr><td><a class="inl" href="#p1"><b>P1 · Conocimiento</b></a></td><td>Preguntas cortas de 3 a 6 líneas sobre las dos láminas</td><td>7 × 4 = 28 (4 de memoria lineal, 3 de virtual)</td><td>2014: 2 · 2015: 2 · 2016: 2 de memoria</td></tr>
+<tr><td><a class="inl" href="#p2"><b>P2 · Memoria lineal</b></a></td><td>FIT con una tabla, bloques, costo de compactar, por qué es ineficiente</td><td>3 × 5 = 15</td><td>2015: sección completa de 30 con tabla de zonas libres</td></tr>
+<tr><td><a class="inl" href="#p3"><b>P3 · Memoria virtual</b></a></td><td>Segmentación paginada con una tabla: tamaño de página, bits, tabla incorrecta, TLB, traducción</td><td>35</td><td>—</td></tr>
+<tr><td><a class="inl" href="#p4"><b>P4 · Reemplazo</b></a></td><td>Solo si el profe pasó el capítulo: una cadena con FIFO, LRU, óptimo</td><td>—</td><td>—</td></tr>
+</tbody></table></div>
+<div class="cols">
+  <div class="card"><h5>Cómo leer las etiquetas</h5>
+    <p><span class="pill no">casi seguro</span> salió en el C2 2023 y además en otro certamen, o es la base de un ejercicio de 2023.</p>
+    <p><span class="pill w">muy probable</span> salió en el C2 2023 o en 2014-2016.</p>
+    <p><span class="pill">probable</span> no ha salido, pero la lámina lo trae con número, diagrama o lista.</p>
+    <p><span class="pill l">posible</span> depende de algo que no sabemos (el reemplazo de páginas).</p></div>
+  <div class="card"><h5>Cómo estudiar con esta página</h5>
+    <p>1. Recorre cada pregunta de arriba hacia abajo: el orden ya va de más a menos probable.</p>
+    <p>2. Tapa cada respuesta y contesta en voz alta o en papel.</p>
+    <p>3. Al final, haz el <a class="inl" href="#simulacro">simulacro de 70 minutos</a>.</p></div>
+  <div class="card"><h5>Ojo</h5>
+    <p>Es una predicción razonada con un solo C2 de referencia. En el C1 lo que más se pareció al certamen fueron las ayudantías: cuando lleguen las de memoria, esta página se reordena según ellas.</p></div>
+</div>
+</section>
+
+<section id="p1" data-nav="P1 · Conocimiento" data-grp="Pregunta 1">
+<h2>P1 · Preguntas de conocimiento</h2>
+<p class="lead">28 puntos en 2023 (7 preguntas). Respuestas de 3 a 6 líneas: definición, mecanismo y consecuencia.</p>
+<h3><span class="pill no">casi seguro</span> Las siete del C2 2023</h3>
+<p>El profe repitió preguntas textuales entre el C1 2023 y el C1 2024; es razonable esperar lo mismo acá.</p>
+<details class="ex"><summary>P1.1 · ¿Cuál es el rol de la MMU en la gestión de memoria (lo que sea el modelo usado)? <span class="tag">C2 2023 · 1.1</span></summary><div class="body"><p>La MMU es la unidad de hardware del procesador que, en <b>cada</b> acceso a memoria, <b>traduce</b> la dirección lógica o virtual del proceso en una dirección física y <b>verifica</b> que el acceso sea válido (que no salga de su espacio, que la página o segmento esté presente y que tenga los derechos). Si algo falla genera un TRAP para el sistema operativo. Debe ser hardware porque se hace en cada fetch y en cada lectura o escritura. En lineal usa BASE y LÍMITE; en segmentación, la tabla de segmentos; en paginación, la tabla de páginas (y actualiza U y D).</p></div></details>
+<details class="ex"><summary>P1.2 · En memoria lineal, definir fragmentación externa e interna <span class="tag">C2 2023 · 1.2 · también 2015 y 2016</span></summary><div class="body"><p><b>Interna:</b> memoria asignada a un proceso (dentro de su partición o de su último bloque) que el proceso no usa; queda perdida porque nadie más la puede usar. <b>Externa:</b> memoria libre repartida en zonas entre las particiones, demasiado pequeñas para un proceso nuevo, aunque sumadas alcanzarían.</p></div></details>
+<details class="ex"><summary>P1.3 · ¿Por qué las particiones estáticas de diferente tamaño no son eficientes? <span class="tag">C2 2023 · 1.3</span></summary><div class="body"><p>Porque se fijan sin conocer los procesos, y es muy difícil saber a priori cuánto ocupará cada uno. Un proceso en una partición más grande deja fragmentación interna; las particiones libres demasiado chicas para los procesos que esperan son fragmentación externa. Además el número de particiones limita la multiprogramación.</p></div></details>
+<details class="ex"><summary>P1.4 · ¿Por qué interesa una gestión de memoria que mantiene más memoria libre? <span class="tag">C2 2023 · 1.4</span></summary><div class="body"><p>Para atender las solicitudes de inmediato (cargar tareas, crecimiento dinámico, swap-in) sin tener que compactar ni descargar procesos al disco en ese momento, que son operaciones muy lentas. Y para tener más procesos listos en memoria: más multiprogramación y mejor uso del procesador.</p></div></details>
+<details class="ex"><summary>P1.5 · Definir page fault en memoria virtual paginada <span class="tag">C2 2023 · 1.5</span></summary><div class="body"><p>Es el TRAP que genera la MMU cuando un proceso accede a una página de su espacio de trabajo que <b>no está en memoria</b> (V = 0). El sistema verifica que la página pertenezca al proceso (si no, memory fault), le asigna un marco (descargando otra página si no hay libres), la carga desde el disco y actualiza la tabla; mientras, el proceso queda bloqueado y otro usa la CPU. Después reejecuta la instrucción.</p></div></details>
+<details class="ex"><summary>P1.6 · En segmentación paginada, ¿cuándo ocurre un SEGMENTATION VIOLATION? <span class="tag">C2 2023 · 1.6</span></summary><div class="body"><p>Cuando la dirección (seg, offset) usa un segmento que no existe en la tabla de segmentos del proceso, o un offset que no es menor que el tamaño (límite) del segmento. Es distinto del page fault (página válida pero ausente: se carga) y del permission denied (operación no permitida).</p></div></details>
+<details class="ex"><summary>P1.7 · ¿Por qué la paginación mejora bastante el desempeño del swapping? <span class="tag">C2 2023 · 1.7</span></summary><div class="body"><p>Porque el intercambio se hace por páginas de pocos KB y no por procesos completos: se descargan solo las páginas poco usadas (bit U), solo se escriben las modificadas (bit D) y solo se cargan las que se necesitan (on demand). Cualquier marco libre sirve para traerlas de vuelta: no hay que buscar zona contigua, ni compactar, ni reubicar el programa. Y el proceso sigue ejecutándose con solo parte de sus páginas en memoria.</p></div></details>
+<h3><span class="pill w">muy probable</span> Salieron en 2014-2016 o en otra parte del C2 2023</h3>
+<details class="ex"><summary>P1.8 · Explicar la transformación lógica → física en memoria continua y el rol de BASE y LIMIT <span class="tag">2014 · 1.5 · 2015 · 3.5</span></summary><div class="body"><p>BASE es la dirección donde está cargada la tarea y LIMIT el tamaño que ocupa. La MMU calcula @física = BASE + d, donde d es la dirección lógica, y verifica d &lt; LIMIT (si no, TRAP). Así la ubicación de la tarea es transparente para sus direcciones.</p></div></details>
+<details class="ex"><summary>P1.9 · Explicar brevemente el swapping <span class="tag">2014 · 1.6</span></summary><div class="body"><p>Cuando falta memoria, el sistema elige una tarea (la que libera el espacio requerido, la de menor prioridad…) y la descarga al disco (swap-out, a la zona de swap). Cuando necesita ejecutarla otra vez, la vuelve a cargar (swap-in). Tiene un costo alto y baja el rendimiento.</p></div></details>
+<details class="ex"><summary>P1.10 · ¿Cuál es el peor escenario del swapping? <span class="tag">2015 · 1.8</span></summary><div class="body"><p>Tener que cargar de nuevo (swap-in) una tarea que se acaba de descargar (swap-out), porque el scheduler la eligió justo después.</p></div></details>
+<details class="ex"><summary>P1.11 · ¿Qué significa que un proceso esté LISTO_NO_EN_MEMORIA? <span class="tag">2015 · 1.7</span></summary><div class="body"><p>Que está listo para ejecutarse pero no está en memoria: está en el disco como resultado de un swap-out.</p></div></details>
+<details class="ex"><summary>P1.12 · ¿Cuáles son las dos técnicas para liberar espacio y cuál no se usa en la práctica? <span class="tag">2015 · 3.4</span></summary><div class="body"><p>Compactar la memoria y el swapping. Compactar es posible en teoría, pero mover varios GB tarda demasiado (unos 107 s por GB con 50 ns por acceso) para usarlo en la práctica. El swapping funciona sea cual sea el tamaño de la memoria.</p></div></details>
+<details class="ex"><summary>P1.13 · ¿Qué consecuencias tienen los bloques pequeños y los grandes? <span class="tag">2015 · 3.2 · misma idea que la 4.1 de 2023</span></summary><div class="body"><p>Pequeños: menos fragmentación interna, pero más externa (cuesta más juntar bloques contiguos suficientes) y más bloques que administrar. Grandes: menos externa, más interna para las tareas chicas.</p></div></details>
+<details class="ex"><summary>P1.14 · Explicar BEST_FIT y sus desventajas <span class="tag">2016 · 1.7</span></summary><div class="body"><p>Asigna la zona libre donde cabe la tarea dejando el menor remanente. Desventajas: recorre toda la lista (o la mantiene ordenada) y deja remanentes tan pequeños que casi nunca sirven: fragmentación externa en migajas.</p></div></details>
+<details class="ex"><summary>P1.15 · Explicar el rol de los bits V, U y D <span class="tag">C2 2023 · 4.2</span></summary><div class="body"><p>V: presencia en memoria; la MMU lo revisa en cada acceso y si es 0 genera un page fault. U: uso; el sistema lo pone en 0 al cargar, la MMU en 1 en cada acceso; sirve para elegir qué descargar (U = 0 es buen candidato). D: escritura; el sistema lo pone en 0 al cargar, la MMU en 1 en cada escritura; si es 1 hay que escribir la página en el swap al descargarla.</p></div></details>
+<details class="ex"><summary>P1.16 · ¿Ventajas y desventajas de páginas pequeñas o grandes? <span class="tag">C2 2023 · 4.1</span></summary><div class="body"><p>Pequeñas: menos fragmentación interna y carga más fina, pero tablas más grandes, peor cobertura de la TLB y más page faults. Grandes: tablas chicas, menos page faults y transferencias más eficientes, pero más fragmentación interna y se cargan datos que quizás no se usen.</p></div></details>
+<details class="ex"><summary>P1.17 · Explicar la TLB para las tablas indexadas <span class="tag">C2 2023 · 4.4</span></summary><div class="body"><p>Memoria asociativa muy rápida (≈ 1 ns) que guarda los descriptores de las páginas usadas hace poco. HIT: el marco y los derechos salen de la TLB, sin ir a la tabla en RAM. MISS: se consulta la tabla indexada; si la página no existe, memory fault; si no está cargada, page fault; si está, su descriptor entra a la TLB (reemplazo LRU). Es pequeña y funciona como cache gracias a la localidad.</p></div></details>
+<h3><span class="pill">probable</span> No han salido, pero la lámina los trae</h3>
+<details class="ex"><summary>P1.18 · ¿Cuáles son los objetivos de la memoria virtual? <span class="tag">VirtualMemory · 2</span></summary><div class="body"><p>La transparencia de la ubicación de los procesos en memoria y la protección de los espacios de trabajo de los procesos y del sistema operativo. Además, no cargar los procesos completos, estructurarlos y compartir partes.</p></div></details>
+<details class="ex"><summary>P1.19 · ¿Qué diferencia hay entre la MMU simple y la MMU con control? <span class="tag">LinearMemory · 12-14</span></summary><div class="body"><p>La simple solo traduce: en modo usuario suma BASE a la dirección, en modo sistema accede directo. La con control además compara la dirección lógica con LÍMITE y genera un TRAP si se sale, para que un proceso no se desborde hacia otro.</p></div></details>
+<details class="ex"><summary>P1.20 · ¿Por qué el arreglo de bits es poco eficiente y qué se usa en su lugar? <span class="tag">LinearMemory · 24-26</span></summary><div class="body"><p>Porque ocupa memoria adicional (un bit por bloque: 64 KB para 4 GB con bloques de 8 KB) y hay que recorrerlo para encontrar zonas. En su lugar se guarda en el primer bloque de cada zona libre cuántos bloques libres tiene y dónde empieza la próxima: una lista que vive en los bloques libres y no usa memoria extra.</p></div></details>
+<details class="ex"><summary>P1.21 · ¿Qué problemas tiene compactar la memoria? <span class="tag">LinearMemory · 32</span></summary><div class="body"><p>Hay que actualizar el registro BASE de cada proceso movido, mover bloques cuesta mucho tiempo (necesita DMA; 105 ms por MB con 50 ns por acceso) y si la memoria está sobrecargada la fragmentación vuelve rápido.</p></div></details>
+<details class="ex"><summary>P1.22 · ¿Cuándo es interesante el swapping? <span class="tag">LinearMemory · 35</span></summary><div class="body"><p>Cuando hay al menos otro proceso en memoria listo para ejecutarse mientras el disco transfiere (con DMA, en paralelo), y cuando el proceso se puede volver a cargar en otra zona (traducción de direcciones: linker dinámico o registro BASE).</p></div></details>
+<details class="ex"><summary>P1.23 · ¿Para qué sirven los overlays? <span class="tag">LinearMemory · 8-10</span></summary><div class="body"><p>Para ejecutar un programa con menos memoria física que su espacio lógico: solo una parte del código está en memoria, y el código de manejo de overlays carga cada parte (overlay) en un espacio reservado cuando el programa la necesita, reemplazando a otra.</p></div></details>
+<details class="ex"><summary>P1.24 · ¿Qué ventaja tiene compartir segmentos? Da ejemplos <span class="tag">VirtualMemory · 18-19</span></summary><div class="body"><p>Ahorra memoria: un segmento se carga una sola vez y las tablas de varios procesos apuntan a él. Ejemplos: el código de un programa que ejecutan varios procesos, los datos de procesos cooperativos o tras un <code>fork()</code>, y las bibliotecas como la LibC.</p></div></details>
+<details class="ex"><summary>P1.25 · ¿Por qué no basta la segmentación sola? <span class="tag">VirtualMemory · 21</span></summary><div class="body"><p>Porque los segmentos siguen siendo zonas contiguas: los grandes son difíciles de ubicar (fragmentación externa), no pueden ser más grandes que la memoria real y se transfieren completos al disco. Se resuelve cortando en páginas de igual tamaño.</p></div></details>
+<details class="ex"><summary>P1.26 · ¿Por qué la paginación no tiene fragmentación externa? <span class="tag">VirtualMemory · 29</span></summary><div class="body"><p>Porque todos los marcos tienen el mismo tamaño que las páginas y la asignación es discontinua: cualquier marco libre sirve para cualquier página. Solo queda fragmentación interna en la última página.</p></div></details>
+<details class="ex"><summary>P1.27 · ¿Dónde se puede guardar la tabla de páginas? <span class="tag">VirtualMemory · 32</span></summary><div class="body"><p>En registros (rápido pero de tamaño muy limitado), en la RAM (cabe, pero cada acceso cuesta dos) o, como compromiso, una parte en una memoria especial muy rápida: la TLB.</p></div></details>
+<details class="ex"><summary>P1.28 · ¿Qué problema resuelve la tabla jerárquica y qué es un table fault? <span class="tag">VirtualMemory · 39-41</span></summary><div class="body"><p>Con espacios de direcciones enormes la tabla indexada sería gigante. La jerárquica divide la dirección en (X, Y, Z, offset): la tabla primaria está siempre cargada y las demás solo si se usan. Un table fault es cuando falta una de esas tablas durante la búsqueda: el sistema la carga.</p></div></details>
+<details class="ex"><summary>P1.29 · ¿Qué es la tabla invertida y qué problema resuelve? <span class="tag">VirtualMemory · 41-43</span></summary><div class="body"><p>Una sola tabla para todo el sistema, indexada por marco, con el PID y la página virtual de cada marco. Resuelve que las tablas por proceso crecen con el número de procesos y hay que cambiarlas en cada conmutación. Su costo: hay que buscar el par (PID, p).</p></div></details>
+<details class="ex"><summary>P1.30 · ¿Qué es el thrashing? <span class="tag">VirtualMemory · 31</span></summary><div class="body"><p>El estado en que siempre hay un page fault con la página que se acaba de descargar: el sistema pasa el tiempo moviendo páginas, se vuelve ineficiente y puede colapsar. Se necesita un buen algoritmo de reemplazo y limitar la frecuencia de page faults.</p></div></details>
+<details class="ex"><summary>P1.31 · ¿Qué hace el hardware y qué hace el SO en la memoria virtual? <span class="tag">VirtualMemory · 47</span></summary><div class="body"><p>El hardware (MMU) hace casi todo: verifica presencia y derechos, calcula la dirección real, genera los TRAPs y actualiza U y D. El SO atiende los TRAPs: carga lo que falta, elige qué descargar, mantiene las tablas y termina los accesos ilegales.</p></div></details>
+<details class="ex"><summary>P1.32 · ¿Para qué sirve el bit COW? <span class="tag">VirtualMemory · 24 y 35</span></summary><div class="body"><p>Marca una página compartida (por ejemplo, entre padre e hijo después de un <code>fork()</code>) que hay que copiar cuando ocurra la primera escritura. Si el hardware no tiene el bit, se simula dejando la página con solo derecho de lectura: la escritura produce un TRAP y el SO hace la copia.</p></div></details>
+</section>
+
+<section id="p2" data-nav="P2 · La plantilla" data-grp="Pregunta 2">
+<h2>P2 · Memoria lineal</h2>
+<p class="lead">15 puntos en 2023 (FIT, costo, por qué es ineficiente) y 30 en 2015 (con tabla de zonas libres). La plantilla probable: una tabla de zonas libres con bloques de N KB, una o varias tareas, los tres algoritmos, y preguntas de fragmentación, costo y swapping.</p>
+<h3><span class="pill no">casi seguro</span> Lo que ya salió</h3>
+<p>· <a class="inl" href="1-Memoria-lineal.html#ex2015">Certamen 2015 · sección 3 completa</a> (tabla, 150 KB, FIRST/BEST/WORST, compactar vs swapping, MMU).</p>
+<p>· <a class="inl" href="1-Memoria-lineal.html#ex2023l">C2 2023 · sección 3</a> (FIT, el dato de 50 ns, por qué lo lineal es ineficiente).</p>
+<h3><span class="pill w">muy probable</span> Variantes con números nuevos</h3>
+<p>· <a class="inl" href="1-Memoria-lineal.html#L1">L1</a>: la tabla de 2015 con cinco pedidos seguidos (aparece la fragmentación externa).</p>
+<p>· <a class="inl" href="1-Memoria-lineal.html#L3">L3</a>: costo de compactar con 50 ns por acceso.</p>
+<p>· <a class="inl" href="1-Memoria-lineal.html#L7">L7</a>: seis zonas y cinco procesos (Silberschatz 9.6).</p>
+<h3><span class="pill">probable</span> Lo que la lámina trae con números o diagrama</h3>
+<p>· <a class="inl" href="1-Memoria-lineal.html#L2">L2</a>: tamaño del arreglo de bits.</p>
+<p>· <a class="inl" href="1-Memoria-lineal.html#L4">L4</a>: traducir con BASE y LÍMITE.</p>
+<p>· <a class="inl" href="1-Memoria-lineal.html#L5">L5</a>: dibujar y actualizar la lista de zonas libres.</p>
+<p>· <a class="inl" href="1-Memoria-lineal.html#L6">L6</a>: particiones fijas con las dos fragmentaciones.</p>
+</section>
+
+<section id="p3" data-nav="P3 · La plantilla" data-grp="Pregunta 3">
+<h2>P3 · Memoria virtual (segmentación paginada)</h2>
+<p class="lead">35 puntos en 2023. La plantilla: “un sistema tipo Linux con varios segmentos paginados, páginas de X KB”, una tabla de páginas con V, U, D, COW, RWX y marco, y cuatro preguntas: tamaño de página, rol de los bits, qué está mal en la tabla, cómo funciona la TLB. Lo más natural para cambiarla es agregar una traducción de direcciones.</p>
+<h3><span class="pill no">casi seguro</span> Lo que ya salió</h3>
+<p>· <a class="inl" href="3-Paginacion.html#ex2023v">C2 2023 · sección 4 completa</a>, con la tabla resuelta en <a class="inl" href="3-Paginacion.html#tabla-mala">Encontrar errores en una tabla</a>.</p>
+<h3><span class="pill w">muy probable</span> La misma plantilla con otra tabla</h3>
+<p>· <a class="inl" href="3-Paginacion.html#V7">V7</a>: otra tabla con tres errores distintos (D sin U, marco inexistente, D sin W).</p>
+<p>· <a class="inl" href="3-Paginacion.html#V6">V6</a>: segmentación paginada con 16 KB, seis accesos y sus errores.</p>
+<p>· <a class="inl" href="3-Paginacion.html#V1">V1</a>: traducir con la tabla de la lámina 23.</p>
+<h3><span class="pill">probable</span> Otras formas de preguntar lo mismo</h3>
+<p>· <a class="inl" href="2-Segmentacion.html#S1">S1</a> (traducir con segmentos y nombrar el error) y <a class="inl" href="2-Segmentacion.html#S2">S2</a> (elegir víctima con U y D).</p>
+<p>· <a class="inl" href="3-Paginacion.html#V2">V2</a> (página y offset en decimal), <a class="inl" href="3-Paginacion.html#V3">V3</a> (tamaño de tablas), <a class="inl" href="3-Paginacion.html#V4">V4</a> (jerárquica), <a class="inl" href="3-Paginacion.html#V5">V5</a> (invertida).</p>
+<p>· <a class="inl" href="3-Paginacion.html#V8">V8</a>: tiempo efectivo con TLB (baja: no está en las láminas).</p>
+</section>
+
+<section id="p4" data-nav="P4 · Reemplazo (por confirmar)" data-grp="Pregunta 4">
+<h2>P4 · Reemplazo de páginas <span class="lv p0">Por confirmar</span></h2>
+<p class="lead">Solo si el profe pasó el capítulo. Si entra, lo típico es una cadena de referencias con 3 o 4 marcos.</p>
+<p><span class="pill l">posible</span> <a class="inl" href="4-Reemplazo-de-paginas.html#R1">R1</a> (FIFO, OPT, LRU y reloj con la cadena de Stallings) · <a class="inl" href="4-Reemplazo-de-paginas.html#R2">R2</a> (Belady y LRU) · <a class="inl" href="4-Reemplazo-de-paginas.html#R3">R3</a> (víctima con U y D) · <a class="inl" href="4-Reemplazo-de-paginas.html#R4">R4</a> (conjunto de trabajo) · <a class="inl" href="4-Reemplazo-de-paginas.html#R5">R5</a> (thrashing).</p>
+</section>
+
+<section id="simulacro" data-nav="Simulacro de 70 minutos" data-grp="Final">
+<h2>Simulacro de 70 minutos</h2>
+<p class="lead">Con el formato más probable: tres partes de 35 puntos. Hazlo con reloj, sin mirar, y corrige al final. Todos los números están verificados.</p>
+<div class="enun"><div class="et">Parte 1 · Conocimiento (7 × 5 = 35 pts)</div>
+<p><b>1.1</b> ¿Por qué la traducción de direcciones la hace un componente de hardware y no el sistema operativo? <b>1.2</b> Dé un ejemplo de fragmentación interna y uno de externa. <b>1.3</b> ¿Por qué el swapping solo es interesante si hay otro proceso listo en memoria? <b>1.4</b> ¿Qué diferencia hay entre un segment fault y una segmentation violation? <b>1.5</b> ¿Por qué un segmento con D = 0 es buen candidato para un swap-out? <b>1.6</b> ¿Qué problema de las tablas de páginas por proceso resuelve la tabla invertida? <b>1.7</b> ¿Qué es el thrashing y por qué puede colapsar el sistema?</p></div>
+<div class="enun"><div class="et">Parte 2 · Memoria lineal (35 pts)</div>
+<p>Gestión continua con bloques de <b>8 KB</b>. Tabla de zonas libres (Start, Size en bloques): (10, 6), (40, 25), (90, 13), (150, 4), (200, 30), (260, 14), (300, 9).</p>
+<p><b>2.1</b> (10) Llega una tarea de 100 KB. ¿Cuántos bloques necesita y cuánta fragmentación interna produce? ¿Dónde la ubican FIRST_FIT, BEST_FIT y WORST_FIT? <b>2.2</b> (8) Con FIRST_FIT, después llega una tarea de 240 KB y luego una de 250 KB. ¿Dónde quedan? Explique lo que pasa con la segunda. <b>2.3</b> (6) ¿Cuánta memoria ocupa un arreglo de bits para una RAM de 8 GB con bloques de 8 KB? <b>2.4</b> (6) Si hay que mover 512 MB para compactar y leer o escribir un byte cuesta 50 ns, ¿cuánto demora? <b>2.5</b> (5) ¿Por qué la gestión lineal es ineficiente?</p></div>
+<div class="enun"><div class="et">Parte 3 · Segmentación paginada (35 pts)</div>
+<p>Sistema tipo Linux con segmentación paginada y páginas de <b>8 KB</b>. El proceso P tiene: segmento 0 (código, 20 KB, R-X), segmento 1 (datos, 32 KB, RW-) y segmento 2 (pila, 16 KB, RW-). Tabla de páginas del segmento 1 (V, U, D, COW, Frame): página 0: (1, 1, 0, 0, 12) · página 1: (1, 0, 1, 0, 7) · página 2: (0, 1, 1, 0, 3) · página 3: (1, 1, 1, 0, 25).</p>
+<p><b>3.1</b> (6) ¿Ventajas y desventajas de usar páginas de 8 KB en vez de 64 KB? <b>3.2</b> (8) ¿Qué pasa en cada acceso? a) leer (1, 26 000) · b) leer (1, 40 000) · c) escribir (0, 100) · d) leer (1, 9 000). <b>3.3</b> (8) ¿Qué filas de la tabla son incorrectas? Justifique. <b>3.4</b> (6) Con una TLB vacía de 4 entradas, ¿cuántos MISS hay en la secuencia de páginas (1,0), (1,3), (1,0), (1,1), (1,3)? <b>3.5</b> (7) Explique qué hace el sistema en un page fault.</p></div>
+<details class="ex" id="sim-sol"><summary>Solución del simulacro <span class="tag">abrir al terminar</span></summary>
+<div class="body">
+<div class="st">Parte 1</div>
+<p><b>1.1</b> Porque ocurre en cada acceso a memoria (cada fetch, cada lectura y escritura): en software el SO tendría que ejecutar varias instrucciones por cada acceso del programa. Además el mismo circuito controla la seguridad sin que el proceso pueda evitarlo. <b>1.2</b> Interna: una tarea de 9 KB en una partición de 16 KB pierde 7 KB. Externa: tres zonas libres de 4 KB separadas no sirven para una tarea de 10 KB. <b>1.3</b> Porque el swapping es muy lento (disco ≈ un millón de veces más lento que la RAM): solo vale la pena si, con DMA, otro proceso usa la CPU mientras se transfiere. <b>1.4</b> Segment fault: el segmento existe pero no está cargado (V = 0); el SO lo carga y se reintenta. Segmentation violation: el segmento no existe o el offset sale del límite; es un error del proceso. <b>1.5</b> Porque no fue modificado: su copia en disco sigue siendo válida y no hay que escribirlo, basta marcarlo como ausente. <b>1.6</b> Que el volumen de las tablas crece con el número de procesos y hay que cambiar de tabla en cada conmutación: la invertida es una sola, del tamaño de la RAM. <b>1.7</b> Siempre hay un page fault con la página recién descargada: el sistema pasa el tiempo moviendo páginas, los procesos casi no avanzan, y si además entran más procesos, empeora hasta colapsar.</p>
+<div class="st">Parte 2</div>
+<p><b>2.1</b> 100 / 8 = 12,5 → <b>b = 13</b> bloques = 104 KB, 4 KB de fragmentación interna. FIRST_FIT: la zona 10 tiene 6 &lt; 13, la <b>40</b> tiene 25 → queda (53, 12). BEST_FIT: remanentes 12 (zona 40), 0 (zona <b>90</b>), 17 (200), 1 (260) → zona 90. WORST_FIT: el mayor remanente es 17 → zona <b>200</b>, queda (213, 17).</p>
+<p><b>2.2</b> 240 / 8 = 30 bloques → la única zona con 30 es la 200 (calza exacta). 250 / 8 = 31,25 → 32 bloques: <b>no cabe</b>. Quedan libres 6 + 12 + 13 + 4 + 14 + 9 = 58 bloques (464 KB), casi el doble, pero ninguna zona tiene 32: fragmentación externa. Hay que compactar o hacer swapping.</p>
+<p><b>2.3</b> 2<sup>33</sup> / 2<sup>13</sup> = 2<sup>20</sup> bloques → 2<sup>20</sup> / 8 = <b>128 KB</b>.</p>
+<p><b>2.4</b> t = 2 × 50 ns × 512 × 2<sup>20</sup> ≈ <b>53,7 s</b> (o 512 × 105 ms).</p>
+<p><b>2.5</b> Zona contigua del tamaño de todo el proceso → fragmentación externa → compactar (caro) o swapping de procesos completos (más caro); el proceso se carga entero y cada reubicación cuesta.</p>
+<div class="st">Parte 3</div>
+<p><b>3.1</b> 8 KB: menos fragmentación interna y carga más fina, pero 8 veces más páginas: tablas más grandes, menos cobertura de la TLB y más page faults. 64 KB: lo contrario.</p>
+<p><b>3.2</b> K = 13 (8 192 B). a) 26 000 &lt; 32 768 ✓ · i = 3, o = 26 000 − 24 576 = 1 424 · marco 25 → 25 × 8 192 + 1 424 = <b>206 224</b>. b) 40 000 ≥ 32 768 → <b>segmentation violation</b>. c) código R-X → <b>permission denied</b>. d) i = 1, o = 808 · marco 7 → 7 × 8 192 + 808 = <b>58 152</b>.</p>
+<p><b>3.3</b> Página 1: D = 1 con U = 0 (una escritura es un acceso, la MMU habría puesto U = 1). Página 2: V = 0 con D = 1 (una página ausente no puede tener modificaciones pendientes; al descargarla sucia se escribió en el swap). Páginas 0 y 3 están bien.</p>
+<p><b>3.4</b> (1,0) MISS · (1,3) MISS · (1,0) HIT · (1,1) MISS · (1,3) HIT → <b>3 MISS</b>.</p>
+<p><b>3.5</b> TRAP de la MMU; el SO verifica que la página pertenezca al proceso (si no, memory fault); busca un marco libre o descarga una víctima (escribiéndola si D = 1); carga la página desde el disco mientras el proceso está bloqueado y otro usa la CPU; actualiza la tabla (marco, V = 1, U = D = 0); el proceso reejecuta la instrucción.</p>
+</div></details>
+</section>
+
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=(localStorage.getItem('so-c2-theme')||localStorage.getItem('so-c2-theme')); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('so-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  var lastBest=-1;
+  function onScroll(){
+    var y=window.scrollY+70, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4) best=secs.length-1;
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+    var sb=document.querySelector('.sidebar'), act=links[best];
+    if(sb && act && window.innerWidth>900 && best!==lastBest){
+      var r=act.getBoundingClientRect(), s=sb.getBoundingClientRect();
+      if(r.top<s.top+40 || r.bottom>s.bottom-40){ sb.scrollTop+=r.top-s.top-sb.clientHeight/2; }
+    }
+    lastBest=best;
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='so-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+</script>
+</body>
+</html>

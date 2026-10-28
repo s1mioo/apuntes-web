@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resolver problemas · Infosoc C1</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T6</div>
+    <div><h1>Resolver problemas</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 1</small></div>
+  </div>
+  <div class="pages"><a href="0-Guia-de-estudio-C1.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 3</small></span></a><a href="1-Proyectos.html"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></a><a href="2-Definiciones.html"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></a><a href="3-Falacias.html"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></a><a href="4-Sesgos-cognitivos.html"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></a><a href="5-Pensamiento-critico.html"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></a><a href="6-Resolver-problemas.html" class="cur"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></a><a href="7-Etica-y-moral.html"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></a><a href="8-Etica-antiguedad.html"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></a><a href="9-Etica-moderna.html"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></a><a href="10-Sociedades.html"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></a><a href="11-Metodo-cientifico.html"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></a><a href="12-Ingenieria.html"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></a><a href="13-Computacion.html"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></a><a href="14-Ejercicios.html"><b>14</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 6</div><a href="#t6-inicio">Qué pesa y qué estudiar</a><a href="#polya">Pólya y los 4 principios</a><a href="#heuristicas">Estrategias y heurísticas</a><a href="#ejemplos">Los dos ejemplos de clase</a><div class="grp">Práctica</div><a href="#t6-videos">Videos del tema</a><a href="#t6-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+<section id="t6-inicio">
+<h2>Tema 6 · Resolver problemas (Pólya)</h2>
+<p class="lead">Clase <code>06-resolver-problemas-hnd.pdf</code>. La estrategia de George Pólya: cuatro principios, una lista de heurísticas y dos ejemplos resueltos (una suma y un embaldosado).</p>
+
+<div class="hero">
+  <div class="big">Peso en el certamen: medio-alto</div>
+  <div class="sub">“Esboce la estrategia de Pólya para resolver problemas” salió en el <b>C1 2025-2</b> (20 pts) e “indique los pasos de la estrategia de Pólya” en el <b>C2 2025-1</b> (20 pts). La pauta da <b>5 puntos por cada uno de los 4 pasos</b>. Es la pregunta más fácil de asegurar del ramo.</div>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder escribir</h5>
+    <p>· Quién fue Pólya y su libro (<i>How to Solve It</i>, 1945).</p>
+    <p>· Los <b>4 principios</b> con una explicación de 2 líneas cada uno.</p>
+    <p>· 3 o 4 <b>heurísticas</b> y 3 o 4 <b>estrategias</b> para armar el plan.</p>
+    <p>· La <b>paradoja del inventor</b>.</p>
+  </div>
+  <div class="card"><h5>Dónde está</h5>
+    <p><b>Diapositivas</b> <code>06-resolver-problemas-hnd.pdf</code>.</p>
+    <p>El libro existe en español como <i>Cómo plantear y resolver problemas</i> (Trillas). Un buen resumen en inglés, con la lista completa de preguntas del libro: <a class="inl" href="https://en.wikipedia.org/wiki/How_to_Solve_It" target="_blank" rel="noopener">“How to Solve It” en Wikipedia</a>.</p>
+  </div>
+  <div class="card"><h5>Plan para este tema</h5>
+    <p>1. Los 4 principios, de memoria (10 min).</p>
+    <p>2. Leer los dos ejemplos para poder citarlos (15 min).</p>
+    <p>3. Escribir la respuesta de 20 puntos sin mirar (8 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="polya">
+<h2>Pólya y los cuatro principios</h2>
+<p class="lead">“Ingeniería es resolver problemas. Aprender a hacerlo bien es obligatorio.” Así justifica el profe la clase.</p>
+<div class="box def">
+  <div class="bt">Quién fue</div>
+  <p><b>Pólya György</b> (George Pólya en occidente), matemático húngaro. Su libro <b>“How to Solve It” (1945)</b> es un clásico traducido a muchos idiomas que nunca ha dejado de imprimirse. Plantea <b>heurísticas</b> para resolver problemas, con ejemplos de matemática de nivel de enseñanza media, y tuvo fuerte impacto en la enseñanza de las matemáticas. Advertía a los profesores que exigir solo operaciones de rutina, en vez de desarrollar la imaginación y el juicio, es inexcusable.</p>
+</div>
+
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 700 220" width="700" role="img" aria-label="Los cuatro principios de Pólya">
+<g font-family="system-ui,sans-serif" font-size="13">
+  <defs><marker id="ar6" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--muted)"/></marker></defs>
+  <rect x="10" y="50" width="150" height="80" rx="10" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="85" y="78" text-anchor="middle" fill="var(--brand)" font-weight="800">1 · Entender</text>
+  <text x="85" y="98" text-anchor="middle" fill="var(--ink)" font-size="12">¿qué busco?, ¿qué</text>
+  <text x="85" y="114" text-anchor="middle" fill="var(--ink)" font-size="12">datos tengo?</text>
+  <rect x="190" y="50" width="150" height="80" rx="10" fill="var(--lib-soft)" stroke="var(--lib)"/>
+  <text x="265" y="78" text-anchor="middle" fill="var(--lib)" font-weight="800">2 · Armar un plan</text>
+  <text x="265" y="98" text-anchor="middle" fill="var(--ink)" font-size="12">estrategias y</text>
+  <text x="265" y="114" text-anchor="middle" fill="var(--ink)" font-size="12">heurísticas</text>
+  <rect x="370" y="50" width="150" height="80" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="445" y="78" text-anchor="middle" fill="var(--accent)" font-weight="800">3 · Ejecutar</text>
+  <text x="445" y="98" text-anchor="middle" fill="var(--ink)" font-size="12">cálculos, registrar</text>
+  <text x="445" y="114" text-anchor="middle" fill="var(--ink)" font-size="12">éxitos y fracasos</text>
+  <rect x="550" y="50" width="140" height="80" rx="10" fill="var(--ana-soft)" stroke="var(--ana)"/>
+  <text x="620" y="78" text-anchor="middle" fill="var(--ana)" font-weight="800">4 · Reflexionar</text>
+  <text x="620" y="98" text-anchor="middle" fill="var(--ink)" font-size="12">¿tiene sentido?,</text>
+  <text x="620" y="114" text-anchor="middle" fill="var(--ink)" font-size="12">¿qué aprendí?</text>
+  <path d="M162 90 L186 90" stroke="var(--muted)" stroke-width="2" marker-end="url(#ar6)"/>
+  <path d="M342 90 L366 90" stroke="var(--muted)" stroke-width="2" marker-end="url(#ar6)"/>
+  <path d="M522 90 L546 90" stroke="var(--muted)" stroke-width="2" marker-end="url(#ar6)"/>
+  <path d="M445 132 C 445 185, 265 185, 265 134" stroke="var(--warn)" stroke-width="1.5" fill="none" stroke-dasharray="5 4" marker-end="url(#ar6)"/>
+  <text x="355" y="200" text-anchor="middle" fill="var(--warn)" font-size="12">si el plan falla: ver por qué falló, aprovechar lo útil y armar otro</text>
+</g>
+</svg>
+</div>
+<figcaption>Los cuatro principios. La flecha de vuelta es parte del método: descartar un plan no es fracasar.</figcaption>
+</figure>
+
+<div class="tw"><table>
+<thead><tr><th>Principio</th><th>Qué dice la clase</th></tr></thead>
+<tbody>
+<tr><td><b>1. Entender el problema</b></td><td>“A veces el problema está en entender el problema.” Leer con cuidado el enunciado (muchos se lanzan a resolver antes de terminar de leer). Tener claro <b>qué se quiere obtener</b>, <b>cuáles son los datos</b> y <b>qué técnicas hay disponibles</b>. Listar componentes y datos y darles nombre. En problemas reales sobran datos irrelevantes; si faltan, hay que diseñar cómo obtenerlos.</td></tr>
+<tr><td><b>2. Armar un plan</b></td><td>Definir una forma de resolverlo: una ecuación, un diagrama, una tabla de valores. Trabajar <b>de datos a resultados</b> (¿qué puedo obtener con lo que tengo?), <b>de resultados a datos</b> (¿qué necesito para llegar?), o desde ambos extremos hasta encontrarse.</td></tr>
+<tr><td><b>3. Ejecutar el plan</b></td><td>El corazón de la estrategia: hacer los cálculos, resolver las ecuaciones. Si el plan no funciona, descartarlo y diseñar otro, pero <b>reflexionando por qué falló</b> y qué parte se puede aprovechar. Llevar registro de éxitos y fracasos.</td></tr>
+<tr><td><b>4. Reflexionar sobre lo hecho</b> <span class="yrs">(mirada retrospectiva)</span></td><td>¿Usé todos los datos? ¿La respuesta tiene sentido? ¿Hay una forma simple de corroborarla? Y en general: ¿qué planes funcionaron y cuáles no?, ¿sirve para problemas parecidos?, ¿qué explica el éxito o el fracaso? Ayuda a diseñar estrategias futuras, incluso en áreas distintas.</td></tr>
+</tbody></table></div>
+
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">C1 2025-2 · P6 · 20 pts</span></div>
+<p>La pauta parte contextualizando (“Pólya se centra en el ámbito de las matemáticas… en lo que en Chile es la Enseñanza Media”) y después da los cuatro principios con una frase cada uno: entender (“si no tenemos claro qué buscamos, difícilmente lo encontraremos”), armar un plan (“atacar problemas complejos en forma organizada; si el plan resulta inviable, enmiéndelo o plantee otro”), ejecutar (“el trabajo más bien rutinario de llevarlos a cabo, y verificar que se obtienen los resultados buscados”) y reflexionar (“siempre es beneficioso aprender de lo que se ha hecho”).</p>
+<div class="pts"><span>Entender el problema</span><span>5</span><span>Armar un plan</span><span>5</span><span>Ejecutar el plan</span><span>5</span><span>Reflexionar sobre lo hecho</span><span>5</span></div>
+</div>
+</section>
+
+<section id="heuristicas">
+<h2>Estrategias y heurísticas</h2>
+<h3>Estrategias para armar el plan (14)</h3>
+<div class="cols">
+  <div class="card"><p>Adivine y verifique · Haga una lista ordenada · Elimine posibilidades · Use simetría · Considere casos especiales · Use razonamiento directo · Resuelva una ecuación</p></div>
+  <div class="card"><p>Busque un patrón · Haga un dibujo · Resuelva un problema más simple · Use un modelo · Trabaje en reversa · Use una fórmula · Sea ingenioso</p></div>
+</div>
+<h3>Heurísticas de Pólya (11)</h3>
+<p>Muchas apuntan a <b>generar un problema más accesible</b> que ayude a resolver el original.</p>
+<div class="tw"><table>
+<thead><tr><th>Heurística</th><th>La pregunta que se hace</th></tr></thead>
+<tbody>
+<tr><td><b>Analogía</b></td><td>¿Hay un problema similar que sé resolver?</td></tr>
+<tr><td><b>Elementos auxiliares</b></td><td>¿Hay elementos nuevos que me acerquen a la solución?</td></tr>
+<tr><td><b>Generalización</b></td><td>¿Puedo plantear un problema más general?</td></tr>
+<tr><td><b>Inducción</b></td><td>¿Puedo derivar una generalización desde algunos ejemplos?</td></tr>
+<tr><td><b>Variaciones</b></td><td>¿Puedo variar el problema y obtener otros cuyas soluciones ayuden?</td></tr>
+<tr><td><b>Problema auxiliar</b></td><td>¿Hay un subproblema cuya solución ayude?</td></tr>
+<tr><td><b>Problemas relacionados</b></td><td>¿Hay un problema relacionado ya resuelto que pueda usar?</td></tr>
+<tr><td><b>Especializar</b></td><td>¿Puedo plantear un problema más particular?</td></tr>
+<tr><td><b>Descomponer y recombinar</b></td><td>¿Puedo separar el problema y combinar sus partes de otra forma?</td></tr>
+<tr><td><b>Trabajar en reversa</b></td><td>¿Puedo partir de la meta y retroceder hasta algo conocido?</td></tr>
+<tr><td><b>Dibuje una figura</b></td><td>¿Puedo hacer un dibujo del problema?</td></tr>
+</tbody></table></div>
+<div class="box ana"><div class="bt">Analogía · Pólya aplicado a un bug</div>
+<p><b>Entender:</b> reproducir el error, ver qué entrada lo produce y qué se esperaba. <b>Plan:</b> “buscar un patrón” en los logs, “resolver un problema más simple” (un caso mínimo que falle). <b>Ejecutar:</b> probar la hipótesis; si no era eso, anotar por qué y probar otra. <b>Reflexionar:</b> agregar un test para que no vuelva y preguntarse dónde más puede estar el mismo error.</p></div>
+</section>
+
+<section id="ejemplos">
+<h2>Los dos ejemplos de la clase</h2>
+<h3>Ejemplo 1 · Una suma tediosa</h3>
+<div class="enun"><div class="et">Problema</div><p>Halle el valor de 1/(1·2) + 1/(2·3) + … + 1/(99·100) como fracción en mínimos términos.</p></div>
+<div class="cols">
+  <div class="card"><h5>Plan A · “carretera”</h5><p>Calcular la suma. Como “computines”, el profe usa Raku (que maneja números racionales exactos): un ciclo que suma <code>1/(k*(k+1))</code> para k de 1 a n. Con n = 99 imprime <b>99/100</b>.</p><p style="color:var(--muted)">Reflexión: a falta de algo mejor, buscar una herramienta general que haga el trabajo sucio.</p></div>
+  <div class="card"><h5>Plan B · inducción</h5><p>Casos chicos: 1/2, 2/3, 3/4… <b>Patrón</b> → conjetura: la suma hasta n vale <b>n/(n+1)</b>.</p><p><b>Base:</b> n = 1 da 1/2. <b>Paso:</b> n/(n+1) + 1/((n+1)(n+2)) = (n² + 2n + 1)/((n+1)(n+2)) = (n+1)/(n+2).</p><p>Con n = 99: <b>99/100</b>.</p></div>
+  <div class="card"><h5>Plan C · una identidad</h5><p>Fracciones parciales (por <b>analogía</b> con integrales): 1/(k(k+1)) = 1/k − 1/(k+1).</p><p>La suma es <b>telescópica</b>: (1 − 1/2) + (1/2 − 1/3) + … + (1/99 − 1/100) = 1 − 1/100 = <b>99/100</b>.</p></div>
+</div>
+<p><b>Reflexión de la clase:</b> se plantearon dos caminos (calcular o buscar algo más inteligente). En el de inducción se exploraron casos pequeños, el patrón llevó a una conjetura y se demostró con inducción usando álgebra. La alternativa usó una <b>analogía</b> con otra área y una técnica de ella.</p>
+
+<h3>Ejemplo 2 · Embaldosar con losas en L</h3>
+<div class="enun"><div class="et">Problema</div><p>Cubrir un cuadrado de 2<sup>n</sup> × 2<sup>n</sup> con losas en forma de L (de 3 cuadraditos) dejando libre un cuadradito adyacente al centro.</p></div>
+<ol>
+<li><b>Viabilidad:</b> ¿2<sup>n</sup>·2<sup>n</sup> es siempre múltiplo de 3 más 1? Sí: 4<sup>n</sup> ≡ 1 (mod 3). Hasta acá es posible.</li>
+<li><b>Primer intento, inducción directa:</b> el caso base es obvio, pero el paso falla: al juntar cuatro cuadrados con su hueco al centro quedan cuatro huecos desparramados.</li>
+<li><b>Un paso atrás:</b> restringir más la posición del hueco empeora las cosas. Lo que funciona es <b>relajar</b> la condición: demostrar que se puede dejar libre <b>cualquier</b> cuadradito.</li>
+<li><b>Demostración:</b> base n = 1, un cuadrado de 2×2 se cubre con una L dejando libre cualquier casilla. Paso: en el cuadrado de 2<sup>n+1</sup>, el hueco cae en un cuadrante, que se cubre por inducción. En los otros tres se deja libre la esquina que toca el centro (también por inducción), y esas tres esquinas se tapan con <b>una sola L</b>.</li>
+</ol>
+
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 560 220" width="560" role="img" aria-label="Embaldosado con losas en L">
+<g font-family="system-ui,sans-serif" font-size="12">
+  <g transform="translate(20,20)">
+    <rect x="0" y="0" width="40" height="40" fill="var(--g1)"/><rect x="40" y="0" width="40" height="40" fill="var(--g1)"/><rect x="0" y="40" width="40" height="40" fill="var(--g1)"/>
+    <rect x="80" y="0" width="40" height="40" fill="var(--g2)"/><rect x="120" y="0" width="40" height="40" fill="var(--g2)"/><rect x="120" y="40" width="40" height="40" fill="var(--g2)"/>
+    <rect x="0" y="80" width="40" height="40" fill="var(--g3)"/><rect x="0" y="120" width="40" height="40" fill="var(--g3)"/><rect x="40" y="120" width="40" height="40" fill="var(--g3)"/>
+    <rect x="120" y="80" width="40" height="40" fill="var(--g4)"/><rect x="80" y="120" width="40" height="40" fill="var(--g4)"/><rect x="120" y="120" width="40" height="40" fill="var(--g4)"/>
+    <rect x="80" y="40" width="40" height="40" fill="var(--ex)"/><rect x="40" y="80" width="40" height="40" fill="var(--ex)"/><rect x="80" y="80" width="40" height="40" fill="var(--ex)"/>
+    <rect x="40" y="40" width="40" height="40" fill="var(--panel)" stroke="var(--warn)" stroke-width="2" stroke-dasharray="4 3"/>
+    <text x="60" y="64" text-anchor="middle" fill="var(--warn)" font-weight="700">libre</text>
+    <g stroke="var(--panel)" stroke-width="1.5" fill="none"><path d="M40 0 V160 M80 0 V160 M120 0 V160 M0 40 H160 M0 80 H160 M0 120 H160"/></g>
+    <rect x="0" y="0" width="160" height="160" fill="none" stroke="var(--ink)" stroke-width="2"/>
+    <text x="80" y="185" text-anchor="middle" fill="var(--muted)">4×4 (n = 2): cinco losas, una libre</text>
+  </g>
+  <g transform="translate(300,20)">
+    <rect x="0" y="0" width="160" height="160" fill="var(--code)" stroke="var(--ink)" stroke-width="2"/>
+    <path d="M80 0 V160 M0 80 H160" stroke="var(--ink)" stroke-width="1.5"/>
+    <circle cx="30" cy="30" r="7" fill="var(--warn)"/>
+    <text x="40" y="58" fill="var(--warn)" font-size="11.5">hueco pedido</text>
+    <rect x="80" y="60" width="20" height="20" fill="var(--ex)"/><rect x="60" y="80" width="20" height="20" fill="var(--ex)"/><rect x="80" y="80" width="20" height="20" fill="var(--ex)"/>
+    <text x="120" y="38" text-anchor="middle" fill="var(--muted)" font-size="11">inducción</text>
+    <text x="40" y="128" text-anchor="middle" fill="var(--muted)" font-size="11">inducción</text>
+    <text x="120" y="128" text-anchor="middle" fill="var(--muted)" font-size="11">inducción</text>
+    <text x="80" y="185" text-anchor="middle" fill="var(--muted)">paso inductivo: una L al centro</text>
+    <text x="200" y="85" fill="var(--ex)" font-size="11.5" font-weight="700">la L tapa</text>
+    <text x="200" y="100" fill="var(--ex)" font-size="11.5" font-weight="700">las 3 esquinas</text>
+  </g>
+</g>
+</svg>
+</div>
+<figcaption>Izquierda: el caso de 4×4 resuelto, con el cuadradito libre junto al centro. Derecha: la idea del paso inductivo. Los tres cuadrantes sin el hueco dejan libre su esquina central y una sola losa morada las tapa.</figcaption>
+</figure>
+
+<div class="box tip"><div class="bt">La paradoja del inventor</div>
+<p>Para cerrar la inducción hubo que demostrar algo <b>más general</b> que lo pedido (cualquier hueco, no solo junto al centro). A veces demostrar algo más general es más simple. Es la heurística de <b>generalización</b> en acción, y un buen ejemplo para citar en el certamen.</p></div>
+</section>
+
+<section id="t6-videos">
+<h2>Videos del tema</h2>
+<p class="lead">Revisados con su transcripción. Todos explican los mismos cuatro pasos; con uno basta.</p>
+<div class="vgrid">
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=odXMHOhcmQA" target="_blank" rel="noopener"><img loading="lazy" src="data:image/jpeg;base64,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" alt=""><span class="rk">RECOMENDADO</span><span class="dur">6:11</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=odXMHOhcmQA" target="_blank" rel="noopener">George Pólya: estrategias de resolución de problemas</a>
+    <div class="ch">Fernando Faundez · 6:11 min</div>
+    <div class="tags"><span class="lt es">En español</span></div>
+    <p>Quién fue Pólya y los cuatro pasos, con las preguntas de cada uno: entender (1:00), configurar el plan con una lista de estrategias (1:30-2:30), ejecutarlo (2:30) y mirar hacia atrás (3:30).</p>
+    <div class="ver"><b>Qué ver:</b> Hasta 4:00 es lo que pide el certamen; lo demás son consejos.</div>
+    
+  </div>
+</div>
+</div>
+</section>
+
+<section id="t6-preguntas">
+<h2>Preguntas del tema</h2>
+<p class="lead">La de certamen con pauta y respuesta modelo: <a class="inl" href="14-Ejercicios.html#e13">E13 (estrategia de Pólya)</a>.</p>
+
+<details class="ex"><summary>1 · Nombre los 4 principios de Pólya <span class="tag">lista cerrada</span></summary>
+<div class="body"><p>Entender el problema, armar un plan, ejecutar el plan y reflexionar sobre lo hecho (mirada retrospectiva).</p></div></details>
+
+<details class="ex"><summary>2 · ¿Qué significa trabajar “de datos a resultados” y “de resultados a datos”? <span class="tag">armar el plan</span></summary>
+<div class="body"><p>De datos a resultados: preguntarse qué se puede obtener con los datos dados. De resultados a datos: preguntarse qué se necesita para obtener el resultado. Se puede trabajar desde ambos extremos hasta encontrarse en el medio.</p></div></details>
+
+<details class="ex"><summary>3 · ¿Qué hacer si el plan falla? <span class="tag">ejecutar</span></summary>
+<div class="body"><p>Descartarlo y diseñar otro, pero reflexionando por qué falló y qué parte se puede aprovechar, y llevando registro de éxitos y fracasos.</p></div></details>
+
+<details class="ex"><summary>4 · Nombre 4 heurísticas de Pólya <span class="tag">lista</span></summary>
+<div class="body"><p>Cualquiera de: analogía, elementos auxiliares, generalización, inducción, variaciones, problema auxiliar, problemas relacionados, especializar, descomponer y recombinar, trabajar en reversa, dibujar una figura.</p></div></details>
+
+<details class="ex"><summary>5 · ¿Qué es la paradoja del inventor? <span class="tag">ejemplo 2</span></summary>
+<div class="body"><p>Que a veces es más fácil demostrar algo más general que lo pedido. En el embaldosado, la inducción solo cierra si se demuestra que se puede dejar libre cualquier cuadradito, no solo el adyacente al centro.</p></div></details>
+
+<details class="ex"><summary>6 · ¿Qué preguntas se hacen en la mirada retrospectiva? <span class="tag">paso 4</span></summary>
+<div class="body"><p>¿Usé los datos disponibles? ¿La respuesta tiene sentido? ¿Hay una forma simple de corroborarla? ¿Qué plan funcionó y cuál no? ¿Hay problemas similares donde aplicar variantes del plan? ¿Qué características explican el éxito o el fracaso?</p></div></details>
+</section>
+
+<div class="pnav"><a href="5-Pensamiento-critico.html"><small>← Anterior</small>Pensamiento crítico</a><a class="nx" href="7-Etica-y-moral.html"><small>Siguiente →</small>Ética y moral</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c1-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c1-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c1-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>
