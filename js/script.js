@@ -1,18 +1,4 @@
-// Base de datos de rutas (asegúrate de que estas rutas coincidan exactamente con tus carpetas)
-const baseDeDatos = {
-    'inf221': {
-        titulo: 'INF221 - Algoritmos y Complejidad',
-        archivos: [
-            { nombre: 'Resumen C1', ruta: 'inf221-algoco/Resumen-C1-AlgoCo.html' }
-        ]
-    },
-    'inf236': {
-        titulo: 'INF236 - Análisis y Diseño de Software',
-        archivos: [
-            { nombre: 'Resumen Parte 1', ruta: 'inf236-ads/Resumen-ADS-Parte1.html' }
-        ]
-    }
-};
+// Los datos de los ramos vienen de js/ramos.js (constante RAMOS)
 
 // Referencias a los contenedores principales
 const homeView = document.getElementById('home-view');
@@ -20,6 +6,8 @@ const apuntesView = document.getElementById('apuntes-view');
 const visorHtml = document.getElementById('visor-html');
 const listaArchivos = document.getElementById('lista-archivos-ramo');
 const tituloRamo = document.getElementById('titulo-ramo');
+const listaRamos = document.getElementById('lista-ramos');
+const gridRamos = document.getElementById('grid-ramos');
 
 // Función para cambiar de pantalla
 function mostrarVista(vista) {
@@ -40,22 +28,22 @@ document.getElementById('btn-home').addEventListener('click', () => {
 
 // Función para cargar los apuntes de un ramo
 function cargarRamo(idRamo) {
-    const datos = baseDeDatos[idRamo];
-    if (!datos) return;
+    const ramo = RAMOS.find(r => r.id === idRamo);
+    if (!ramo) return;
 
-    tituloRamo.textContent = datos.titulo;
+    tituloRamo.textContent = `${ramo.codigo} - ${ramo.nombre}`;
     listaArchivos.innerHTML = ''; // Limpiamos botones previos
 
     // Crear los botones para cada HTML
-    datos.archivos.forEach((archivo, index) => {
+    ramo.apuntes.forEach((apunte, index) => {
         const btn = document.createElement('button');
         btn.className = 'btn-file';
-        btn.textContent = archivo.nombre;
-        
+        btn.textContent = apunte.nombre;
+
         btn.addEventListener('click', () => {
             // Actualiza el iframe
-            visorHtml.src = archivo.ruta;
-            
+            visorHtml.src = apunte.ruta;
+
             // Efecto visual de botón activo
             document.querySelectorAll('.btn-file').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
@@ -71,6 +59,25 @@ function cargarRamo(idRamo) {
 
     mostrarVista('apuntes');
 }
+
+// Construir el menú lateral y las tarjetas del inicio a partir de RAMOS
+RAMOS.forEach(ramo => {
+    const item = document.createElement('li');
+    item.className = 'subject-item';
+    item.dataset.ramo = ramo.id;
+    item.textContent = `${ramo.codigo} - ${ramo.nombre}`;
+    listaRamos.appendChild(item);
+
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.dataset.ramo = ramo.id;
+    const h3 = document.createElement('h3');
+    h3.textContent = ramo.codigo;
+    const p = document.createElement('p');
+    p.textContent = ramo.nombre;
+    card.append(h3, p);
+    gridRamos.appendChild(card);
+});
 
 // Vincular los clics de las tarjetas y el menú lateral automáticamente
 document.querySelectorAll('[data-ramo]').forEach(elemento => {

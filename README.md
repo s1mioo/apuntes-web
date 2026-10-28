@@ -1,103 +1,71 @@
 # Apuntes — panel de estudio
 
-Sitio estático (HTML + CSS + Vanilla JS) para navegar tus apuntes HTML desde un
-sidebar único, con modo oscuro/claro. Pensado para GitHub Pages: sin backend,
-sin build, sin dependencias que instalar.
+Sitio estático (HTML + CSS + Vanilla JS) que reúne mis resúmenes HTML de
+estudio por ramo, para preparar evaluaciones. Pensado para GitHub Pages: sin
+backend, sin build, sin dependencias que instalar.
 
 ## Estructura del repositorio
 
 ```
 /
-├── index.html                     ← página principal (sidebar + visor)
-├── assets/
-│   ├── css/style.css
-│   └── js/script.js                ← aquí está el índice de asignaturas
-├── inf292-optimizacion/            ← una carpeta por asignatura
-│   └── branch-and-bound.html
-├── arquitectura-computadores/
-│   └── full-adder.html
-└── sistemas-operativos/
-    └── planificacion.html
+├── index.html              ← página principal (sidebar + inicio + visor)
+├── css/style.css           ← estilos del sitio (no de los apuntes)
+├── js/
+│   ├── ramos.js            ← índice de ramos y apuntes (lo único que se edita)
+│   └── script.js           ← arma el sidebar, las tarjetas y el visor
+└── apuntes/
+    ├── inf221-algoco/
+    │   └── c1-resumen.html
+    └── inf236-ads/
+        └── parte1-resumen.html
 ```
 
-## Cómo agregar una asignatura o apunte nuevo
+## Cómo agregar un ramo o un apunte
 
-1. Crea una carpeta en la raíz, ej. `/probabilidad`.
-2. Copia tus `.html` de apuntes dentro, tal cual los generas hoy (no hace
-   falta editarlos).
-3. Abre `assets/js/script.js` y agrega un bloque al arreglo `SUBJECTS`:
+1. Copia el `.html` en `apuntes/<ramo>/` (nombres en minúscula, con guiones,
+   sin espacios ni tildes). No hace falta editarlo.
+2. Agrega o completa su entrada en `js/ramos.js`:
 
 ```js
 {
-  id: "probabilidad",
-  name: "Probabilidad y Estadística",
-  notes: [
-    { title: "Variables aleatorias", file: "probabilidad/variables-aleatorias.html" },
-    { title: "Teorema central del límite", file: "probabilidad/tcl.html" },
-  ],
+  id: 'inf292',
+  codigo: 'INF292',
+  nombre: 'Optimización',
+  apuntes: [
+    { nombre: 'Branch and Bound', ruta: 'apuntes/inf292-optimizacion/branch-and-bound.html' }
+  ]
 }
 ```
 
-No necesitas tocar `index.html` ni `style.css`: el sidebar se construye
-solo a partir de este arreglo.
+El menú lateral y las tarjetas del inicio se generan solos a partir de esa
+lista; no hay que tocar `index.html`.
 
-## Metodología de visualización: iframe dinámico (recomendada)
+Los apuntes no deben enlazar a archivos fuera del repo (por ejemplo,
+`../Certamenes/...`): esas rutas no existen en GitHub Pages.
 
-`script.js` carga cada apunte cambiando el `src` de un `<iframe>`:
+## Por qué un iframe
 
-```js
-noteFrame.src = note.file;
+Cada apunte se carga cambiando el `src` de un `<iframe>`:
+
+- **Aislamiento de estilos.** Los apuntes traen su propio `<head>` con
+  estilos, sidebar interno, tema claro/oscuro y MathJax; dentro del iframe no
+  chocan con el CSS del sitio.
+- **Funciona sin servidor.** Abrir `index.html` con doble clic (`file://`)
+  funciona; un `fetch()` de archivos locales fallaría por CORS.
+- **Scripts internos intactos.** Lo que funciona al abrir el apunte suelto
+  funciona igual en el visor.
+
+## Probar localmente
+
+Abre `index.html` en el navegador, o levanta un servidor:
+
+```bash
+python -m http.server
 ```
-
-Se eligió **iframe sobre `fetch` + `innerHTML`** por tres razones concretas
-para tu caso:
-
-- **Aislamiento de estilos.** Tus apuntes ya traen su propio `<head>` con
-  estilos (sidebar interno, cajas de teoría/fórmulas, MathJax). Si los
-  inyectaras con `fetch` dentro de un `<div>`, ese CSS interno chocaría con
-  el del sitio contenedor (mismas clases, selectores globales, etc.).
-  El iframe los mantiene en su propio documento, sin conflicto.
-- **Funciona sin servidor.** Al abrir `index.html` con doble clic
-  (protocolo `file://`), `fetch()` de otro archivo local falla por la
-  política CORS del navegador. Un `<iframe src="...">` sí carga el archivo
-  igual. Esto te permite probar el sitio localmente sin levantar nada.
-- **Scripts internos intactos.** Si algún apunte usa su propio `<script>`
-  (por ejemplo MathJax, un cronómetro, colapsables con JS propio), correr
-  dentro de un iframe es exactamente como abrir ese HTML suelto: no hay que
-  reescribir nada para que siga funcionando.
-
-**Alternativa con `fetch`** (por si en el futuro quieres que todos los
-apuntes hereden un único estilo visual, sin su propio `<head>`):
-
-```js
-async function loadWithFetch(file) {
-  const res = await fetch(file);
-  const html = await res.text();
-  document.getElementById("content").innerHTML = html;
-}
-```
-
-Esto exige (a) correr el sitio vía HTTP (GitHub Pages ya lo hace, pero
-localmente necesitas `python -m http.server` o la extensión "Live Server"),
-y (b) que tus apuntes sean solo el `<body>` interno, no un HTML completo con
-su propio `<head>` — si no, terminas con `<html>` anidados. Como tus notas
-ya son HTML autocontenidos, el iframe es la opción sin fricción.
-
-## Otras características
-
-- **Modo oscuro/claro**: botón en el sidebar, guarda la preferencia en
-  `localStorage` y respeta el tema del sistema en la primera visita.
-- **Último apunte visitado**: se recuerda en `localStorage` y se recarga
-  automáticamente la próxima vez que abras el sitio.
-- **Sidebar responsivo**: en pantallas ≤860px se convierte en un panel
-  deslizable (hamburguesa arriba a la izquierda).
 
 ## Desplegar en GitHub Pages
 
-1. Sube esta carpeta completa a un repositorio de GitHub.
-2. Ve a *Settings → Pages*.
-3. En *Source*, elige la rama (ej. `main`) y la carpeta `/root`.
-4. Guarda. En un par de minutos tu sitio queda disponible en
+1. Sube el repositorio a GitHub.
+2. *Settings → Pages* → *Source*: rama `main`, carpeta `/ (root)`.
+3. En un par de minutos el sitio queda en
    `https://tu-usuario.github.io/nombre-repo/`.
-
-No hay paso de build: lo que subes es lo que se sirve.
