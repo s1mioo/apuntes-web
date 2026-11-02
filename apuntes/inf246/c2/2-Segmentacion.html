@@ -302,10 +302,69 @@
   table.rp td.n{color:var(--ink);font-weight:700}
   table.rp th.rh{text-align:right;color:var(--muted);background:var(--panel)}
   .tw table.rp{min-width:0}
+  table.pila tr.pl td{border-left:2px solid var(--line);border-right:2px solid var(--line)}
+  table.wsv td{vertical-align:middle}
+  table.wsv b.pfx{color:var(--warn);background:var(--warn-soft);padding:0 4px;border-radius:4px}
   .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.93em}
   .q{font-weight:600}
   .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:14px 0}
   .tiny{font-size:12.5px;color:var(--muted)}
+  /* --- página 7: flashcards --- */
+  [hidden]{display:none!important}
+  .fc-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 14px;margin:14px 0;box-shadow:var(--shadow)}
+  .fc-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .fc-row:last-child{border-bottom:0}
+  .fc-lab{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);min-width:62px}
+  .fc-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 300px}
+  .fc-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;
+    font-size:13.5px;cursor:pointer;background:var(--bg);color:var(--ink);user-select:none}
+  .fc-chip input{accent-color:var(--brand);margin:0}
+  .fc-chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
+  .fc-chip small{color:var(--muted);font-weight:400}
+  .fc-status{font-size:13px;color:var(--muted);margin:10px 2px 6px;min-height:1.3em}
+  .fc-card{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--brand);border-radius:14px;padding:18px 20px;
+    min-height:230px;box-shadow:var(--shadow);cursor:pointer;outline:none;display:flex;flex-direction:column;gap:12px}
+  .fc-card:focus-visible{box-shadow:0 0 0 3px var(--brand-soft),var(--shadow)}
+  .fc-card.flipped{border-left-color:var(--accent);cursor:default}
+  .fc-card.fc-vacio{cursor:default;border-left-color:var(--line)}
+  .fc-meta{display:flex;flex-wrap:wrap;gap:6px}
+  .fc-tag{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .fc-tag.fc-salio{color:var(--no);border-color:var(--no);background:var(--no-soft);font-weight:700}
+  .fc-front{font-size:19px;font-weight:700;line-height:1.45;color:var(--ink)}
+  .fc-hint{font-size:14.5px;color:var(--warn);background:var(--warn-soft);border-radius:8px;padding:8px 12px}
+  .fc-back{border-top:1px dashed var(--line);padding-top:12px;font-size:16px;line-height:1.65}
+  .fc-back b{color:var(--accent)}
+  .fc-src{font-size:12.8px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .fc-src b{color:var(--muted)}
+  .fc-tap{font-size:12.5px;color:var(--muted);margin-top:auto}
+  .fc-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .fc-actions .btn{flex:1 1 150px;padding:11px 12px;font-size:14.5px;font-weight:600;text-align:center}
+  .fc-actions .btn:disabled{opacity:.45;cursor:default}
+  .fc-main{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+  .fc-no{border-color:var(--no);color:var(--no);background:var(--no-soft)}
+  .fc-mid{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+  .fc-yes{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .fc-end{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0;box-shadow:var(--shadow)}
+  .fc-score{font-size:26px;font-weight:800;color:var(--brand)}
+  .fc-end ul{margin:6px 0 10px}
+  table.mini tr.fc-tot td{font-weight:700}
+  details.fc-item .body b{color:var(--accent)}
+  h3 .num{color:var(--muted);font-weight:400;font-size:.8em}
+  /* --- página 6: tarjetas de ejercicio --- */
+  .ej{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:10px;
+    padding:12px 16px 2px;margin:18px 0;box-shadow:var(--shadow)}
+  .ej.p3{border-left-color:var(--accent)} .ej.p1{border-left-color:var(--line)}
+  .ej-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:6px}
+  .ej-h input{transform:scale(1.25);accent-color:var(--brand);flex:0 0 auto;margin:0 2px 0 0}
+  .ej-n{color:var(--brand);font-weight:800;font-variant-numeric:tabular-nums}
+  .ej-t{font-weight:700;font-size:16px;flex:1 1 220px;min-width:0}
+  .ej-h.done .ej-t{text-decoration:line-through;color:var(--muted)}
+  .ej-tag{font-size:12px;color:var(--muted);white-space:nowrap}
+  .ej .meta{background:var(--code);border-radius:8px;padding:8px 12px;margin:10px 0;font-size:14px}
+  .ej .meta p{margin:3px 0}
+  .ej details.ex{margin:10px 0 14px;box-shadow:none}
+  .ej .st{font-weight:700;color:var(--accent);font-size:13.5px;margin:16px 0 4px}
+  .ej pre{white-space:pre;overflow-x:auto}
   @media (max-width:900px){
     .layout{align-items:stretch}
     .content{width:100%;max-width:100%}
@@ -320,12 +379,12 @@
     <div class="dot">T2</div>
     <div><h1>Segmentación</h1><small>Sistemas Operativos · INF-246 · Certamen 2</small></div>
   </div>
-  <div class="pages"><a href="0-Guia-de-estudio-C2.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html" class="cur"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, reloj · por confirmar</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a></div>
+  <div class="pages"><a href="0-Guia-de-estudio-C2.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html" class="cur"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, Working Set</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a><a href="6-Lista-de-estudio.html"><b>6</b><span>Lista de estudio<br><small style="color:var(--muted)">día a día desde hoy, con explicaciones</small></span></a><a href="7-Flashcards.html"><b>7</b><span>Flashcards<br><small style="color:var(--muted)">conceptos al azar, con cajas de repaso</small></span></a></div>
   <div class="toolbar">
     <button class="btn" id="theme">Claro / oscuro</button>
     <button class="btn" id="expand">Abrir todo</button>
   </div>
-  <nav id="nav"><div class="grp">Tema 2</div><a href="#t2-inicio"><span class="nt">Qué pesa y qué estudiar</span></a><a href="#objetivos"><span class="nt">Por qué memoria virtual</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#mmu-vm"><span class="nt">La MMU revisa cada acceso</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#segmento"><span class="nt">Qué es un segmento</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#tablas-seg"><span class="nt">Tabla global y tabla por proceso</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#mmu-seg"><span class="nt">La MMU de segmentación</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#bitv"><span class="nt">Bit V: segment fault</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#bitu"><span class="nt">Bit U: ¿se usó?</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#bitd"><span class="nt">Bit D: ¿se escribió?</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#compartir"><span class="nt">Segmentos compartidos</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#mmu-completa"><span class="nt">Los cuatro controles de la MMU</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#problemas-seg"><span class="nt">Problemas de la segmentación sola</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><div class="grp">Práctica</div><a href="#t2-receta"><span class="nt">Receta: traducir (s, d)</span></a><a href="#t2-videos"><span class="nt">Videos del tema</span></a><a href="#S1"><span class="nt">S1 · Traducir y detectar errores</span></a><a href="#S2"><span class="nt">S2 · Elegir qué descargar</span></a><a href="#S3"><span class="nt">S3 · Las tablas de la lámina 18</span></a><a href="#S4"><span class="nt">S4 · Bits de segmento y de offset</span></a><a href="#t2-preguntas"><span class="nt">Preguntas del tema</span></a></nav>
+  <nav id="nav"><div class="grp">Tema 2</div><a href="#t2-inicio"><span class="nt">Qué pesa y qué estudiar</span></a><a href="#objetivos"><span class="nt">Por qué memoria virtual</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#mmu-vm"><span class="nt">La MMU revisa cada acceso</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#segmento"><span class="nt">Qué es un segmento</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#tablas-seg"><span class="nt">Tabla global y tabla por proceso</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#mmu-seg"><span class="nt">La MMU de segmentación</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#bitv"><span class="nt">Bit V: segment fault</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#bitu"><span class="nt">Bit U: ¿se usó?</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#bitd"><span class="nt">Bit D: ¿se escribió?</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#compartir"><span class="nt">Segmentos compartidos</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#mmu-completa"><span class="nt">Los cuatro controles de la MMU</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#problemas-seg"><span class="nt">Problemas de la segmentación sola</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><div class="grp">Práctica</div><a href="#t2-receta"><span class="nt">Receta: traducir (s, d)</span></a><a href="#t2-videos"><span class="nt">Videos del tema</span></a><a href="#S1"><span class="nt">S1 · Traducir y detectar errores</span></a><a href="#S2"><span class="nt">S2 · Elegir qué descargar</span></a><a href="#S3"><span class="nt">S3 · Las tablas de la lámina 18</span></a><a href="#S4"><span class="nt">S4 · Bits de segmento y de offset</span></a><a href="#ex2016s"><span class="nt">C2 2016 · conocimiento</span></a><a href="#t2-preguntas"><span class="nt">Preguntas del tema</span></a></nav>
 </aside>
 <main class="content">
 
@@ -393,7 +452,7 @@
 
 <section id="segmento" data-nav="Qué es un segmento" data-p="3">
 <h2>Qué es un segmento</h2>
-<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Todo el tema y la segmentación paginada se apoyan en esta definición.</p>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> “¿Qué informaciones maneja el SO para definir un segmento?” fue la 1.1 del C2 2016, y “¿cómo se representa una dirección segmentada?”, la 1.1 del C2 2015.</p>
 <div class="box def"><div class="bt">Segmento (lámina 6)</div>
 <p>Un segmento está definido por una <b>BASE</b> (la dirección donde empieza en la RAM) y un <b>LÍMITE</b> (su tamaño en bytes).</p></div>
 <p>El espacio de trabajo de un proceso es un <b>conjunto de segmentos</b>. En UNIX/Linux, por ejemplo: uno para el <b>código ejecutable</b>, uno para los <b>datos</b> (variables estáticas) y uno para la <b>pila de ejecución y la asignación dinámica</b> (stack y heap).</p>
@@ -481,7 +540,7 @@
 
 <section id="bitv" data-nav="Bit V: segment fault" data-p="3">
 <h2>Bit V (Valid): ¿está cargado?</h2>
-<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Los tres bits fueron la 4.2 del C2 2023 y sostienen la 4.3 (la tabla con errores).</p>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> “¿Para qué sirve el bit V en la tabla de segmentos?” fue la 1.4 del C2 2016, y los bits U y D salieron en los cuatro C2 (2014, 2015, 2016 y 2023).</p>
 <ul>
   <li><b>V = 1</b>: el segmento está cargado en memoria y disponible.</li>
   <li><b>V = 0</b>: el segmento <b>existe</b>, pero no está cargado.</li>
@@ -498,7 +557,7 @@
 
 <section id="bitu" data-nav="Bit U: ¿se usó?" data-p="3">
 <h2>Bit U (Used): ¿se usó?</h2>
-<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Mismo motivo que el bit V.</p>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> U y D salieron en los cuatro C2, casi siempre con “¿quién los inicializa y quién los modifica?”.</p>
 <ul>
   <li><b>U = 1</b>: el segmento fue leído o escrito. <b>U = 0</b>: no tuvo acceso.</li>
   <li>El <b>sistema</b> lo pone en 0 cuando carga el segmento.</li>
@@ -511,7 +570,7 @@
 
 <section id="bitd" data-nav="Bit D: ¿se escribió?" data-p="3">
 <h2>Bit D (Dirty): ¿se escribió?</h2>
-<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Mismo motivo que el bit V; además el C2 2023 tenía una tabla con un bit D imposible.</p>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> U y D salieron en los cuatro C2, y tres de ellos (2015, 2016 y 2023) traían una tabla con un bit D imposible.</p>
 <ul>
   <li><b>D = 1</b>: el segmento fue escrito al menos una vez. <b>D = 0</b>: no fue modificado.</li>
   <li>El <b>sistema</b> lo pone en 0 cuando carga el segmento.</li>
@@ -549,13 +608,15 @@
   <li><b>Un segmento de datos</b>: para procesos cooperativos y para la llamada de sistema <code>fork()</code>.</li>
   <li><b>Las bibliotecas de programación</b>: cada una se carga una sola vez en un segmento (la LibC, por ejemplo) y todos los procesos hacen referencia al segmento global.</li>
 </ol>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · 200 copias de la biblioteca C<span class="ref">Audio 18 · 37:00 / 38:32 / 40:00 / 42:46</span></div>
+<p>Su ejemplo para justificar compartir: la biblioteca C pesa más o menos <b>4,5 MB</b>. Si 200 procesos de Linux la cargaran cada uno por su cuenta, serían unos 800 MB de pura biblioteca en una memoria de 8 GB. Y no es solo la biblioteca: dos ventanas del navegador, o dos terminales con <code>bash</code>, son procesos distintos que ejecutan <b>el mismo código</b> con datos distintos. Si el código se carga una sola vez y todos lo comparten, se ahorra muchísima memoria. Eso es lo que la memoria lineal no permite y la virtual sí: cortar las tareas en pedazos y compartir algunos. (Las DLL de Windows y las <code>.so</code>, <i>Shared Objects</i>, de Linux.)</p></div>
 <div class="box tip"><div class="bt">Los derechos son de cada proceso, no del segmento</div>
 <p>En la lámina 18, P0 tiene el segmento global S2 con derechos <b>1 0 0</b> (solo lectura) y P1 lo tiene con <b>1 1 0</b> (lectura y escritura). El mismo segmento, con permisos distintos según quién lo usa. Por eso los derechos están en la tabla por proceso y no en la global.</p></div>
 </section>
 
 <section id="mmu-completa" data-nav="Los cuatro controles de la MMU" data-p="3">
 <h2>Dirección segmentada y los cuatro controles de la MMU</h2>
-<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer S1.</strong> De aquí sale la respuesta a la 1.6 del C2 2023 (cuándo ocurre un SEGMENTATION VIOLATION).</p>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y hacer S1.</strong> “¿Cuándo ocurre Segmentation Violation?” salió en el C2 2016 (1.7) y en el C2 2023 (1.6), y el propósito de los bits RWX en el C2 2016 (1.6).</p>
 <p>En una arquitectura de 64 bits, la dirección segmentada usa <b>S bits</b> para el número de segmento y los <b>K = 64 − S</b> restantes para el offset.</p>
 <div class="addr"><div class="a1" style="flex:1">Segmento<small>S bits</small></div><div class="a2" style="flex:3">Offset<small>K = 64 − S bits</small></div></div>
 <p>Con S bits el proceso puede tener hasta 2<sup>S</sup> segmentos, y cada uno puede medir hasta 2<sup>64−S</sup> bytes. Antes de dejar pasar el acceso, la MMU hace cuatro preguntas, en orden:</p>
@@ -604,9 +665,9 @@
 <p>“En segmentación paginada, ¿cuándo ocurre el error SEGMENTATION VIOLATION?” Cuando el proceso usa una dirección (s, d) cuyo segmento <b>no existe en su tabla de segmentos</b>, o cuyo offset d <b>sale del límite</b> (tamaño) del segmento. No se confunde con el page fault (la página existe pero no está en memoria: se carga y se sigue) ni con el permission denied (la operación no está permitida por los derechos).</p></div>
 </section>
 
-<section id="problemas-seg" data-nav="Problemas de la segmentación sola" data-p="2">
+<section id="problemas-seg" data-nav="Problemas de la segmentación sola" data-p="3">
 <h2>Los problemas de la segmentación sola</h2>
-<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Justifica la paginación y la segmentación paginada; es una buena pregunta de “¿por qué?”.</p>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> “¿Puede un segmento ser más grande que la RAM?” fue la 1.5 del C2 2016, y “¿por qué la segmentación produce fragmentación externa?”, la 1.2.</p>
 <p>Con espacios de trabajo grandes (lámina 21):</p>
 <ul>
   <li><b>Varios segmentos grandes</b>: la asignación de memoria es difícil, porque hay que buscar un espacio contiguo grande. Es el problema de la memoria lineal otra vez, ahora por segmento: fragmentación externa y FIRST/BEST/WORST FIT.</li>
@@ -711,6 +772,27 @@
 </div></div>
 </details>
 
+<details class="ex" id="ex2016s" data-nav="C2 2016 · conocimiento">
+<summary>Certamen 2 2016-1 · las siete preguntas de conocimiento (casi todas de segmentación) <span class="tag">28 pts · 4 por pregunta · sin pauta</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div>
+<p><b>1.1</b> En segmentación, ¿qué informaciones maneja el sistema operativo para definir un segmento? <b>1.2</b> ¿Por qué la segmentación produce fragmentación externa? <b>1.3</b> En la dirección paginada (page, offset), ¿qué representa el offset? <b>1.4</b> ¿Para qué sirve el bit V en la tabla de segmentos? <b>1.5</b> En segmentación, ¿puede un segmento ser más grande que la memoria RAM? <b>1.6</b> Explicar el propósito de los bits RWX en la tabla de segmentos. <b>1.7</b> ¿Cuándo ocurre el error Segmentation Violation?</p></div>
+<div class="sol">
+<div class="st">1.1</div><p>La <b>BASE</b> (dirección donde empieza en la RAM) y el <b>LÍMITE</b> (su tamaño), en la tabla global junto con los bits V, U y D; y en la tabla de cada proceso, a qué segmento global corresponde y con qué <b>derechos</b> R, W, X.</p>
+<div class="st">1.2</div><p>Porque los segmentos tienen <b>tamaños variables</b> y cada uno necesita una zona <b>contigua</b> de RAM. Al cargarse y liberarse, van quedando huecos entre ellos que pueden ser demasiado chicos para el siguiente segmento: el mismo problema de las particiones dinámicas.</p>
+<div class="st">1.3</div><p>El desplazamiento dentro de la página: la posición del byte desde el comienzo de la página (los K bits bajos de la dirección, con páginas de 2<sup>K</sup> bytes). Es igual en la dirección virtual y en la física.</p>
+<div class="st">1.4</div><p>Indica si el segmento está cargado en memoria (V = 1) o si existe pero está en el disco (V = 0). La MMU lo revisa en cada acceso; si vale 0 genera un segment fault y el sistema lo carga.</p>
+<div class="st">1.5</div><p><b>No.</b> Con segmentación sola, un segmento se carga entero en una zona contigua, así que no puede medir más que la RAM disponible. Es uno de los problemas que resuelve la paginación (lámina 21).</p>
+<div class="st">1.6</div><p>Son los derechos de acceso de cada proceso al segmento (leer, escribir, ejecutar): protegen el código contra escrituras, impiden ejecutar datos y permiten compartir un segmento con permisos distintos. La MMU los verifica en cada acceso; si la operación no está permitida, TRAP (permission denied).</p>
+<div class="st">1.7</div><p>Cuando el proceso usa un segmento que no está en su tabla, o un offset que no es menor que el límite del segmento.</p>
+</div>
+<div class="sol">
+<div class="st">Dos preguntas parecidas de otros años</div>
+<p><b>C2 2015 · 1.1</b> “En memoria segmentada, ¿cómo se representa una dirección?” → Como un par (segmento, offset): el número de segmento (S bits) indexa la tabla de segmentos y el offset (los bits restantes) es el desplazamiento dentro del segmento; la MMU calcula BASE + offset si offset &lt; LÍMITE.</p>
+<p><b>C2 2014 · 1.3</b> “Definir fragmentación externa en segmentación. ¿Cómo se soluciona sin usar paginación? ¿Es factible con una memoria grande?” → Son los huecos entre segmentos demasiado chicos para un segmento nuevo. Sin paginación, la solución es <b>compactar</b> la memoria (mover los segmentos y actualizar sus BASE). Con una memoria grande no es factible: cuesta unos 107 segundos por GB con accesos de 50 ns.</p>
+</div></div>
+</details>
+
 <section id="t2-preguntas" data-nav="Preguntas del tema">
 <h2>Preguntas del tema</h2>
 <p class="lead">Tapa la respuesta y contesta en voz alta.</p>
@@ -762,7 +844,7 @@
     lastBest=best;
   }
   window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
-  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k], .ej input[data-k]'));
   function upd(){
     var done=boxes.filter(function(b){return b.checked;}).length;
     document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });

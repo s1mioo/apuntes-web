@@ -302,10 +302,69 @@
   table.rp td.n{color:var(--ink);font-weight:700}
   table.rp th.rh{text-align:right;color:var(--muted);background:var(--panel)}
   .tw table.rp{min-width:0}
+  table.pila tr.pl td{border-left:2px solid var(--line);border-right:2px solid var(--line)}
+  table.wsv td{vertical-align:middle}
+  table.wsv b.pfx{color:var(--warn);background:var(--warn-soft);padding:0 4px;border-radius:4px}
   .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.93em}
   .q{font-weight:600}
   .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:14px 0}
   .tiny{font-size:12.5px;color:var(--muted)}
+  /* --- página 7: flashcards --- */
+  [hidden]{display:none!important}
+  .fc-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 14px;margin:14px 0;box-shadow:var(--shadow)}
+  .fc-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .fc-row:last-child{border-bottom:0}
+  .fc-lab{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);min-width:62px}
+  .fc-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 300px}
+  .fc-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;
+    font-size:13.5px;cursor:pointer;background:var(--bg);color:var(--ink);user-select:none}
+  .fc-chip input{accent-color:var(--brand);margin:0}
+  .fc-chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
+  .fc-chip small{color:var(--muted);font-weight:400}
+  .fc-status{font-size:13px;color:var(--muted);margin:10px 2px 6px;min-height:1.3em}
+  .fc-card{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--brand);border-radius:14px;padding:18px 20px;
+    min-height:230px;box-shadow:var(--shadow);cursor:pointer;outline:none;display:flex;flex-direction:column;gap:12px}
+  .fc-card:focus-visible{box-shadow:0 0 0 3px var(--brand-soft),var(--shadow)}
+  .fc-card.flipped{border-left-color:var(--accent);cursor:default}
+  .fc-card.fc-vacio{cursor:default;border-left-color:var(--line)}
+  .fc-meta{display:flex;flex-wrap:wrap;gap:6px}
+  .fc-tag{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .fc-tag.fc-salio{color:var(--no);border-color:var(--no);background:var(--no-soft);font-weight:700}
+  .fc-front{font-size:19px;font-weight:700;line-height:1.45;color:var(--ink)}
+  .fc-hint{font-size:14.5px;color:var(--warn);background:var(--warn-soft);border-radius:8px;padding:8px 12px}
+  .fc-back{border-top:1px dashed var(--line);padding-top:12px;font-size:16px;line-height:1.65}
+  .fc-back b{color:var(--accent)}
+  .fc-src{font-size:12.8px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .fc-src b{color:var(--muted)}
+  .fc-tap{font-size:12.5px;color:var(--muted);margin-top:auto}
+  .fc-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .fc-actions .btn{flex:1 1 150px;padding:11px 12px;font-size:14.5px;font-weight:600;text-align:center}
+  .fc-actions .btn:disabled{opacity:.45;cursor:default}
+  .fc-main{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+  .fc-no{border-color:var(--no);color:var(--no);background:var(--no-soft)}
+  .fc-mid{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+  .fc-yes{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .fc-end{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0;box-shadow:var(--shadow)}
+  .fc-score{font-size:26px;font-weight:800;color:var(--brand)}
+  .fc-end ul{margin:6px 0 10px}
+  table.mini tr.fc-tot td{font-weight:700}
+  details.fc-item .body b{color:var(--accent)}
+  h3 .num{color:var(--muted);font-weight:400;font-size:.8em}
+  /* --- página 6: tarjetas de ejercicio --- */
+  .ej{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:10px;
+    padding:12px 16px 2px;margin:18px 0;box-shadow:var(--shadow)}
+  .ej.p3{border-left-color:var(--accent)} .ej.p1{border-left-color:var(--line)}
+  .ej-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:6px}
+  .ej-h input{transform:scale(1.25);accent-color:var(--brand);flex:0 0 auto;margin:0 2px 0 0}
+  .ej-n{color:var(--brand);font-weight:800;font-variant-numeric:tabular-nums}
+  .ej-t{font-weight:700;font-size:16px;flex:1 1 220px;min-width:0}
+  .ej-h.done .ej-t{text-decoration:line-through;color:var(--muted)}
+  .ej-tag{font-size:12px;color:var(--muted);white-space:nowrap}
+  .ej .meta{background:var(--code);border-radius:8px;padding:8px 12px;margin:10px 0;font-size:14px}
+  .ej .meta p{margin:3px 0}
+  .ej details.ex{margin:10px 0 14px;box-shadow:none}
+  .ej .st{font-weight:700;color:var(--accent);font-size:13.5px;margin:16px 0 4px}
+  .ej pre{white-space:pre;overflow-x:auto}
   @media (max-width:900px){
     .layout{align-items:stretch}
     .content{width:100%;max-width:100%}
@@ -320,12 +379,12 @@
     <div class="dot">T3</div>
     <div><h1>Paginación</h1><small>Sistemas Operativos · INF-246 · Certamen 2</small></div>
   </div>
-  <div class="pages"><a href="0-Guia-de-estudio-C2.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html" class="cur"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, reloj · por confirmar</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a></div>
+  <div class="pages"><a href="0-Guia-de-estudio-C2.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html" class="cur"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, Working Set</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a><a href="6-Lista-de-estudio.html"><b>6</b><span>Lista de estudio<br><small style="color:var(--muted)">día a día desde hoy, con explicaciones</small></span></a><a href="7-Flashcards.html"><b>7</b><span>Flashcards<br><small style="color:var(--muted)">conceptos al azar, con cajas de repaso</small></span></a></div>
   <div class="toolbar">
     <button class="btn" id="theme">Claro / oscuro</button>
     <button class="btn" id="expand">Abrir todo</button>
   </div>
-  <nav id="nav"><div class="grp">Tema 3</div><a href="#t3-inicio"><span class="nt">Qué pesa y qué estudiar</span></a><a href="#principio"><span class="nt">Páginas y marcos</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#tabla-pag"><span class="nt">La tabla de páginas y sus bits</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#traduccion"><span class="nt">Traducir: marco × 2^K + offset</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#control"><span class="nt">Los tres controles y sus errores</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#page-fault"><span class="nt">El page fault paso a paso</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#demanda"><span class="nt">On demand paging</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#costo-pf"><span class="nt">Bajar el costo de los page faults</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#thrashing"><span class="nt">Reemplazo y thrashing</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#ubicacion"><span class="nt">¿Dónde se guarda la tabla?</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#tipos"><span class="nt">Los tipos de tabla, comparados</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#tamano-pag"><span class="nt">Tamaño de página</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#indexada"><span class="nt">Tabla indexada</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#tlb"><span class="nt">La TLB (tabla asociativa)</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#jerarquica"><span class="nt">Tabla jerárquica</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#invertida"><span class="nt">Tabla invertida</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#segpag"><span class="nt">Segmentación paginada</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#tabla-mala"><span class="nt">Encontrar errores en una tabla</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><div class="grp">Práctica</div><a href="#t3-receta"><span class="nt">Receta: traducir y revisar tablas</span></a><a href="#t3-videos"><span class="nt">Videos del tema</span></a><a href="#ex2023v"><span class="nt">C2 2023 · sección 4 y 1.5-1.7</span></a><a href="#V1"><span class="nt">V1 · Traducir con la tabla de la lámina</span></a><a href="#V2"><span class="nt">V2 · Direcciones en decimal</span></a><a href="#V3"><span class="nt">V3 · Tamaño de las tablas</span></a><a href="#V4"><span class="nt">V4 · Partir una dirección en X, Y, Z</span></a><a href="#V5"><span class="nt">V5 · Buscar en la tabla invertida</span></a><a href="#V6"><span class="nt">V6 · Segmentación paginada con 16 KB</span></a><a href="#V7"><span class="nt">V7 · Otra tabla con errores</span></a><a href="#V8"><span class="nt">V8 · Tiempo efectivo con TLB</span></a><a href="#t3-preguntas"><span class="nt">Preguntas del tema</span></a></nav>
+  <nav id="nav"><div class="grp">Tema 3</div><a href="#t3-inicio"><span class="nt">Qué pesa y qué estudiar</span></a><a href="#principio"><span class="nt">Páginas y marcos</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#tabla-pag"><span class="nt">La tabla de páginas y sus bits</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#traduccion"><span class="nt">Traducir: marco × 2^K + offset</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#control"><span class="nt">Los tres controles y sus errores</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#page-fault"><span class="nt">El page fault paso a paso</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#demanda"><span class="nt">On demand paging</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#costo-pf"><span class="nt">Bajar el costo de los page faults</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#thrashing"><span class="nt">Reemplazo y thrashing</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#ubicacion"><span class="nt">¿Dónde se guarda la tabla?</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#tipos"><span class="nt">Los tipos de tabla, comparados</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#tamano-pag"><span class="nt">Tamaño de página</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#indexada"><span class="nt">Tabla indexada</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#cow"><span class="nt">El bit COW y el fork()</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#tlb"><span class="nt">La TLB (tabla asociativa)</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#jerarquica"><span class="nt">Tabla jerárquica</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#invertida"><span class="nt">Tabla invertida</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#segpag"><span class="nt">Segmentación paginada</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#tabla-mala"><span class="nt">Encontrar errores en una tabla</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><div class="grp">Práctica</div><a href="#t3-receta"><span class="nt">Receta: traducir y revisar tablas</span></a><a href="#t3-videos"><span class="nt">Videos del tema</span></a><a href="#ex2023v"><span class="nt">C2 2023 · sección 4 y 1.5-1.7</span></a><a href="#V1"><span class="nt">V1 · Traducir con la tabla de la lámina</span></a><a href="#V2"><span class="nt">V2 · Direcciones en decimal</span></a><a href="#V3"><span class="nt">V3 · Tamaño de las tablas</span></a><a href="#V4"><span class="nt">V4 · Partir una dirección en X, Y, Z</span></a><a href="#V5"><span class="nt">V5 · Buscar en la tabla invertida</span></a><a href="#V6"><span class="nt">V6 · Segmentación paginada con 16 KB</span></a><a href="#V7"><span class="nt">V7 · Otra tabla con errores</span></a><a href="#V8"><span class="nt">V8 · Tiempo efectivo con TLB</span></a><a href="#ex2016v"><span class="nt">C2 2016 · memoria virtual</span></a><a href="#ex2015v"><span class="nt">C2 2015 · memoria virtual</span></a><a href="#ex2014v"><span class="nt">C2 2014 · segmentación paginada</span></a><a href="#t3-preguntas"><span class="nt">Preguntas del tema</span></a></nav>
 </aside>
 <main class="content">
 
@@ -366,13 +425,15 @@
 <p>· Los <b>espacios de trabajo</b> se cortan en <b>páginas virtuales</b> del mismo tamaño.</p>
 <p>· Cada proceso tiene una <b>tabla de páginas</b> que dice a qué marco apunta cada una de sus páginas virtuales.</p>
 <p>· La asignación de marcos es <b>discontinua</b>: los marcos de un proceso no tienen que estar seguidos ni en el mismo orden.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · 100 páginas de un libro de 500<span class="ref">Audio 18 · 11:00 / 11:51</span></div>
+<p>Cuando la memoria se satura, la pregunta es si hay que sacar la tarea completa o se pueden sacar pedazos. Su analogía con la repisa: no hace falta sacar un libro entero para hacer espacio; puedo sacar 100 páginas de un libro de 500, o 2 o 3 páginas de uno, 10 de otro y 5 de otro. Eso es la paginación: el pedazo que entra y sale es la página, no la tarea.</p></div>
 <div class="box ana"><div class="bt">Analogía · el libro de hojas sueltas</div>
 <p>En vez de exigir un estante vacío del largo del libro entero (memoria lineal), arrancas las hojas y metes cada una en cualquier ranura libre del archivador. Un índice dice en qué ranura quedó cada hoja: esa es la tabla de páginas. Como todas las ranuras son del mismo tamaño, cualquier ranura libre sirve; por eso desaparece la fragmentación externa.</p></div>
 </section>
 
 <section id="tabla-pag" data-nav="La tabla de páginas y sus bits" data-p="3">
 <h2>La tabla de páginas por proceso y sus bits</h2>
-<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> El C2 2023 dio una tabla con este formato (V, U, D, COW, RWX, Frame) y pidió el rol de los bits y encontrar los errores.</p>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Tres de los cuatro C2 dieron una tabla de páginas con estos bits (2015, 2016 y 2023) y los cuatro preguntaron por U y D.</p>
 <div class="tw"><table class="pt">
 <thead><tr><th>Pág.</th><th>V<br><small>Valid</small></th><th>U<br><small>Used</small></th><th>D<br><small>Dirty</small></th><th>R<br><small>Refer</small></th><th>COW</th><th>R<br><small>Read</small></th><th>W<br><small>Write</small></th><th>X<br><small>eXec</small></th><th>Frame</th></tr></thead>
 <tbody>
@@ -396,11 +457,13 @@
 </tbody></table></div>
 <div class="box tip"><div class="bt">¿Para qué tener U y además R?</div>
 <p>U dice si la página se usó <b>desde que se cargó</b>. R se borra cada TICK, así que dice si se usó <b>hace poco</b>. Para elegir qué página descargar interesa más lo reciente: es la base de los algoritmos que aproximan LRU (página 4).</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · U = 0 con D = 1 no existe, y U = D = 0 “todavía” tampoco<span class="ref">Audio 20 · 23:26 / 23:46 / 25:00 / 25:22</span></div>
+<p>Preguntó cuál es la mejor página para sacar: la que tiene <b>U = 0 y D = 0</b> (no hay que escribirla y probablemente no es útil). Pero agregó que una página modificada y no usada es imposible: <i>“no puedo tener una página modificada sin uso”</i>. Y que con paginación a la demanda, U = D = 0 en una página cargada tampoco debería existir: la página se cargó porque alguien la pidió, así que justo después <i>“el bit U va a pasar de 0 a 1, mínimo”</i>. Ese caso aparece recién con los algoritmos de reemplazo, que resetean U para ver si la página sigue siendo útil. Entonces, hoy: la mejor víctima es una usada y no modificada; la peor, una usada y modificada.</p></div>
 </section>
 
 <section id="traduccion" data-nav="Traducir: marco × 2^K + offset" data-p="3">
 <h2>Traducir una dirección virtual</h2>
-<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer V1 y V2.</strong> No salió como cálculo en 2023, pero es el mecanismo que hay que explicar en cualquier pregunta de MMU o TLB, y el ejercicio numérico más natural del tema.</p>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer V1 y V2.</strong> El C2 2015 pidió cuántos bits son de página y cuántos de offset (32 bits, páginas de 8 KB) y el C2 2016 qué representa el offset. Es además el mecanismo de cualquier pregunta de MMU o TLB.</p>
 <div class="addr"><div class="a1" style="flex:3">Número de página virtual<small>P = 64 − K bits</small></div><div class="a2" style="flex:1">Offset<small>K bits</small></div></div>
 <p>Con páginas de 2<sup>K</sup> bytes, los K bits bajos de la dirección son el <b>offset</b> dentro de la página y el resto es el <b>número de página</b>. La MMU busca la página en la tabla, obtiene el marco i y calcula:</p>
 <div class="form"><b>@física = i × 2<sup>K</sup> + offset</b><span class="n">En decimal: página = ⌊d / 2<sup>K</sup>⌋ y offset = d mod 2<sup>K</sup>. En binario o hexadecimal es solo cortar la dirección y pegar el marco delante del offset.</span></div>
@@ -483,12 +546,14 @@
 <tr><td><b>Page fault</b></td><td>La página existe, pero V = 0</td><td>Le asigna un marco, la carga (swap-in) y hace un task switch mientras tanto</td></tr>
 <tr><td><b>Permission denied</b></td><td>La operación no está permitida por R, W o X</td><td>Error del proceso (salvo el caso de COW, ver abajo)</td></tr>
 </tbody></table></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · los tres casos, otra vez<span class="ref">Audio 20 · 08:04 / 08:22 / 08:52 / 09:10</span></div>
+<p>Repasó el diagrama: si la página no existe en la tabla (por ejemplo, la tabla va de 0 a 3 y se pide la 5), <i>“no está en el rango, memory violation”</i>; si existe pero V = 0, page fault; si existe, está cargada y no hay derecho de escritura, permission denied: <i>“un código no lo puedo modificar, o la biblioteca C, nadie la puede modificar”</i>.</p></div>
 <p class="tiny">El task switch durante el page fault es la Unidad 1 otra vez: cargar la página es una E/S de disco, así que la tarea pasa a <b>bloqueada</b> y el scheduler le da el procesador a otra. Cuando el disco termina, la tarea vuelve a lista.</p>
 </section>
 
 <section id="page-fault" data-nav="El page fault paso a paso" data-p="3">
 <h2>El page fault, paso a paso</h2>
-<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> “Definir la noción de Page Fault en gestión de memoria virtual paginada” fue la 1.5 del C2 2023.</p>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Salió en 2014 (1.6, y la 2.2 pidió los eventos del hardware y del SO paso a paso), 2016 (2.4, con la memoria saturada) y 2023 (1.5).</p>
 <p>Cuando la MMU accede a una página (lámina 27):</p>
 <ul>
   <li><b>HIT</b>: la página está en memoria, hay un marco asociado: acceso directo a la dirección final.</li>
@@ -501,19 +566,27 @@
 <div class="step">Carga la página desde el disco y actualiza la tabla: marco, V = 1, U = 0, D = 0. Mientras tanto, el proceso está bloqueado y otro usa la CPU.</div>
 <div class="step">Cuando el proceso recupera el procesador, <b>reejecuta la instrucción</b> que falló, y ahora es un HIT.</div>
 </div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · medio quantum esperando el disco<span class="ref">Audio 20 · 09:49 / 10:16 / 10:32 / 11:00</span></div>
+<p>Cargar la página exige leer el disco duro: <i>“en un disco duro moderno va a ser de 8 a 15 milisegundos, o más”</i>, a veces 20 según la cola del controlador; o sea, medio quantum o más. Esperar sin hacer nada desperdiciaría el procesador, así que el sistema hace un <b>task switch</b> y ejecuta otra tarea. Cuando termina la carga, la tarea pasa de bloqueada a lista y, al volver a ejecutarse, accede otra vez a la misma página <i>“porque estamos en la misma instrucción”</i>, y ahora la encuentra.</p></div>
 <div class="box warn"><div class="bt">Respuesta modelo para “definir page fault”</div>
 <p>Un page fault es la interrupción (TRAP) que genera la MMU cuando un proceso accede a una página virtual de su espacio de trabajo que <b>no está presente en memoria</b> (bit V = 0). El sistema verifica que la página sea válida, le asigna un marco (descargando otra página si no hay marcos libres), la carga desde el disco y actualiza la tabla de páginas; el proceso queda bloqueado mientras tanto y después reejecuta la instrucción. No es un error del programa: es el mecanismo normal de la paginación bajo demanda.</p></div>
 </section>
 
 <section id="demanda" data-nav="On demand paging" data-p="3">
 <h2>On demand paging: cargar solo lo útil</h2>
-<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> “¿Por qué la gestión de memoria paginada mejora bastante el desempeño del swapping?” fue la 1.7 del C2 2023.</p>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> “¿Por qué la paginación mejora el swapping?” fue la 1.7 del C2 2023, y “¿por qué no hay fragmentación externa y sí interna?”, la 1.3 del C2 2015.</p>
 <p>El sistema carga <b>solo las páginas útiles</b> de los procesos, en el momento en que ocurre un page fault (<i>on demand paging</i>), porque no todas las páginas van a tener acceso. Cuando falta memoria, descarga las páginas inútiles (swap-out de páginas), eligiendo las menos útiles con los bits U y D. Es <b>menos costoso</b> que descargar el proceso completo o un segmento.</p>
 <p>El espacio de trabajo pasa a ser un conjunto de páginas, mapeadas a un marco cuando V = 1. La <b>granularidad es más fina</b>, así que:</p>
 <ul>
   <li>La asignación de memoria es <b>más fácil</b>: cualquier marco libre sirve.</li>
   <li><b>No hay fragmentación externa.</b> (Sí queda una fragmentación interna pequeña: la última página de cada zona casi nunca se llena.)</li>
 </ul>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · la matriz y el malloc<span class="ref">Audio 20 · 12:06 / 13:03 / 13:53</span></div>
+<p>Dos ejemplos de páginas que no hace falta cargar. Al multiplicar dos matrices, el código que escribe C en el archivo solo sirve al final: si está en otra página, se queda en el disco hasta que se llama. Y si se hace un malloc de millones de datos y se llena solo la mitad del arreglo (una distribución gaussiana), las páginas del principio y del final nunca se acceden: <i>“¿necesito realmente asignar físicamente esa página? No”</i>.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · ¿un malloc de 7 GB con 6 GB libres?<span class="ref">Audio 20 · 14:40 / 15:00 / 16:56 / 17:02</span></div>
+<p>Con 8 GB de RAM y 6 libres, ¿se puede pedir 7 GB? <i>“Sí y no”</i>: no caben los 7 GB a la vez en la RAM, pero sí hasta 6, y el giga que falta queda en la zona de swap del disco. La memoria disponible para las tareas es la RAM libre más la zona de swap: con 1 TB de swap y 8 GB de RAM, la memoria virtual es 1 TB + 8 GB. Por eso <i>“tiene que tener una zona de swap; si no tengo swap, ahí tengo un problema”</i>. Si se pasa mucho de la RAM, el acceso a esos datos se vuelve lentísimo por las idas y vueltas con el disco (es la 2.7 y 2.8 del C2 2015).</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · fragmentación interna: como mucho 2^K − 1<span class="ref">Audio 20 · 19:37 / 19:52 / 20:09</span></div>
+<p>Con páginas se elimina la fragmentación externa, pero la interna queda <i>“sí o sí”</i>. Está acotada: el peor caso es que la última página use un solo byte, y se pierden <b>2<sup>K</sup> − 1 bytes</b>; con páginas de 4 KB, 4 095 bytes como máximo.</p></div>
 <div class="box warn"><div class="bt">Cómo responder la 1.7 del C2 2023</div>
 <p>Porque el swapping deja de ser de procesos completos y pasa a ser <b>por páginas</b> de pocos KB: solo se descargan las páginas poco usadas (bit U) y solo se escriben en disco las modificadas (bit D = 1); al volver, solo se cargan las páginas que se necesitan, cuando se necesitan. Además, la página puede volver a <b>cualquier marco libre</b>: no hay que buscar una zona contigua, ni compactar, ni retraducir las direcciones del programa (basta actualizar la tabla). Y el proceso puede seguir ejecutándose con solo una parte de sus páginas en memoria.</p></div>
 </section>
@@ -527,15 +600,19 @@
   <li><b>Con el bit U</b>: si una página no se usa durante un periodo, el sistema la puede descargar <b>de forma preventiva</b> para tener espacio listo.</li>
   <li><b>Compartiendo marcos</b>: varias páginas virtuales (de distintos procesos) pueden apuntar al mismo marco. Es un nivel más fino que compartir segmentos.</li>
 </ul>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · la biblioteca C, una sola vez<span class="ref">Audio 20 · 03:06 / 03:27 / 03:33</span></div>
+<p>Cada proceso tiene en su tabla unas páginas que apuntan a los mismos marcos donde está la biblioteca C, así que <i>“la biblioteca C la tengo físicamente una sola vez”</i>. Los números de página virtual pueden ser distintos: en una tarea las páginas 1 a 10, en otra las 100 a 110, apuntando a los mismos marcos.</p></div>
 </section>
 
-<section id="thrashing" data-nav="Reemplazo y thrashing" data-p="2">
+<section id="thrashing" data-nav="Reemplazo y thrashing" data-p="3">
 <h2>Reemplazo de páginas y thrashing</h2>
-<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Lo que dice esta lámina sí entra; los algoritmos con detalle están en la <a class="inl" href="4-Reemplazo-de-paginas.html">página 4</a>, que depende de si el profe alcanzó a pasarlos.</p>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Lo de esta lámina entra; el C2 2016 preguntó por el peor escenario de un algoritmo de reemplazo y el “efecto bola de nieve” (3.5). Los algoritmos están en la <a class="inl" href="4-Reemplazo-de-paginas.html">página 4</a>.</p>
 <p>Cuando hay un page fault, el sistema mantiene una <b>lista de marcos libres</b>. Si no queda ninguno, tiene que <b>elegir una página para descargarla</b>. Una mala elección cuesta caro: si justo después hay un page fault con la misma página que se acaba de descargar, se hizo el trabajo dos veces.</p>
 <div class="box def"><div class="bt">Thrashing (hiperpaginación)</div>
 <p>El estado en que el sistema <b>siempre</b> produce un page fault con la página que acaba de descargar. El sistema se vuelve rápidamente ineficiente (pasa el tiempo moviendo páginas en vez de ejecutar) y <b>puede colapsar</b>.</p></div>
 <p><b>Conclusión de la lámina:</b> el sistema necesita un buen algoritmo para elegir qué página descargar, y hay que <b>limitar la frecuencia de page faults</b>.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · swap out y swap in de la misma página<span class="ref">Audio 20 · 26:38 / 28:09 / 28:20 / 29:21</span></div>
+<p>Una mala elección: se saca una página de T1 (y se escribe, si fue modificada), se le da el marco a T2, y cuando T1 vuelve a ejecutarse pide justo esa página. <i>“En menos de dos quantum de tiempo tuvimos que hacer un swap out y un swap in de la misma página”</i>. Si eso pasa en cascada, <i>“como una bola de nieve”</i>, es el thrashing: el procesador pasa el tiempo haciendo E/S con el disco, y en el caso extremo ninguna tarea tiene sus páginas en memoria y el sistema colapsa. Conclusión: evitar la saturación y, si ocurre, elegir bien la víctima.</p></div>
 </section>
 
 <section id="ubicacion" data-nav="¿Dónde se guarda la tabla?" data-p="2">
@@ -548,6 +625,10 @@
 <div class="card"><h5>Compromiso: la TLB</h5><p>Una memoria especial muy rápida, que guarda solo una parte de la tabla.</p></div>
 </div>
 <p>El problema de fondo es la <b>búsqueda rápida del marco</b>, y la latencia de acceso depende del tipo de tabla.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · 81 nanosegundos contra 42<span class="ref">Audio 20 · 32:51 / 33:42 / 40:47 / 41:30</span></div>
+<p>En registros es imposible (demasiado costoso). En la RAM es demasiado lento: 40 ns para leer la tabla, 1 ns de cálculo y verificación de derechos, y 40 ns del acceso final: <i>“pasamos de un acceso a una RAM sin memoria virtual de 40 nanosegundos a 81”</i>, más del doble en cada acceso. Con la tabla en una memoria de la MMU de menos de 1 ns queda 1 + 1 + 40 = <b>42 ns</b>: <i>“perdimos un poco, pero comparado a todas las ganancias que tenemos por la paginación, vale la pena pagar ese costo”</i>. El problema: esa memoria cuesta 20 o 30 veces más que una RAM normal.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · 40 nanosegundos contra 1<span class="ref">Audio 18 · 09:00 / 09:50 / 10:30</span></div>
+<p>La memoria virtual necesita un hardware que antes no existía: un circuito que calcula y una <b>memoria ultrarrápida</b>. Una RAM actual tarda entre 30 y 40 nanosegundos; la memoria que acompaña a la MMU, alrededor de <b>1 nanosegundo</b>, 30 a 40 veces más rápida, pero mucho más cara: nadie pagaría un PC con gigabytes de esa memoria. Por eso la TLB es chica y funciona como cache.</p></div>
 </section>
 
 <section id="tipos" data-nav="Los tipos de tabla, comparados" data-p="3">
@@ -562,11 +643,13 @@
 <tr><td><b>Jerárquica</b></td><td>Varios índices (X, Y, Z)</td><td>Solo las subtablas que se usan</td><td>Proceso</td><td>La primaria siempre cargada; el resto, a la demanda</td><td>Varios accesos por traducción; table fault</td></tr>
 <tr><td><b>Invertida</b></td><td>Número de marco</td><td>Todas las páginas de los procesos cargados en memoria</td><td>Sistema (una sola)</td><td>Tamaño fijo, no crece con los procesos; bien adaptada a la memoria real</td><td>Hay que buscar (PID, p): no hay acceso directo</td></tr>
 </tbody></table></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · la que se usa hoy<span class="ref">Audio 21 · 23:55 / 24:13</span></div>
+<p><i>“¿Cuál se usa actualmente? En todos, todos los PC, y los celulares van a tener todos la tabla con TLB, la asociativa”</i>, con función de hash: <i>“es la que se usa en todos los hardware actuales, porque es la más rápida de todas”</i>. La jerárquica y la invertida quedaron como soluciones de cuando la RAM era chica.</p></div>
 </section>
 
 <section id="tamano-pag" data-nav="Tamaño de página" data-p="3">
 <h2>¿Páginas chicas o grandes?</h2>
-<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Fue la 4.1 del C2 2023, y la misma idea con bloques salió en 2015.</p>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Fue la 4.1 del C2 2023 y la 2.1 del C2 2014 (con marcos de 64 KB: impacto en la gestión y en las estructuras de datos); la misma idea con bloques salió en el C1 2015.</p>
 <p>La lámina 34 dice que hay que buscar un <b>compromiso</b> entre páginas <b>pequeñas</b>, para limitar la fragmentación, y páginas <b>grandes</b>, para limitar el costo de los accesos al disco. En la mayoría de los procesadores el tamaño es fijo; algunos (Intel, AMD) permiten elegir entre varios tamaños según el tamaño del espacio de direccionamiento. Y aparece otro problema: el <b>volumen de la tabla</b> en registros o caches, que se resuelve con tablas parcialmente cargadas o jerárquicas.</p>
 <div class="two">
 <div class="card"><h5>Páginas pequeñas</h5>
@@ -584,18 +667,36 @@
 
 <section id="indexada" data-nav="Tabla indexada" data-p="2">
 <h2>La tabla indexada</h2>
-<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Es la tabla de los ejercicios; lo nuevo acá es el descriptor y lo del COW.</p>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Es la tabla de los ejercicios. El COW salió en dos C2: 2014 (2.3, su objetivo) y 2015 (2.6, su rol en Linux).</p>
 <p>El <b>descriptor</b> de cada página virtual contiene (lámina 35): el marco en memoria, el bit P de presencia (el mismo V), el bit D, el bit U, el bit COW (opcional) y los derechos R, W, X. La dirección virtual es <b>@v = (page, offset)</b>, y la MMU llega <b>directo</b> al descriptor con tabla[page]. La MMU modifica U y D según los accesos.</p>
 <div class="box tip"><div class="bt">“COW opcional: se puede simular con el derecho Read”</div>
 <p>Si el hardware no tiene bit COW, el sistema marca la página compartida como <b>solo lectura</b>. La primera escritura produce un TRAP (permission denied); el sistema ve que en realidad es una página COW, hace la copia, le da W = 1 a la copia y la instrucción se reintenta. Es un permission denied que no termina el proceso.</p></div>
 <p>Su problema: tiene una entrada por <b>cada página virtual posible</b>, se use o no. Con direcciones de 64 bits y páginas de 16 KB serían 2<sup>50</sup> entradas por proceso: imposible. Eso lleva a la tabla jerárquica y a la invertida.</p>
 </section>
 
+<section id="cow" data-nav="El bit COW y el fork()" data-p="2">
+<h2>El bit COW y el <code>fork()</code></h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Salió en dos C2: 2014 (2.3, “explicar el objetivo del bit COW”) y 2015 (2.6, “su rol en Linux y en qué caso se usa”), y aparece en las tablas de 2015 y 2023.</p>
+<p>El <code>fork()</code> crea un proceso hijo que es una copia del padre. Copiar todas sus páginas sería lento y muchas veces inútil (el hijo suele hacer un <code>exec()</code> enseguida). Con <b>Copy On Write</b>:</p>
+<div class="steps">
+<div class="step">Al hacer el <code>fork()</code>, la tabla del hijo apunta a los <b>mismos marcos</b> que la del padre, y esas páginas quedan con COW = 1 (y sin permiso de escritura).</div>
+<div class="step">Mientras los dos solo leen, comparten los marcos: no se copió nada.</div>
+<div class="step">Cuando uno escribe por primera vez en una página COW, la MMU genera un TRAP; el sistema copia esa página en un marco nuevo, se la da al proceso que escribió (con W = 1 y COW = 0) y la instrucción se reintenta.</div>
+</div>
+<p>Así el <code>fork()</code> es rápido y solo se copian las páginas que de verdad se modifican. La lámina deja el detalle para el capítulo de procesos Linux/Unix (Unidad 3), pero el bit está en la tabla de páginas de este capítulo.</p>
+</section>
+
 <section id="tlb" data-nav="La TLB (tabla asociativa)" data-p="3">
 <h2>La TLB: tabla de páginas asociativa</h2>
-<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> “Explicar el funcionamiento del Translation Lookaside Buffer (TLB) de la MMU para las tablas de memoria indexadas” fue la 4.4 del C2 2023.</p>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Fue la 4.4 del C2 2023 (“para las tablas de memoria indexadas”) y la 1.5 del C2 2015.</p>
 <div class="box def"><div class="bt">TLB · Translation Lookaside Buffer (lámina 37)</div>
 <p>Una <b>memoria asociativa muy rápida</b> que permite encontrar el descriptor de una página a partir de su número p, <b>sea cual sea su ubicación</b> en la tabla, usando funciones de hash. Tiempo de acceso del orden de <b>1 ns</b>. Su costo de fabricación es alto (más que un cache), así que <b>no puede ser muy grande</b> ni contener toda la tabla: se usa <b>como un cache</b>, administrado con <b>LRU</b> (Least Recently Used).</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · no cabe toda la tabla: solo las líneas más usadas<span class="ref">Audio 21 · 00:50 / 01:40 / 02:29</span></div>
+<p>La memoria rápida del procesador es de algunos megabytes (los procesadores de alta gama llegan a 512 MB), y la tabla de un proceso grande no cabe. Una opción sería guardar, por ejemplo, la primera mitad de la tabla y confiar en la suerte: <i>“es una opción fácil, pero no es una buena opción, porque no tengo ni idea de cómo se van a repartir los accesos”</i>. Lo mejor es mantener <b>algunas líneas</b> de la tabla: <i>“las que más vamos a usar en la práctica”</i>. Esa es la TLB.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · la tabla hash de Estructuras de Datos<span class="ref">Audio 21 · 03:07 / 05:28 / 07:02 / 09:05</span></div>
+<p>Lo explicó con la tabla hash que vieron en Estructuras de Datos (sumar las letras del apellido y aplicar módulo 10). La MMU aplica una función de hash al número de página (él usó módulo 10 de ejemplo) y llega a una línea de la TLB, que tiene el número de página p, los bits V, U, D y el marco. Si el p guardado es el buscado, es un <b>HIT</b>. Si no (las páginas 5, 15 y 25 caen en la misma línea), es un <b>MISS</b>: se lee la tabla en la RAM y se copia la línea en la TLB, reemplazando la que estaba. Una TLB más grande (más líneas en el módulo) tiene menos choques.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · 42 contra 83 nanosegundos<span class="ref">Audio 21 · 07:38 / 10:11 / 10:33 / 11:54</span></div>
+<p>Un HIT cuesta 1 ns de la TLB, 1 de cálculo y 40 del acceso final: <b>42 ns</b>. Un MISS cuesta el intento fallido, 40 ns para leer la tabla en la RAM, 1 para copiar la línea y 40 del acceso final: <b>83 ns</b>, <i>“más el doble”</i>. Pero vale la pena por la localidad: si un ciclo tiene todas sus instrucciones en la misma página, se pagan 83 ns la primera vez y 42 en los millones de accesos siguientes. Y un MISS no cambia lo demás: si la página tiene V = 0, sigue siendo un page fault.</p></div>
 <figure>
 <div class="fig-scroll">
 <svg viewBox="0 0 780 340" width="780" role="img" aria-label="TLB: hit va directo al chequeo de permisos; miss consulta la tabla indexada, que da memory fault, page fault o carga la entrada en la TLB">
@@ -638,8 +739,8 @@
 <div class="box warn"><div class="bt">Respuesta modelo para la 4.4 del C2 2023</div>
 <p>La TLB es una memoria asociativa muy rápida (≈ 1 ns) dentro de la MMU que guarda los descriptores de las páginas usadas más recientemente. En cada acceso, la MMU busca el número de página en la TLB (por hash, en paralelo sobre todas sus entradas). Si está (<b>HIT</b>), obtiene el marco y los derechos sin consultar la tabla indexada, que está en la RAM. Si no está (<b>MISS</b>), consulta la tabla indexada: si la página no existe, <b>memory fault</b>; si existe pero no está cargada, <b>page fault</b>; si está cargada, su descriptor se copia a la TLB reemplazando la entrada usada hace más tiempo (<b>LRU</b>) y se verifican los permisos. Como es cara, la TLB es pequeña y funciona como un cache: gracias a la localidad, la gran mayoría de los accesos son HIT.</p></div>
 <div class="box tip"><div class="bt">Si preguntan por el cambio de proceso</div><p>Las entradas de la TLB son del proceso que se estaba ejecutando. En cada conmutación hay que invalidarlas (o etiquetarlas con el PID), y el proceso nuevo parte con varios MISS. Es parte del “hay que cambiar de tabla a cada conmutación” que la lámina 41 le reprocha a las tablas por proceso.</p></div>
-<h4>Tiempo efectivo de acceso <span class="lv p1">Probabilidad baja</span></h4>
-<p>No está en las láminas, pero es el cálculo clásico del Silberschatz (§9.3.2). Con la tabla indexada en RAM, un HIT cuesta la TLB más un acceso; un MISS, la TLB más dos accesos (tabla y dato):</p>
+<h4>Tiempo efectivo de acceso <span class="lv p2">Probabilidad media</span></h4>
+<p>No está en las láminas, pero el profe dio los números en clase (HIT 42 ns, MISS 83 ns). Con ellos y 90 % de HIT: 0,9 × 42 + 0,1 × 83 = <b>46,1 ns</b>, contra 81 ns sin TLB. Es el cálculo clásico del Silberschatz (§9.3.2). Con la tabla indexada en RAM, un HIT cuesta la TLB más un acceso; un MISS, la TLB más dos accesos (tabla y dato):</p>
 <div class="form"><b>TEA = h × (t<sub>TLB</sub> + t<sub>mem</sub>) + (1 − h) × (t<sub>TLB</sub> + 2 t<sub>mem</sub>)</b><span class="n">Con t<sub>mem</sub> = 50 ns, t<sub>TLB</sub> = 1 ns y h = 90 %: 0,9 × 51 + 0,1 × 101 = 56 ns, contra 100 ns sin TLB.</span></div>
 </section>
 
@@ -687,6 +788,8 @@
 <figcaption>Redibujado de la lámina 40. Las flechas punteadas son punteros a la tabla del nivel siguiente.</figcaption>
 </figure>
 <p><b>Ventajas (lámina 41):</b> la tabla primaria está siempre cargada; las secundarias y terciarias no están todas cargadas. Durante la búsqueda puede ocurrir un <b>table fault</b> (falta una de esas tablas): el sistema carga la tabla que falta y actualiza las tablas.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · “nadie la usa ahora”<span class="ref">Audio 21 · 15:54 / 18:02 / 18:29 / 22:02</span></div>
+<p><i>“Se usaron en los antiguos, pero, le digo francamente, nadie la usa ahora”</i>: servía cuando la RAM era chica. No es más rápida que la indexada (hay que leer la tabla antes del dato), pero permite tener cargada solo una parte: mientras el programa se queda en la misma página, solo necesita las tres tablas de su camino (X, Y, Z), y el resto puede estar en el disco. El costo: si falta una tabla hay un <b>table fault</b>, además del page fault, <i>“por eso no es muy eficiente, y cuesta mucho”</i>.</p></div>
 <div class="box warn"><div class="bt">El problema que le queda a todas estas tablas (lámina 41)</div>
 <p>Cada proceso tiene <b>su propia</b> tabla de páginas: el volumen de las tablas <b>crece con el número de procesos</b>, y hay que <b>cambiar de tabla en cada conmutación</b> de proceso. Solución: la tabla invertida.</p></div>
 </section>
@@ -730,11 +833,15 @@
 <figcaption>Redibujado de la lámina 43. La posición c donde se encontró el par (PID, p) es el número de marco.</figcaption>
 </figure>
 <p><b>Por qué conviene:</b> su tamaño depende de la RAM y no del número de procesos (con 16 GB y marcos de 16 KB son 2<sup>20</sup> entradas para todo el sistema), y no hay que cambiar de tabla en cada conmutación. <b>Su costo:</b> como está ordenada por marco, para encontrar (PID, p) hay que buscar; en la práctica se usa un hash y la TLB delante.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · al revés: se busca (PID, p)<span class="ref">Audio 21 · 22:24 / 23:01 / 23:34</span></div>
+<p>En la invertida la entrada es el número de marco, no el de página: la tabla tiene una línea por cada marco de la RAM, y hay que buscar dónde está la dupla (PID, p) para saber el marco. <i>“La única ventaja que tiene es que es de tamaño fijo”</i>: una sola tabla para todo el sistema, que nunca cambia de tamaño. La implementó IBM hace tiempo (en el audio 20 dijo que la usaban los PowerPC); hoy casi no se usa.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · “ningún procesador del mercado la usa”<span class="ref">Audio 22 · 03:32 / 06:23 / 07:00 / 07:35</span></div>
+<p>La idea de IBM fue resolver que todas las tablas anteriores <b>crecen</b> con la aplicación (cada malloc agrega páginas virtuales). Con la invertida hay una sola tabla, del tamaño de la RAM. Pero eso puede ser ventaja o desventaja: <i>“si tenemos solamente 3 procesos en el sistema, que ocupan cada uno 10 páginas virtuales”</i>, igual hay una tabla enorme. Y buscar (PID, p) <i>“tiene pinta de O(n)”</i>; con una función de hash mejora, <i>“pero no tanto”</i>. Conclusión: <i>“actualmente no hay ningún procesador de mercado que use una tabla invertida; todas usan la tabla con el TLB”</i>.</p></div>
 </section>
 
 <section id="segpag" data-nav="Segmentación paginada" data-p="3">
 <h2>Segmentación paginada</h2>
-<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer V6.</strong> Es el modelo del enunciado de la sección 4 del C2 2023 (“un sistema tipo Linux donde el espacio de trabajo tiene varios segmentos y cada segmento es paginado”).</p>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer V6.</strong> Es el modelo del enunciado del C2 2023 (sección 4) y del C2 2014 (sección 2); el C2 2015 preguntó cómo se representa su dirección (1.2) y el C2 2016 qué ventaja tiene (2.5).</p>
 <p>Junta lo mejor de los dos temas (lámina 44):</p>
 <ul>
   <li>La <b>segmentación</b> estructura el espacio de trabajo (código, datos, pila…).</li>
@@ -773,6 +880,10 @@
 </figure>
 <div class="form"><b>@(seg, offset):</b> página i = offset div 2<sup>K</sup> &nbsp;·&nbsp; o = offset mod 2<sup>K</sup> &nbsp;·&nbsp; @física = marco(i) × 2<sup>K</sup> + o</div>
 <p><b>Compartir</b> (lámina 46): dos procesos pueden tener tablas de páginas distintas para sus segmentos y aun así apuntar al mismo marco en una de sus páginas.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · el ejemplo de la pizarra: offset 5 100<span class="ref">Audio 22 · 12:29 / 13:55 / 15:01</span></div>
+<p>Con páginas de 4 096 bytes y una dirección segmentada (s, 5 100): la página es 5 100 div 4 096 = <b>1</b> (<i>“porque 5 100 es más allá de los primeros 4 096”</i>) y el desplazamiento es el resto, 5 100 − 4 096 = <b>1 004</b>. Con la tabla de páginas de ese segmento se busca el marco j de la página 1, y la dirección final es j × 2<sup>K</sup> + 1 004.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · la doble ventaja<span class="ref">Audio 22 · 09:37 / 10:09 / 18:01 / 20:52</span></div>
+<p>La paginación sola <i>“volvió a una especie de tarea monolítica”</i>: se pierde la organización lógica en código, datos, pila y bibliotecas. Juntando las dos se gana por ambos lados: los segmentos organizan la tarea y cada uno tiene su tabla de páginas (más chica que la de la tarea completa); el segmento ya no tiene que caber contiguo, así que <b>desaparece la fragmentación externa</b> de la segmentación sola, y <i>“lo único que nos queda es la pequeña fragmentación interna”</i>, en la última página de cada segmento. Para compartir la biblioteca C, los dos procesos tienen segmentos distintos cuyas tablas de páginas apuntan a los mismos marcos.</p></div>
 <div class="box warn"><div class="bt">Los errores de la segmentación paginada, en orden</div>
 <p>1. El segmento no está en la tabla del proceso, o el offset no es menor que el tamaño del segmento → <b>segmentation violation</b> (la 1.6 del C2 2023).</p>
 <p>2. La operación no está permitida → <b>permission denied</b>.</p>
@@ -781,14 +892,14 @@
 
 <section id="tabla-mala" data-nav="Encontrar errores en una tabla" data-p="3">
 <h2>Cómo encontrar lo incorrecto en una tabla de páginas</h2>
-<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer V7.</strong> Fue la 4.3 del C2 2023 (“¿Qué parte de la tabla anterior es incorrecta? Justificar”). Si el profe repite el formato, cambia los números.</p>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y hacer V7.</strong> Salió en tres de los cuatro C2: 2015 (2.4, una fila), 2016 (2.2, la tabla entera) y 2023 (4.3). Si el profe repite el formato, cambia los números.</p>
 <p>Ninguna lámina da una lista de reglas, pero todas salen de quién mueve cada bit. Revisa fila por fila:</p>
 <div class="tw"><table>
 <thead><tr><th>Regla</th><th>Por qué</th></tr></thead>
 <tbody>
 <tr><td><b>D = 1 exige W = 1</b></td><td>La MMU pone D en 1 al escribir, y sin derecho de escritura la escritura termina en permission denied. (Con COW simulado, la página tiene W = 0, pero al copiarla la copia recibe W = 1 y D se marca en ella.)</td></tr>
 <tr><td><b>D = 1 exige U = 1</b></td><td>Escribir es un acceso: la MMU pone U y D a la vez.</td></tr>
-<tr><td><b>V = 0 y D = 1 no calza</b></td><td>D dice que la copia en memoria difiere de la del disco, pero una página ausente no tiene copia en memoria. Al descargar una página sucia, el sistema la escribe en el swap; al volver a cargarla, pone U = D = 0.</td></tr>
+<tr><td><b>V = 0 con U o D en 1: no es error seguro</b></td><td>Son los valores que quedaron cuando la página se descargó: el sistema los reinicia (U = D = 0) recién al volver a cargarla. El profe deja así esos bits en sus propios ejemplos: la página 2 de la lámina 23 (V = 0, U = 1) y el segmento 2 de la Ayudantía 4 (V = 0, U = 1, D = 1). Si lo mencionas, que sea como observación, después de los errores seguros.</td></tr>
 <tr><td><b>El marco tiene que existir</b></td><td>Si el enunciado da el tamaño de la RAM, el marco debe ser menor que el número de marcos.</td></tr>
 <tr><td><b>Dos páginas, un marco</b></td><td>Solo es correcto si es memoria compartida a propósito (páginas de distintos procesos, o COW).</td></tr>
 </tbody></table></div>
@@ -803,10 +914,10 @@
 </tbody></table></div>
 <div class="steps">
 <div class="step"><b>Página 1, seguro incorrecta.</b> Tiene D = 1 (fue escrita) pero sus derechos son RWX = 100: solo lectura, y sin COW. El proceso no pudo haberla escrito: cualquier escritura habría terminado en permission denied.</div>
-<div class="step"><b>Página 0, casi seguro incorrecta.</b> V = 0 (no está en memoria) pero U = 1 y D = 1, como si tuviera modificaciones pendientes. Una página ausente no puede estar sucia: si se descargó estando modificada, el sistema la escribió en el swap, y U y D se reinician al volver a cargarla.</div>
+<div class="step"><b>Página 0, discutible.</b> V = 0 (no está en memoria) pero U = 1 y D = 1. Se podría decir que una página ausente no tiene cambios pendientes, porque al descargarla sucia se escribió en el swap. Pero el profe deja U y D en 1 en entradas ausentes en sus propios ejemplos (lámina 23 y Ayudantía 4): son valores que quedaron, y el sistema los reinicia al volver a cargar la página. No la des como error seguro; si la mencionas, como observación.</div>
 <div class="step"><b>Páginas 2 y 3, correctas.</b> La 2 no está cargada y no tiene uso ni escritura. La 3 está cargada y nadie la ha usado todavía; COW = 1 con W = 1 es coherente si el hardware tiene bit COW: la primera escritura provoca la copia.</div>
 </div>
-<p class="tiny">Honestidad: el certamen está escaneado sin pauta. En la copia, quien lo rindió marcó con una cruz las filas 0 y 1, que coincide con este análisis. Ojo con un detalle de las propias láminas: en la tabla de la lámina 23, la página 2 tiene V = 0 y U = 1, así que el profe no trata como error que una página ausente conserve U = 1. Por eso, en la página 0, el argumento fuerte es el D = 1, no el U.</p>
+<p class="tiny">Honestidad: el certamen está escaneado sin pauta. En la copia, quien lo rindió marcó con una cruz las filas 0 y 1, pero eso no es una pauta. Dos cosas apuntan a que la respuesta esperada es solo la página 1: la pregunta dice “qué parte”, en singular, y el profe deja bits en 1 en entradas ausentes en sus propios ejemplos (la página 2 de la lámina 23 tiene V = 0 y U = 1; el segmento 2 de la Ayudantía 4, V = 0, U = 1 y D = 1).</p>
 </section>
 
 <section id="t3-receta" data-nav="Receta: traducir y revisar tablas" data-grp="Práctica">
@@ -995,7 +1106,7 @@
 <div class="st">1.7</div><p>Ver <a class="inl" href="#demanda">on demand paging</a>: swapping por páginas en vez de procesos completos, solo las útiles, solo se escriben las sucias, y cualquier marco libre sirve.</p>
 <div class="st">4.1</div><p>Ver <a class="inl" href="#tamano-pag">tamaño de página</a>. Con 16 KB: si una página es pequeña, menos fragmentación interna y carga más fina, pero tablas más grandes y más page faults; si es grande, al revés.</p>
 <div class="st">4.2</div><p>V: presencia, la MMU genera page fault si es 0. U: uso, para elegir qué descargar (U = 0 buen candidato). D: escritura, para saber si hay que escribir la página en el swap al descargarla. Quién los pone en 0 y en 1: ver <a class="inl" href="#tabla-pag">la tabla de bits</a>.</p>
-<div class="st">4.3</div><p>Página 1 (D = 1 con derechos de solo lectura y sin COW) y página 0 (ausente pero marcada como modificada). Ver <a class="inl" href="#tabla-mala">el análisis completo</a>.</p>
+<div class="st">4.3</div><p>Página 1 (D = 1 con derechos de solo lectura y sin COW). La página 0 (ausente con D = 1), solo como observación: el profe deja esos bits en entradas ausentes. Ver <a class="inl" href="#tabla-mala">el análisis completo</a>.</p>
 <div class="st">4.4</div><p>Ver <a class="inl" href="#tlb">la TLB</a> (respuesta modelo en el recuadro).</p>
 </div></div>
 </details>
@@ -1007,7 +1118,7 @@
 <div class="sol">
 <p>Con 4 KB, K = 12: los últimos 3 dígitos hex son el offset y el resto es la página.</p>
 <p><b>a)</b> página 0, offset 0xABC; V = 1, R = 1 → marco 4 → <b>0x4ABC</b>.</p>
-<p><b>b)</b> página 1, W = 1 → marco 1 → <b>0x1F00</b> (D ya era 1).</p>
+<p><b>b)</b> página 1, offset 0xF00; V = 1 y W = 1, pero <b>COW = 1</b>: la escritura provoca un TRAP y el sistema copia la página en un marco libre. La tabla queda apuntando al marco nuevo, con COW = 0, y la escritura se hace en la copia (D = 1): la dirección final es el marco nuevo seguido de F00. Sin el COW habría sido <b>0x1F00</b>, en el marco 1.</p>
 <p><b>c)</b> página 2, V = 0 → <b>page fault</b>: se le asigna un marco, se carga y se reintenta.</p>
 <p><b>d)</b> página 3, X = 0 → <b>permission denied</b>.</p>
 <p><b>e)</b> página 4, W = 1 → marco 6 → <b>0x6FFF</b>; D pasa de 0 a 1.</p>
@@ -1105,6 +1216,95 @@
 </div></div>
 </details>
 
+<details class="ex" id="ex2016v" data-nav="C2 2016 · memoria virtual">
+<summary>Certamen 2 2016-1 · sección 2 “Memoria Virtual” <span class="tag">25 pts · 5 por pregunta · sin pauta</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div>
+<p><b>2.1</b> En paginación, ¿para qué sirven los bits U y D? Tabla de páginas virtuales:</p>
+<div class="tw"><table class="pt mini"><thead><tr><th>Page</th><th>V</th><th>U</th><th>D</th><th>RWX</th><th>Frame</th></tr></thead><tbody>
+<tr><td>0</td><td>0</td><td>1</td><td>1</td><td>101</td><td>20</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>1</td><td>111</td><td>21</td></tr>
+<tr><td>2</td><td>1</td><td>1</td><td>1</td><td>100</td><td>30</td></tr>
+<tr><td>3</td><td>0</td><td>1</td><td>1</td><td>110</td><td>2</td></tr>
+</tbody></table></div>
+<p><b>2.2</b> ¿Está correcta la tabla? Justificar. <b>2.3</b> ¿Cuáles son las páginas virtuales de esta tabla que corresponden a páginas de código? Justificar. <b>2.4</b> Explicar la noción de page fault. ¿Qué pasa cuando la memoria está saturada? <b>2.5</b> ¿Qué ventaja tiene el modelo de segmentación paginada?</p></div>
+<div class="sol">
+<div class="st">2.1</div><p>U indica si la página se usó (el SO lo pone en 0 al cargarla, la MMU en 1 en cada acceso): sirve para elegir qué descargar. D indica si se escribió (0 al cargar, 1 en cada escritura): sirve para saber si al descargarla hay que escribirla en el swap.</p>
+<div class="st">2.2 · No está correcta</div>
+<div class="tw"><table class="pt mini"><thead><tr><th>Page</th><th>V</th><th>U</th><th>D</th><th>RWX</th><th>Frame</th><th>Problema</th></tr></thead><tbody>
+<tr><td>0</td><td>0</td><td>1</td><td class="bad">1</td><td class="bad">101</td><td>20</td><td>D = 1 sin derecho de escritura</td></tr>
+<tr><td>1</td><td>1</td><td class="bad">0</td><td class="bad">1</td><td>111</td><td>21</td><td>D = 1 con U = 0: escribir es un acceso</td></tr>
+<tr><td>2</td><td>1</td><td>1</td><td class="bad">1</td><td class="bad">100</td><td>30</td><td>D = 1 en una página de solo lectura</td></tr>
+<tr><td>3</td><td>0</td><td>1</td><td>1</td><td>110</td><td>2</td><td>Discutible: ausente con D = 1 (solo como observación)</td></tr>
+</tbody></table></div>
+<p>Las tres primeras son imposibles sin discusión: dilas primero. La página 3 es el mismo caso que la página 0 del C2 2023: no es error seguro, porque el profe deja U y D en 1 en entradas ausentes (lámina 23 y Ayudantía 4). Es la misma pregunta de 2023 y de 2015 (2.4): el profe la repite.</p>
+<div class="st">2.3</div><p>Las que tienen derecho de ejecución, X = 1: la <b>página 0</b> (R-X, la página de código típica: se lee y se ejecuta, pero no se escribe) y la <b>página 1</b> (RWX, que además se puede escribir, cosa rara para código).</p>
+<div class="st">2.4</div><p>Page fault: TRAP de la MMU al acceder a una página válida del proceso que no está en memoria (V = 0). Si la memoria está saturada (no hay marcos libres), el sistema debe elegir una página víctima con el algoritmo de reemplazo, descargarla (escribiéndola en el swap si D = 1) y usar ese marco para la página pedida.</p>
+<div class="st">2.5</div><p>Junta la estructura de la segmentación (código, datos, pila separados; protección y compartición por segmento) con la asignación de la paginación (sin fragmentación externa, cualquier marco sirve, se carga solo lo que se usa).</p>
+</div></div>
+</details>
+
+<details class="ex" id="ex2015v" data-nav="C2 2015 · memoria virtual">
+<summary>Certamen 2 2015-1 · conocimiento 1.2-1.5 y sección 2 “Gestión de Memoria Virtual” <span class="tag">sin pauta · la 2.5 está en la página 4</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div>
+<p><b>1.2</b> En segmentación con paginación, ¿cómo se representa una dirección? <b>1.3</b> En paginación, ¿por qué no hay fragmentación externa? ¿Por qué todavía existe la interna? <b>1.4</b> Explicar el rol de los bits U y D (sin su uso en reemplazo). ¿Qué partes del sistema inicializan y modifican estos bits? <b>1.5</b> Explicar el rol de una TLB en una tabla de paginación indexada.</p>
+<p><b>Sección 2.</b> El sistema ACME usa paginación, con una lista FreeFrames de marcos libres (lista enlazada simple). Páginas de <b>8 KB</b>. <b>2.1</b> Con un procesador de 32 bits, ¿cuántos bits representan el número de página y el offset? Tabla de P0:</p>
+<div class="tw"><table class="pt mini"><thead><tr><th>Página</th><th>V</th><th>U</th><th>D</th><th>R</th><th>W</th><th>X</th><th>COW</th><th>Frame</th></tr></thead><tbody>
+<tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>3</td></tr>
+<tr><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>14</td></tr>
+<tr><td>2</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>23</td></tr>
+<tr><td>3</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>67</td></tr>
+<tr><td>4</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td></tr>
+</tbody></table></div>
+<p><b>2.2</b> Explicar el uso de V, U y D en la tabla. <b>2.3</b> ACME no tiene más marcos y elige a P0 para un swap-out que recupere 16 KB: ¿qué páginas son teóricamente las mejores candidatas? <b>2.4</b> ¿Es posible esta fila: V = 1, U = 1, D = 1, R = 1, W = 0, X = 0, COW = 0, Frame = 3? <b>2.5</b> FIFO y LRU con la cadena {3,1,2,3,3,1,4,3,4,1,3} y 3 marcos (<a class="inl" href="4-Reemplazo-de-paginas.html#ex2015r">resuelta en la página 4</a>). <b>2.6</b> En Linux, ¿cuál es el rol del bit COW? ¿En qué caso se usa? <b>2.7</b> Se puede instalar Linux sin zona de swap: ¿qué consecuencia tiene? <b>2.8</b> Pedro piensa: “más RAM tengo, más memoria podrán usar los procesos con <code>malloc()</code>”. ¿Tiene razón?</p></div>
+<div class="sol">
+<div class="st">1.2</div><p>Como (segmento, offset), donde el offset del segmento se parte en (página, desplazamiento): el segmento elige la tabla de páginas del segmento, la página elige el marco, y el desplazamiento se suma: marco × 2<sup>K</sup> + desplazamiento.</p>
+<div class="st">1.3</div><p>No hay externa porque todos los marcos miden lo mismo y cualquier marco libre sirve para cualquier página. Sigue habiendo interna porque el tamaño de un proceso o segmento casi nunca es múltiplo exacto de la página: la última queda a medio usar.</p>
+<div class="st">1.4</div><p>U marca que la página se usó y D que se escribió. Los <b>inicializa el sistema operativo</b> (en 0, al cargar la página; U también lo puede resetear periódicamente) y los <b>modifica la MMU</b> (los pone en 1 en cada acceso o escritura).</p>
+<div class="st">1.5</div><p>Es un cache asociativo de descriptores dentro de la MMU: si la página está (HIT), se obtiene el marco sin acceder a la tabla indexada en RAM; si no (MISS), se consulta la tabla y el descriptor entra a la TLB (LRU). Ver <a class="inl" href="#tlb">la TLB</a>.</p>
+<div class="st">2.1</div><p>8 KB = 2<sup>13</sup> B → <b>13 bits de offset</b> y 32 − 13 = <b>19 bits</b> de número de página (2<sup>19</sup> páginas virtuales).</p>
+<div class="st">2.2</div><p>V: la página está en un marco (si es 0, page fault). U: tuvo acceso desde que se cargó. D: fue escrita, así que al descargarla hay que escribirla en el swap.</p>
+<div class="st">2.3</div><p>16 KB son 2 páginas. Solo pueden salir las presentes (V = 1): 0, 1 y 3. Las mejores son la <b>1</b> (no usada y limpia: U = 0, D = 0) y la <b>3</b> (limpia: no hay que escribirla, aunque se usó). La 0 es la peor: usada y sucia.</p>
+<div class="st">2.4</div><p><b>No.</b> D = 1 dice que la página fue escrita, pero W = 0 y COW = 0: cualquier escritura habría sido rechazada. (Además el marco 3 ya es de la página 0: solo calzaría si fuera memoria compartida.)</p>
+<p class="tiny">Ojo: con la misma regla, la página 2 de la tabla del enunciado (D = 1 con W = 0) tampoco calza. El enunciado no lo pregunta, pero si te piden revisar la tabla entera, dilo.</p>
+<div class="st">2.6</div><p>Después de un <code>fork()</code>, el hijo comparte las páginas del padre en vez de copiarlas: quedan marcadas COW (y protegidas contra escritura). Cuando uno de los dos escribe por primera vez en una de ellas, el sistema copia esa página y cada proceso queda con la suya. Así el <code>fork()</code> es rápido y no gasta memoria en páginas que nunca se modifican.</p>
+<div class="st">2.7</div><p>Sin zona de swap el sistema no puede hacer swap-out de las páginas modificadas (datos, pila, heap): cuando la memoria se satura no tiene dónde ponerlas. Solo puede liberar páginas limpias que se pueden releer del ejecutable. La memoria total queda limitada a la RAM: cuando se acaba, fallan las asignaciones o el sistema tiene que terminar procesos.</p>
+<div class="st">2.8</div><p><b>Se equivoca.</b> <code>malloc()</code> reserva memoria <b>virtual</b> en el espacio de direcciones del proceso: lo que se puede pedir lo limita el tamaño de ese espacio (4 GB con 32 bits) y lo que el sistema puede respaldar (RAM más swap), no solo la RAM. Más RAM significa menos page faults y menos swapping, o sea, mejor rendimiento.</p>
+</div></div>
+</details>
+
+<details class="ex" id="ex2014v" data-nav="C2 2014 · segmentación paginada">
+<summary>Certamen 2 2014-1 · conocimiento de memoria y sección 2 “Memoria Virtual – Segmentación Paginada” <span class="tag">30 + 30 pts · sin pauta · el archivo dice “Certamen 1”</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div>
+<p><b>1.1</b> ¿Para qué sirven los bits U y D en paginación? ¿Cuándo se inicializan? ¿Cuándo se modifican? <b>1.2</b> Definir fragmentación interna en memoria continua por bloques. ¿Por qué es un problema? <b>1.4</b> Explicar BEST_FIT y sus desventajas. <b>1.6</b> Definir page fault en memoria virtual paginada. (La 1.3 está en la <a class="inl" href="2-Segmentacion.html#ex2016s">página 2</a>; la 1.5, sección crítica, es de la Unidad 3.)</p>
+<p><b>Sección 2.</b> Segmentación paginada; la RAM tiene N marcos de <b>64 KB</b>. <b>2.1</b> ¿Qué consecuencia tiene elegir un tamaño de página más pequeño, sobre la gestión de memoria y sobre las estructuras de datos? <b>2.2</b> Explicar los eventos a nivel del hardware y del sistema operativo cuando un proceso accede a una página p que no está cargada. ¿Qué acciones debe tomar el SO? <b>2.3</b> Explicar el objetivo del bit COW. <b>2.4</b> Explicar qué hace esta función y qué falta después de <code>V = 1</code>:</p>
+<pre><code>void do_page_fault(task t, segment s, page p)
+{
+  newframe = get_frame();
+  if (newframe == NULL) {
+    do_swap_out();
+    newframe = get_frame();
+  }
+  load_page(p, newframe);
+  t-&gt;page_table[p].frame = newframe;
+  t-&gt;page_table[p].V = 1;
+  …
+}</code></pre>
+<p><b>2.5</b> y <b>2.6</b> (víctima y LRU): en la <a class="inl" href="4-Reemplazo-de-paginas.html#ex2014r">página 4</a>.</p></div>
+<div class="sol">
+<div class="st">1.1</div><p>U: saber si la página se usó (elegir qué descargar). D: saber si se escribió (si hay que escribirla al descargarla). Se <b>inicializan en 0</b> cuando el sistema carga la página; se <b>modifican</b> cuando la MMU los pone en 1 (U en cada acceso, D en cada escritura); el sistema puede volver U a 0 cada cierto tiempo.</p>
+<div class="st">1.2</div><p>Es la parte del último bloque asignado que la tarea no usa (b × bloque − K). Es un problema porque esa memoria queda perdida: está asignada y nadie más la puede usar.</p>
+<div class="st">1.4</div><p>Ver <a class="inl" href="1-Memoria-lineal.html#fit">FIT</a>: la zona con el menor remanente; recorre toda la lista y deja migajas.</p>
+<div class="st">1.6</div><p>Ver <a class="inl" href="#page-fault">el page fault</a>.</p>
+<div class="st">2.1</div><p><b>Gestión:</b> menos fragmentación interna y se carga solo lo necesario, pero hay más page faults y más transferencias con el disco. <b>Estructuras:</b> más páginas por proceso, así que las tablas de páginas de cada segmento son más grandes (más memoria para tablas, más difícil tenerlas en la TLB) y la lista de marcos libres también crece. Con 64 KB pasa lo contrario.</p>
+<div class="st">2.2</div><p><b>Hardware:</b> la MMU busca la página (TLB y tabla), ve V = 0 y genera un TRAP (page fault); la instrucción queda sin terminar. <b>SO:</b> verifica que p pertenezca al segmento del proceso (si no, error); toma un marco libre o, si no hay, elige una víctima y la descarga (escribiéndola si D = 1); pide la carga de p desde el disco; mientras tanto el proceso queda <b>bloqueado</b> y se ejecuta otro (task switch); al terminar la E/S actualiza la tabla (marco, V = 1, U = D = 0), el proceso pasa a <b>listo</b> y, cuando recupera la CPU, reejecuta la instrucción.</p>
+<div class="st">2.3</div><p>Permitir que dos procesos (padre e hijo tras un <code>fork()</code>) compartan una página hasta que uno la escriba; recién ahí se copia. Ahorra memoria y tiempo.</p>
+<div class="st">2.4</div><p>Busca un marco libre; si no hay, hace un swap-out para liberar uno y lo vuelve a pedir; carga la página p en ese marco y actualiza la tabla (marco y V = 1). <b>Falta inicializar los bits de uso y de escritura</b>: <code>t-&gt;page_table[p].U = 0;</code> y <code>t-&gt;page_table[p].D = 0;</code>, porque el sistema los pone en 0 cada vez que carga una página. Después, la tarea vuelve a lista para reejecutar la instrucción.</p>
+</div></div>
+</details>
+
 <section id="t3-preguntas" data-nav="Preguntas del tema">
 <h2>Preguntas del tema</h2>
 <p class="lead">Tapa la respuesta y contesta en voz alta.</p>
@@ -1159,7 +1359,7 @@
     lastBest=best;
   }
   window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
-  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k], .ej input[data-k]'));
   function upd(){
     var done=boxes.filter(function(b){return b.checked;}).length;
     document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });

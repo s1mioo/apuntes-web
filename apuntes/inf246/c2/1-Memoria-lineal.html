@@ -302,10 +302,69 @@
   table.rp td.n{color:var(--ink);font-weight:700}
   table.rp th.rh{text-align:right;color:var(--muted);background:var(--panel)}
   .tw table.rp{min-width:0}
+  table.pila tr.pl td{border-left:2px solid var(--line);border-right:2px solid var(--line)}
+  table.wsv td{vertical-align:middle}
+  table.wsv b.pfx{color:var(--warn);background:var(--warn-soft);padding:0 4px;border-radius:4px}
   .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.93em}
   .q{font-weight:600}
   .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:14px 0}
   .tiny{font-size:12.5px;color:var(--muted)}
+  /* --- página 7: flashcards --- */
+  [hidden]{display:none!important}
+  .fc-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 14px;margin:14px 0;box-shadow:var(--shadow)}
+  .fc-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .fc-row:last-child{border-bottom:0}
+  .fc-lab{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);min-width:62px}
+  .fc-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 300px}
+  .fc-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;
+    font-size:13.5px;cursor:pointer;background:var(--bg);color:var(--ink);user-select:none}
+  .fc-chip input{accent-color:var(--brand);margin:0}
+  .fc-chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
+  .fc-chip small{color:var(--muted);font-weight:400}
+  .fc-status{font-size:13px;color:var(--muted);margin:10px 2px 6px;min-height:1.3em}
+  .fc-card{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--brand);border-radius:14px;padding:18px 20px;
+    min-height:230px;box-shadow:var(--shadow);cursor:pointer;outline:none;display:flex;flex-direction:column;gap:12px}
+  .fc-card:focus-visible{box-shadow:0 0 0 3px var(--brand-soft),var(--shadow)}
+  .fc-card.flipped{border-left-color:var(--accent);cursor:default}
+  .fc-card.fc-vacio{cursor:default;border-left-color:var(--line)}
+  .fc-meta{display:flex;flex-wrap:wrap;gap:6px}
+  .fc-tag{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .fc-tag.fc-salio{color:var(--no);border-color:var(--no);background:var(--no-soft);font-weight:700}
+  .fc-front{font-size:19px;font-weight:700;line-height:1.45;color:var(--ink)}
+  .fc-hint{font-size:14.5px;color:var(--warn);background:var(--warn-soft);border-radius:8px;padding:8px 12px}
+  .fc-back{border-top:1px dashed var(--line);padding-top:12px;font-size:16px;line-height:1.65}
+  .fc-back b{color:var(--accent)}
+  .fc-src{font-size:12.8px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .fc-src b{color:var(--muted)}
+  .fc-tap{font-size:12.5px;color:var(--muted);margin-top:auto}
+  .fc-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .fc-actions .btn{flex:1 1 150px;padding:11px 12px;font-size:14.5px;font-weight:600;text-align:center}
+  .fc-actions .btn:disabled{opacity:.45;cursor:default}
+  .fc-main{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+  .fc-no{border-color:var(--no);color:var(--no);background:var(--no-soft)}
+  .fc-mid{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+  .fc-yes{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .fc-end{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0;box-shadow:var(--shadow)}
+  .fc-score{font-size:26px;font-weight:800;color:var(--brand)}
+  .fc-end ul{margin:6px 0 10px}
+  table.mini tr.fc-tot td{font-weight:700}
+  details.fc-item .body b{color:var(--accent)}
+  h3 .num{color:var(--muted);font-weight:400;font-size:.8em}
+  /* --- página 6: tarjetas de ejercicio --- */
+  .ej{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:10px;
+    padding:12px 16px 2px;margin:18px 0;box-shadow:var(--shadow)}
+  .ej.p3{border-left-color:var(--accent)} .ej.p1{border-left-color:var(--line)}
+  .ej-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:6px}
+  .ej-h input{transform:scale(1.25);accent-color:var(--brand);flex:0 0 auto;margin:0 2px 0 0}
+  .ej-n{color:var(--brand);font-weight:800;font-variant-numeric:tabular-nums}
+  .ej-t{font-weight:700;font-size:16px;flex:1 1 220px;min-width:0}
+  .ej-h.done .ej-t{text-decoration:line-through;color:var(--muted)}
+  .ej-tag{font-size:12px;color:var(--muted);white-space:nowrap}
+  .ej .meta{background:var(--code);border-radius:8px;padding:8px 12px;margin:10px 0;font-size:14px}
+  .ej .meta p{margin:3px 0}
+  .ej details.ex{margin:10px 0 14px;box-shadow:none}
+  .ej .st{font-weight:700;color:var(--accent);font-size:13.5px;margin:16px 0 4px}
+  .ej pre{white-space:pre;overflow-x:auto}
   @media (max-width:900px){
     .layout{align-items:stretch}
     .content{width:100%;max-width:100%}
@@ -320,7 +379,7 @@
     <div class="dot">T1</div>
     <div><h1>Memoria lineal</h1><small>Sistemas Operativos · INF-246 · Certamen 2</small></div>
   </div>
-  <div class="pages"><a href="0-Guia-de-estudio-C2.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html" class="cur"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, reloj · por confirmar</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a></div>
+  <div class="pages"><a href="0-Guia-de-estudio-C2.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html" class="cur"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, Working Set</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a><a href="6-Lista-de-estudio.html"><b>6</b><span>Lista de estudio<br><small style="color:var(--muted)">día a día desde hoy, con explicaciones</small></span></a><a href="7-Flashcards.html"><b>7</b><span>Flashcards<br><small style="color:var(--muted)">conceptos al azar, con cajas de repaso</small></span></a></div>
   <div class="toolbar">
     <button class="btn" id="theme">Claro / oscuro</button>
     <button class="btn" id="expand">Abrir todo</button>
@@ -376,6 +435,9 @@
 </ul>
 <div class="box tip"><div class="bt">Por qué importa el detalle del fetch</div>
 <p>Si cada instrucción necesita al menos un acceso a memoria, cualquier mecanismo que se meta entre la CPU y la RAM se ejecuta <b>millones de veces por segundo</b>. Por eso la traducción de direcciones no la puede hacer el sistema operativo en software: tiene que hacerla un circuito, la MMU. Esa idea vuelve en las tres páginas de esta guía.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · la memoria es finita<span class="ref">Audio 18 · 03:00 / 05:28 / 07:36</span></div>
+<p>Más tareas en memoria significa más probabilidad de que el scheduler encuentre una lista. Pero la memoria es un recurso finito: <i>“si tengo 32 gigas, tengo 32, no 33”</i>, y en algún momento se satura. Cuando las tareas terminan dejan zonas libres separadas, y una tarea grande puede no caber en ninguna aunque sumadas alcancen: ese es el problema de fondo de toda la unidad, la <b>fragmentación</b>.</p>
+<p>Avisó que lo que viene, <b>“memoria virtual y reemplazo de páginas”</b>, es el capítulo más difícil del curso, y adelantó la gracia de la memoria virtual: <i>“una de las dos fragmentaciones va a desaparecer totalmente y la otra va a quedar bastante bien controlada”</i> (en paginación desaparece la externa).</p></div>
 </section>
 
 <section id="direcciones" data-nav="Dirección lógica, física y la MMU" data-p="3">
@@ -422,6 +484,9 @@
 <p>Lo que cambia según el modelo es <i>con qué</i> traduce: en memoria lineal con los registros BASE y LÍMITE; en segmentación con la tabla de segmentos (base, límite, derechos, bit V); en paginación con la tabla de páginas (marco, bit V, derechos) y además actualiza los bits U y D.</p></div>
 <div class="box ana"><div class="bt">Analogía · el condominio</div>
 <p>El programa da direcciones del tipo “casa 12 del condominio”. No sabe ni le importa en qué número de la calle empieza el condominio. El conserje (la MMU) sí lo sabe: suma el número donde empieza el condominio y te lleva a la puerta real. Si alguien pide la “casa 400” y el condominio tiene 50 casas, el conserje no lo deja pasar y llama a la administración (el TRAP al sistema operativo).</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · la biblioteca y el supermercado<span class="ref">Audio 18 · 18:00 / 22:00 / 25:00</span></div>
+<p>Las analogías del profe. La dirección <b>física</b> es como decir “el libro número 3800 contando desde el primero de la biblioteca”. La <b>lógica</b> es “segundo piso, estante A3, octavo libro”: una referencia relativa, y tú sabes traducirla a un lugar físico. El otro ejemplo es el supermercado con compra en línea: la lista viene ordenada por pasillo y estante, y quien arma el pedido traduce cada producto a su ubicación real.</p>
+<p>La MMU hace esa traducción <b>en cada acceso a memoria</b>, es decir, en cada instrucción: por eso tiene que estar dentro del procesador y ser rápida.</p></div>
 </section>
 
 <section id="politicas" data-nav="Las cuatro políticas y los overlays" data-p="1">
@@ -439,6 +504,9 @@
 <h4>Overlays, en una imagen</h4>
 <p>La memoria física del proceso es de tamaño fijo y contiene: una <b>tabla de símbolos</b> (indica en qué overlay está cada función que usa el programa principal), el <b>programa principal</b>, los <b>datos</b>, el <b>código de manejo de overlays</b> y un <b>espacio para overlays</b>. Cuando el programa llama a una función que está en el overlay 2, el código de manejo lo carga en ese espacio, encima del overlay que estaba antes.</p>
 <div class="box tip"><div class="bt">Por qué desaparecieron</div><p>El trabajo de partir el programa en overlays lo hacía el <b>programador</b>, a mano. La memoria virtual hace lo mismo (tener en RAM solo la parte útil del programa) pero automáticamente y sin que el programa se entere.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · “un desastre de programación”<span class="ref">Audio 18 · 43:00 / 47:00 / 49:34 · Audio 19 · 00:00</span></div>
+<p>El profe programó con overlays en Pascal, con 64 KB de memoria. La tabla de símbolos dice en qué overlay está cada función (F1 en el overlay 1, F2 y F3 en el 2…). La regla que lo complica todo: el programa principal puede llamar al overlay cargado, pero <b>un overlay no puede llamar a una función de otro overlay</b>, porque los dos no pueden estar en memoria al mismo tiempo. El programador tiene que organizar el código en torno a eso, y además hay idas y vueltas constantes con el disco (en esa época, disquetes lentísimos). Su veredicto: funciona, pero es <i>“un desastre de programación”</i>.</p>
+<p>Sobre las bibliotecas de la política 4: las DLL son <i>Dynamic Link Libraries</i> y las <code>.so</code> de Linux son <b><i>Shared Objects</i></b>, objetos compartidos (la lámina dice “Symbolic Object”, pero en clase dijo Shared Object). Lo de compartirlas está en la <a class="inl" href="2-Segmentacion.html#compartir">página 2</a>.</p></div>
 </section>
 
 <section id="mmu-simple" data-nav="MMU simple: BASE + offset" data-p="3">
@@ -484,6 +552,9 @@
   <li><b>Reubicación fácil.</b> Si el sistema mueve el proceso a otra zona, solo cambia el valor del registro BASE; las direcciones lógicas del programa siguen siendo las mismas.</li>
   <li><b>¿Quién carga BASE?</b> El sistema operativo, con una instrucción privilegiada, cada vez que le da el procesador a otro proceso. BASE es parte del contexto de la tarea.</li>
 </ul>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · J + D, y la llave de la vitrina<span class="ref">Audio 18 · 54:00 / 55:56 / 57:32 · Audio 19 · 07:04 / 08:00</span></div>
+<p>La tarea ocupa la zona que empieza en J y mide K. Para ella las direcciones van de 0 a K − 1, como si estuviera sola; la dirección real de su byte D es <b>J + D</b>, “como una traslación en matemática”. El modo sistema es como tener la llave de la vitrina de la biblioteca: el SO ve las direcciones reales; las tareas, solo su zona.</p>
+<p>Su ejemplo de la reubicación: una aplicación cargada en la 1000 ejecuta su instrucción 100, que está en la <b>1100</b>. Sale por un swap-out y vuelve a la 20 000: la instrucción sigue siendo la 100 para ella, pero ahora está en la <b>20 100</b>. Lo único que se cambió fue el registro BASE. Eso es la <b>transparencia de la ubicación</b>.</p></div>
 </section>
 
 <section id="mmu-control" data-nav="MMU con control: el LÍMITE" data-p="3">
@@ -531,6 +602,8 @@
 <div class="box warn"><div class="bt">La respuesta de la pauta (2014, 1.5)</div>
 <p>“El registro <b>BASE</b> determina la dirección base donde está cargada una tarea, y el registro <b>LIMIT</b> corresponde al tamaño que ocupa la tarea. La dirección de memoria física es <b>@ram = BASE + d</b>, donde d es la dirección lógica. El resultado debe ser tal que <b>d &lt; LIMIT</b>.” En 2015 la pauta agregó por qué sirve: la dirección lógica hace que la ubicación de la tarea en memoria sea <b>transparente</b> para su direccionamiento (instrucciones, datos, pila).</p></div>
 <p><b>Ejemplo corto.</b> BASE = 300 000 y LÍMITE = 50 000. La dirección lógica 12 345 va a la física 312 345. La 49 999 va a la 349 999, el último byte del proceso. La 50 000 no pasa: TRAP.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · por qué hace falta el límite<span class="ref">Audio 18 · 62:00 · Audio 19 · 09:00 / 11:00 / 13:03</span></div>
+<p>Con la MMU simple sé dónde <b>empieza</b> la aplicación, pero no dónde <b>termina</b>. Un ciclo <code>for</code> que se pasa del arreglo o un puntero que apunta a cualquier parte llega a la memoria de la tarea siguiente, y nadie se da cuenta. Por eso se agrega el tamaño: si la aplicación mide 20 500 bytes, el límite es 20 500 y la MMU revisa que el offset sea inferior; si no, genera un <b>TRAP</b>, una excepción por acceder a una zona que no le pertenece. Es el famoso <i>segmentation…</i> de Linux cuando se usa un puntero sin inicializar o se sale de un arreglo.</p></div>
 </section>
 
 <section id="ram" data-nav="Organización de la RAM" data-p="1">
@@ -538,6 +611,7 @@
 <p class="prio"><span class="lv p1">Probabilidad baja</span><strong>Pasar por encima.</strong> Nunca ha salido; la parte de chips y dual channel es cultura general.</p>
 <p><b>Organización lógica (lámina 15).</b> De arriba hacia abajo: los <b>vectores de interrupción</b> (los links hacia las rutinas de gestión de las interrupciones y de las llamadas de sistema, el mismo tema de la Unidad 1), el <b>sistema operativo</b> con sus datos, y la <b>memoria libre</b> para los procesos y sus datos. Todo lo que sigue en este tema trata de cómo repartir esa memoria libre.</p>
 <p><b>Organización física (láminas 16 y 17).</b> Los bytes consecutivos no están en el mismo chip: el byte 0 va al chip RAM 1, el byte 1 al RAM 2, el 2 al RAM 3, el 3 al RAM 4 y el 4 vuelve al RAM 1. Así se leen o escriben varios bytes en paralelo. En <i>dual channel</i> de 32 bits hay dos placas: los bytes 0-3 en la placa 0 y los 4-7 en la placa 1, de modo que en un acceso salen 8 bytes.</p>
+<p class="tiny">En clase (audio 19, 19:10) lo bajó a un consejo práctico: si vas a poner 16 GB, es mejor poner dos placas de 8 GB que una de 16, para aprovechar los dos canales.</p>
 </section>
 
 <section id="fijas" data-nav="Particiones fijas" data-p="3">
@@ -556,13 +630,16 @@
   <li>La fragmentación causa un uso poco eficiente de la memoria.</li>
   <li>Es muy difícil para el sistema <b>determinar a priori el tamaño de los procesos</b>.</li>
 </ul>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · los 28 KB perdidos y la tarea de 130 KB<span class="ref">Audio 19 · 21:00 / 23:22 / 27:23 / 29:00</span></div>
+<p>Su ejemplo: una tarea de 4 KB cabe en una partición de 32 KB, pero se pierden <b>28 KB</b> mientras esté ahí (fragmentación interna); lo óptimo sería la de 8 KB, si está libre. Y al revés: llega una tarea de <b>130 KB</b>, la partición más grande libre es de 128 KB y las otras libres son chicas; aunque sumadas pasan de 130, no cabe (fragmentación externa: “pierdo particiones completas porque ninguna tarea nueva cabe ahí”).</p>
+<p>Un problema más: el SO no sabe si la tarea va a crecer. Si la de 4 KB hace un <code>malloc</code> de 50 KB, ya no cabe en sus 32 y hay que <b>moverla</b> a una partición más grande. Su resumen: es fácil de gestionar, pero totalmente ineficiente en el uso de la memoria.</p></div>
 <div class="box warn"><div class="bt">Cómo responder la 1.3 del C2 2023</div>
 <p>Porque los tamaños se fijan antes de conocer los procesos, y el sistema no puede saber a priori cuánta memoria va a necesitar cada uno. Un proceso casi nunca calza exacto con una partición: si cae en una más grande, el sobrante queda perdido adentro (<b>fragmentación interna</b>, por ejemplo 9 KB en una partición de 16 KB pierden 7); y puede haber particiones libres demasiado chicas para los procesos que esperan (<b>fragmentación externa</b>), aunque sumadas alcanzarían. Además, la cantidad de particiones limita el grado de multiprogramación.</p></div>
 </section>
 
 <section id="frag" data-nav="Fragmentación interna y externa" data-p="3">
 <h2>Fragmentación interna y externa</h2>
-<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Salió en 2015 (3.1), 2016 (1.6) y en el C2 2023 (1.2). Es la pregunta más repetida de toda la unidad.</p>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Salió en los cuatro C2: 2014 (1.2 y 1.3), 2015 (1.3), 2016 (1.2) y 2023 (1.2), y además en los C1 de 2015 y 2016. Es la pregunta más repetida de la unidad.</p>
 <div class="two">
 <div class="box def"><div class="bt">Fragmentación interna</div><p>Una zona de memoria que el proceso <b>no usa adentro de su partición</b> (su espacio de trabajo). Es memoria perdida para el sistema: está asignada, pero nadie la ocupa.</p><p class="tiny">Pauta 2015: ocurre cuando un bloque asignado a una tarea no está ocupado completamente por esta tarea.</p></div>
 <div class="box def"><div class="bt">Fragmentación externa</div><p>Una zona de memoria libre (una partición) <b>probablemente perdida</b> para el sistema, porque es muy poco probable encontrar un proceso que quepa en ella.</p><p class="tiny">Pauta 2015: existen bloques libres, pero no hay una zona suficientemente grande para asignarla a una nueva tarea.</p></div>
@@ -597,6 +674,9 @@
 </div>
 <div class="memlab"><span></span><span></span><span></span><span></span><span>Partición 1</span><span></span><span></span><span></span><span style="flex-grow:2">Partición 2</span><span></span></div>
 <p class="memcap">El ejemplo que el profe usa en todas las láminas: 11 bloques, la partición 1 en los bloques 4-6, la partición 2 en los 9-10. Libres: 1-3, 7-8 y 11.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · el tamaño del bloque y la peor fragmentación interna<span class="ref">Audio 19 · 34:00 / 34:49 / 36:00 / 37:43</span></div>
+<p>El tamaño del bloque es una <b>potencia de 2</b> y lo elige el sistema según cuánta memoria hay: <b>más memoria, bloques más grandes</b>, porque las tablas que administran los bloques también ocupan memoria. Con bloques de 4 KB, una aplicación de 14 KB recibe 3 bloques (16 KB) y una que pide 10 KB de 12 pierde 2 KB en el último bloque.</p>
+<p>Lo bueno frente a las particiones fijas: la fragmentación interna queda acotada. Lo peor que puede pasar es que la tarea use un solo byte de su último bloque: con bloques de 4 KB se pierden como máximo <b>4 095 bytes</b> (un bloque menos un byte).</p></div>
 <div class="box tip"><div class="bt">Ojo con la palabra “partición”</div><p>En particiones fijas, la partición existe aunque esté vacía. En particiones dinámicas, la partición es lo que se le asigna a un proceso y desaparece cuando el proceso libera la memoria: lo que queda son bloques libres.</p></div>
 </section>
 
@@ -611,6 +691,7 @@
 <p>El problema que marca el profe: <b>es poco eficiente porque ocupa memoria adicional</b>. Su ejemplo, para 4 GB de RAM con bloques de 8 KB:</p>
 <div class="form"><b>bloques</b> = 4 × 1024³ / (8 × 1024) = 1024² / 2 = <b>524 288</b> &nbsp;·&nbsp; <b>m</b> = 524 288 / 8 = 65 536 B = <b>64 KB</b><span class="n">Un byte indexa 8 bloques. En general: m (bytes) = (tamaño de la RAM / tamaño del bloque) / 8.</span></div>
 <p>Además, para encontrar b bloques libres seguidos hay que recorrer los bits uno por uno, lo que también cuesta tiempo. La alternativa del profe no usa memoria extra: guardar la información <b>dentro de los propios bloques libres</b>.</p>
+<p class="tiny">En clase (audio 19, 41:48) lo dijo así: <i>“con esa estructura estoy ocupando memoria para manejar la memoria”</i>. Y si se agrandan los bloques para achicar el arreglo, sube la fragmentación interna.</p>
 <div class="box tip"><div class="bt">Truco de cálculo con potencias de 2</div>
 <p>Pasa todo a potencias de 2: 4 GB = 2<sup>32</sup> B y 8 KB = 2<sup>13</sup> B, así que hay 2<sup>32−13</sup> = 2<sup>19</sup> = 524 288 bloques; en bytes, 2<sup>19</sup> / 2<sup>3</sup> = 2<sup>16</sup> = 64 KB. Tabla útil: 2<sup>10</sup> = 1 K, 2<sup>20</sup> = 1 M, 2<sup>30</sup> = 1 G.</p></div>
 </section>
@@ -656,6 +737,8 @@
 </figure>
 <p><b>Asignar una partición nueva (lámina 26).</b> Si el sistema asigna el bloque 1 a una partición de un bloque, la zona libre ahora empieza en el bloque 2: el <b>Head</b> pasa a apuntar al bloque 2, que ahora guarda <b>2 / 7</b>. El resto de la cadena no cambia.</p>
 <p><b>Buscar un lugar</b> es recorrer la cadena desde el Head comparando cada n con los bloques pedidos: una búsqueda secuencial, que es justo lo que hacen FIRST, BEST y WORST FIT.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · “eso se llama una blockchain”<span class="ref">Audio 19 · 43:00 / 45:17 / 46:00 / 47:05</span></div>
+<p>Solo hace falta <b>una variable</b> con el primer bloque libre; en ese bloque, que nadie usa, se anota cuántos bloques libres consecutivos hay y dónde está el próximo libre (si no hay más, un −1). Al comienzo todo es una sola zona enorme. Asignar es fácil: se corre la cabecera y se resta. <b>Lo que cuesta es buscar</b>: en el peor caso hay que recorrer casi toda la cadena, O(n). A cambio no gasta ninguna memoria adicional. Dijo que la misma técnica se usa en los sistemas de archivos.</p></div>
 <div class="box tip"><div class="bt">Lo que la lámina no muestra, pero conviene decir</div><p>Cuando un proceso libera su partición, la zona se vuelve a insertar en la cadena, y si queda pegada a otra zona libre se <b>juntan</b> en una sola (sumando los n). Si no se juntaran, la memoria se iría picando en zonas cada vez más chicas.</p></div>
 </section>
 
@@ -673,12 +756,12 @@
 
 <section id="fit" data-nav="FIRST, BEST y WORST FIT" data-p="3">
 <h2>FIRST FIT, BEST FIT y WORST FIT</h2>
-<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y hacer los ejercicios.</strong> Salió en 2015 (con tabla, 5 pts), 2016 (BEST_FIT y sus desventajas) y en el C2 2023 (los tres, 5 pts). Es el ejercicio más seguro de la sección de memoria lineal.</p>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y hacer los ejercicios.</strong> Salió en el C1 2015 (con tabla), el C1 2016, el C2 2014 (BEST_FIT y sus desventajas) y el C2 2023 (los tres). Es el ejercicio más seguro de la memoria lineal.</p>
 <div class="tw"><table>
 <thead><tr><th>Algoritmo</th><th>Qué zona elige</th><th>Ventaja</th><th>Desventaja</th></tr></thead>
 <tbody>
 <tr><td><b>FIRST FIT</b></td><td>La <b>primera</b> zona con al menos b bloques libres consecutivos</td><td>El más rápido: se detiene en la primera que sirve</td><td>Va dejando pedacitos al comienzo de la memoria, que hay que volver a recorrer cada vez</td></tr>
-<tr><td><b>BEST FIT</b></td><td>La zona donde cabe y deja el <b>remanente más pequeño</b> posible</td><td>Guarda las zonas grandes para las tareas grandes</td><td>Recorre toda la lista; deja remanentes tan chicos que no sirven (lámina: “en general, Best Fit produce también fragmentación externa”)</td></tr>
+<tr><td><b>BEST FIT</b></td><td>La zona donde cabe y deja el <b>remanente más pequeño</b> posible</td><td>Guarda las zonas grandes para las tareas grandes</td><td>Recorre toda la lista; deja remanentes tan chicos que no sirven (lámina: “en general, Best Fit produce también fragmentación externa”); la tarea queda justa y no puede crecer sin moverla</td></tr>
 <tr><td><b>WORST FIT</b></td><td>La zona donde cabe y deja el <b>remanente más grande</b> posible</td><td>El sobrante queda grande y útil para otra tarea</td><td>Recorre toda la lista y va destruyendo las zonas grandes: después una tarea grande ya no cabe</td></tr>
 </tbody></table></div>
 <p class="tiny">El <b>remanente</b> es lo que sobra de la zona: tamaño de la zona − b.</p>
@@ -706,8 +789,14 @@
 <div class="ans">FIRST_FIT → bloque 30 · BEST_FIT → bloque 47 · WORST_FIT → bloque 120 (igual que la pauta)</div>
 <div class="box warn"><div class="bt">Cómo escribirlo en el certamen</div>
 <p>Primero el cálculo de b, con la división. Después, para cada algoritmo, una línea con la regla (“asigna la primera zona donde cabe”, “la que deja el menor remanente”, “la que deja el mayor”) y la zona elegida. Si te piden actualizar la tabla: la zona elegida pasa a (Start + b, Size − b), y si Size − b = 0 se borra la fila.</p></div>
-<div class="box warn"><div class="bt">Las desventajas de BEST_FIT (2016, 1.7)</div>
-<p>Tiene que recorrer <b>toda</b> la lista de zonas libres para encontrar la mejor (o mantenerla ordenada por tamaño, lo que encarece cada liberación), y los remanentes que deja son tan pequeños que casi nunca le sirven a otra tarea: en vez de evitar la fragmentación externa, la produce en forma de migajas.</p></div>
+<div class="box warn"><div class="bt">Las desventajas de BEST_FIT (C1 2016 1.7 y C2 2014 1.4)</div>
+<p>Tiene que recorrer <b>toda</b> la lista de zonas libres para encontrar la mejor (salvo que encuentre una exacta), los remanentes que deja son tan pequeños que casi nunca le sirven a otra tarea (en vez de evitar la fragmentación externa, la produce en forma de migajas), y la tarea queda tan justa que <b>no puede crecer</b>: si hace un <code>malloc</code>, hay que moverla.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · “¿hay alguno de los tres que sea mejor? No”<span class="ref">Audio 19 · 49:00 / 51:00 / 52:00 / 53:00 / 55:30</span></div>
+<p>Su resumen de los algoritmos, con un ejemplo de zonas de 3, 2 y 1 bloques y una tarea de 1 bloque:</p>
+<p>· <b>FIRST FIT</b>: su objetivo es ser lo más rápido posible; pero no es bueno para la fragmentación externa (en el ejemplo deja un bloque suelto donde antes cabía una tarea de 3).</p>
+<p>· <b>BEST FIT</b>: minimiza el remanente, pero demora más (O(n), salvo que encuentre una zona exacta) y la tarea no puede crecer sin moverla.</p>
+<p>· <b>WORST FIT</b>: deja el remanente más grande para que quepa otra tarea mediana, pero va comiéndose las zonas grandes.</p>
+<p>· Mencionó un cuarto que no está en la lámina, <b>random</b> (cualquier zona donde quepa): <i>“¿es mejor que los otros? No. ¿Es peor? Tampoco”</i>. Con cualquiera de ellos la memoria termina llena de hoyos inutilizables.</p></div>
 </section>
 
 <section id="tamano-bloque" data-nav="Bloques chicos o grandes" data-p="3">
@@ -723,7 +812,7 @@
 
 <section id="compactar" data-nav="Compactar y cuánto cuesta" data-p="3">
 <h2>Compactar la memoria, y cuánto cuesta</h2>
-<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer L3.</strong> 2015 preguntó cuál técnica es posible en teoría pero no en la práctica (compactar), y el C2 2023 dio el dato “leer o escribir un byte cuesta 50 ns”, el mismo de la lámina.</p>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer L3.</strong> El C1 2015 preguntó qué técnica es posible en teoría pero no en la práctica (compactar), el C2 2014 cómo arreglar la fragmentación externa sin paginación y si es factible con una memoria grande, y el C2 2023 dio el dato “leer o escribir un byte cuesta 50 ns”.</p>
 <p>La fragmentación es un problema importante: una asignación puede <b>fallar</b> porque no hay una zona que contenga la partición, <b>aunque físicamente exista el espacio</b> en la memoria. Solución: <b>compactar</b>, es decir, correr todas las particiones hacia un extremo para que los bloques libres queden juntos en una sola zona.</p>
 <div class="mem"><div class="c nw">1</div><div class="c">2</div><div class="c">3</div><div class="c u1">4</div><div class="c u1">5</div><div class="c u1">6</div><div class="c">7</div><div class="c">8</div><div class="c u2">9</div><div class="c u2">10</div><div class="c">11</div></div>
 <p class="memcap">Antes: tres zonas libres separadas (2-3, 7-8 y 11).</p>
@@ -736,13 +825,15 @@
   <li>Si la memoria está sobrecargada, la fragmentación <b>reaparece rápidamente</b>.</li>
 </ul>
 <div class="form"><b>t = 2 × t<sub>acceso</sub> × bytes a mover</b><span class="n">Por 2 porque cada byte se lee y después se escribe. Con 50 ns: 1 MB = 2 × 50 ns × 1024² ≈ 105 ms · 1 GB ≈ 105 ms × 1024 ≈ 107 s ≈ 1 min 48 s.</span></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · un minuto y 48 segundos<span class="ref">Audio 19 · 56:00 / 57:46 / 58:00</span></div>
+<p>Compactar funciona: mover una tarea es solo cambiar su registro BASE. El problema es el costo: cada byte hay que leerlo y escribirlo, y con una RAM de 50 ns (“más o menos el estándar”), mover un GB, aun con DMA, cuesta <b>1 minuto 48 segundos</b>. El usuario no va a esperar un minuto para que parta su tarea. Su veredicto: <i>“teóricamente posible, pero totalmente inaceptable”</i>.</p></div>
 <div class="box warn"><div class="bt">Las dos técnicas para liberar espacio (2015, 3.4)</div>
 <p>Compactar la memoria o hacer swapping. <b>Compactar es teóricamente posible</b>, pero aunque se haga por hardware, el tiempo para compactar una memoria grande (varios GB) es demasiado alto para usarlo en la práctica: más de un minuto y medio por GB, con los procesos detenidos. El <b>swapping</b> se puede implementar sea cual sea el tamaño de la memoria.</p></div>
 </section>
 
 <section id="swapping" data-nav="Swapping" data-p="3">
 <h2>Swapping</h2>
-<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Salió en 2014 (1.6), 2015 (1.7 y 1.8) y como contraste en el C2 2023 (1.7: por qué la paginación mejora el swapping).</p>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Salió en los C1 de 2014 (1.6) y 2015 (1.7 y 1.8) y en los C2 de 2015 (2.7, Linux sin zona de swap), 2016 (3.5, el efecto bola de nieve) y 2023 (1.7). El profe lo explicó en la Unidad 1 con la analogía de la biblioteca.</p>
 <div class="two">
 <div class="box def"><div class="bt">Swap-Out</div><p>Descargar desde la memoria central hacia una <b>memoria secundaria persistente</b> todo o parte del espacio de trabajo de un proceso. Típicamente a una zona especial del disco, la <b>zona de swap</b>.</p></div>
 <div class="box def"><div class="bt">Swap-In</div><p>Cargar desde la zona de swap hacia la memoria central la o las partes de un proceso descargado antes.</p></div>
@@ -756,6 +847,14 @@
 </ul>
 <h4>Elegir qué proceso descargar (lámina 36)</h4>
 <p>Criterios posibles: ocupación de memoria, prioridades, tiempo de ejecución… Se pueden usar algoritmos parecidos a los de planificación (Round Robin, etc.). La elección no es fácil: <b>si el sistema necesita cargar un proceso que acaba de descargar, pierde mucho tiempo</b> y mucha eficiencia.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase (Unidad 1) · la biblioteca y la bola de nieve<span class="ref">Planificación de tareas · Voz 002_1 · 18:12 / 21:09 / 26:10 / 30:36</span></div>
+<p>El swapping lo presentó ya en la Unidad 1. Una RAM se lee en 25 a 50 nanosegundos y un disco duro en milisegundos: <b>un factor de un millón</b>. Un SSD es unas mil veces más rápido que el disco mecánico, pero sigue siendo mil veces más lento que la RAM. Por eso el disco sirve para dejar afuera una tarea que va a esperar minutos (el usuario que se fue a otra cosa), no para ir y volver todo el tiempo.</p>
+<p>Su analogía: la repisa de libros está llena y llega uno nuevo. ¿Cuál mandas a la bodega? <b>No el más viejo, el que menos usas.</b> Pero no tienes bola de cristal: a los dos días puedes necesitar justo ese, y para que vuelva tienes que sacar otro. Un swap-in puede provocar un swap-out, y eso puede volverse <b>“una bola de nieve o un círculo vicioso”</b>: swap-in, swap-out, swap-in, y el sistema deja de ser eficiente. En el C2 2016 preguntó justamente por el “efecto bola de nieve”.</p>
+<p>Y un detalle que suele preguntar en otra forma: hacer el swap-in de una tarea <b>no significa que se ejecute de inmediato</b>; vuelve a ser candidata y obtiene el procesador cuando el scheduler la elige (28:39).</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · pagar dos veces el disco<span class="ref">Audio 19 · 58:00 / 59:16 / 60:00 / 61:00</span></div>
+<p>En la clase de memoria lineal volvió al swapping como la otra salida a la fragmentación. Un swap-out casi siempre trae un swap-in futuro: <i>“voy a pagar dos veces el costo”</i> del disco (y adelantó que “veremos que no es siempre así”: es lo que permite el bit D). La ventaja es que, gracias a la MMU, la tarea puede volver a <b>otra</b> zona. El problema: se mueve la tarea completa (si ocupa 20 MB, se descargan 20 MB), hay que delegarlo a un chip adicional (DMA) y hace falta un algoritmo para elegir <b>la víctima</b>, que no es fácil. Lo comparó con sacar todos los libros de la repisa para hacerle espacio a uno.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase (Unidad 1) · los saltos absolutos<span class="ref">Planificación de tareas · Voz 002_1 · 45:42 / 47:44 / 48:50</span></div>
+<p>El problema de devolver una tarea a <b>otro lugar</b>: un salto relativo (“100 bytes más adelante”) sigue funcionando, pero un salto absoluto (“salta a la dirección 2000”) y las variables quedan apuntando a donde estaba antes. Arreglarlo cambiando las instrucciones se puede, pero es caro, porque hay que analizar el programa. Lo que se quiere es una capa intermedia que le haga creer a la aplicación que está en la dirección 1000 aunque esté en la 5000: esa capa es la MMU, y el modelo completo es la memoria virtual.</p></div>
 <div class="box warn"><div class="bt">Respuestas de pauta que conviene tener listas</div>
 <p><b>2014, 1.6 (explicar el swapping).</b> Consiste en elegir una tarea y descargarla de la memoria al disco duro para liberar espacio. El sistema debe elegir la más adecuada (la que libera el espacio requerido, la de prioridad más baja, etc.). Cuando necesita ejecutarla de nuevo (por ejemplo, le toca un quantum), debe cargarla otra vez desde el disco. El swapping tiene un costo y baja el rendimiento.</p>
 <p><b>2015, 1.8 (el peor escenario).</b> Tener que cargar de nuevo (swap-in) una tarea que acaba de descargar (swap-out). Ocurre cuando la tarea descargada es justo la elegida después por el algoritmo de scheduling.</p>
@@ -797,6 +896,8 @@
   <li><b>No es muy eficiente:</b> el costo de compactar, el costo del swapping, y la reubicación frecuente de los programas implica un costo del <i>linker</i> dinámico que puede ser importante.</li>
   <li>⇒ Hay que usar otro tipo de gestión de memoria: la <b>memoria virtual</b>.</li>
 </ul>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · “necesitamos otro modelo de memoria”<span class="ref">Audio 19 · 61:00 / 62:00 / 62:44</span></div>
+<p>Así cerró la memoria lineal: las particiones dinámicas son mejores que los overlays, pero dejan mucha fragmentación y, cuando la memoria se satura, obligan a sacar tareas completas. La salida necesita hardware adicional: <i>“una TLB y una memoria RAM hiperrápida con una función de hash”</i>, que permiten la paginación y la segmentación paginada, el modelo que usan hoy todos los sistemas, hasta el celular. Desde la clase siguiente: memoria virtual, empezando por la segmentación.</p></div>
 <div class="box warn"><div class="bt">Cómo responder la 3.2 del C2 2023</div>
 <p>Porque cada proceso necesita una zona <b>contigua</b> del tamaño de todo su espacio de trabajo. Eso produce fragmentación externa entre las particiones, que hace fallar asignaciones aunque haya memoria libre suficiente; para recuperarla hay que compactar (muy caro: unos 105 ms por MB con 50 ns por acceso) o hacer swapping de procesos completos (el disco es un millón de veces más lento que la RAM). Además el proceso debe estar cargado entero aunque use solo una parte, y cada vez que se reubica hay que retraducir sus direcciones.</p></div>
 <div class="box warn"><div class="bt">Y la 1.4 del C2 2023: ¿por qué interesa mantener más memoria libre?</div>
@@ -1093,7 +1194,7 @@
     lastBest=best;
   }
   window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
-  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k], .ej input[data-k]'));
   function upd(){
     var done=boxes.filter(function(b){return b.checked;}).length;
     document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });

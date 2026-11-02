@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lista de estudio · SO C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  /* --- agregado para el C2: probabilidad por sección --- */
+  .prio{margin:2px 0 16px;font-size:14.5px;color:var(--muted)}
+  .prio strong{color:var(--ink)}
+  .lv{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    padding:2px 9px;border-radius:999px;border:1px solid var(--line);margin-right:8px;vertical-align:1px;white-space:nowrap}
+  .lv.p3{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lv.p2{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lv.p1{color:var(--muted);border-style:dashed}
+  .lv.p0{color:var(--ex);border-color:var(--ex);background:var(--ex-soft)}
+  td .lv{margin-right:0}
+  nav a{display:flex;align-items:baseline;gap:6px}
+  nav a .nt{flex:1 1 auto;min-width:0}
+  .pd{display:inline-flex;gap:3px;align-items:center;color:var(--muted);vertical-align:1px;flex:0 0 auto}
+  .pd i{display:inline-block;width:6px;height:6px;border-radius:50%;border:1px solid currentColor;box-sizing:border-box}
+  .pd i.on{background:currentColor}
+  .pd.p3{color:var(--accent)} .pd.p2{color:var(--brand)} .pd.p0{color:var(--ex)}
+  /* --- tiras de bloques de memoria --- */
+  .mem{display:flex;flex-wrap:nowrap;gap:0;margin:10px 0 2px;overflow-x:auto;padding-bottom:2px}
+  .mem .c{flex:1 0 46px;min-width:46px;height:44px;border:1px solid var(--line);margin-right:-1px;display:grid;place-items:center;
+    font-size:11.5px;line-height:1.15;text-align:center;background:var(--panel);color:var(--ink)}
+  .mem .c small{display:block;font-size:10px;color:var(--muted)}
+  .mem .c.u1{background:var(--brand-soft);border-color:var(--brand);color:var(--brand);font-weight:700}
+  .mem .c.u2{background:var(--lib-soft);border-color:var(--lib);color:var(--lib);font-weight:700}
+  .mem .c.u3{background:var(--ana-soft);border-color:var(--ana);color:var(--ana);font-weight:700}
+  .mem .c.nw{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:700}
+  .mem .c.fx{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+  .mem .c.os{background:var(--code);color:var(--muted)}
+  .memlab{display:flex;gap:0;font-size:11.5px;color:var(--muted);margin:0 0 10px;overflow-x:auto}
+  .memlab span{flex:1 0 46px;min-width:46px;text-align:center}
+  .memcap{font-size:13px;color:var(--muted);margin:2px 0 14px}
+  /* --- dirección dividida en campos --- */
+  .addr{display:flex;margin:12px auto;max-width:620px;border-radius:9px;overflow:hidden;border:1px solid var(--line);font-size:13.5px;box-shadow:var(--shadow)}
+  .addr div{padding:9px 10px;text-align:center;border-right:1px solid var(--line)}
+  .addr div:last-child{border-right:0}
+  .addr .a1{background:var(--brand-soft);color:var(--brand);font-weight:700}
+  .addr .a2{background:var(--lib-soft);color:var(--lib);font-weight:700}
+  .addr .a3{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  .addr .a4{background:var(--ex-soft);color:var(--ex);font-weight:700}
+  .addr small{display:block;font-weight:500;color:var(--muted);font-size:11.5px}
+  /* --- tablas de páginas y de reemplazo --- */
+  table.pt td,table.pt th{text-align:center;padding:6px 8px;font-variant-numeric:tabular-nums}
+  table.pt td.bad{background:var(--no-soft);color:var(--no);font-weight:700}
+  table.pt td.ok{background:var(--accent-soft);color:var(--accent);font-weight:700}
+  table.rp{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px}
+  table.rp td,table.rp th{text-align:center;padding:4px 6px;min-width:26px}
+  table.rp td.f{background:var(--warn-soft);color:var(--warn);font-weight:700}
+  table.rp td.h{color:var(--accent);font-weight:700}
+  table.rp td.n{color:var(--ink);font-weight:700}
+  table.rp th.rh{text-align:right;color:var(--muted);background:var(--panel)}
+  .tw table.rp{min-width:0}
+  table.pila tr.pl td{border-left:2px solid var(--line);border-right:2px solid var(--line)}
+  table.wsv td{vertical-align:middle}
+  table.wsv b.pfx{color:var(--warn);background:var(--warn-soft);padding:0 4px;border-radius:4px}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.93em}
+  .q{font-weight:600}
+  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:14px 0}
+  .tiny{font-size:12.5px;color:var(--muted)}
+  /* --- página 7: flashcards --- */
+  [hidden]{display:none!important}
+  .fc-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 14px;margin:14px 0;box-shadow:var(--shadow)}
+  .fc-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .fc-row:last-child{border-bottom:0}
+  .fc-lab{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);min-width:62px}
+  .fc-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 300px}
+  .fc-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;
+    font-size:13.5px;cursor:pointer;background:var(--bg);color:var(--ink);user-select:none}
+  .fc-chip input{accent-color:var(--brand);margin:0}
+  .fc-chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
+  .fc-chip small{color:var(--muted);font-weight:400}
+  .fc-status{font-size:13px;color:var(--muted);margin:10px 2px 6px;min-height:1.3em}
+  .fc-card{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--brand);border-radius:14px;padding:18px 20px;
+    min-height:230px;box-shadow:var(--shadow);cursor:pointer;outline:none;display:flex;flex-direction:column;gap:12px}
+  .fc-card:focus-visible{box-shadow:0 0 0 3px var(--brand-soft),var(--shadow)}
+  .fc-card.flipped{border-left-color:var(--accent);cursor:default}
+  .fc-card.fc-vacio{cursor:default;border-left-color:var(--line)}
+  .fc-meta{display:flex;flex-wrap:wrap;gap:6px}
+  .fc-tag{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .fc-tag.fc-salio{color:var(--no);border-color:var(--no);background:var(--no-soft);font-weight:700}
+  .fc-front{font-size:19px;font-weight:700;line-height:1.45;color:var(--ink)}
+  .fc-hint{font-size:14.5px;color:var(--warn);background:var(--warn-soft);border-radius:8px;padding:8px 12px}
+  .fc-back{border-top:1px dashed var(--line);padding-top:12px;font-size:16px;line-height:1.65}
+  .fc-back b{color:var(--accent)}
+  .fc-src{font-size:12.8px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .fc-src b{color:var(--muted)}
+  .fc-tap{font-size:12.5px;color:var(--muted);margin-top:auto}
+  .fc-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .fc-actions .btn{flex:1 1 150px;padding:11px 12px;font-size:14.5px;font-weight:600;text-align:center}
+  .fc-actions .btn:disabled{opacity:.45;cursor:default}
+  .fc-main{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+  .fc-no{border-color:var(--no);color:var(--no);background:var(--no-soft)}
+  .fc-mid{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+  .fc-yes{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .fc-end{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0;box-shadow:var(--shadow)}
+  .fc-score{font-size:26px;font-weight:800;color:var(--brand)}
+  .fc-end ul{margin:6px 0 10px}
+  table.mini tr.fc-tot td{font-weight:700}
+  details.fc-item .body b{color:var(--accent)}
+  h3 .num{color:var(--muted);font-weight:400;font-size:.8em}
+  /* --- página 6: tarjetas de ejercicio --- */
+  .ej{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:10px;
+    padding:12px 16px 2px;margin:18px 0;box-shadow:var(--shadow)}
+  .ej.p3{border-left-color:var(--accent)} .ej.p1{border-left-color:var(--line)}
+  .ej-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:6px}
+  .ej-h input{transform:scale(1.25);accent-color:var(--brand);flex:0 0 auto;margin:0 2px 0 0}
+  .ej-n{color:var(--brand);font-weight:800;font-variant-numeric:tabular-nums}
+  .ej-t{font-weight:700;font-size:16px;flex:1 1 220px;min-width:0}
+  .ej-h.done .ej-t{text-decoration:line-through;color:var(--muted)}
+  .ej-tag{font-size:12px;color:var(--muted);white-space:nowrap}
+  .ej .meta{background:var(--code);border-radius:8px;padding:8px 12px;margin:10px 0;font-size:14px}
+  .ej .meta p{margin:3px 0}
+  .ej details.ex{margin:10px 0 14px;box-shadow:none}
+  .ej .st{font-weight:700;color:var(--accent);font-size:13.5px;margin:16px 0 4px}
+  .ej pre{white-space:pre;overflow-x:auto}
+  @media (max-width:900px){
+    .layout{align-items:stretch}
+    .content{width:100%;max-width:100%}
+    .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">6</div>
+    <div><h1>Lista de estudio</h1><small>Sistemas Operativos · INF-246 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><a href="0-Guia-de-estudio-C2.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, Working Set</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a><a href="6-Lista-de-estudio.html" class="cur"><b>6</b><span>Lista de estudio<br><small style="color:var(--muted)">día a día desde hoy, con explicaciones</small></span></a><a href="7-Flashcards.html"><b>7</b><span>Flashcards<br><small style="color:var(--muted)">conceptos al azar, con cajas de repaso</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Antes de empezar</div><a href="#l-inicio"><span class="nt">Cómo usar esta lista</span></a><a href="#l-formulas"><span class="nt">Fórmulas y de dónde salen</span></a><div class="grp">Hoy · viernes 30</div><a href="#d1"><span class="nt">Por qué empezar por el reemplazo</span></a><a href="#e1-1"><span class="nt">1.1 · FIFO de la lámina 11</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e1-2"><span class="nt">1.2 · LRU de la lámina 13</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e1-3"><span class="nt">1.3 · Working Set de la lámina 27</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e1-4"><span class="nt">1.4 · C2 2016 · sección 3</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e1-5"><span class="nt">1.5 · C2 2015 · FIFO y LRU</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e1-6"><span class="nt">1.6 · Anomalía de Belady</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#e1-7"><span class="nt">1.7 · Las preguntas cortas</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><div class="grp">Sábado 31</div><a href="#d2"><span class="nt">La tabla de páginas · qué leer</span></a><a href="#e2-0"><span class="nt">2.0 · Calentamiento: Stallings</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#e2-1"><span class="nt">2.1 · Traducir: página y offset</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#e2-2"><span class="nt">2.2 · C2 2016 · sección 2</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e2-3"><span class="nt">2.3 · C2 2023 · sección 4</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e2-4"><span class="nt">2.4 · C2 2015 · sección 2</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e2-5"><span class="nt">2.5 · TLB con los números del profe</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#e2-6"><span class="nt">2.6 · V7: otra tabla con errores</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#e2-7"><span class="nt">2.7 · V1: traducir en hexadecimal</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a><div class="grp">Domingo 1</div><a href="#d3"><span class="nt">Segmentación · qué leer</span></a><a href="#e3-0"><span class="nt">3.0 · Calentamiento: WS con escrituras</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#e3-1"><span class="nt">3.1 · S1: tabla de segmentos</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#e3-2"><span class="nt">3.2 · C2 2016 · las siete de conocimiento</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e3-3"><span class="nt">3.3 · El ejemplo de la pizarra</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#e3-4"><span class="nt">3.4 · V6: segmentación paginada con 16 KB</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#e3-5"><span class="nt">3.5 · C2 2014 · sección 2</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e3-6"><span class="nt">3.6 · Bits de segmento y tamaño de tablas</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a><div class="grp">Lunes 2</div><a href="#d4"><span class="nt">Ayudantía 4 · qué leer</span></a><a href="#e4-0"><span class="nt">4.0 · Calentamiento: la secuencia larga</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a><a href="#e4-1"><span class="nt">4.1 · Ayudantía 4 · memoria lineal</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e4-2"><span class="nt">4.2 · Ayudantía 4 · segmentación</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e4-3"><span class="nt">4.3 · Ayudantía 4 · paginación</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e4-4"><span class="nt">4.4 · Ayudantía 4 · segmentación paginada</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e4-5"><span class="nt">4.5 · C1 2015 · sección 3</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e4-6"><span class="nt">4.6 · C2 2023 · sección 3 y compactar</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#e4-7"><span class="nt">4.7 · C2 2023 · conocimiento</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e4-8"><span class="nt">4.8 · L1: cinco pedidos seguidos</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a><a href="#e4-9"><span class="nt">4.9 · L2 y L4: bits y BASE</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a><div class="grp">Martes 3</div><a href="#d5"><span class="nt">Simulacro · cómo hacerlo</span></a><a href="#e5-1"><span class="nt">5.1 · Simulacro de 90 minutos</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e5-2"><span class="nt">5.2 · Corrección dirigida</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e5-3"><span class="nt">5.3 · Una secuencia nueva</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e5-4"><span class="nt">5.4 · Flashcards de lo que ya salió</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e5-5"><span class="nt">5.5 · La chuleta, de memoria</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e5-6"><span class="nt">5.6 · Lo que el profe no iba a ver</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a><div class="grp">Miércoles 4</div><a href="#d6"><span class="nt">La mañana del certamen</span></a><a href="#e6-1"><span class="nt">6.1 · Una secuencia con 4 marcos</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e6-2"><span class="nt">6.2 · Chuleta, errores y flashcards</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#e6-3"><span class="nt">6.3 · En la sala</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a></nav>
+</aside>
+<main class="content">
+
+<section id="l-inicio" data-nav="Cómo usar esta lista" data-grp="Antes de empezar">
+<h2>Lista de estudio desde hoy</h2>
+<p class="lead">Del viernes 30 de octubre al certamen, día por día: qué leer antes, qué ejercicios hacer y, aparte, la explicación de cada uno, con la fórmula que usa o de dónde sale la materia (la sección de la guía, la lámina y el minuto del audio). Unas 15 horas, con lo confirmado por el profe primero.</p>
+<div class="kpis">
+  <div class="kpi"><b>Mié 4 nov · 14:40</b><span>fecha supuesta, en la P407</span></div>
+  <div class="kpi"><b>5 días y una mañana</b><span>≈ 15 h en total</span></div>
+  <div class="kpi"><b>41 ejercicios</b><span>cada uno con su explicación aparte</span></div>
+  <div class="kpi"><b>Reemplazo primero</b><span>FIFO, LRU y WS a mano, confirmado</span></div>
+</div>
+<div class="box warn"><div class="bt">La fecha que supuse</div>
+<p>Nadie la ha confirmado. Supuse el <b>miércoles 4 de noviembre a las 14:40</b> porque el calendario ponía el C2 el miércoles 28 de octubre, el C1 se corrió una semana (del 23 al 30 de septiembre) y las clases son los miércoles y los jueves: el miércoles siguiente a la última clase es el 4. Si resulta ser otra fecha, el orden de los días no cambia (ver “Si el certamen es antes”).</p></div>
+<div class="box tip"><div class="bt">Llegó la Ayudantía 4 (1 de noviembre)</div>
+<p>Es del propio profe y cubre memoria lineal, segmentación, paginación y segmentación paginada (no trae reemplazo de páginas). En el C1, lo que más se pareció al certamen fueron las ayudantías, así que va primero el lunes: <a class="inl" href="#e4-1">4.1 a 4.4</a>, con su pauta revisada. La pauta tiene dos errores que importan: en la 3.3, la página que escribe el ciclo es la 8, no la 7, y en la 4.1, la página [2, 2] no existe. Además, su tabla de segmentos trae un segmento ausente con D = 1 sin marcarlo como error, así que en las tablas eso ya no se cuenta como error seguro (2.2 y 2.3 del sábado).</p></div>
+<div class="cols">
+  <div class="card"><h5>Cómo se usa cada ejercicio</h5>
+    <p>1. Léelo y hazlo en papel, con reloj.</p>
+    <p>2. Si no sabes por dónde partir, mira <b>Usa</b> (la fórmula o la regla) y <b>Materia</b> (dónde está explicado).</p>
+    <p>3. Abre <b>Explicación y respuesta</b> solo al terminar, y corrige.</p>
+    <p>4. Marca la casilla: queda guardada en este navegador.</p></div>
+  <div class="card"><h5>Las etiquetas</h5>
+    <p><span class="lv p3">Imprescindible</span> lo confirmado por el profe, o lo que salió en tres o cuatro C2.</p>
+    <p><span class="lv p2">Importante</span> salió en uno o dos C2, o la lámina lo trae con números.</p>
+    <p><span class="lv p1">Si alcanza</span> no ha salido; solo si te sobra tiempo.</p></div>
+  <div class="card"><h5>Si el certamen es antes (o después)</h5>
+    <p>Antes: no cambies el orden de los días; haz solo lo imprescindible de cada uno y deja el simulacro para el día anterior (aunque sean las partes 1, 3 y 4, en 70 minutos).</p>
+    <p>Después: agrega cada mañana una secuencia del día 1, sin mirar.</p></div>
+</div>
+<h3>Tu avance</h3>
+<div class="bar"><i></i></div><p class="tiny barlbl"></p>
+<h3>Los días de un vistazo</h3>
+<div class="tw"><table class="mini"><thead><tr><th>Día</th><th>Tema</th><th>Tiempo</th><th>Ejercicios</th></tr></thead><tbody><tr><td><a class="inl" href="#d1"><b>Hoy · viernes 30</b></a></td><td>Reemplazo de páginas a mano</td><td>≈ 3 h</td><td>1.1 a 1.7</td></tr><tr><td><a class="inl" href="#d2"><b>Sábado 31</b></a></td><td>La tabla de páginas</td><td>≈ 3 h</td><td>2.0 a 2.7</td></tr><tr><td><a class="inl" href="#d3"><b>Domingo 1</b></a></td><td>Segmentación y segmentación paginada</td><td>≈ 2 h 15</td><td>3.0 a 3.6</td></tr><tr><td><a class="inl" href="#d4"><b>Lunes 2</b></a></td><td>Ayudantía 4, memoria lineal y conocimiento</td><td>≈ 3 h 10</td><td>4.0 a 4.9</td></tr><tr><td><a class="inl" href="#d5"><b>Martes 3</b></a></td><td>Simulacro y corrección</td><td>≈ 3 h 05</td><td>5.1 a 5.6</td></tr><tr><td><a class="inl" href="#d6"><b>Miércoles 4</b></a></td><td>Antes del certamen</td><td>≈ 55 min</td><td>6.1 a 6.3</td></tr></tbody></table></div>
+</section>
+
+<section id="l-formulas" data-nav="Fórmulas y de dónde salen">
+<h2>Fórmulas y de dónde salen</h2>
+<p class="lead">Todas las fórmulas y reglas que usan los ejercicios, con la lámina o el audio de donde salen. En cada ejercicio, “Usa” repite la que corresponde.</p>
+<div class="tw"><table class="mini"><thead><tr><th>Para qué</th><th>Fórmula o regla</th><th>De dónde sale</th><th>Ejercicios</th></tr></thead><tbody><tr><td><b>Cuántos bloques pide una tarea</b></td><td>b = ⌈K / tamaño del bloque⌉ · fragmentación interna = b × bloque − K</td><td>LinearMemory, lámina 27 · Ayudantía 4, 1.2 · <a class="inl" href="1-Memoria-lineal.html#nbloques">página 1</a></td><td>4.1, 4.5</td></tr><tr><td><b>Ubicar una tarea</b></td><td>FIRST: la primera zona con Size ≥ b · BEST: la de menor remanente (Size − b) · WORST: la de mayor remanente · la zona queda (Start + b, Size − b)</td><td>láminas 28 a 30 · audio 19 (49:00) · <a class="inl" href="1-Memoria-lineal.html#fit">página 1</a></td><td>4.1, 4.5, 4.6, 4.8</td></tr><tr><td><b>Arreglo de bits</b></td><td>m = (RAM / bloque) / 8 bytes</td><td>láminas 24 a 26 · <a class="inl" href="1-Memoria-lineal.html#bits">página 1</a></td><td>4.9</td></tr><tr><td><b>Costo de compactar</b></td><td>t = 2 × t<sub>acceso</sub> × bytes a mover (con 50 ns: ≈ 105 ms por MB)</td><td>láminas 31 y 32 · audio 19 (56:00) · <a class="inl" href="1-Memoria-lineal.html#compactar">página 1</a></td><td>4.6</td></tr><tr><td><b>Traducir en memoria lineal</b></td><td>@física = BASE + d si d &lt; LÍMITE; si no, TRAP</td><td>lámina 14 · audio 19 (09:00) · <a class="inl" href="1-Memoria-lineal.html#mmu-control">página 1</a></td><td>4.5, 4.9</td></tr><tr><td><b>Traducir (s, d) en segmentación</b></td><td>¿s está en la tabla del proceso? → ¿V = 1? → ¿d &lt; LÍMITE? → ¿RWX? → BASE + d</td><td>VirtualMemory, lámina 20 · <a class="inl" href="2-Segmentacion.html#mmu-completa">página 2</a></td><td>3.1, 4.2</td></tr><tr><td><b>Bits de la dirección</b></td><td>offset: K = log<sub>2</sub>(página) bits · página: n − K bits · con S bits de segmento: 2<sup>S</sup> segmentos de hasta 2<sup>64 − S</sup> B</td><td>láminas 20 y 26</td><td>2.1, 3.6</td></tr><tr><td><b>Traducir en paginación</b></td><td>página = d div 2<sup>K</sup> · offset = d mod 2<sup>K</sup> · @física = marco × 2<sup>K</sup> + offset</td><td>lámina 26 · <a class="inl" href="3-Paginacion.html#traduccion">página 3</a></td><td>2.1, 2.7</td></tr><tr><td><b>Páginas de un espacio de trabajo</b></td><td>páginas de cada zona = ⌈tamaño / tamaño de página⌉ (código, datos y pila por separado) · tab[i] de un arreglo de int está en el byte 4 × i de los datos</td><td>Ayudantía 4, 3.1 y 3.2 · <a class="inl" href="3-Paginacion.html#principio">página 3</a></td><td>4.3</td></tr><tr><td><b>Segmentación paginada</b></td><td>primero d &lt; tamaño del segmento · i = d div 2<sup>K</sup>, o = d mod 2<sup>K</sup> · @ = marco × 2<sup>K</sup> + o, con la tabla de páginas del segmento</td><td>láminas 44 a 46 · audio 22 (12:29) · <a class="inl" href="3-Paginacion.html#segpag">página 3</a></td><td>3.3, 3.4, 4.4</td></tr><tr><td><b>¿Está correcta la tabla?</b></td><td>D = 1 exige U = 1 (escribir es un acceso) y W = 1 (o COW) · el marco tiene que existir · dos páginas en un marco solo si se comparte · V = 0 con U o D en 1 no es error seguro: son valores que quedaron (el SO los reinicia al cargar)</td><td>lámina 23 · audio 20 (23:26) · Ayudantía 4, tabla de segmentos · <a class="inl" href="3-Paginacion.html#tabla-mala">página 3</a></td><td>2.2, 2.3, 2.4, 2.6</td></tr><tr><td><b>La mejor víctima según U y D</b></td><td>solo páginas con V = 1 · primero U = 0 y D = 0; después D = 0; la peor, U = 1 y D = 1</td><td>PageReplacement, láminas 5 y 6 · audio 20 (23:26) · <a class="inl" href="4-Reemplazo-de-paginas.html#nru">página 4</a></td><td>2.4</td></tr><tr><td><b>TLB (números del profe)</b></td><td>sin TLB 40 + 1 + 40 = 81 ns · HIT 1 + 1 + 40 = 42 · MISS 1 + 40 + 1 + 40 = 83 · promedio h × 42 + (1 − h) × 83</td><td>audio 20 (32:51) y audio 21 (07:38); no está en las láminas · <a class="inl" href="3-Paginacion.html#tlb">página 3</a></td><td>2.5</td></tr><tr><td><b>Tamaño de las tablas</b></td><td>indexada: 2<sup>bits de página</sup> entradas por proceso · invertida: RAM / página entradas en total</td><td>láminas 35 y 42 · <a class="inl" href="3-Paginacion.html#V3">página 3</a></td><td>3.6</td></tr><tr><td><b>FIFO</b></td><td>acierto: la lista no se mueve · page fault: entra arriba y sale la de abajo (la que entró primero)</td><td>lámina 11 · audio 23 (27:31) · <a class="inl" href="4-Reemplazo-de-paginas.html#fifo">página 4</a></td><td>1.1, 1.5, 1.6, 2.0, 4.0, 5.3, 6.1</td></tr><tr><td><b>LRU</b></td><td>acierto: la página sube arriba · page fault: entra arriba y sale la de abajo (la usada hace más tiempo)</td><td>lámina 13 · audio 23 (30:53) · <a class="inl" href="4-Reemplazo-de-paginas.html#lru">página 4</a></td><td>1.2, 1.4, 1.5, 2.0, 4.0, 5.3, 6.1</td></tr><tr><td><b>Working Set</b></td><td>ventanas fijas de Δt · page fault si no está en memoria (WS anterior + lo cargado en la ventana) · al cerrar: WS = las páginas usadas (U = 1), se libera el resto y se escriben las liberadas con D = 1</td><td>láminas 25 a 30 · audio 23 (39:50) · <a class="inl" href="4-Reemplazo-de-paginas.html#conjunto">página 4</a></td><td>1.3, 1.4, 3.0, 4.0, 5.3, 6.1</td></tr><tr><td><b>Contar los page faults</b></td><td>se cuentan también los de la carga inicial (“son inevitables”)</td><td>lámina 11 · audio 23 (23:41) · <a class="inl" href="4-Reemplazo-de-paginas.html#cadena">página 4</a></td><td>todos los de reemplazo</td></tr></tbody></table></div>
+</section>
+
+<section id="d1" data-grp="Hoy · viernes 30" data-nav="Por qué empezar por el reemplazo">
+<h2>Hoy, viernes 30 de octubre · Reemplazo de páginas a mano <span class="num">≈ 3 h</span></h2>
+<p class="lead">Es lo único que el profe confirmó que hay que saber hacer a mano (audio 23, 42:35: “tienen que saber sí o sí ejecutar a mano FIFO, LRU […] con el ejemplo igual que lo que vimos”), y salió en tres de los cuatro C2. Es mecánico: si te sabes las reglas, son puntos seguros. Por eso va primero, con la última clase fresca.</p>
+<div class="day"><h4>Antes de empezar, lee</h4><div class="when">≈ 25 min</div><ul class="check"><li><input type="checkbox" data-k="lista-d1-l0"><span><a class="inl" href="4-Reemplazo-de-paginas.html#problema">Página 4 · El problema: elegir la víctima</a> y <a class="inl" href="4-Reemplazo-de-paginas.html#cadena">Cómo se ejecuta a mano</a> (15 min): qué es la víctima y el formato de pila del profe.</span></li><li><input type="checkbox" data-k="lista-d1-l1"><span><a class="inl" href="4-Reemplazo-de-paginas.html#conjunto">Página 4 · Working Set</a>, hasta la tabla de la lámina 27 (10 min): las ventanas fijas.</span></li></ul></div>
+<div class="ej p3" id="e1-1" data-nav="1.1 · FIFO de la lámina 11" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-1.1" aria-label="Hecho"><span class="ej-n">1.1</span><span class="ej-t">FIFO de la lámina 11</span><span class="lv p3">Imprescindible</span><span class="ej-tag">lámina 11 · 15 min</span></div>
+<p>Secuencia de accesos 1, 2, 3, 4, 1, 2, 5, 1, 2, 3 con <b>4 marcos</b>. Ejecuta FIFO con el formato del profe: una columna por acceso, PF arriba cuando falla y la lista debajo. ¿Cuántos page faults hay y cuáles son las víctimas?</p>
+<div class="meta"><p><b>Usa:</b> FIFO es una cola. Acierto: la lista no se mueve. Page fault: la nueva entra arriba y, si la lista está llena, sale la de abajo (la que entró primero). Los page faults de la carga inicial también cuentan.</p><p><b>Materia:</b> <a class="inl" href="4-Reemplazo-de-paginas.html#fifo">página 4 · FIFO</a> y <a class="inl" href="4-Reemplazo-de-paginas.html#cadena">Cómo se ejecuta a mano</a> · lámina 11 · audio 23 (23:41 la pizarra, 27:31 FIFO)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="f">4</td><td>4</td><td>4</td><td class="f">5</td><td class="f">1</td><td class="f">2</td><td class="f">3</td></tr><tr class="pl"><th class="rh"></th><td></td><td>1</td><td>2</td><td>3</td><td>3</td><td>3</td><td>4</td><td>5</td><td>1</td><td>2</td></tr><tr class="pl"><th class="rh"></th><td></td><td></td><td>1</td><td>2</td><td>2</td><td>2</td><td>3</td><td>4</td><td>5</td><td>1</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td></td><td>1</td><td>1</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td></tr></table></div><p class="tiny">8 page faults en 10 accesos (contando los 4 de la carga inicial).</p>
+<p>Los cuatro primeros accesos llenan los marcos: 4 page faults que ningún algoritmo evita. El 1 y el 2 son aciertos y en FIFO <b>no mueven la lista</b>, así que el 1 sigue abajo aunque se acaba de usar.</p>
+<p>Cuando llega el 5 sale el 1 (el primero que entró), que se necesita en el acceso siguiente: page fault. Pasa lo mismo con el 2 y el 3. Es lo que el profe llamó “eficiencia cero”: FIFO no mira el uso, solo el orden de llegada.</p>
+<div class="ans">8 page faults (4 de la carga inicial y 4 reemplazos). Víctimas, en orden: 1, 2, 3 y 4.</div>
+</div></details>
+</div>
+<div class="ej p3" id="e1-2" data-nav="1.2 · LRU de la lámina 13" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-1.2" aria-label="Hecho"><span class="ej-n">1.2</span><span class="ej-t">LRU de la lámina 13</span><span class="lv p3">Imprescindible</span><span class="ej-tag">lámina 13 · 15 min</span></div>
+<p>La misma secuencia (1, 2, 3, 4, 1, 2, 5, 1, 2, 3) y los mismos 4 marcos, ahora con LRU. ¿Cuántos page faults y qué víctimas? Compara con 1.1.</p>
+<div class="meta"><p><b>Usa:</b> LRU es la lista ordenada por uso. Acierto: la página sube arriba y las que estaban encima bajan un puesto. Page fault: entra arriba y sale la de abajo, la usada hace más tiempo.</p><p><b>Materia:</b> <a class="inl" href="4-Reemplazo-de-paginas.html#lru">página 4 · LRU</a> · lámina 13 (y la errata de la lámina 12: R−1 es la página <b>más</b> reciente) · audio 23 (30:53)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td></td><td></td><td class="f">PF</td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="f">4</td><td class="h">1</td><td class="h">2</td><td class="f">5</td><td class="h">1</td><td class="h">2</td><td class="f">3</td></tr><tr class="pl"><th class="rh"></th><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>2</td><td>5</td><td>1</td><td>2</td></tr><tr class="pl"><th class="rh"></th><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>2</td><td>5</td><td>1</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>4</td><td>4</td><td>5</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td></td><td>3</td><td></td><td></td><td>4</td></tr></table></div><p class="tiny">6 page faults en 10 accesos (contando los 4 de la carga inicial).</p>
+<p>La diferencia está en los aciertos: cuando se usan el 1 y el 2, suben arriba, y el 3 y el 4 quedan abajo. Al llegar el 5 sale el 3 (el usado hace más tiempo), no el 1. Después el 1 y el 2 aciertan, y cuando vuelve el 3 sale el 4.</p>
+<div class="ans">6 page faults (4 iniciales y 2 reemplazos). Víctimas: 3 y 4. LRU le gana a FIFO por dos porque respeta la localidad: lo que se acaba de usar se queda.</div>
+</div></details>
+</div>
+<div class="ej p3" id="e1-3" data-nav="1.3 · Working Set de la lámina 27" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-1.3" aria-label="Hecho"><span class="ej-n">1.3</span><span class="ej-t">Working Set de la lámina 27</span><span class="lv p3">Imprescindible</span><span class="ej-tag">láminas 27 a 30 · 20 min</span></div>
+<p>Secuencia 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5 con una ventana <b>Δt = 4</b>. Para cada ventana, di qué hay en memoria al empezar, qué accesos fallan, el Working Set al cerrar y qué páginas se liberan. ¿Cuántos page faults en total?</p>
+<div class="meta"><p><b>Usa:</b> Ventanas fijas: accesos 1-4, 5-8 y 9-12. Hay page fault si la página no está en memoria (el WS de la ventana anterior más lo que ya se cargó en esta). Al cerrar la ventana, WS = las páginas distintas usadas en ella (U = 1); el resto se libera.</p><p><b>Materia:</b> <a class="inl" href="4-Reemplazo-de-paginas.html#conjunto">página 4 · Working Set</a> · láminas 25 a 30 (la 30 dice cómo lo arma el sistema) · audio 23 (39:50)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<div class="tw"><table class="mini wsv"><thead><tr><th>Ventana</th><th>Accesos</th><th>En memoria al empezar</th><th>Page faults</th><th>WS al final (U = 1)</th><th>Se liberan</th></tr></thead><tbody><tr><td>1 · t = 1–4</td><td class="mono"><b class="pfx">1</b> <b class="pfx">2</b> <b class="pfx">3</b> <b class="pfx">4</b></td><td>∅</td><td>4 (1, 2, 3, 4)</td><td><b>{1, 2, 3, 4}</b> · 4 pág.</td><td>—</td></tr><tr><td>2 · t = 5–8</td><td class="mono">1 2 <b class="pfx">5</b> 1</td><td>{1, 2, 3, 4}</td><td>1 (5)</td><td><b>{1, 2, 5}</b> · 3 pág.</td><td>{3, 4}</td></tr><tr><td>3 · t = 9–12</td><td class="mono">2 <b class="pfx">3</b> <b class="pfx">4</b> 5</td><td>{1, 2, 5}</td><td>2 (3, 4)</td><td><b>{2, 3, 4, 5}</b> · 4 pág.</td><td>{1}</td></tr></tbody></table></div><p class="tiny">7 page faults en 12 accesos con ventanas fijas de Δt = 4 (contando los iniciales). En negrita, el acceso que provocó cada fallo.</p>
+<p>Ventana 1: la memoria está vacía y los cuatro accesos fallan. WS = {1, 2, 3, 4}.</p>
+<p>Ventana 2: en memoria están {1, 2, 3, 4}; el 1 y el 2 aciertan y el 5 falla. Al cerrar, WS = {1, 2, 5}: el 3 y el 4 no se usaron y se liberan.</p>
+<p>Ventana 3: en memoria quedan {1, 2, 5}; fallan el 3 y el 4. WS = {2, 3, 4, 5} y se libera el 1.</p>
+<div class="ans">7 page faults (4 + 1 + 2). El Working Set mide 4, 3 y 4 páginas: los marcos del proceso cambian según lo que usa.</div>
+<p class="tiny">Los libros y los videos usan una ventana que avanza en cada acceso y dan otros números. En el certamen, la del profe: ventanas fijas.</p>
+</div></details>
+</div>
+<div class="ej p3" id="e1-4" data-nav="1.4 · C2 2016 · sección 3" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-1.4" aria-label="Hecho"><span class="ej-n">1.4</span><span class="ej-t">C2 2016 · sección 3 completa (25 puntos)</span><span class="lv p3">Imprescindible</span><span class="ej-tag">C2 2016 · 35 min</span></div>
+<p>3.1 ¿Para qué sirve un algoritmo de reemplazo de páginas? ¿Cuál es la página víctima?</p>
+<p>Considera la secuencia 1 | 2 | 3 | 1 | 1 | 4 | 5 | 2 | 1 | 2 | 3 | 1 y una memoria de solo <b>3 marcos</b>. 3.2 Ejecútala con LRU: ¿cuántos page faults? 3.3 Ejecútala con Working Set, ventana de 4 accesos: ¿cuántos page faults?</p>
+<p>3.4 En general, ¿qué ventaja tiene el Working Set para la saturación de la memoria? ¿Qué tasa permite aumentar en el sistema? 3.5 ¿Cuál es el peor escenario para un algoritmo de reemplazo? Explica el efecto bola de nieve.</p>
+<div class="meta"><p><b>Usa:</b> Las reglas de 1.2 (LRU) y de 1.3 (Working Set). 3.1, 3.4 y 3.5 son de teoría: ver “Materia”.</p><p><b>Materia:</b> <a class="inl" href="4-Reemplazo-de-paginas.html#ex2016r">página 4 · C2 2016</a> · 3.1: <a class="inl" href="4-Reemplazo-de-paginas.html#problema">El problema</a> (láminas 2 y 7) · 3.4: lámina 31 y audio 23 (39:50) · 3.5: <a class="inl" href="4-Reemplazo-de-paginas.html#caida">Multiprogramación y caída</a> (láminas 32 a 34)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p class="st">3.1</p>
+<p>Cuando hay un page fault y no queda ningún marco libre, el algoritmo elige qué página descargar (swap out) para hacerle espacio a la nueva, buscando el menor costo y no tener que volver a cargarla enseguida. La víctima es esa página: idealmente la que no se usará por más tiempo; en la práctica, una poco usada últimamente y, si se puede, limpia (D = 0: no hay que escribirla).</p>
+<p class="st">3.2 · LRU con 3 marcos</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">1</td><td class="n">1</td><td class="n">4</td><td class="n">5</td><td class="n">2</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">1</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="h">1</td><td class="h">1</td><td class="f">4</td><td class="f">5</td><td class="f">2</td><td class="f">1</td><td class="h">2</td><td class="f">3</td><td class="h">1</td></tr><tr class="pl"><th class="rh"></th><td></td><td>1</td><td>2</td><td>3</td><td>3</td><td>1</td><td>4</td><td>5</td><td>2</td><td>1</td><td>2</td><td>3</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td>1</td><td>2</td><td>2</td><td>3</td><td>1</td><td>4</td><td>5</td><td>5</td><td>1</td><td>2</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td>2</td><td>3</td><td>1</td><td>4</td><td></td><td>5</td><td></td></tr></table></div><p class="tiny">8 page faults en 12 accesos (contando los 3 de la carga inicial).</p>
+<div class="ans">8 page faults: 3 de la carga inicial y 5 reemplazos (víctimas 2, 3, 1, 4 y 5).</div>
+<p class="st">3.3 · Working Set, Δt = 4</p>
+<div class="tw"><table class="mini wsv"><thead><tr><th>Ventana</th><th>Accesos</th><th>En memoria al empezar</th><th>Page faults</th><th>WS al final (U = 1)</th><th>Se liberan</th></tr></thead><tbody><tr><td>1 · t = 1–4</td><td class="mono"><b class="pfx">1</b> <b class="pfx">2</b> <b class="pfx">3</b> 1</td><td>∅</td><td>3 (1, 2, 3)</td><td><b>{1, 2, 3}</b> · 3 pág.</td><td>—</td></tr><tr><td>2 · t = 5–8</td><td class="mono">1 <b class="pfx">4</b> <b class="pfx">5</b> 2</td><td>{1, 2, 3}</td><td>2 (4, 5)</td><td><b>{1, 2, 4, 5}</b> · 4 pág.</td><td>{3}</td></tr><tr><td>3 · t = 9–12</td><td class="mono">1 2 <b class="pfx">3</b> 1</td><td>{1, 2, 4, 5}</td><td>1 (3)</td><td><b>{1, 2, 3}</b> · 3 pág.</td><td>{4, 5}</td></tr></tbody></table></div><p class="tiny">6 page faults en 12 accesos con ventanas fijas de Δt = 4 (contando los iniciales). En negrita, el acceso que provocó cada fallo.</p>
+<div class="ans">6 page faults (3 + 2 + 1).</div>
+<p>Conviene comentarlo en la respuesta: en la ventana 2 el proceso llega a tener 5 páginas en memoria ({1, 2, 3} más el 4 y el 5), más que los 3 marcos del enunciado. Con Working Set, los marcos los decide el algoritmo (lámina 26).</p>
+<p class="st">3.4</p>
+<p>Adapta los marcos de cada proceso a lo que de verdad usa: al cerrar cada ventana libera los marcos de las páginas no usadas (limpieza preventiva, antes de que la memoria se sature) y escribe juntas en el disco las que estaban sucias. Al no desperdiciar marcos caben más procesos sin caer en la bola de nieve: permite aumentar la <b>tasa de multiprogramación</b> y, con ella, la ocupación del procesador.</p>
+<p class="st">3.5</p>
+<p>El peor escenario es sacar justo la página que se va a necesitar enseguida. El page fault siguiente la trae de vuelta y, para hacerle espacio, saca otra que también se necesita, que provoca otro page fault, y así en cadena: la bola de nieve. Con mucha multiprogramación los page faults crecen de forma explosiva, todos los procesos esperan al disco y la ocupación del procesador se desploma (láminas 32 a 34).</p>
+</div></details>
+</div>
+<div class="ej p3" id="e1-5" data-nav="1.5 · C2 2015 · FIFO y LRU" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-1.5" aria-label="Hecho"><span class="ej-n">1.5</span><span class="ej-t">C2 2015 · 2.5: FIFO y LRU con 3 marcos</span><span class="lv p3">Imprescindible</span><span class="ej-tag">C2 2015 · 20 min</span></div>
+<p>Las páginas de P0 se usaron en este orden: 3, 1, 2, 3, 3, 1, 4, 3, 4, 1, 3. El sistema tiene solo <b>3 marcos</b> y, cuando están ocupados, elige una víctima para un swap out. ¿Qué página elige FIFO y cuál LRU? ¿Cuántos page faults genera cada uno?</p>
+<div class="meta"><p><b>Usa:</b> Las reglas de 1.1 y 1.2. “La página elegida” es la primera víctima: la que sale cuando llega el 4.</p><p><b>Materia:</b> <a class="inl" href="4-Reemplazo-de-paginas.html#ex2015r">página 4 · C2 2015</a> · láminas 11 y 13</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p class="st">FIFO</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">3</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">3</td><td class="n">1</td><td class="n">4</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">3</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">3</td><td class="f">1</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td class="f">4</td><td class="f">3</td><td>3</td><td class="f">1</td><td>1</td></tr><tr class="pl"><th class="rh"></th><td></td><td>3</td><td>1</td><td>1</td><td>1</td><td>1</td><td>2</td><td>4</td><td>4</td><td>3</td><td>3</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td>3</td><td>3</td><td>3</td><td>3</td><td>1</td><td>2</td><td>2</td><td>4</td><td>4</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td></td><td>3</td><td>1</td><td></td><td>2</td><td></td></tr></table></div><p class="tiny">6 page faults en 11 accesos (contando los 3 de la carga inicial).</p>
+<p class="st">LRU</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">3</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">3</td><td class="n">1</td><td class="n">4</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">3</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td></td><td class="f">PF</td><td></td><td></td><td></td><td></td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">3</td><td class="f">1</td><td class="f">2</td><td class="h">3</td><td class="h">3</td><td class="h">1</td><td class="f">4</td><td class="h">3</td><td class="h">4</td><td class="h">1</td><td class="h">3</td></tr><tr class="pl"><th class="rh"></th><td></td><td>3</td><td>1</td><td>2</td><td>2</td><td>3</td><td>1</td><td>4</td><td>3</td><td>4</td><td>1</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td>3</td><td>1</td><td>1</td><td>2</td><td>3</td><td>1</td><td>1</td><td>3</td><td>4</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td></td><td>2</td><td></td><td></td><td></td><td></td></tr></table></div><p class="tiny">4 page faults en 11 accesos (contando los 3 de la carga inicial).</p>
+<p>Cuando llega el 4 están el 3, el 1 y el 2. FIFO saca el <b>3</b>, el primero que entró, aunque se usó dos veces justo antes; como el 3 se pide en el acceso siguiente, vuelve a fallar y arrastra dos víctimas más (el 1 y el 2). LRU saca el <b>2</b>, el usado hace más tiempo, y no vuelve a fallar.</p>
+<div class="ans">FIFO: 6 page faults, primera víctima el 3 (después el 1 y el 2). LRU: 4 page faults, víctima el 2.</div>
+</div></details>
+</div>
+<div class="ej p2" id="e1-6" data-nav="1.6 · Anomalía de Belady" data-p="2">
+<div class="ej-h"><input type="checkbox" data-k="lista-1.6" aria-label="Hecho"><span class="ej-n">1.6</span><span class="ej-t">La anomalía de Belady: FIFO con 3 y con 4 marcos</span><span class="lv p2">Importante</span><span class="ej-tag">lámina 15 · 15 min</span></div>
+<p>Secuencia 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5. Ejecuta FIFO con 3 marcos y después con 4. ¿Qué pasa con el número de page faults? ¿Le pasaría lo mismo a LRU?</p>
+<div class="meta"><p><b>Usa:</b> Las reglas de FIFO de 1.1, dos veces.</p><p><b>Materia:</b> <a class="inl" href="4-Reemplazo-de-paginas.html#belady">página 4 · Anomalía de Belady</a> · lámina 15 · audio 23 (44:47)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p class="st">FIFO con 3 marcos</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">5</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td></td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="f">4</td><td class="f">1</td><td class="f">2</td><td class="f">5</td><td>5</td><td>5</td><td class="f">3</td><td class="f">4</td><td>4</td></tr><tr class="pl"><th class="rh"></th><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>2</td><td>2</td><td>2</td><td>5</td><td>3</td><td>3</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>1</td><td>1</td><td>2</td><td>5</td><td>5</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td></td><td></td><td>1</td><td>2</td><td></td></tr></table></div><p class="tiny">9 page faults en 12 accesos (contando los 3 de la carga inicial).</p>
+<p class="st">FIFO con 4 marcos</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">5</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="f">4</td><td>4</td><td>4</td><td class="f">5</td><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="f">4</td><td class="f">5</td></tr><tr class="pl"><th class="rh"></th><td></td><td>1</td><td>2</td><td>3</td><td>3</td><td>3</td><td>4</td><td>5</td><td>1</td><td>2</td><td>3</td><td>4</td></tr><tr class="pl"><th class="rh"></th><td></td><td></td><td>1</td><td>2</td><td>2</td><td>2</td><td>3</td><td>4</td><td>5</td><td>1</td><td>2</td><td>3</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td></td><td>1</td><td>1</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>1</td><td>2</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>1</td></tr></table></div><p class="tiny">10 page faults en 12 accesos (contando los 4 de la carga inicial).</p>
+<p>Con un marco más, FIFO hace un page fault <b>más</b>: es la anomalía de Belady. Pasa porque FIFO decide solo por el orden de llegada, y con 4 marcos ese orden lo lleva a sacar justo las páginas que vuelven enseguida.</p>
+<p>LRU no la tiene: con la misma secuencia da 10 page faults con 3 marcos y 8 con 4 (ejercicio R2 de la página 4). Con LRU, más marcos nunca empeora.</p>
+<div class="ans">FIFO: 9 page faults con 3 marcos y 10 con 4. Es la anomalía de Belady; LRU baja de 10 a 8.</div>
+</div></details>
+</div>
+<div class="ej p3" id="e1-7" data-nav="1.7 · Las preguntas cortas" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-1.7" aria-label="Hecho"><span class="ej-n">1.7</span><span class="ej-t">Las preguntas cortas de reemplazo</span><span class="lv p3">Imprescindible</span><span class="ej-tag">C2 2014 · láminas · 20 min</span></div>
+<p>Respóndelas en voz alta o en 3 a 5 líneas cada una:</p>
+<ul><li>a) ¿Existe un algoritmo de reemplazo óptimo? ¿Se puede aplicar?</li><li>b) ¿Qué característica debe tener la página víctima? (C2 2014, 2.5)</li><li>c) Explica cómo funciona LRU. ¿Por qué no se puede usar sin ayuda del procesador? (C2 2014, 2.6)</li><li>d) ¿Qué es la anomalía de Belady y qué algoritmo la tiene?</li><li>e) ¿Cómo construye el sistema el Working Set?</li><li>f) ¿Por qué los bits U y D ayudan, pero no bastan para elegir la víctima?</li></ul>
+<div class="meta"><p><b>Materia:</b> <a class="inl" href="4-Reemplazo-de-paginas.html#opt">página 4 · Los algoritmos y el óptimo</a> (láminas 7 a 9; audio 23, 17:40) · <a class="inl" href="4-Reemplazo-de-paginas.html#lru">LRU</a> (láminas 12 a 15; audio 23, 35:47) · <a class="inl" href="4-Reemplazo-de-paginas.html#belady">Belady</a> (lámina 15) · <a class="inl" href="4-Reemplazo-de-paginas.html#conjunto">Working Set</a> (lámina 30) · <a class="inl" href="4-Reemplazo-de-paginas.html#nru">U y D</a> (audio 23, 03:16)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>a)</b> Sí: sacar la página que no se va a usar por más tiempo. No se puede aplicar, porque exige conocer de antemano toda la secuencia de accesos (“la bola de cristal”) y hay procesos no deterministas. Por eso se usan aproximaciones, que a veces se equivocan.</p>
+<p><b>b)</b> Idealmente, ser la que no se usará por más tiempo, para no provocar un page fault con ella enseguida. Como no se conoce el futuro: una página poco usada últimamente y, si se puede, limpia (D = 0), para no tener que escribirla en el disco.</p>
+<p><b>c)</b> LRU mantiene las páginas ordenadas por uso: R−1 es la usada más recientemente y R−k la usada hace más tiempo. En cada acceso la página usada pasa arriba; con k marcos están R−1 a R−k y la víctima es R−k. Elegir la víctima es inmediato, pero la lista hay que reordenarla en <b>cada acceso a memoria</b>: por software es impagable, así que necesita hardware (un TLB ordenado). Sin él se aproxima, por ejemplo con el Working Set.</p>
+<p><b>d)</b> Que con más marcos haya más page faults. La tiene FIFO (en 1.6: 9 con 3 marcos y 10 con 4); LRU no.</p>
+<p><b>e)</b> Al empezar cada ventana pone U = 0 en las páginas del proceso y arma un temporizador de Δt. Durante la ventana la MMU pone U = 1 en las que se usan, y el WS crece con cada page fault. Cuando el temporizador interrumpe: WS = las páginas con U = 1; los marcos de las que tienen U = 0 se liberan, y las liberadas con D = 1 se escriben en el disco.</p>
+<p><b>f)</b> Porque no son contadores: U = 1 dice que la página se usó, no cuántas veces ni cuándo. Con dos páginas en U = 1 no se sabe cuál se usó más (audio 23, 03:16). Sirven para una primera selección (U = 0 y D = 0 es la mejor candidata), no para ordenar.</p>
+</div></details>
+</div>
+<div class="box tip"><div class="bt">Al terminar el día</div><p>Antes de cerrar el día, en una hoja limpia rehaz 1.1, 1.2 y 1.3 sin mirar. Si las tres tablas te salen iguales, el formato ya está.</p></div>
+</section>
+
+<section id="d2" data-grp="Sábado 31" data-nav="La tabla de páginas · qué leer">
+<h2>Sábado 31 de octubre · La tabla de páginas <span class="num">≈ 3 h</span></h2>
+<p class="lead">La sección de memoria virtual vale 25 a 35 puntos y es la que más se repite: los cuatro C2 preguntaron por U y D, tres dieron una tabla para revisar y tres pidieron el page fault. Hoy: traducir direcciones, leer una tabla de páginas, encontrarle los errores y la TLB.</p>
+<div class="day"><h4>Antes de empezar, lee</h4><div class="when">≈ 50 min</div><ul class="check"><li><input type="checkbox" data-k="lista-d2-l0"><span><a class="inl" href="3-Paginacion.html#principio">Página 3 · Páginas y marcos</a> y <a class="inl" href="3-Paginacion.html#tabla-pag">La tabla de páginas y sus bits</a> (20 min): qué es cada bit y quién lo cambia.</span></li><li><input type="checkbox" data-k="lista-d2-l1"><span><a class="inl" href="3-Paginacion.html#traduccion">Traducir</a> y <a class="inl" href="3-Paginacion.html#control">Los tres controles y sus errores</a> (15 min): página, offset y marco.</span></li><li><input type="checkbox" data-k="lista-d2-l2"><span><a class="inl" href="3-Paginacion.html#page-fault">El page fault paso a paso</a> y <a class="inl" href="3-Paginacion.html#tabla-mala">Encontrar errores en una tabla</a> (15 min): las reglas que usan 2.2 a 2.6.</span></li></ul></div>
+<div class="ej p2" id="e2-0" data-nav="2.0 · Calentamiento: Stallings" data-p="2">
+<div class="ej-h"><input type="checkbox" data-k="lista-2.0" aria-label="Hecho"><span class="ej-n">2.0</span><span class="ej-t">Calentamiento: FIFO y LRU con otra secuencia</span><span class="lv p2">Importante</span><span class="ej-tag">15 min · sin mirar</span></div>
+<p>Secuencia 2, 3, 2, 1, 5, 2, 4, 5, 3, 2, 5, 2 con 3 marcos. FIFO y LRU: page faults y víctimas, sin mirar nada.</p>
+<div class="meta"><p><b>Usa:</b> Las reglas de FIFO y LRU del día 1.</p><p><b>Materia:</b> <a class="inl" href="4-Reemplazo-de-paginas.html#R4">página 4 · R4</a> (la secuencia del libro de Stallings)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p class="st">FIFO</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">2</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">5</td><td class="n">2</td><td class="n">4</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">2</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">2</td><td class="f">3</td><td>3</td><td class="f">1</td><td class="f">5</td><td class="f">2</td><td class="f">4</td><td>4</td><td class="f">3</td><td>3</td><td class="f">5</td><td class="f">2</td></tr><tr class="pl"><th class="rh"></th><td></td><td>2</td><td>2</td><td>3</td><td>1</td><td>5</td><td>2</td><td>2</td><td>4</td><td>4</td><td>3</td><td>5</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td></td><td>2</td><td>3</td><td>1</td><td>5</td><td>5</td><td>2</td><td>2</td><td>4</td><td>3</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td>2</td><td>3</td><td>1</td><td></td><td>5</td><td></td><td>2</td><td>4</td></tr></table></div><p class="tiny">9 page faults en 12 accesos (contando los 3 de la carga inicial).</p>
+<p class="st">LRU</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">2</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">5</td><td class="n">2</td><td class="n">4</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">2</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td><td></td><td></td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">2</td><td class="f">3</td><td class="h">2</td><td class="f">1</td><td class="f">5</td><td class="h">2</td><td class="f">4</td><td class="h">5</td><td class="f">3</td><td class="f">2</td><td class="h">5</td><td class="h">2</td></tr><tr class="pl"><th class="rh"></th><td></td><td>2</td><td>3</td><td>2</td><td>1</td><td>5</td><td>2</td><td>4</td><td>5</td><td>3</td><td>2</td><td>5</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td></td><td>3</td><td>2</td><td>1</td><td>5</td><td>2</td><td>4</td><td>5</td><td>3</td><td>3</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td>3</td><td></td><td>1</td><td></td><td>2</td><td>4</td><td></td><td></td></tr></table></div><p class="tiny">7 page faults en 12 accesos (contando los 3 de la carga inicial).</p>
+<div class="ans">FIFO: 9 page faults (víctimas 2, 3, 1, 5, 2 y 4). LRU: 7 (víctimas 3, 1, 2 y 4). La diferencia sale de los aciertos del 2: en LRU lo suben y nunca llega abajo.</div>
+</div></details>
+</div>
+<div class="ej p2" id="e2-1" data-nav="2.1 · Traducir: página y offset" data-p="2">
+<div class="ej-h"><input type="checkbox" data-k="lista-2.1" aria-label="Hecho"><span class="ej-n">2.1</span><span class="ej-t">Traducir: página, offset y dirección física</span><span class="lv p2">Importante</span><span class="ej-tag">lámina 26 · 15 min</span></div>
+<p>a) Con páginas de 1 KB, ¿en qué página y con qué offset están las direcciones 3 085, 42 095 y 215 201?</p>
+<p>b) Con páginas de 16 KB, la dirección 50 000 está en una página cargada en el marco 20. ¿Cuál es la dirección física?</p>
+<p>c) Con direcciones de 32 bits y páginas de 8 KB, ¿cuántos bits son del número de página y cuántos del offset? (C2 2015, 2.1)</p>
+<p>d) En la dirección paginada (page, offset), ¿qué representa el offset? (C2 2016, 1.3)</p>
+<div class="meta"><p><b>Usa:</b> K = log<sub>2</sub>(tamaño de página) · página = d div 2<sup>K</sup> · offset = d mod 2<sup>K</sup> · @física = marco × 2<sup>K</sup> + offset · bits de página = bits de la dirección − K</p><p><b>Materia:</b> <a class="inl" href="3-Paginacion.html#traduccion">página 3 · Traducir</a> · lámina 26</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<div class="tw"><table class="mini"><thead><tr><th>Dirección</th><th>Página = d div 1 024</th><th>Offset = d mod 1 024</th></tr></thead><tbody><tr><td>3 085</td><td>3</td><td>13</td></tr><tr><td>42 095</td><td>41</td><td>111</td></tr><tr><td>215 201</td><td>210</td><td>161</td></tr></tbody></table></div>
+<p><b>b)</b> 16 KB = 2<sup>14</sup> = 16 384 B. 50 000 div 16 384 = 3, y el offset es 50 000 − 3 × 16 384 = 848. Física: 20 × 16 384 + 848 = <b>328 528</b>.</p>
+<p><b>c)</b> 8 KB = 2<sup>13</sup> B → <b>13 bits de offset</b> y 32 − 13 = <b>19 bits de número de página</b> (2<sup>19</sup> páginas virtuales).</p>
+<p><b>d)</b> El desplazamiento del byte dentro de la página, contado desde su comienzo: los K bits bajos de la dirección. Es el mismo en la dirección virtual y en la física; la MMU solo cambia el número de página por el de marco.</p>
+<div class="ans">(3, 13), (41, 111), (210, 161) · 328 528 · 19 bits de página y 13 de offset.</div>
+</div></details>
+</div>
+<div class="ej p3" id="e2-2" data-nav="2.2 · C2 2016 · sección 2" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-2.2" aria-label="Hecho"><span class="ej-n">2.2</span><span class="ej-t">C2 2016 · sección 2 “Memoria virtual” (25 puntos)</span><span class="lv p3">Imprescindible</span><span class="ej-tag">C2 2016 · 30 min</span></div>
+<p>Tabla de páginas virtuales:</p>
+<div class="tw"><table class="mini"><thead><tr><th>Page</th><th>V</th><th>U</th><th>D</th><th>RWX</th><th>Frame</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>1</td><td>101</td><td>20</td></tr><tr><td>1</td><td>1</td><td>0</td><td>1</td><td>111</td><td>21</td></tr><tr><td>2</td><td>1</td><td>1</td><td>1</td><td>100</td><td>30</td></tr><tr><td>3</td><td>0</td><td>1</td><td>1</td><td>110</td><td>2</td></tr></tbody></table></div>
+<p>2.1 En paginación, ¿para qué sirven los bits U y D? 2.2 ¿Está correcta la tabla? Justifica. 2.3 ¿Qué páginas corresponden a código? Justifica. 2.4 Explica el page fault. ¿Qué pasa cuando la memoria está saturada? 2.5 ¿Qué ventaja tiene la segmentación paginada?</p>
+<div class="meta"><p><b>Usa:</b> Las reglas de una tabla correcta: D = 1 exige U = 1 (escribir es un acceso) y W = 1 (o COW); el marco tiene que existir. V = 0 con U o D en 1 no es error seguro (son valores que quedaron). Página de código = derecho X.</p><p><b>Materia:</b> <a class="inl" href="3-Paginacion.html#tabla-mala">página 3 · Encontrar errores en una tabla</a> · <a class="inl" href="3-Paginacion.html#tabla-pag">La tabla y sus bits</a> (lámina 23; audio 20, 23:26) · <a class="inl" href="3-Paginacion.html#page-fault">El page fault</a> (lámina 27; audio 20, 09:49) · <a class="inl" href="3-Paginacion.html#segpag">Segmentación paginada</a> (láminas 44 a 46)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p class="st">2.1</p>
+<p>U dice si la página se usó desde que se cargó; D, si se escribió. El sistema los pone en 0 al cargar la página y la MMU los pone en 1 (U en cada acceso, D en cada escritura). U sirve para elegir qué descargar (U = 0 es buena candidata) y D para saber si al descargarla hay que escribirla en el swap (D = 1) o basta con marcarla ausente (D = 0).</p>
+<p class="st">2.2 · No está correcta</p>
+<div class="tw"><table class="mini"><thead><tr><th>Page</th><th>V</th><th>U</th><th>D</th><th>RWX</th><th>Frame</th><th>Problema</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>1</td><td>101</td><td>20</td><td>D = 1 sin derecho de escritura</td></tr><tr><td>1</td><td>1</td><td>0</td><td>1</td><td>111</td><td>21</td><td>D = 1 con U = 0: escribir es un acceso</td></tr><tr><td>2</td><td>1</td><td>1</td><td>1</td><td>100</td><td>30</td><td>D = 1 en una página de solo lectura</td></tr><tr><td>3</td><td>0</td><td>1</td><td>1</td><td>110</td><td>2</td><td>Discutible: ausente con D = 1</td></tr></tbody></table></div>
+<p>Las tres primeras son imposibles sin discusión: dilas primero. La 3 (ausente con D = 1) menciónala solo como observación: el profe deja U y D en 1 en entradas ausentes en sus propios ejemplos (la página 2 de la lámina 23 y el segmento 2 de la Ayudantía 4). Son valores que quedaron cuando se descargó, y el sistema los reinicia al volver a cargarla.</p>
+<p class="st">2.3</p>
+<p>Las que tienen derecho de ejecución, X = 1: la <b>0</b> (R-X, la página de código típica: se lee y se ejecuta, pero no se escribe) y la <b>1</b> (RWX: ejecutable, aunque que el código se pueda escribir es raro).</p>
+<p class="st">2.4</p>
+<p>Page fault: el TRAP que genera la MMU cuando el proceso accede a una página válida de su espacio que no está en memoria (V = 0). El SO verifica que la página sea del proceso, le busca un marco, la carga del disco (de 8 a 15 ms, así que el proceso queda bloqueado y otro usa la CPU), actualiza la tabla (marco, V = 1, U = D = 0) y el proceso reejecuta la instrucción. Con la memoria saturada no hay marco libre: el algoritmo de reemplazo elige una víctima, se descarga (escribiéndola en el swap solo si D = 1) y su marco se usa para la página pedida.</p>
+<p class="st">2.5</p>
+<p>Junta lo mejor de los dos modelos: la estructura de la segmentación (código, datos y pila separados, con protección y compartición por segmento) y la asignación de la paginación (sin fragmentación externa, cualquier marco sirve, se carga solo lo que se usa). Solo queda la fragmentación interna de la última página de cada segmento.</p>
+</div></details>
+</div>
+<div class="ej p3" id="e2-3" data-nav="2.3 · C2 2023 · sección 4" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-2.3" aria-label="Hecho"><span class="ej-n">2.3</span><span class="ej-t">C2 2023 · sección 4 “Memoria segmentada paginada” (35 puntos)</span><span class="lv p3">Imprescindible</span><span class="ej-tag">C2 2023 · 30 min</span></div>
+<p>Sistema tipo Linux: el espacio de trabajo de un proceso tiene varios segmentos de memoria virtual y cada segmento es paginado. Las páginas son de 16 KB. 4.1 ¿Ventajas y desventajas de páginas pequeñas o grandes? Tabla de páginas del proceso P0:</p>
+<div class="tw"><table class="mini"><thead><tr><th>Page</th><th>V</th><th>U</th><th>D</th><th>COW</th><th>RWX</th><th>Frame</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>110</td><td>4</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>100</td><td>100</td></tr><tr><td>2</td><td>0</td><td>0</td><td>0</td><td>1</td><td>110</td><td>11</td></tr><tr><td>3</td><td>1</td><td>0</td><td>0</td><td>1</td><td>110</td><td>9</td></tr></tbody></table></div>
+<p>4.2 Explica el rol de los bits V, U y D en la tabla. 4.3 ¿Qué parte de la tabla es incorrecta? Justifica. 4.4 Explica el funcionamiento de la TLB de la MMU para las tablas de memoria indexadas.</p>
+<div class="meta"><p><b>Usa:</b> Las mismas reglas de 2.2. Para 4.4, el camino HIT o MISS de la lámina 38.</p><p><b>Materia:</b> <a class="inl" href="3-Paginacion.html#tamano-pag">página 3 · Tamaño de página</a> (lámina 34) · <a class="inl" href="3-Paginacion.html#tabla-mala">Encontrar errores</a> (esta tabla está resuelta ahí) · <a class="inl" href="3-Paginacion.html#tlb">La TLB</a> (láminas 37 y 38; audio 21, 03:07 y 07:38)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p class="st">4.1</p>
+<p>Pequeñas: menos fragmentación interna (se pierde menos en la última página) y se carga solo lo necesario, pero hay más páginas: tablas más grandes, la TLB cubre menos memoria y hay más page faults. Grandes: tablas chicas, menos page faults y transferencias más eficientes, pero más fragmentación interna y se cargan datos que quizás no se usan.</p>
+<p class="st">4.2</p>
+<p>V: si la página está en un marco (si es 0, page fault). U: si se usó desde que se cargó (para elegir víctimas). D: si se escribió, para saber si hay que escribirla en el swap al descargarla. El SO los pone en 0 al cargar; la MMU, en 1.</p>
+<p class="st">4.3</p>
+<p><b>Página 1</b>, incorrecta sin discusión: D = 1 con derechos 100 (solo lectura) y sin COW; ninguna escritura pudo pasar. Las páginas 2 y 3 están bien: la 2 no está cargada y la 3 está cargada sin usar, con COW = 1 y W = 1 (la primera escritura provoca la copia).</p>
+<p><b>Página 0</b> (V = 0 con U = 1 y D = 1): no la des como error seguro. Se podría argumentar que una página ausente no tiene cambios pendientes, pero el profe deja U y D en 1 en entradas ausentes en sus propios ejemplos (lámina 23 y Ayudantía 4): son valores que quedaron y el sistema los reinicia al volver a cargarla. Además la pregunta dice “qué parte”, en singular. Si la mencionas, que sea como observación, después de la página 1.</p>
+<p class="st">4.4</p>
+<p>La TLB es una memoria asociativa muy rápida (≈ 1 ns) dentro de la MMU que guarda los descriptores de las páginas usadas hace poco. En cada acceso, la MMU busca el número de página en la TLB (por hash). Si está (HIT), obtiene el marco y los derechos sin ir a la tabla indexada, que está en la RAM. Si no está (MISS), consulta la tabla: si la página no existe, memory fault; si no está cargada, page fault; si está, su descriptor entra a la TLB reemplazando al usado hace más tiempo (LRU). Es cara, así que es pequeña y funciona como cache: por la localidad, casi todos los accesos son HIT.</p>
+<div class="ans">Incorrecta: la página 1. La 0 (ausente con D = 1), solo como observación.</div>
+</div></details>
+</div>
+<div class="ej p3" id="e2-4" data-nav="2.4 · C2 2015 · sección 2" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-2.4" aria-label="Hecho"><span class="ej-n">2.4</span><span class="ej-t">C2 2015 · sección 2 “Gestión de memoria virtual”</span><span class="lv p3">Imprescindible</span><span class="ej-tag">C2 2015 · 25 min</span></div>
+<p>El sistema ACME usa paginación con páginas de 8 KB y una lista de marcos libres. Tabla de P0:</p>
+<div class="tw"><table class="mini"><thead><tr><th>Página</th><th>V</th><th>U</th><th>D</th><th>R</th><th>W</th><th>X</th><th>COW</th><th>Frame</th></tr></thead><tbody><tr><td>0</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>3</td></tr><tr><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>14</td></tr><tr><td>2</td><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>23</td></tr><tr><td>3</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>67</td></tr><tr><td>4</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td></tr></tbody></table></div>
+<p>2.2 Explica el uso de V, U y D en esta tabla. 2.3 ACME no tiene más marcos y elige a P0 para un swap out que recupere 16 KB: ¿qué páginas son las mejores candidatas? 2.4 ¿Es posible esta fila: V = 1, U = 1, D = 1, R = 1, W = 0, X = 0, COW = 0, Frame = 3? 2.6 En Linux, ¿cuál es el rol del bit COW y cuándo se usa? 2.7 Se puede instalar Linux sin zona de swap: ¿qué consecuencia tiene? 2.8 Pedro piensa: “más RAM tengo, más memoria podrán usar los procesos con malloc()”. ¿Tiene razón?</p>
+<div class="meta"><p><b>Usa:</b> 16 KB / 8 KB = 2 páginas. Solo se pueden sacar páginas presentes (V = 1). La mejor víctima tiene U = 0 y D = 0; después, D = 0 (no hay que escribirla).</p><p><b>Materia:</b> <a class="inl" href="3-Paginacion.html#ex2015v">página 3 · C2 2015</a> · <a class="inl" href="3-Paginacion.html#cow">El bit COW y el fork()</a> · <a class="inl" href="3-Paginacion.html#demanda">On demand paging</a> (audio 20, 14:40: el malloc de 7 GB) · <a class="inl" href="4-Reemplazo-de-paginas.html#nru">Elegir con U y D</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p class="st">2.2</p>
+<p>V = 1: la página está en el marco indicado (0, 1 y 3); V = 0: está en el disco y acceder a ella da page fault (2 y 4). U = 1: se usó desde que se cargó. D = 1: se escribió, y al descargarla hay que escribirla en el swap.</p>
+<p class="st">2.3</p>
+<p>16 KB son 2 páginas, y solo pueden salir las presentes: 0, 1 y 3. La mejor es la <b>1</b> (U = 0 y D = 0: no se ha usado y no hay que escribirla) y después la <b>3</b> (se usó, pero está limpia: sale sin escribir en el disco). La 0 es la peor: usada y sucia.</p>
+<p class="st">2.4</p>
+<p>No. D = 1 dice que la página fue escrita, pero W = 0 y COW = 0: cualquier escritura habría terminado en permission denied. Además, el marco 3 ya es de la página 0: solo calzaría si fuera memoria compartida. Con la misma regla, la página 2 de la tabla (D = 1 con W = 0) tampoco calza; si te piden revisar la tabla entera, dilo.</p>
+<p class="st">2.6</p>
+<p>Copy On Write: después de un <code>fork()</code>, el hijo comparte las páginas del padre en vez de copiarlas, marcadas COW. Cuando uno de los dos escribe por primera vez en una, el sistema copia solo esa página. El <code>fork()</code> queda rápido y no se gasta memoria en páginas que nunca se modifican.</p>
+<p class="st">2.7</p>
+<p>Sin swap no hay dónde descargar las páginas modificadas (datos, pila, heap): solo se pueden liberar las limpias, que se releen del ejecutable. La memoria total queda limitada a la RAM: cuando se acaba, fallan las asignaciones o el sistema termina procesos. En clase: “tiene que tener una zona de swap; si no tengo swap, ahí tengo un problema”.</p>
+<p class="st">2.8</p>
+<p>No. <code>malloc()</code> reserva memoria <b>virtual</b>: el límite lo pone el espacio de direcciones del proceso (4 GB con 32 bits) y lo que el sistema puede respaldar, RAM más swap, no la RAM sola. En clase: con 6 GB libres, un malloc de 7 GB “sí y no” se puede, porque el giga que falta queda en el swap. Más RAM significa menos page faults: más rendimiento, no más memoria para malloc.</p>
+</div></details>
+</div>
+<div class="ej p2" id="e2-5" data-nav="2.5 · TLB con los números del profe" data-p="2">
+<div class="ej-h"><input type="checkbox" data-k="lista-2.5" aria-label="Hecho"><span class="ej-n">2.5</span><span class="ej-t">La TLB con los números del profe</span><span class="lv p2">Importante</span><span class="ej-tag">audios 20 y 21 · 15 min</span></div>
+<p>Con los números que dio el profe en clase: la RAM tarda 40 ns, la TLB 1 ns y el cálculo de la MMU 1 ns, con la tabla indexada en la RAM. a) ¿Cuánto cuesta un acceso sin TLB? b) ¿Y un HIT? c) ¿Y un MISS? d) Con 90 % de HIT, ¿cuál es el tiempo promedio? e) ¿Por qué vale la pena, si un MISS cuesta más que no tener TLB?</p>
+<div class="meta"><p><b>Usa:</b> sin TLB = tabla en RAM + cálculo + acceso · HIT = TLB + cálculo + acceso · MISS = TLB + tabla en RAM + copiar la línea + acceso · promedio = h × HIT + (1 − h) × MISS</p><p><b>Materia:</b> <a class="inl" href="3-Paginacion.html#ubicacion">página 3 · ¿Dónde se guarda la tabla?</a> (lámina 32; audio 20, 32:51) · <a class="inl" href="3-Paginacion.html#tlb">La TLB</a> (audio 21, 07:38). No está en las láminas: probabilidad media</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>a)</b> 40 (leer la tabla) + 1 (cálculo y derechos) + 40 (el acceso) = <b>81 ns</b>: “pasamos de un acceso de 40 nanosegundos a 81”, más del doble.</p>
+<p><b>b)</b> 1 (TLB) + 1 (cálculo) + 40 (acceso) = <b>42 ns</b>.</p>
+<p><b>c)</b> 1 (el intento fallido) + 40 (leer la tabla en la RAM) + 1 (copiar la línea a la TLB) + 40 (el acceso) = <b>83 ns</b>.</p>
+<p><b>d)</b> 0,9 × 42 + 0,1 × 83 = 37,8 + 8,3 = <b>46,1 ns</b>, contra 81 sin TLB.</p>
+<p><b>e)</b> Por la localidad: si un ciclo tiene todas sus instrucciones en la misma página, se pagan 83 ns la primera vez y 42 en los millones de accesos siguientes. Y un MISS no cambia lo demás: si la página tiene V = 0, sigue siendo un page fault.</p>
+<div class="ans">81 · 42 · 83 · 46,1 ns.</div>
+<p class="tiny">Si te dan otros números, la estructura es la misma. El Silberschatz usa h × (t<sub>TLB</sub> + t<sub>mem</sub>) + (1 − h) × (t<sub>TLB</sub> + 2 t<sub>mem</sub>), sin el nanosegundo de cálculo.</p>
+</div></details>
+</div>
+<div class="ej p2" id="e2-6" data-nav="2.6 · V7: otra tabla con errores" data-p="2">
+<div class="ej-h"><input type="checkbox" data-k="lista-2.6" aria-label="Hecho"><span class="ej-n">2.6</span><span class="ej-t">V7: encuentra los errores en otra tabla</span><span class="lv p2">Importante</span><span class="ej-tag">10 min</span></div>
+<p>La RAM tiene 64 marcos. ¿Qué filas son incorrectas?</p>
+<div class="tw"><table class="mini"><thead><tr><th>Página</th><th>V</th><th>U</th><th>D</th><th>COW</th><th>RWX</th><th>Frame</th></tr></thead><tbody><tr><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td><td>110</td><td>3</td></tr><tr><td>1</td><td>1</td><td>1</td><td>0</td><td>0</td><td>101</td><td>7</td></tr><tr><td>2</td><td>1</td><td>1</td><td>1</td><td>0</td><td>110</td><td>70</td></tr><tr><td>3</td><td>0</td><td>0</td><td>0</td><td>0</td><td>110</td><td>—</td></tr><tr><td>4</td><td>1</td><td>1</td><td>1</td><td>0</td><td>100</td><td>12</td></tr><tr><td>5</td><td>1</td><td>0</td><td>0</td><td>1</td><td>100</td><td>21</td></tr></tbody></table></div>
+<div class="meta"><p><b>Usa:</b> Las reglas de 2.2, más una: el marco tiene que ser menor que el número de marcos de la RAM.</p><p><b>Materia:</b> <a class="inl" href="3-Paginacion.html#V7">página 3 · V7</a> · <a class="inl" href="3-Paginacion.html#tabla-mala">Encontrar errores en una tabla</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>Página 0</b>: D = 1 con U = 0. Escribir es un acceso: no puede estar sucia sin estar usada.</p>
+<p><b>Página 2</b>: marco 70, pero la RAM tiene 64 marcos (del 0 al 63).</p>
+<p><b>Página 4</b>: D = 1 con derechos 100 y sin COW: no pudo ser escrita.</p>
+<p>Correctas: la 1 (código: lectura y ejecución, usada y limpia), la 3 (no cargada) y la 5 (página COW recién compartida tras un <code>fork()</code>, marcada solo lectura para que la primera escritura avise).</p>
+<div class="ans">Incorrectas: 0, 2 y 4.</div>
+</div></details>
+</div>
+<div class="ej p1" id="e2-7" data-nav="2.7 · V1: traducir en hexadecimal" data-p="1">
+<div class="ej-h"><input type="checkbox" data-k="lista-2.7" aria-label="Hecho"><span class="ej-n">2.7</span><span class="ej-t">V1: traducir en hexadecimal con la tabla de la lámina 23</span><span class="lv p1">Si alcanza</span><span class="ej-tag">lámina 23 · 15 min</span></div>
+<p>Páginas de 4 KB y la tabla de la lámina 23 (la lámina trae además el bit Refer, en 1 en todas):</p>
+<div class="tw"><table class="mini"><thead><tr><th>Página</th><th>V</th><th>U</th><th>D</th><th>COW</th><th>R</th><th>W</th><th>X</th><th>Frame</th></tr></thead><tbody><tr><td>0</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td><td>4</td></tr><tr><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td></tr><tr><td>2</td><td>0</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>2</td></tr><tr><td>3</td><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td><td>1</td><td>0</td><td>20</td></tr><tr><td>4</td><td>1</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>1</td><td>6</td></tr></tbody></table></div>
+<p>¿Qué pasa en cada acceso? a) leer 0x0ABC · b) escribir 0x1F00 · c) leer 0x2010 · d) ejecutar 0x3004 · e) escribir 0x4FFF · f) leer 0x5000</p>
+<div class="meta"><p><b>Usa:</b> Con páginas de 4 KB (K = 12), los 3 últimos dígitos hexadecimales son el offset. Orden de los controles: ¿la página existe? → ¿V = 1? → ¿RWX permite la operación? (y si es escritura en una página COW, se copia primero) → marco y offset.</p><p><b>Materia:</b> <a class="inl" href="3-Paginacion.html#V1">página 3 · V1</a> · <a class="inl" href="3-Paginacion.html#control">Los tres controles</a> (lámina 28) · <a class="inl" href="3-Paginacion.html#cow">COW</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p>Con 4 KB, K = 12: los últimos 3 dígitos hexadecimales son el offset y el resto es la página.</p>
+<p><b>a)</b> Página 0, offset 0xABC; V = 1 y R = 1 → marco 4 → <b>0x4ABC</b>.</p>
+<p><b>b)</b> Página 1, offset 0xF00; V = 1 y W = 1, pero <b>COW = 1</b>: la escritura provoca un TRAP y el sistema copia la página en un marco libre. La tabla queda apuntando al marco nuevo, con COW = 0, y la escritura se hace en la copia (D = 1). Sin el COW habría sido 0x1F00.</p>
+<p><b>c)</b> Página 2, V = 0 → <b>page fault</b>: se le asigna un marco, se carga y se reintenta.</p>
+<p><b>d)</b> Página 3, X = 0 → <b>permission denied</b>.</p>
+<p><b>e)</b> Página 4, W = 1 → marco 6 → <b>0x6FFF</b>; D pasa de 0 a 1.</p>
+<p><b>f)</b> La página 5 no existe en la tabla → <b>memory violation</b>.</p>
+</div></details>
+</div>
+<div class="box tip"><div class="bt">Al terminar el día</div><p>Si una regla de la tabla no te queda clara, vuelve a “Encontrar errores en una tabla”: todas salen de quién mueve cada bit (el sistema los pone en 0 al cargar, la MMU en 1 al usar o escribir).</p></div>
+</section>
+
+<section id="d3" data-grp="Domingo 1" data-nav="Segmentación · qué leer">
+<h2>Domingo 1 de noviembre · Segmentación y segmentación paginada <span class="num">≈ 2 h 15</span></h2>
+<p class="lead">Día más corto, porque el domingo a las 23:59 cierra el Hito 4 de ADS. La segmentación sale en las preguntas de conocimiento (el C2 2016 tuvo siete) y la segmentación paginada es el modelo de la sección de memoria virtual de los C2 2014 y 2023.</p>
+<div class="day"><h4>Antes de empezar, lee</h4><div class="when">≈ 30 min</div><ul class="check"><li><input type="checkbox" data-k="lista-d3-l0"><span><a class="inl" href="2-Segmentacion.html#segmento">Página 2 · Qué es un segmento</a>, <a class="inl" href="2-Segmentacion.html#tablas-seg">Tabla global y tabla por proceso</a> y <a class="inl" href="2-Segmentacion.html#mmu-completa">Los cuatro controles de la MMU</a> (20 min): segment fault, segmentation violation y permission denied.</span></li><li><input type="checkbox" data-k="lista-d3-l1"><span><a class="inl" href="3-Paginacion.html#segpag">Página 3 · Segmentación paginada</a> (10 min): el offset del segmento se parte en página y desplazamiento.</span></li></ul></div>
+<div class="ej p2" id="e3-0" data-nav="3.0 · Calentamiento: WS con escrituras" data-p="2">
+<div class="ej-h"><input type="checkbox" data-k="lista-3.0" aria-label="Hecho"><span class="ej-n">3.0</span><span class="ej-t">Calentamiento: Working Set con escrituras</span><span class="lv p2">Importante</span><span class="ej-tag">R5 · 15 min</span></div>
+<p>Secuencia de 16 accesos con Δt = 4; los marcados con * son escrituras: 1, 2*, 1, 3 | 2, 4, 4*, 1 | 5*, 1, 2, 5 | 3, 3, 4, 1. a) Page faults y Working Set de cada ventana. b) Al cerrar cada ventana, ¿qué marcos se liberan y cuáles de esas páginas hay que escribir en el disco?</p>
+<div class="meta"><p><b>Usa:</b> Las reglas del Working Set del día 1, más: al liberar una página con D = 1, se escribe en el disco.</p><p><b>Materia:</b> <a class="inl" href="4-Reemplazo-de-paginas.html#R5">página 4 · R5</a> · láminas 30 y 31</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<div class="tw"><table class="mini wsv"><thead><tr><th>Ventana</th><th>Accesos</th><th>En memoria al empezar</th><th>Page faults</th><th>WS al final (U = 1)</th><th>Se liberan</th></tr></thead><tbody><tr><td>1 · t = 1–4</td><td class="mono"><b class="pfx">1</b> <b class="pfx">2</b> 1 <b class="pfx">3</b></td><td>∅</td><td>3 (1, 2, 3)</td><td><b>{1, 2, 3}</b> · 3 pág.</td><td>—</td></tr><tr><td>2 · t = 5–8</td><td class="mono">2 <b class="pfx">4</b> 4 1</td><td>{1, 2, 3}</td><td>1 (4)</td><td><b>{1, 2, 4}</b> · 3 pág.</td><td>{3}</td></tr><tr><td>3 · t = 9–12</td><td class="mono"><b class="pfx">5</b> 1 2 5</td><td>{1, 2, 4}</td><td>1 (5)</td><td><b>{1, 2, 5}</b> · 3 pág.</td><td>{4}</td></tr><tr><td>4 · t = 13–16</td><td class="mono"><b class="pfx">3</b> 3 <b class="pfx">4</b> 1</td><td>{1, 2, 5}</td><td>2 (3, 4)</td><td><b>{1, 3, 4}</b> · 3 pág.</td><td>{2, 5}</td></tr></tbody></table></div><p class="tiny">7 page faults en 16 accesos con ventanas fijas de Δt = 4 (contando los iniciales). En negrita, el acceso que provocó cada fallo.</p>
+<p><b>a)</b> 7 page faults; el Working Set tiene 3 páginas en las cuatro ventanas.</p>
+<p><b>b)</b> El bit D se pone en 1 con la escritura y no se borra al empezar la ventana (solo U se borra). Fin de la ventana 2: se libera el 3, que nunca se escribió (D = 0): no va al disco. Fin de la ventana 3: se libera el 4, escrito en t = 7 (D = 1): se escribe. Fin de la ventana 4: se liberan el 2 (escrito en t = 2) y el 5 (escrito en t = 9), los dos con D = 1: se escriben juntos, en una sola operación. Es la ventaja de la lámina 31: el swap out de varias páginas de una vez.</p>
+<div class="ans">7 page faults · se escriben el 4 (fin de la ventana 3) y el 2 y el 5 (fin de la ventana 4).</div>
+</div></details>
+</div>
+<div class="ej p2" id="e3-1" data-nav="3.1 · S1: tabla de segmentos" data-p="2">
+<div class="ej-h"><input type="checkbox" data-k="lista-3.1" aria-label="Hecho"><span class="ej-n">3.1</span><span class="ej-t">S1: seis accesos con una tabla de segmentos</span><span class="lv p2">Importante</span><span class="ej-tag">lámina 20 · 15 min</span></div>
+<p>Tabla global de segmentos y tabla del proceso P:</p>
+<div class="tw"><table class="mini"><thead><tr><th>Segmento global</th><th>V</th><th>BASE</th><th>LÍMITE</th></tr></thead><tbody><tr><td>S0</td><td>1</td><td>10 000</td><td>4 000</td></tr><tr><td>S1</td><td>0</td><td>—</td><td>2 000</td></tr><tr><td>S2</td><td>1</td><td>50 000</td><td>8 000</td></tr><tr><td>S3</td><td>1</td><td>80 000</td><td>1 000</td></tr></tbody></table></div>
+<div class="tw"><table class="mini"><thead><tr><th>Segmento de P</th><th>Apunta a</th><th>RWX</th></tr></thead><tbody><tr><td>0</td><td>S0</td><td>1 0 1</td></tr><tr><td>1</td><td>S2</td><td>1 1 0</td></tr><tr><td>2</td><td>S1</td><td>1 1 0</td></tr></tbody></table></div>
+<p>¿Qué pasa en cada acceso y qué bits cambian? a) ejecutar en (0, 300) · b) escribir en (0, 300) · c) leer (1, 7 999) · d) leer (1, 8 000) · e) escribir en (2, 100) · f) leer (3, 10)</p>
+<div class="meta"><p><b>Usa:</b> Los cuatro controles, en orden: ¿el segmento está en la tabla del proceso? (si no, segmentation violation) → ¿V = 1? (si no, segment fault) → ¿d &lt; LÍMITE? (si no, segmentation violation) → ¿RWX permite la operación? (si no, permission denied) → @ = BASE + d.</p><p><b>Materia:</b> <a class="inl" href="2-Segmentacion.html#mmu-completa">página 2 · Los cuatro controles de la MMU</a> (lámina 20) · <a class="inl" href="2-Segmentacion.html#S1">S1</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>a)</b> 300 &lt; 4 000 y X = 1 → <b>10 300</b>. U(S0) = 1.</p>
+<p><b>b)</b> 300 &lt; 4 000, pero W = 0 → <b>permission denied</b>.</p>
+<p><b>c)</b> 7 999 &lt; 8 000 y R = 1 → <b>57 999</b>. U(S2) = 1.</p>
+<p><b>d)</b> 8 000 no es menor que 8 000 → <b>segmentation violation</b>.</p>
+<p><b>e)</b> S1 tiene V = 0 → <b>segment fault</b>: el SO carga S1 (le asigna una BASE), pone V = 1, U = 0 y D = 0, y la instrucción se reintenta; 100 &lt; 2 000 y W = 1 → acceso, y la MMU pone U = 1 y D = 1.</p>
+<p><b>f)</b> P no tiene segmento 3 en su tabla → <b>segmentation violation</b>, aunque S3 exista en la tabla global: P no tiene acceso a él.</p>
+</div></details>
+</div>
+<div class="ej p3" id="e3-2" data-nav="3.2 · C2 2016 · las siete de conocimiento" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-3.2" aria-label="Hecho"><span class="ej-n">3.2</span><span class="ej-t">C2 2016 · las siete preguntas de conocimiento (28 puntos)</span><span class="lv p3">Imprescindible</span><span class="ej-tag">C2 2016 · 25 min</span></div>
+<ul><li>1.1 En segmentación, ¿qué informaciones maneja el sistema operativo para definir un segmento?</li><li>1.2 ¿Por qué la segmentación produce fragmentación externa?</li><li>1.3 En la dirección paginada (page, offset), ¿qué representa el offset?</li><li>1.4 ¿Para qué sirve el bit V en la tabla de segmentos?</li><li>1.5 En segmentación, ¿puede un segmento ser más grande que la memoria RAM?</li><li>1.6 Explica el propósito de los bits RWX en la tabla de segmentos.</li><li>1.7 ¿Cuándo ocurre el error Segmentation Violation?</li></ul>
+<div class="meta"><p><b>Materia:</b> <a class="inl" href="2-Segmentacion.html#ex2016s">página 2 · C2 2016</a> · 1.1: <a class="inl" href="2-Segmentacion.html#tablas-seg">tablas</a> (láminas 10 y 18) · 1.2 y 1.5: <a class="inl" href="2-Segmentacion.html#problemas-seg">problemas de la segmentación sola</a> (lámina 21) · 1.3: <a class="inl" href="3-Paginacion.html#traduccion">traducir</a> (lámina 26) · 1.4: <a class="inl" href="2-Segmentacion.html#bitv">bit V</a> · 1.6 y 1.7: <a class="inl" href="2-Segmentacion.html#mmu-completa">los cuatro controles</a> (lámina 20)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>1.1</b> Su BASE (dónde empieza en la RAM) y su LÍMITE (su tamaño), en la tabla global junto con los bits V, U y D; y en la tabla de cada proceso, a qué segmento global corresponde y con qué derechos R, W y X.</p>
+<p><b>1.2</b> Porque los segmentos tienen tamaños variables y cada uno necesita una zona contigua de RAM. Al cargarse y liberarse van quedando huecos entre ellos que pueden ser demasiado chicos para el siguiente: el mismo problema de las particiones dinámicas.</p>
+<p><b>1.3</b> El desplazamiento dentro de la página: la posición del byte desde el comienzo de la página (los K bits bajos, con páginas de 2<sup>K</sup> bytes). Es igual en la dirección virtual y en la física.</p>
+<p><b>1.4</b> Indica si el segmento está cargado en memoria (V = 1) o si existe pero está en el disco (V = 0). La MMU lo revisa en cada acceso; si vale 0 genera un segment fault y el sistema lo carga.</p>
+<p><b>1.5</b> No. Con segmentación sola, un segmento se carga entero en una zona contigua, así que no puede medir más que la RAM disponible. Es uno de los problemas que resuelve la paginación (lámina 21).</p>
+<p><b>1.6</b> Son los derechos de acceso de cada proceso al segmento: protegen el código contra escrituras, impiden ejecutar datos y permiten compartir un segmento con permisos distintos por proceso. La MMU los verifica en cada acceso; si la operación no está permitida, TRAP (permission denied).</p>
+<p><b>1.7</b> Cuando el proceso usa un segmento que no está en su tabla, o un offset que no es menor que el límite del segmento. No se confunde con el segment fault (el segmento existe pero está en el disco: se carga y se sigue).</p>
+</div></details>
+</div>
+<div class="ej p2" id="e3-3" data-nav="3.3 · El ejemplo de la pizarra" data-p="2">
+<div class="ej-h"><input type="checkbox" data-k="lista-3.3" aria-label="Hecho"><span class="ej-n">3.3</span><span class="ej-t">El ejemplo de la pizarra: segmentación paginada</span><span class="lv p2">Importante</span><span class="ej-tag">audio 22 · 10 min</span></div>
+<p>Segmentación paginada con páginas de 4 096 bytes. Un proceso accede a la dirección (2, 5 100). El segmento 2 mide 12 KB y, en su tabla de páginas, la página 1 está en el marco 9. a) ¿En qué página del segmento cae y con qué desplazamiento? b) ¿Cuál es la dirección física? c) ¿Qué habría pasado con (2, 13 000)?</p>
+<div class="meta"><p><b>Usa:</b> Primero d &lt; tamaño del segmento; después i = d div 2<sup>K</sup>, o = d mod 2<sup>K</sup> y @ = marco × 2<sup>K</sup> + o, con la tabla de páginas de ese segmento.</p><p><b>Materia:</b> <a class="inl" href="3-Paginacion.html#segpag">página 3 · Segmentación paginada</a> (láminas 44 a 46) · audio 22 (12:29: el mismo ejemplo con 5 100)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>a)</b> 5 100 &lt; 12 288 (12 KB): el offset es válido. Página 5 100 div 4 096 = <b>1</b> (“porque 5 100 es más allá de los primeros 4 096”) y desplazamiento 5 100 − 4 096 = <b>1 004</b>.</p>
+<p><b>b)</b> 9 × 4 096 + 1 004 = 36 864 + 1 004 = <b>37 868</b>.</p>
+<p><b>c)</b> 13 000 ≥ 12 288: el offset sale del segmento → <b>segmentation violation</b>, antes de mirar la tabla de páginas.</p>
+<div class="ans">(página 1, desplazamiento 1 004) → 37 868 · (2, 13 000) → segmentation violation.</div>
+</div></details>
+</div>
+<div class="ej p2" id="e3-4" data-nav="3.4 · V6: segmentación paginada con 16 KB" data-p="2">
+<div class="ej-h"><input type="checkbox" data-k="lista-3.4" aria-label="Hecho"><span class="ej-n">3.4</span><span class="ej-t">V6: segmentación paginada con páginas de 16 KB</span><span class="lv p2">Importante</span><span class="ej-tag">formato del C2 2023 · 20 min</span></div>
+<p>Páginas de 16 KB (16 384 B). El proceso P tiene dos segmentos. Segmento 0, código, 40 KB, R-X; su tabla de páginas: 0 → marco 7, 1 → marco 3, 2 → no presente. Segmento 1, datos, 64 KB, RW-; su tabla: 0 → 9, 1 → 12, 2 → 4, 3 → no presente.</p>
+<p>¿Qué pasa en cada acceso? a) leer (1, 40 000) · b) escribir (0, 100) · c) leer (0, 35 000) · d) leer (0, 45 000) · e) leer (2, 0) · f) escribir (1, 60 000). g) ¿Cuánta fragmentación interna tiene el segmento 0?</p>
+<div class="meta"><p><b>Usa:</b> Los pasos de 3.3, con los derechos del segmento antes de traducir. Fragmentación interna = páginas × tamaño de página − tamaño del segmento.</p><p><b>Materia:</b> <a class="inl" href="3-Paginacion.html#V6">página 3 · V6</a> · <a class="inl" href="3-Paginacion.html#segpag">Segmentación paginada</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>a)</b> 40 000 &lt; 65 536 ✓ · i = 40 000 div 16 384 = 2, o = 40 000 − 32 768 = 7 232 · marco 4 → 4 × 16 384 + 7 232 = <b>72 768</b>.</p>
+<p><b>b)</b> El segmento 0 es R-X → <b>permission denied</b>.</p>
+<p><b>c)</b> 35 000 &lt; 40 960 ✓ · i = 2 (o = 2 232) · la página 2 no está → <b>page fault</b>.</p>
+<p><b>d)</b> 45 000 ≥ 40 960 (40 KB) → <b>segmentation violation</b>.</p>
+<p><b>e)</b> P no tiene segmento 2 → <b>segmentation violation</b>.</p>
+<p><b>f)</b> 60 000 &lt; 65 536 ✓ y W ✓ · i = 3 (o = 10 848) · no presente → <b>page fault</b>; después del reintento, D = 1.</p>
+<p><b>g)</b> 40 KB son 2,5 páginas → 3 páginas = 48 KB; se pierden <b>8 KB</b> en la última.</p>
+</div></details>
+</div>
+<div class="ej p3" id="e3-5" data-nav="3.5 · C2 2014 · sección 2" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-3.5" aria-label="Hecho"><span class="ej-n">3.5</span><span class="ej-t">C2 2014 · sección 2: tamaño de página, page fault, COW y do_page_fault()</span><span class="lv p3">Imprescindible</span><span class="ej-tag">C2 2014 · 25 min</span></div>
+<p>Segmentación paginada; la RAM tiene N marcos de 64 KB. 2.1 ¿Qué consecuencia tiene elegir páginas más pequeñas, sobre la gestión de memoria y sobre las estructuras de datos? 2.2 Explica los eventos del hardware y del sistema operativo cuando un proceso accede a una página p que no está cargada. ¿Qué acciones toma el SO? 2.3 Explica el objetivo del bit COW. 2.4 ¿Qué hace esta función y qué falta después de V = 1?</p>
+<pre><code>void do_page_fault(task t, segment s, page p)
+{
+    newframe = get_frame();
+    if (newframe == NULL) {
+        do_swap_out();
+        newframe = get_frame();
+    }
+    load_page(p, newframe);
+    t-&gt;page_table[p].frame = newframe;
+    t-&gt;page_table[p].V = 1;
+    …
+}</code></pre>
+<div class="meta"><p><b>Usa:</b> Para 2.2, el orden de la lámina 27: TRAP de la MMU → ¿la página es del proceso? → marco libre o víctima → cargar del disco (proceso bloqueado) → actualizar la tabla → reejecutar la instrucción.</p><p><b>Materia:</b> <a class="inl" href="3-Paginacion.html#ex2014v">página 3 · C2 2014</a> · <a class="inl" href="3-Paginacion.html#tamano-pag">Tamaño de página</a> (lámina 34) · <a class="inl" href="3-Paginacion.html#page-fault">El page fault paso a paso</a> (lámina 27; audio 20, 09:49) · <a class="inl" href="3-Paginacion.html#cow">El bit COW</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p class="st">2.1</p>
+<p>En la gestión: menos fragmentación interna y se carga solo lo necesario, pero hay más page faults y más transferencias con el disco. En las estructuras: más páginas por proceso, así que las tablas de páginas de cada segmento son más grandes (más memoria para tablas, más difícil tenerlas en la TLB) y la lista de marcos libres también crece. Con páginas de 64 KB pasa lo contrario.</p>
+<p class="st">2.2</p>
+<p>Hardware: la MMU busca la página (TLB y tabla), ve V = 0 y genera un TRAP (page fault); la instrucción queda sin terminar. SO: verifica que p pertenezca al segmento del proceso (si no, error); toma un marco libre o, si no hay, elige una víctima y la descarga (escribiéndola si D = 1); pide la carga de p desde el disco; mientras tanto el proceso queda bloqueado y se ejecuta otro (task switch); al terminar la lectura actualiza la tabla (marco, V = 1, U = D = 0), el proceso pasa a listo y, cuando recupera la CPU, reejecuta la instrucción.</p>
+<p class="st">2.3</p>
+<p>Que dos procesos (padre e hijo tras un <code>fork()</code>) compartan una página hasta que uno de los dos la escriba; recién ahí se copia. Ahorra memoria y tiempo.</p>
+<p class="st">2.4</p>
+<p>Busca un marco libre; si no hay, hace un swap out para liberar uno y lo vuelve a pedir; carga la página p en ese marco y actualiza la tabla (marco y V = 1). Falta inicializar los bits de uso y de escritura, porque el sistema los pone en 0 cada vez que carga una página:</p>
+<pre><code>    t-&gt;page_table[p].U = 0;
+    t-&gt;page_table[p].D = 0;</code></pre>
+<p>Después, la tarea vuelve a lista para reejecutar la instrucción.</p>
+</div></details>
+</div>
+<div class="ej p1" id="e3-6" data-nav="3.6 · Bits de segmento y tamaño de tablas" data-p="1">
+<div class="ej-h"><input type="checkbox" data-k="lista-3.6" aria-label="Hecho"><span class="ej-n">3.6</span><span class="ej-t">Bits de segmento y tamaño de las tablas</span><span class="lv p1">Si alcanza</span><span class="ej-tag">láminas 20, 35 y 42 · 10 min</span></div>
+<p>a) Direcciones de 64 bits con 16 bits de segmento: ¿cuántos segmentos puede tener un proceso y de qué tamaño máximo? b) Direcciones de 32 bits, páginas de 4 KB y entradas de 4 B: ¿cuánto mide la tabla indexada de un proceso? c) RAM de 16 GB con marcos de 16 KB: ¿cuántas entradas tiene la tabla invertida?</p>
+<div class="meta"><p><b>Usa:</b> 2<sup>S</sup> segmentos de hasta 2<sup>64 − S</sup> bytes · indexada: 2<sup>bits de página</sup> entradas por proceso · invertida: RAM / tamaño de página entradas en total</p><p><b>Materia:</b> <a class="inl" href="2-Segmentacion.html#S4">página 2 · S4</a> · <a class="inl" href="3-Paginacion.html#V3">página 3 · V3</a> · <a class="inl" href="3-Paginacion.html#jerarquica">Tabla jerárquica</a> y <a class="inl" href="3-Paginacion.html#invertida">Tabla invertida</a> (láminas 40 a 43)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>a)</b> 2<sup>16</sup> = 65 536 segmentos de hasta 2<sup>48</sup> B = 256 TB.</p>
+<p><b>b)</b> 2<sup>32 − 12</sup> = 2<sup>20</sup> entradas × 4 B = <b>4 MB por proceso</b>; con 100 procesos, 400 MB solo en tablas.</p>
+<p><b>c)</b> 2<sup>34</sup> / 2<sup>14</sup> = 2<sup>20</sup> entradas, una sola tabla para todo el sistema.</p>
+<p>Por eso existen la tabla jerárquica y la invertida, aunque en clase el profe dijo que la jerárquica “nadie la usa ahora” y que “ningún procesador del mercado” usa la invertida: todos usan la tabla con TLB.</p>
+</div></details>
+</div>
+<div class="box tip"><div class="bt">Al terminar el día</div><p>Si el Hito 4 aprieta, deja 3.4 y 3.6 para el lunes, antes del calentamiento.</p></div>
+</section>
+
+<section id="d4" data-grp="Lunes 2" data-nav="Ayudantía 4 · qué leer">
+<h2>Lunes 2 de noviembre · Ayudantía 4, memoria lineal y conocimiento <span class="num">≈ 3 h 10</span></h2>
+<p class="lead">Lo primero es la Ayudantía 4. En el C1, lo que más se pareció al certamen fueron las ayudantías, y esta es del propio profe y cubre justo la memoria lineal, la segmentación, la paginación y la segmentación paginada. Hazla entera sin mirar la pauta; las explicaciones de abajo traen la pauta revisada, con sus dos errores corregidos. Después, la memoria lineal de los certámenes y las preguntas de conocimiento.</p>
+<div class="day"><h4>Antes de empezar, lee</h4><div class="when">≈ 40 min</div><ul class="check"><li><input type="checkbox" data-k="lista-d4-l0"><span><a class="inl" href="1-Memoria-lineal.html#frag">Página 1 · Fragmentación interna y externa</a>, <a class="inl" href="1-Memoria-lineal.html#nbloques">Cuántos bloques pide una tarea</a> y <a class="inl" href="1-Memoria-lineal.html#fit">FIRST, BEST y WORST FIT</a> (20 min): lo que usa la sección 1 de la ayudantía.</span></li><li><input type="checkbox" data-k="lista-d4-l1"><span><a class="inl" href="3-Paginacion.html#principio">Página 3 · Páginas y marcos</a> y <a class="inl" href="3-Paginacion.html#demanda">On demand paging</a> (10 min): lo que usa la sección 3.</span></li><li><input type="checkbox" data-k="lista-d4-l2"><span><a class="inl" href="1-Memoria-lineal.html#compactar">Página 1 · Compactar</a>, <a class="inl" href="1-Memoria-lineal.html#swapping">Swapping</a> y <a class="inl" href="1-Memoria-lineal.html#lineal-conclusion">Por qué lo lineal es ineficiente</a> (10 min): el costo de 50 ns por byte.</span></li></ul></div>
+<div class="ej p1" id="e4-0" data-nav="4.0 · Calentamiento: la secuencia larga" data-p="1">
+<div class="ej-h"><input type="checkbox" data-k="lista-4.0" aria-label="Hecho"><span class="ej-n">4.0</span><span class="ej-t">Calentamiento: la secuencia larga con los tres algoritmos</span><span class="lv p1">Si alcanza</span><span class="ej-tag">R3 · 25 min</span></div>
+<p>Secuencia 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1 (la del Silberschatz). a) FIFO con 3 marcos. b) LRU con 3 marcos. c) Working Set con Δt = 5. Si vas justo de tiempo, sáltalo: el martes hay una secuencia nueva.</p>
+<div class="meta"><p><b>Usa:</b> Las reglas del día 1. Con 20 accesos, lo que más ayuda es no saltarse columnas: copia la lista completa en cada una.</p><p><b>Materia:</b> <a class="inl" href="4-Reemplazo-de-paginas.html#R3">página 4 · R3</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p class="st">a) FIFO</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">7</td><td class="n">0</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">3</td><td class="n">0</td><td class="n">4</td><td class="n">2</td><td class="n">3</td><td class="n">0</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">1</td><td class="n">7</td><td class="n">0</td><td class="n">1</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">7</td><td class="f">0</td><td class="f">1</td><td class="f">2</td><td>2</td><td class="f">3</td><td class="f">0</td><td class="f">4</td><td class="f">2</td><td class="f">3</td><td class="f">0</td><td>0</td><td>0</td><td class="f">1</td><td class="f">2</td><td>2</td><td>2</td><td class="f">7</td><td class="f">0</td><td class="f">1</td></tr><tr class="pl"><th class="rh"></th><td></td><td>7</td><td>0</td><td>1</td><td>1</td><td>2</td><td>3</td><td>0</td><td>4</td><td>2</td><td>3</td><td>3</td><td>3</td><td>0</td><td>1</td><td>1</td><td>1</td><td>2</td><td>7</td><td>0</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td>7</td><td>0</td><td>0</td><td>1</td><td>2</td><td>3</td><td>0</td><td>4</td><td>2</td><td>2</td><td>2</td><td>3</td><td>0</td><td>0</td><td>0</td><td>1</td><td>2</td><td>7</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td>7</td><td></td><td>0</td><td>1</td><td>2</td><td>3</td><td>0</td><td>4</td><td></td><td></td><td>2</td><td>3</td><td></td><td></td><td>0</td><td>1</td><td>2</td></tr></table></div><p class="tiny">15 page faults en 20 accesos (contando los 3 de la carga inicial).</p>
+<p class="st">b) LRU</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">7</td><td class="n">0</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">3</td><td class="n">0</td><td class="n">4</td><td class="n">2</td><td class="n">3</td><td class="n">0</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">1</td><td class="n">7</td><td class="n">0</td><td class="n">1</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td></td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">7</td><td class="f">0</td><td class="f">1</td><td class="f">2</td><td class="h">0</td><td class="f">3</td><td class="h">0</td><td class="f">4</td><td class="f">2</td><td class="f">3</td><td class="f">0</td><td class="h">3</td><td class="h">2</td><td class="f">1</td><td class="h">2</td><td class="f">0</td><td class="h">1</td><td class="f">7</td><td class="h">0</td><td class="h">1</td></tr><tr class="pl"><th class="rh"></th><td></td><td>7</td><td>0</td><td>1</td><td>2</td><td>0</td><td>3</td><td>0</td><td>4</td><td>2</td><td>3</td><td>0</td><td>3</td><td>2</td><td>1</td><td>2</td><td>0</td><td>1</td><td>7</td><td>0</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td>7</td><td>0</td><td>1</td><td>2</td><td>2</td><td>3</td><td>0</td><td>4</td><td>2</td><td>2</td><td>0</td><td>3</td><td>3</td><td>1</td><td>2</td><td>0</td><td>1</td><td>7</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td>7</td><td></td><td>1</td><td></td><td>2</td><td>3</td><td>0</td><td>4</td><td></td><td></td><td>0</td><td></td><td>3</td><td></td><td>2</td><td></td><td></td></tr></table></div><p class="tiny">12 page faults en 20 accesos (contando los 3 de la carga inicial).</p>
+<p class="st">c) Working Set, Δt = 5</p>
+<div class="tw"><table class="mini wsv"><thead><tr><th>Ventana</th><th>Accesos</th><th>En memoria al empezar</th><th>Page faults</th><th>WS al final (U = 1)</th><th>Se liberan</th></tr></thead><tbody><tr><td>1 · t = 1–5</td><td class="mono"><b class="pfx">7</b> <b class="pfx">0</b> <b class="pfx">1</b> <b class="pfx">2</b> 0</td><td>∅</td><td>4 (7, 0, 1, 2)</td><td><b>{0, 1, 2, 7}</b> · 4 pág.</td><td>—</td></tr><tr><td>2 · t = 6–10</td><td class="mono"><b class="pfx">3</b> 0 <b class="pfx">4</b> 2 3</td><td>{0, 1, 2, 7}</td><td>2 (3, 4)</td><td><b>{0, 2, 3, 4}</b> · 4 pág.</td><td>{1, 7}</td></tr><tr><td>3 · t = 11–15</td><td class="mono">0 3 2 <b class="pfx">1</b> 2</td><td>{0, 2, 3, 4}</td><td>1 (1)</td><td><b>{0, 1, 2, 3}</b> · 4 pág.</td><td>{4}</td></tr><tr><td>4 · t = 16–20</td><td class="mono">0 1 <b class="pfx">7</b> 0 1</td><td>{0, 1, 2, 3}</td><td>1 (7)</td><td><b>{0, 1, 7}</b> · 3 pág.</td><td>{2, 3}</td></tr></tbody></table></div><p class="tiny">8 page faults en 20 accesos con ventanas fijas de Δt = 5 (contando los iniciales). En negrita, el acceso que provocó cada fallo.</p>
+<p>El 0 se usa en las cuatro ventanas, así que el Working Set nunca lo saca; FIFO lo saca tres veces y LRU dos. El Working Set gana, pero en la segunda ventana llega a tener 6 páginas en memoria contra los 3 marcos fijos de los otros dos.</p>
+<div class="ans">FIFO 15 · LRU 12 · Working Set 8.</div>
+</div></details>
+</div>
+<div class="ej p3" id="e4-1" data-nav="4.1 · Ayudantía 4 · memoria lineal" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-4.1" aria-label="Hecho"><span class="ej-n">4.1</span><span class="ej-t">Ayudantía 4 · sección 1: memoria lineal</span><span class="lv p3">Imprescindible</span><span class="ej-tag">Ayudantía 4 · 25 min</span></div>
+<p>Al instante t quedan estos bloques libres en la memoria:</p>
+<div class="tw"><table class="mini"><thead><tr><th>Bloque</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead><tbody><tr><td>Tamaño</td><td>100 KB</td><td>500 KB</td><td>200 KB</td><td>300 KB</td><td>600 KB</td></tr></tbody></table></div>
+<p>Llegan en orden P1 = 212 KB, P2 = 417 KB, P3 = 112 KB y P4 = 426 KB.</p>
+<p>1.1 ¿Cómo asigna el SO los bloques a P1, P2, P3 y P4 con BestFit y con FirstFit? 1.2 Ahora la memoria se asigna por bloques de 10 KB y los cuatro procesos están cargados en forma contigua desde la dirección 0: ¿cuántos bloques necesita cada uno? 1.3 ¿Cuánta memoria se pierde por fragmentación interna? 1.4 Explica la fragmentación externa en la memoria lineal. ¿Qué consecuencias tiene sobre la asignación?</p>
+<div class="meta"><p><b>Usa:</b> FirstFit: el primer bloque donde cabe · BestFit: el que deja menos espacio libre · b = ⌈K / 10 KB⌉ · fragmentación interna = b × 10 KB − K</p><p><b>Materia:</b> <a class="inl" href="1-Memoria-lineal.html#fit">página 1 · FIRST, BEST y WORST FIT</a> (láminas 28 a 30; audio 19, 49:00) · <a class="inl" href="1-Memoria-lineal.html#nbloques">Cuántos bloques</a> (lámina 27) · <a class="inl" href="1-Memoria-lineal.html#frag">Fragmentación</a> · pauta de la Ayudantía 4, páginas 1 a 3</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p class="st">1.1</p>
+<div class="tw"><table class="mini"><thead><tr><th></th><th>P1 (212)</th><th>P2 (417)</th><th>P3 (112)</th><th>P4 (426)</th></tr></thead><tbody><tr><td>BestFit</td><td>bloque 4</td><td>bloque 2</td><td>bloque 3</td><td>bloque 5</td></tr><tr><td>FirstFit</td><td>bloque 2</td><td>bloque 5</td><td>bloque 3</td><td>no cabe</td></tr></tbody></table></div>
+<p>BestFit da a cada uno el bloque donde sobra menos: P1 al de 300 (sobran 88), P2 al de 500 (sobran 83), P3 al de 200 (sobran 88) y P4 al de 600. FirstFit da el primero donde cabe: P1 entra en el bloque 2, P2 recién en el 5, P3 en el 3, y para P4 solo quedan los de 100 y 300: <b>no hay bloque</b>.</p>
+<p class="tiny">Ojo con la convención: la pauta entrega cada bloque entero a un proceso (lo que sobra no se vuelve a usar). Si el sobrante se reutiliza, como en las láminas (la zona queda en Start + b, Size − b), con FirstFit P3 iría al resto del bloque 2 (le quedan 288 KB) y no al 3; P4 igual no cabe. En el certamen, di cuál supones. WorstFit, que no se pide: P1 → 5, P2 → 2, P3 → 4 y P4 no cabe.</p>
+<p class="st">1.2 y 1.3</p>
+<div class="tw"><table class="mini"><thead><tr><th>Proceso</th><th>Memoria</th><th>Bloques de 10 KB</th><th>Se pierde</th></tr></thead><tbody><tr><td>P1</td><td>212 KB</td><td>21,2 → 22</td><td>8 KB</td></tr><tr><td>P2</td><td>417 KB</td><td>41,7 → 42</td><td>3 KB</td></tr><tr><td>P3</td><td>112 KB</td><td>11,2 → 12</td><td>8 KB</td></tr><tr><td>P4</td><td>426 KB</td><td>42,6 → 43</td><td>4 KB</td></tr></tbody></table></div>
+<p>Se divide por 10 KB y se redondea hacia arriba, porque un bloque a medio usar igual se asigna entero. La fragmentación interna es lo que sobra del último bloque de cada proceso: 8 + 3 + 8 + 4 = <b>23 KB</b> (en la pauta, 0,8 + 0,3 + 0,8 + 0,4 = 2,3 bloques de 10 KB; ahí los procesos aparecen como P0 a P3).</p>
+<p class="st">1.4</p>
+<p>A medida que los procesos terminan, dejan zonas libres entre los que siguen en memoria. BestFit o FirstFit van usando esas zonas y dejando sobrantes, hasta que hay muchas zonas libres, pero ninguna del tamaño suficiente para un proceso nuevo, aunque sumadas alcanzarían: la memoria está fragmentada. Es externa porque la memoria no se pierde dentro de los espacios de trabajo de los procesos, sino entre ellos. Consecuencia: hay procesos que no se pueden cargar habiendo memoria libre, y hay que compactar (caro) o hacer swapping.</p>
+<div class="ans">BestFit 4, 2, 3 y 5 · FirstFit 2, 5, 3 y P4 sin bloque · 22, 42, 12 y 43 bloques · 23 KB de fragmentación interna.</div>
+</div></details>
+</div>
+<div class="ej p3" id="e4-2" data-nav="4.2 · Ayudantía 4 · segmentación" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-4.2" aria-label="Hecho"><span class="ej-n">4.2</span><span class="ej-t">Ayudantía 4 · sección 2: segmentación</span><span class="lv p3">Imprescindible</span><span class="ej-tag">Ayudantía 4 · 15 min</span></div>
+<p>Tabla de segmentos del proceso P0:</p>
+<div class="tw"><table class="mini"><thead><tr><th>Segmento</th><th>Base</th><th>Tamaño</th><th>V</th><th>U</th><th>D</th><th>RWX</th></tr></thead><tbody><tr><td>0</td><td>1000</td><td>18 KB</td><td>1</td><td>1</td><td>0</td><td>101</td></tr><tr><td>1</td><td>32500</td><td>24 KB</td><td>1</td><td>0</td><td>0</td><td>111</td></tr><tr><td>2</td><td>70000</td><td>32 KB</td><td>0</td><td>1</td><td>1</td><td>111</td></tr></tbody></table></div>
+<p>2.1 ¿Qué significa para el segmento 2 que su bit V valga 0? 2.2 ¿Cuál es la dirección física de la dirección segmentada &lt;1, 260>? 2.3 Si ese acceso es una escritura, ¿qué cambia en la tabla y quién lo cambia? 2.4 ¿Qué pasa con una escritura en &lt;2, 24000>? 2.5 ¿Y con una escritura en &lt;1, 40000>?</p>
+<div class="meta"><p><b>Usa:</b> @física = Base + d si d &lt; Tamaño · V = 0 → segment fault · d ≥ Tamaño → segmentation violation · al escribir, la MMU pone U = 1 y D = 1</p><p><b>Materia:</b> <a class="inl" href="2-Segmentacion.html#mmu-completa">página 2 · Los cuatro controles de la MMU</a> (lámina 20) · <a class="inl" href="2-Segmentacion.html#bitv">bit V</a>, <a class="inl" href="2-Segmentacion.html#bitu">bit U</a> y <a class="inl" href="2-Segmentacion.html#bitd">bit D</a> · pauta de la Ayudantía 4, páginas 3 y 4</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>2.1</b> Que en este instante el segmento no está cargado en la memoria. Cualquier acceso a él provoca un <b>segment fault</b>, y el sistema operativo tiene que cargarlo.</p>
+<p><b>2.2</b> 260 &lt; 24 KB (24 576) ✓ → @ = 32 500 + 260 = <b>32 760</b>.</p>
+<p><b>2.3</b> Es una escritura y RWX = 111 la permite: U pasa a 1 (hubo acceso) y D pasa a 1 (hubo modificación). Lo hace la <b>MMU</b>, el hardware, no el sistema operativo.</p>
+<p><b>2.4</b> El segmento 2 tiene V = 0 → <b>segment fault</b>: el SO carga el segmento y el acceso se reintenta (24 000 &lt; 32 KB, así que después pasa).</p>
+<p><b>2.5</b> 40 000 ≥ 24 KB (24 576): el offset se sale del segmento → <b>segmentation violation</b>.</p>
+<p class="tiny">La pauta de 2.2 dice que la base del segmento 1 es “24KB”, pero eso es su tamaño: la base es 32 500 (el cálculo sí usa 32 500). Y fíjate en el segmento 2: está ausente (V = 0) con U = 1 y D = 1, y el profe no lo trata como error. Por eso, en las tablas, “ausente con D = 1” no cuenta como error seguro (ver 2.2 y 2.3 del sábado).</p>
+<div class="ans">Segment fault · 32 760 · U y D pasan a 1, por la MMU · segment fault · segmentation violation.</div>
+</div></details>
+</div>
+<div class="ej p3" id="e4-3" data-nav="4.3 · Ayudantía 4 · paginación" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-4.3" aria-label="Hecho"><span class="ej-n">4.3</span><span class="ej-t">Ayudantía 4 · sección 3: paginación</span><span class="lv p3">Imprescindible</span><span class="ej-tag">Ayudantía 4 · 25 min</span></div>
+<p>Procesador de 32 bits, RAM de 4 GB, un <code>int</code> ocupa 4 bytes y las páginas son de 32 KB. El SO arma el espacio de trabajo en el orden Código | Datos | Stack/Heap. El código de P0 ocupa 124 800 bytes, su pila 64 KB, y su único dato es un arreglo de enteros:</p>
+<pre><code>int tab[200000];</code></pre>
+<p>3.1 ¿Cuántas páginas virtuales tiene el espacio de trabajo de P0? El proceso ejecuta este código:</p>
+<pre><code>for(int i=0; i&lt;200000; i+=40000) tab[i]=i;</code></pre>
+<p>3.2 ¿Cuántos page faults provoca? Justifica.</p>
+<p>Al principio todos los marcos están libres y el SO los asigna en el orden de los page faults. Antes de tocar cualquier página de datos, P0 ya accedió a todas sus páginas de código y a la primera de la pila. 3.3 Después del ciclo, plantea la tabla de páginas de P0 para las páginas virtuales 0, 7 y 29. 3.4 ¿Qué ventaja tiene para el SO la paginación on demand?</p>
+<div class="meta"><p><b>Usa:</b> páginas de cada zona = ⌈tamaño / 32 768⌉ (código, datos y pila por separado) · tab[i] está en el byte 4 × i de los datos · página virtual = páginas de código + ⌊4i / 32 768⌋</p><p><b>Materia:</b> <a class="inl" href="3-Paginacion.html#principio">página 3 · Páginas y marcos</a> · <a class="inl" href="3-Paginacion.html#tabla-pag">La tabla y sus bits</a> (lámina 23) · <a class="inl" href="3-Paginacion.html#demanda">On demand paging</a> (audio 20, 12:06) · pauta de la Ayudantía 4, páginas 5 a 7</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>3.1</b> Código: 124 800 / 32 768 = 3,8 → 4 páginas (de la 0 a la 3). Datos: 200 000 × 4 = 800 000 B; 800 000 / 32 768 = 24,4 → 25 páginas (de la 4 a la 28). Pila: 64 KB / 32 KB = 2 páginas (29 y 30). Total: <b>31 páginas virtuales</b>.</p>
+<p><b>3.2</b> El ciclo hace 5 accesos (i = 0, 40 000, 80 000, 120 000 y 160 000). El elemento tab[i] está en el byte 4 × i de los datos:</p>
+<div class="tw"><table class="mini"><thead><tr><th>i</th><th>Byte 4i</th><th>Página de datos ⌊4i / 32 768⌋</th><th>Página virtual (4 + …)</th></tr></thead><tbody><tr><td>0</td><td>0</td><td>0</td><td>4</td></tr><tr><td>40 000</td><td>160 000</td><td>4</td><td>8</td></tr><tr><td>80 000</td><td>320 000</td><td>9</td><td>13</td></tr><tr><td>120 000</td><td>480 000</td><td>14</td><td>18</td></tr><tr><td>160 000</td><td>640 000</td><td>19</td><td>23</td></tr></tbody></table></div>
+<p>Son 5 páginas distintas que nunca se habían tocado: <b>5 page faults</b>. (La pauta dice “4 accesos”, pero lista 5 direcciones y concluye 5 page faults.)</p>
+<p><b>3.3</b> Aquí la pauta se equivoca. Dice que 160 000 / 32 768 = 4,88 cae en “la cuarta página de datos” y que esa es la página 7. Pero 4,88 es la página de datos de índice 4 (la quinta: la 0 va del byte 0 al 32 767), y como los datos empiezan en la página virtual 4, es la <b>página 8</b>. Con el enunciado, nada toca la página 7.</p>
+<p>Los marcos se dan en orden de page fault: la página 0 primero (la primera instrucción) → marco 0; la 29 segunda (la llamada a main() escribe la dirección de retorno en la pila) → marco 1. Las otras páginas de código (1, 2 y 3) toman los marcos 2 a 4, y el ciclo los 5 a 9, en orden: página 4 → 5, página 8 → 6, 13 → 7, 18 → 8 y 23 → 9.</p>
+<div class="tw"><table class="mini"><thead><tr><th>Página</th><th>V</th><th>U</th><th>D</th><th>R</th><th>W</th><th>X</th><th>Frame</th></tr></thead><tbody><tr><td>0 (código)</td><td>1</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>0</td></tr><tr><td>7 (datos)</td><td>0</td><td>0</td><td>0</td><td>1</td><td>1</td><td>0</td><td>—</td></tr><tr><td>8 (datos, la del ciclo)</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>0</td><td>6</td></tr><tr><td>29 (pila)</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr></tbody></table></div>
+<p>Código: se leyó y ejecutó, no se escribió (D = 0, W = 0). La 8 se escribió en el ciclo (D = 1). La 29 se escribió al llamar a main() (D = 1). Si en el certamen te piden la página 7 tal cual, di que el ciclo no la toca (V = 0) y muestra la 8; la pauta, en cambio, le pone V = U = D = 1 y un marco desconocido, “f1”.</p>
+<p class="tiny">La pauta le da X = 1 a la pila (RWX = 111); lo habitual sería RW-. Los datos van RW- y el código R-X.</p>
+<p><b>3.4</b> Cargar las páginas virtuales solo cuando hay un acceso, es decir, cuando son útiles: se ahorra memoria (de las 25 páginas de tab, el ciclo usa 5; las otras 20 nunca se cargan), el proceso parte antes y caben más procesos en memoria.</p>
+<div class="ans">31 páginas · 5 page faults (páginas 4, 8, 13, 18 y 23) · la página que escribe el ciclo es la 8, no la 7.</div>
+</div></details>
+</div>
+<div class="ej p3" id="e4-4" data-nav="4.4 · Ayudantía 4 · segmentación paginada" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-4.4" aria-label="Hecho"><span class="ej-n">4.4</span><span class="ej-t">Ayudantía 4 · sección 4: segmentación paginada</span><span class="lv p3">Imprescindible</span><span class="ej-tag">Ayudantía 4 · 20 min</span></div>
+<p>Páginas de 32 KB. P0 tiene tres segmentos: código (segmento 0, 124 800 bytes), datos (segmento 1, 800 000 bytes) y stack/heap (segmento 2, 64 KB). Algunas páginas cargadas, con la notación [segmento, página virtual]: [0, 0] en la dirección física 163 840, [1, 2] en 196 608 y [2, 2] en 0. 4.1 ¿En qué marco está cada una?</p>
+<p>La función printf() empieza en el byte 1 200 000 de la biblioteca C, que mide 4 MB. Tabla global de segmentos: S0 biblioteca C, S1 código LibreOffice, S2 código Firefox, S3 datos P0, S4 datos P1, S5 biblioteca Pthreads, S6 stack P0 y S7 stack P1. Las tablas de segmentos de los procesos:</p>
+<div class="tw"><table class="mini"><thead><tr><th>P0: segmento</th><th>Contenido</th><th>Global</th></tr></thead><tbody><tr><td>0</td><td>Código</td><td>S1</td></tr><tr><td>1</td><td>Datos</td><td>S3</td></tr><tr><td>3</td><td>Stack</td><td>S6</td></tr><tr><td>4</td><td>Biblioteca C</td><td>S0</td></tr></tbody></table></div>
+<div class="tw"><table class="mini"><thead><tr><th>P1: segmento</th><th>Contenido</th><th>Global</th></tr></thead><tbody><tr><td>0</td><td>Código</td><td>S2</td></tr><tr><td>1</td><td>Datos</td><td>S4</td></tr><tr><td>3</td><td>Stack</td><td>S7</td></tr><tr><td>4</td><td>Biblioteca Pthreads</td><td>S5</td></tr><tr><td>5</td><td>Biblioteca C</td><td>S0</td></tr></tbody></table></div>
+<p>4.2 ¿Cuál es la dirección virtual (segmento, offset) de printf() para P0 y para P1? 4.3 ¿Y la dirección (segmento, página, offset)? 4.4 ¿Qué ventaja tiene la segmentación paginada frente a la segmentación sola? 4.5 ¿Cuál es la condición para que el SO pueda eliminar de la memoria el segmento global S5?</p>
+<div class="meta"><p><b>Usa:</b> marco = dirección física / 32 768 · página = ⌊offset / 32 768⌋ · desplazamiento = offset − página × 32 768 · el número de segmento es el de la tabla de cada proceso, no el global</p><p><b>Materia:</b> <a class="inl" href="3-Paginacion.html#segpag">página 3 · Segmentación paginada</a> (láminas 44 a 46; audio 22, 12:29) · <a class="inl" href="2-Segmentacion.html#compartir">página 2 · Segmentos compartidos</a> (láminas 18 y 19) · pauta de la Ayudantía 4, páginas 7 a 9</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>4.1</b> Las direcciones son múltiplos de 32 768: [0, 0] → 163 840 / 32 768 = <b>marco 5</b>; [1, 2] → 196 608 / 32 768 = <b>marco 6</b>; [2, 2] → 0 / 32 768 = <b>marco 0</b>.</p>
+<p class="tiny">Detalle del enunciado: el segmento 2 mide 64 KB, o sea 2 páginas (la 0 y la 1), así que [2, 2] no existe y daría segmentation violation. La pauta igual responde marco 0 (y en esa línea escribe [0, 0] por [2, 2]). Si te lo encuentras en el certamen, comenta las dos cosas.</p>
+<p><b>4.2</b> La biblioteca C es el segmento global S0, pero cada proceso la ve con su propio número: P0 como segmento 4 y P1 como segmento 5. printf() está en <b>&lt;4, 1 200 000></b> para P0 y en <b>&lt;5, 1 200 000></b> para P1 (1 200 000 &lt; 4 MB ✓). Fíjate que P0 no tiene segmento 2: &lt;2, x> le daría segmentation violation.</p>
+<p><b>4.3</b> ⌊1 200 000 / 32 768⌋ = 36 y 1 200 000 − 36 × 32 768 = 1 200 000 − 1 179 648 = 20 352. Entonces <b>&lt;4, 36, 20 352></b> para P0 y <b>&lt;5, 36, 20 352></b> para P1: la misma página y el mismo desplazamiento, porque es el mismo segmento global.</p>
+<p><b>4.4</b> La segmentación sola organiza el espacio de trabajo (código, datos y pila separados), pero cada segmento necesita una zona contigua y aparece la fragmentación externa. La segmentación paginada tiene lo mejor de los dos: la organización por segmentos, sin fragmentación externa, porque la memoria se asigna por páginas y no tiene que ser contigua.</p>
+<p><b>4.5</b> Que ningún proceso haga referencia a S5. Aquí solo P1 usa Pthreads, así que S5 se puede liberar cuando P1 termina. En cambio, S0 (la biblioteca C) no, porque P0 todavía la usa.</p>
+<div class="ans">Marcos 5, 6 y 0 · &lt;4, 1 200 000> y &lt;5, 1 200 000> · &lt;4, 36, 20 352> y &lt;5, 36, 20 352> · S5 se libera cuando ningún proceso lo usa (al terminar P1).</div>
+</div></details>
+</div>
+<div class="ej p3" id="e4-5" data-nav="4.5 · C1 2015 · sección 3" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-4.5" aria-label="Hecho"><span class="ej-n">4.5</span><span class="ej-t">C1 2015 · sección 3 “Gestión de memoria continua” (30 puntos, con pauta)</span><span class="lv p3">Imprescindible</span><span class="ej-tag">C1 2015 · 30 min</span></div>
+<p>Memoria continua con bloques de 16 KB y una lista de zonas libres (primer bloque libre, tamaño en bloques): (15, 3), (30, 12), (47, 10), (120, 50), (250, 40), (300, 5), (400, 8), (600, 2), (652, 7).</p>
+<p>3.1 Explica la fragmentación interna y externa en memoria continua por bloques. 3.2 ¿Qué consecuencia tiene elegir bloques pequeños? ¿Y grandes? 3.3 Una tarea necesita 150 KB: ¿dónde la ubican BEST_FIT, FIRST_FIT y WORST_FIT? 3.4 Si no hay una zona donde quepa una tarea nueva, ¿cuáles son las dos técnicas para liberar espacio? ¿Cuál es posible en teoría pero no se usa en la práctica? 3.5 Explica la dirección lógica en gestión continua y cómo la MMU la transforma en física.</p>
+<div class="meta"><p><b>Usa:</b> b = ⌈K / bloque⌉ · fragmentación interna = b × bloque − K · FIRST: la primera zona con Size ≥ b · BEST: la de menor remanente (Size − b) · WORST: la de mayor remanente · @física = BASE + d si d &lt; LÍMITE</p><p><b>Materia:</b> <a class="inl" href="1-Memoria-lineal.html#ex2015">página 1 · Certamen 2015</a> (pauta oficial) · <a class="inl" href="1-Memoria-lineal.html#fit">FIT</a> (láminas 28 a 30; audio 19, 49:00) · <a class="inl" href="1-Memoria-lineal.html#nbloques">Cuántos bloques</a> (lámina 27) · <a class="inl" href="1-Memoria-lineal.html#compactar">Compactar</a> y <a class="inl" href="1-Memoria-lineal.html#swapping">Swapping</a> (láminas 31 a 36)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p class="st">3.1</p>
+<p>Interna: un bloque asignado a una tarea no está ocupado completamente por ella (lo que sobra del último bloque). Externa: hay bloques libres, pero ninguna zona es suficientemente grande para una tarea nueva.</p>
+<p class="st">3.2</p>
+<p>Pequeños: menos fragmentación interna, pero más externa (cuesta más juntar bloques libres suficientes) y más bloques que administrar. Grandes: menos externa, más interna para las tareas que usan poca memoria.</p>
+<p class="st">3.3</p>
+<p>150 / 16 = 9,375 → <b>b = 10 bloques</b> (160 KB: 10 KB de fragmentación interna).</p>
+<div class="tw"><table class="mini"><thead><tr><th>Zona (Start, Size)</th><th>¿Caben 10?</th><th>Remanente</th></tr></thead><tbody><tr><td>(15, 3)</td><td>no</td><td>—</td></tr><tr><td>(30, 12)</td><td>sí</td><td>2</td></tr><tr><td>(47, 10)</td><td>sí</td><td>0</td></tr><tr><td>(120, 50)</td><td>sí</td><td>40</td></tr><tr><td>(250, 40)</td><td>sí</td><td>30</td></tr><tr><td>(300, 5)</td><td>no</td><td>—</td></tr><tr><td>(400, 8)</td><td>no</td><td>—</td></tr><tr><td>(600, 2)</td><td>no</td><td>—</td></tr><tr><td>(652, 7)</td><td>no</td><td>—</td></tr></tbody></table></div>
+<p>FIRST_FIT: la zona del bloque <b>30</b> (la primera donde cabe); queda (40, 2). BEST_FIT: la del bloque <b>47</b> (remanente 0, la zona desaparece). WORST_FIT: la del bloque <b>120</b> (remanente 40); queda (130, 40).</p>
+<p class="st">3.4</p>
+<p>Compactar o swapping. Compactar es posible en teoría, pero con varios GB tarda demasiado (unos 107 s por GB con 50 ns por acceso) y no se usa en la práctica. El swapping descarga tareas al disco para liberar zonas y funciona sea cual sea el tamaño de la memoria.</p>
+<p class="st">3.5</p>
+<p>La dirección lógica hace que la ubicación de la tarea sea transparente para su código: sus direcciones empiezan en 0. BASE dice dónde empieza la zona asignada: @física = BASE + @lógica, y la MMU con control verifica además @lógica &lt; LÍMITE (si no, TRAP).</p>
+<div class="ans">10 bloques · FIRST → 30 · BEST → 47 · WORST → 120.</div>
+</div></details>
+</div>
+<div class="ej p2" id="e4-6" data-nav="4.6 · C2 2023 · sección 3 y compactar" data-p="2">
+<div class="ej-h"><input type="checkbox" data-k="lista-4.6" aria-label="Hecho"><span class="ej-n">4.6</span><span class="ej-t">C2 2023 · sección 3 y el costo de compactar</span><span class="lv p2">Importante</span><span class="ej-tag">C2 2023 · 15 min</span></div>
+<p>3.1 Explica FIRST_FIT, BEST_FIT y WORST_FIT. El enunciado agrega que leer o escribir un byte de memoria cuesta 50 ns: a) ¿cuánto demora compactar si hay que mover 300 MB? b) ¿Y 2 GB? 3.2 En términos generales, ¿por qué la gestión de memoria lineal es ineficiente?</p>
+<div class="meta"><p><b>Usa:</b> t = 2 × t<sub>acceso</sub> × bytes a mover (cada byte se lee y se escribe) · con 50 ns: ≈ 105 ms por MB y ≈ 107 s por GB</p><p><b>Materia:</b> <a class="inl" href="1-Memoria-lineal.html#ex2023l">página 1 · C2 2023</a> · <a class="inl" href="1-Memoria-lineal.html#compactar">Compactar y cuánto cuesta</a> (láminas 31 y 32; audio 19, 56:00) · <a class="inl" href="1-Memoria-lineal.html#lineal-conclusion">Por qué lo lineal es ineficiente</a> (lámina 37)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>3.1</b> Con b = ⌈K / bloque⌉: FIRST asigna la primera zona libre con al menos b bloques; BEST, la zona donde cabe con el menor remanente; WORST, la de mayor remanente. Los tres recorren la lista de zonas libres; FIRST se detiene antes, BEST y WORST la recorren entera.</p>
+<p><b>a)</b> t = 2 × 50 ns × 300 × 2<sup>20</sup> B = 100 ns × 314 572 800 ≈ <b>31,5 s</b>.</p>
+<p><b>b)</b> 100 ns × 2 × 2<sup>30</sup> ≈ <b>214,7 s</b>, casi 3 minutos y medio, con los procesos movidos detenidos.</p>
+<p><b>3.2</b> Cada proceso necesita una zona contigua de su tamaño completo → fragmentación externa → hay que compactar (carísimo, como en b) o hacer swapping de procesos completos (más caro aún). Además el proceso se carga entero aunque use una parte, y cada reubicación cuesta.</p>
+<p class="tiny">En la copia escaneada del C2 2023 la sección vale 15 puntos y solo se ven dos preguntas: el dato de 50 ns probablemente era para una tercera, de costo. Por eso conviene saber este cálculo.</p>
+</div></details>
+</div>
+<div class="ej p3" id="e4-7" data-nav="4.7 · C2 2023 · conocimiento" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-4.7" aria-label="Hecho"><span class="ej-n">4.7</span><span class="ej-t">C2 2023 · las siete preguntas de conocimiento</span><span class="lv p3">Imprescindible</span><span class="ej-tag">C2 2023 · 20 min</span></div>
+<ul><li>1.1 ¿Cuál es el rol de la MMU en la gestión de memoria, sea cual sea el modelo?</li><li>1.2 En memoria lineal, define fragmentación externa e interna.</li><li>1.3 ¿Por qué las particiones estáticas de distinto tamaño no son eficientes?</li><li>1.4 ¿Por qué le interesa al SO una gestión de memoria que mantiene más memoria libre?</li><li>1.5 Define page fault en memoria virtual paginada.</li><li>1.6 En segmentación paginada, ¿cuándo ocurre un SEGMENTATION VIOLATION?</li><li>1.7 ¿Por qué la paginación mejora bastante el desempeño del swapping?</li></ul>
+<div class="meta"><p><b>Materia:</b> <a class="inl" href="5-Ejercicios-por-pregunta.html#p1">página 5 · P1</a> (P1.9 a P1.12, P1.2, P1.3 y P1.4) · <a class="inl" href="1-Memoria-lineal.html#direcciones">La MMU</a> · <a class="inl" href="1-Memoria-lineal.html#fijas">Particiones fijas</a> (láminas 18 y 19) · <a class="inl" href="3-Paginacion.html#demanda">On demand paging</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>1.1</b> La MMU es el hardware que, en <b>cada</b> acceso a memoria, traduce la dirección lógica o virtual en física y verifica que el acceso sea válido (que no salga del espacio del proceso, que la página o segmento esté presente y que tenga los derechos); si algo falla, genera un TRAP para el SO. Tiene que ser hardware porque ocurre en cada fetch, lectura y escritura.</p>
+<p><b>1.2</b> Interna: memoria asignada a un proceso que el proceso no usa (dentro de su partición o de su último bloque); queda perdida. Externa: zonas libres entre particiones, demasiado chicas para un proceso nuevo aunque sumadas alcanzarían.</p>
+<p><b>1.3</b> Porque se fijan sin conocer los procesos: casi nunca calzan. Un proceso en una partición más grande deja fragmentación interna, y las particiones libres demasiado chicas para los que esperan son fragmentación externa. Además, el número de particiones limita la multiprogramación.</p>
+<p><b>1.4</b> Para atender las solicitudes de inmediato (cargar tareas, crecimiento dinámico, swap in) sin tener que compactar ni descargar procesos en ese momento, que es muy lento; y para tener más procesos listos en memoria: más multiprogramación.</p>
+<p><b>1.5</b> El TRAP que genera la MMU cuando un proceso accede a una página de su espacio que no está en memoria (V = 0). El sistema verifica que sea válida, le asigna un marco (descargando otra si no hay libres), la carga del disco y actualiza la tabla; el proceso queda bloqueado mientras tanto y después reejecuta la instrucción. No es un error: es el mecanismo normal de la paginación bajo demanda.</p>
+<p><b>1.6</b> Cuando el segmento de la dirección no está en la tabla de segmentos del proceso, o cuando el offset sale del tamaño (límite) del segmento.</p>
+<p><b>1.7</b> Porque el intercambio se hace por páginas de pocos KB y no por procesos completos: se descargan solo las poco usadas (U), se escriben solo las modificadas (D) y se cargan solo las que se piden. Cualquier marco libre sirve (no hay que compactar ni reubicar) y el proceso sigue ejecutándose con solo una parte de sus páginas en memoria.</p>
+</div></details>
+</div>
+<div class="ej p1" id="e4-8" data-nav="4.8 · L1: cinco pedidos seguidos" data-p="1">
+<div class="ej-h"><input type="checkbox" data-k="lista-4.8" aria-label="Hecho"><span class="ej-n">4.8</span><span class="ej-t">L1: cinco pedidos seguidos con la tabla de 2015</span><span class="lv p1">Si alcanza</span><span class="ej-tag">20 min</span></div>
+<p>Misma tabla y bloques de 16 KB que en 4.5. Llegan en orden A = 150 KB, B = 600 KB, C = 100 KB, D = 40 KB y E = 700 KB. Para cada algoritmo, ¿dónde queda cada tarea? ¿Alguna no cabe? ¿Por qué?</p>
+<div class="meta"><p><b>Usa:</b> Lo de 4.5, pero actualizando la tabla después de cada pedido: la zona usada pasa a (Start + b, Size − b), o se borra si queda en 0.</p><p><b>Materia:</b> <a class="inl" href="1-Memoria-lineal.html#L1">página 1 · L1</a> · <a class="inl" href="1-Memoria-lineal.html#fit">FIT</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p>Bloques: A 150/16 = 9,4 → 10 · B 600/16 = 37,5 → 38 · C 100/16 = 6,25 → 7 · D 40/16 = 2,5 → 3 · E 700/16 = 43,75 → 44.</p>
+<div class="tw"><table class="mini"><thead><tr><th>Tarea (b)</th><th>FIRST_FIT</th><th>BEST_FIT</th><th>WORST_FIT</th></tr></thead><tbody><tr><td>A (10)</td><td>30 → queda (40, 2)</td><td>47 → se borra</td><td>120 → queda (130, 40)</td></tr><tr><td>B (38)</td><td>120 → queda (158, 12)</td><td>250 → queda (288, 2)</td><td>130 → queda (168, 2)</td></tr><tr><td>C (7)</td><td>47 → queda (54, 3)</td><td>652 → se borra</td><td>250 → queda (257, 33)</td></tr><tr><td>D (3)</td><td>15 → se borra</td><td>15 → se borra</td><td>257 → queda (260, 30)</td></tr><tr><td>E (44)</td><td>no cabe</td><td>120 → queda (164, 6)</td><td>no cabe</td></tr></tbody></table></div>
+<p>Con FIRST_FIT, al final quedan libres 79 bloques (1 264 KB), casi el doble de lo que pide E, pero la zona más grande tiene 40: es <b>fragmentación externa</b> pura. WORST_FIT partió la zona de 50 para A (y el resto se lo llevó B). BEST_FIT guardó la zona de 50 intacta hasta que llegó la tarea que la necesitaba.</p>
+<div class="ans">E no cabe con FIRST_FIT ni con WORST_FIT (fragmentación externa); con BEST_FIT, sí.</div>
+</div></details>
+</div>
+<div class="ej p1" id="e4-9" data-nav="4.9 · L2 y L4: bits y BASE" data-p="1">
+<div class="ej-h"><input type="checkbox" data-k="lista-4.9" aria-label="Hecho"><span class="ej-n">4.9</span><span class="ej-t">L2 y L4: el arreglo de bits y BASE + LÍMITE</span><span class="lv p1">Si alcanza</span><span class="ej-tag">láminas 14 y 24 · 15 min</span></div>
+<p>a) ¿Cuánto ocupa el arreglo de bits de una RAM de 8 GB con bloques de 4 KB? ¿Y el de una de 16 GB con bloques de 16 KB?</p>
+<p>b) Un proceso tiene BASE = 300 000 y LÍMITE = 50 000. Traduce, en modo usuario, las direcciones lógicas 0, 12 345, 49 999 y 50 000. ¿Qué cambia si el SO mueve el proceso a 120 000?</p>
+<div class="meta"><p><b>Usa:</b> m = (RAM / bloque) / 8 bytes · @física = BASE + d si d &lt; LÍMITE; si no, TRAP</p><p><b>Materia:</b> <a class="inl" href="1-Memoria-lineal.html#bits">página 1 · Arreglo de bits</a> (láminas 24 a 26) · <a class="inl" href="1-Memoria-lineal.html#mmu-control">MMU con control</a> (lámina 14; audio 19, 09:00)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>a)</b> 2<sup>33</sup> / 2<sup>12</sup> = 2<sup>21</sup> bloques → 2<sup>21</sup> / 8 = 2<sup>18</sup> B = <b>256 KB</b>. Con 16 GB y bloques de 16 KB: 2<sup>20</sup> bloques → <b>128 KB</b>. Con bloques más grandes, el arreglo es más chico.</p>
+<p><b>b)</b> 0 → 300 000 · 12 345 → 312 345 · 49 999 → 349 999 · 50 000 → <b>TRAP</b> (no es menor que el límite). Si el proceso se mueve, solo cambia el registro: BASE = 120 000; las direcciones lógicas del programa no cambian.</p>
+</div></details>
+</div>
+<div class="box tip"><div class="bt">Al terminar el día</div><p>En la noche, 20 minutos de <a class="inl" href="7-Flashcards.html#fc-practica">flashcards</a> en modo “Repaso inteligente”, con todos los temas. Anota las preguntas de 4.7 que no te salieron: mañana las vuelves a practicar después del simulacro.</p></div>
+</section>
+
+<section id="d5" data-grp="Martes 3" data-nav="Simulacro · cómo hacerlo">
+<h2>Martes 3 de noviembre · Simulacro y corrección <span class="num">≈ 3 h 05</span></h2>
+<p class="lead">El día antes: el simulacro con reloj, la corrección con la materia de cada error, una secuencia de reemplazo que nunca has visto (para comprobar que sabes el método y no solo las respuestas) y el banco de preguntas de conocimiento en voz alta.</p>
+<div class="ej p3" id="e5-1" data-nav="5.1 · Simulacro de 90 minutos" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-5.1" aria-label="Hecho"><span class="ej-n">5.1</span><span class="ej-t">Simulacro de 90 minutos</span><span class="lv p3">Imprescindible</span><span class="ej-tag">página 5 · 90 min</span></div>
+<p>El simulacro de la página 5: cuatro partes de 35 puntos (conocimiento, memoria lineal, segmentación paginada y reemplazo de páginas). Con reloj, sin mirar nada, en hojas como en el certamen. Si estás corto de tiempo, solo las partes 1, 3 y 4, en 70 minutos.</p>
+<div class="meta"><p><b>Usa:</b> Todo lo de los días 1 a 4. Empieza por la parte 4 (reemplazo) o la 3: son las más mecánicas.</p><p><b>Materia:</b> <a class="inl" href="5-Ejercicios-por-pregunta.html#simulacro">página 5 · Simulacro de 90 minutos</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p>La solución completa está al final del simulacro, en “Solución del simulacro”. Los resultados, para revisar rápido:</p>
+<ul><li>Parte 2: 13 bloques y 4 KB de fragmentación interna; FIRST → 40, BEST → 90, WORST → 200; 240 KB va a la zona 200; 250 KB no cabe (fragmentación externa); arreglo de bits de 128 KB; compactar 512 MB ≈ 53,7 s.</li><li>Parte 3: a) 206 224 · b) segmentation violation · c) permission denied · d) 58 152; la fila 1 es incorrecta (D = 1 con U = 0) y la 2 (ausente con D = 1) va solo como observación; 3 MISS en la TLB.</li><li>Parte 4: FIFO 8 page faults (primera víctima el 4) · LRU 9 (primera víctima el 1) · Working Set 6, con hasta 5 páginas en memoria en la segunda ventana.</li></ul>
+</div></details>
+</div>
+<div class="ej p3" id="e5-2" data-nav="5.2 · Corrección dirigida" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-5.2" aria-label="Hecho"><span class="ej-n">5.2</span><span class="ej-t">Corrección dirigida</span><span class="lv p3">Imprescindible</span><span class="ej-tag">30 min</span></div>
+<p>Por cada respuesta mala o incompleta del simulacro: busca su parte en la tabla, lee la sección y rehaz, sin mirar, el ejercicio de esta lista que la practica.</p>
+<div class="tw"><table class="mini"><thead><tr><th>Parte del simulacro</th><th>Dónde está la materia</th><th>Rehaz</th></tr></thead><tbody><tr><td>1 · Conocimiento</td><td><a class="inl" href="5-Ejercicios-por-pregunta.html#p1">página 5 · P1</a></td><td>4.7, 5.4 y 3.2</td></tr><tr><td>2 · Memoria lineal</td><td><a class="inl" href="1-Memoria-lineal.html#fit">página 1 · FIT</a> y <a class="inl" href="1-Memoria-lineal.html#compactar">Compactar</a></td><td>4.1, 4.5 y 4.6</td></tr><tr><td>3 · Segmentación paginada, tabla y TLB</td><td><a class="inl" href="3-Paginacion.html#segpag">página 3 · Segmentación paginada</a> y <a class="inl" href="3-Paginacion.html#tabla-mala">Encontrar errores</a></td><td>2.2 a 2.6, 3.3, 4.3 y 4.4</td></tr><tr><td>4 · Reemplazo</td><td><a class="inl" href="4-Reemplazo-de-paginas.html#t4-receta">página 4 · Receta para el certamen</a></td><td>1.1 a 1.5</td></tr></tbody></table></div>
+<div class="meta"><p><b>Materia:</b> Esta misma tabla</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p>Lo importante es no quedarse con “ah, era eso”: rehacer el ejercicio sin mirar es lo que fija el método. Si en la parte 4 el error fue de formato (mover la lista de FIFO en un acierto, no contar los page faults iniciales, usar la ventana deslizante), rehaz 1.1, 1.2 y 1.3 completos.</p>
+</div></details>
+</div>
+<div class="ej p3" id="e5-3" data-nav="5.3 · Una secuencia nueva" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-5.3" aria-label="Hecho"><span class="ej-n">5.3</span><span class="ej-t">Una secuencia nueva: FIFO, LRU y Working Set</span><span class="lv p3">Imprescindible</span><span class="ej-tag">20 min</span></div>
+<p>Nunca la has visto: 2, 3, 1, 2, 4, 3, 2, 5, 3, 2, 4, 1 con <b>3 marcos</b>. a) FIFO: page faults y primera víctima. b) LRU: page faults y primera víctima. c) Working Set con Δt = 4: page faults, WS de cada ventana y máximo de páginas en memoria.</p>
+<div class="meta"><p><b>Usa:</b> Las reglas de 1.1 a 1.3.</p><p><b>Materia:</b> <a class="inl" href="4-Reemplazo-de-paginas.html#t4-receta">página 4 · Receta para el certamen</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p class="st">a) FIFO</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">2</td><td class="n">3</td><td class="n">1</td><td class="n">2</td><td class="n">4</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">4</td><td class="n">1</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">2</td><td class="f">3</td><td class="f">1</td><td>1</td><td class="f">4</td><td>4</td><td class="f">2</td><td class="f">5</td><td class="f">3</td><td>3</td><td class="f">4</td><td class="f">1</td></tr><tr class="pl"><th class="rh"></th><td></td><td>2</td><td>3</td><td>3</td><td>1</td><td>1</td><td>4</td><td>2</td><td>5</td><td>5</td><td>3</td><td>4</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td>2</td><td>2</td><td>3</td><td>3</td><td>1</td><td>4</td><td>2</td><td>2</td><td>5</td><td>3</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td>2</td><td></td><td>3</td><td>1</td><td>4</td><td></td><td>2</td><td>5</td></tr></table></div><p class="tiny">9 page faults en 12 accesos (contando los 3 de la carga inicial).</p>
+<p class="st">b) LRU</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">2</td><td class="n">3</td><td class="n">1</td><td class="n">2</td><td class="n">4</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">4</td><td class="n">1</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">2</td><td class="f">3</td><td class="f">1</td><td class="h">2</td><td class="f">4</td><td class="f">3</td><td class="h">2</td><td class="f">5</td><td class="h">3</td><td class="h">2</td><td class="f">4</td><td class="f">1</td></tr><tr class="pl"><th class="rh"></th><td></td><td>2</td><td>3</td><td>1</td><td>2</td><td>4</td><td>3</td><td>2</td><td>5</td><td>3</td><td>2</td><td>4</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td>2</td><td>3</td><td>1</td><td>2</td><td>4</td><td>3</td><td>2</td><td>5</td><td>3</td><td>2</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td>3</td><td>1</td><td></td><td>4</td><td></td><td></td><td>5</td><td>3</td></tr></table></div><p class="tiny">8 page faults en 12 accesos (contando los 3 de la carga inicial).</p>
+<p class="st">c) Working Set, Δt = 4</p>
+<div class="tw"><table class="mini wsv"><thead><tr><th>Ventana</th><th>Accesos</th><th>En memoria al empezar</th><th>Page faults</th><th>WS al final (U = 1)</th><th>Se liberan</th></tr></thead><tbody><tr><td>1 · t = 1–4</td><td class="mono"><b class="pfx">2</b> <b class="pfx">3</b> <b class="pfx">1</b> 2</td><td>∅</td><td>3 (2, 3, 1)</td><td><b>{1, 2, 3}</b> · 3 pág.</td><td>—</td></tr><tr><td>2 · t = 5–8</td><td class="mono"><b class="pfx">4</b> 3 2 <b class="pfx">5</b></td><td>{1, 2, 3}</td><td>2 (4, 5)</td><td><b>{2, 3, 4, 5}</b> · 4 pág.</td><td>{1}</td></tr><tr><td>3 · t = 9–12</td><td class="mono">3 2 4 <b class="pfx">1</b></td><td>{2, 3, 4, 5}</td><td>1 (1)</td><td><b>{1, 2, 3, 4}</b> · 4 pág.</td><td>{5}</td></tr></tbody></table></div><p class="tiny">6 page faults en 12 accesos con ventanas fijas de Δt = 4 (contando los iniciales). En negrita, el acceso que provocó cada fallo.</p>
+<p>Cuando llega el 4 están el 2, el 3 y el 1, y el 2 se acaba de usar. FIFO saca igual el <b>2</b> (el primero que entró) y lo vuelve a pedir dos accesos después; LRU saca el <b>3</b>, el usado hace más tiempo.</p>
+<div class="ans">FIFO 9 (primera víctima el 2) · LRU 8 (primera víctima el 3) · Working Set 6, con WS de 3, 4 y 4 páginas y hasta 5 en memoria en la segunda ventana.</div>
+</div></details>
+</div>
+<div class="ej p3" id="e5-4" data-nav="5.4 · Flashcards de lo que ya salió" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-5.4" aria-label="Hecho"><span class="ej-n">5.4</span><span class="ej-t">Las flashcards de lo que ya salió, en voz alta</span><span class="lv p3">Imprescindible</span><span class="ej-tag">página 7 · 30 min</span></div>
+<p>En la página 7 (flashcards): modo “Mazo al azar” con “Solo las que ya salieron”, respondiendo en voz alta antes de voltear cada tarjeta, en 3 a 6 líneas: definición, mecanismo y consecuencia. Al terminar, “Repetir solo las que fallé”. Si sobra tiempo, un “Examen de 10” con “Solo las que me cuestan”. Son las mismas preguntas del banco P1 de la página 5, pero al azar y sin el contexto del ejercicio.</p>
+<div class="meta"><p><b>Materia:</b> <a class="inl" href="7-Flashcards.html#fc-practica">página 7 · Flashcards</a> (cada tarjeta trae su explicación, de dónde salió y el enlace a la guía) · <a class="inl" href="5-Ejercicios-por-pregunta.html#p1">página 5 · P1</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p>Cada tarjeta trae su respuesta modelo, con las ideas que hay que decir en negrita. Las que más se repiten en los certámenes: U y D (P1.1, en los cuatro C2), fragmentación (P1.2, en los cuatro y en la Ayudantía 4), page fault (P1.3, en tres), segmentation violation (P1.4), TLB (P1.5), tamaño de página (P1.6) y COW (P1.7).</p>
+<p>Si una no sale dos veces, sigue su enlace “ver en la guía”: lleva a la sección que la explica.</p>
+</div></details>
+</div>
+<div class="ej p3" id="e5-5" data-nav="5.5 · La chuleta, de memoria" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-5.5" aria-label="Hecho"><span class="ej-n">5.5</span><span class="ej-t">La chuleta, de memoria</span><span class="lv p3">Imprescindible</span><span class="ej-tag">15 min</span></div>
+<p>En una hoja en blanco, escribe todas las fórmulas y reglas de la tabla “Fórmulas y de dónde salen” sin mirar. Después compara y repite las que faltaron.</p>
+<div class="meta"><p><b>Materia:</b> <a class="inl" href="#l-formulas">Fórmulas y de dónde salen</a> (al comienzo de esta página) · <a class="inl" href="0-Guia-de-estudio-C2.html#chuleta">página 0 · Chuleta</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p>Deberían salirte, al menos: b = ⌈K / bloque⌉ y la fragmentación interna; FIRST, BEST y WORST; t = 2 × t × bytes; BASE + d con d &lt; LÍMITE; los cuatro controles de la segmentación; página = d div 2<sup>K</sup>, offset = d mod 2<sup>K</sup> y marco × 2<sup>K</sup> + offset; las reglas de una tabla correcta; 81, 42 y 83 ns; las reglas de FIFO, LRU y Working Set, y contar los page faults iniciales.</p>
+</div></details>
+</div>
+<div class="ej p1" id="e5-6" data-nav="5.6 · Lo que el profe no iba a ver" data-p="1">
+<div class="ej-h"><input type="checkbox" data-k="lista-5.6" aria-label="Hecho"><span class="ej-n">5.6</span><span class="ej-t">Lo que tiene lámina pero el profe no iba a ver</span><span class="lv p1">Si alcanza</span><span class="ej-tag">15 min</span></div>
+<p>Lee solo la idea, sin ejercicios: NFU (segunda oportunidad), LFU (vectores de uso) y reemplazo local contra global. Si el certamen trae algo de esto, basta con explicarlo en 3 líneas. Si sobra tiempo, las preguntas “posible” de la página 5 (P1.29 a P1.41).</p>
+<div class="meta"><p><b>Materia:</b> <a class="inl" href="4-Reemplazo-de-paginas.html#reloj">página 4 · NFU</a> (láminas 16 a 19) · <a class="inl" href="4-Reemplazo-de-paginas.html#lfu">LFU</a> (láminas 20 a 22) · <a class="inl" href="4-Reemplazo-de-paginas.html#local-global">Local y global</a> (láminas 23 y 24) · audio 23 (16:45: “nadie los usa”)</p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p><b>NFU</b> (el nombre del profe para la segunda oportunidad): en un page fault recorre las páginas en círculo; si tiene U = 1, la pone en 0 y sigue; la primera con U = 0 es la víctima.</p>
+<p><b>LFU</b>: guarda por cada página un vector con su bit U en cada período; su utilidad es P = Σ V<sub>i</sub> / 2<sup>i</sup> (lo reciente pesa más) y sale la de menor P.</p>
+<p><b>Local o global</b>: en el reemplazo local cada proceso elige la víctima entre sus propios marcos; en el global, entre todos los marcos del sistema.</p>
+</div></details>
+</div>
+<div class="box tip"><div class="bt">Al terminar el día</div><p>Duerme bien. Lo que a esta altura no está, no vale la pena forzarlo de noche.</p></div>
+</section>
+
+<section id="d6" data-grp="Miércoles 4" data-nav="La mañana del certamen">
+<h2>Miércoles 4 de noviembre · Antes del certamen <span class="num">≈ 55 min</span></h2>
+<p class="lead">Nada nuevo. Solo calentar la mano con lo confirmado y repasar los errores típicos. Si la fecha supuesta es la correcta, el certamen es a las 14:40 en la P407.</p>
+<div class="ej p3" id="e6-1" data-nav="6.1 · Una secuencia con 4 marcos" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-6.1" aria-label="Hecho"><span class="ej-n">6.1</span><span class="ej-t">Una secuencia corta con 4 marcos</span><span class="lv p3">Imprescindible</span><span class="ej-tag">15 min</span></div>
+<p>3, 2, 1, 3, 4, 1, 6, 2, 4, 3, 4, 2 con <b>4 marcos</b>. FIFO y LRU: page faults y víctimas. Después, Working Set con Δt = 4.</p>
+<div class="meta"><p><b>Usa:</b> Las reglas de 1.1 a 1.3.</p><p><b>Materia:</b> <a class="inl" href="4-Reemplazo-de-paginas.html#t4-receta">página 4 · Receta para el certamen</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p class="st">FIFO</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">6</td><td class="n">2</td><td class="n">4</td><td class="n">3</td><td class="n">4</td><td class="n">2</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td></td><td class="f">PF</td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">3</td><td class="f">2</td><td class="f">1</td><td>1</td><td class="f">4</td><td>4</td><td class="f">6</td><td>6</td><td>6</td><td class="f">3</td><td>3</td><td class="f">2</td></tr><tr class="pl"><th class="rh"></th><td></td><td>3</td><td>2</td><td>2</td><td>1</td><td>1</td><td>4</td><td>4</td><td>4</td><td>6</td><td>6</td><td>3</td></tr><tr class="pl"><th class="rh"></th><td></td><td></td><td>3</td><td>3</td><td>2</td><td>2</td><td>1</td><td>1</td><td>1</td><td>4</td><td>4</td><td>6</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td></td><td></td><td>3</td><td>3</td><td>2</td><td>2</td><td>2</td><td>1</td><td>1</td><td>4</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td></td><td>3</td><td></td><td></td><td>2</td><td></td><td>1</td></tr></table></div><p class="tiny">7 page faults en 12 accesos (contando los 4 de la carga inicial).</p>
+<p class="st">LRU</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">6</td><td class="n">2</td><td class="n">4</td><td class="n">3</td><td class="n">4</td><td class="n">2</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td></td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">3</td><td class="f">2</td><td class="f">1</td><td class="h">3</td><td class="f">4</td><td class="h">1</td><td class="f">6</td><td class="f">2</td><td class="h">4</td><td class="f">3</td><td class="h">4</td><td class="h">2</td></tr><tr class="pl"><th class="rh"></th><td></td><td>3</td><td>2</td><td>1</td><td>3</td><td>4</td><td>1</td><td>6</td><td>2</td><td>4</td><td>3</td><td>4</td></tr><tr class="pl"><th class="rh"></th><td></td><td></td><td>3</td><td>2</td><td>1</td><td>3</td><td>4</td><td>1</td><td>6</td><td>2</td><td>2</td><td>3</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td></td><td></td><td>2</td><td>2</td><td>3</td><td>4</td><td>1</td><td>6</td><td>6</td><td>6</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td></td><td>2</td><td>3</td><td></td><td>1</td><td></td><td></td></tr></table></div><p class="tiny">7 page faults en 12 accesos (contando los 4 de la carga inicial).</p>
+<p class="st">Working Set, Δt = 4</p>
+<div class="tw"><table class="mini wsv"><thead><tr><th>Ventana</th><th>Accesos</th><th>En memoria al empezar</th><th>Page faults</th><th>WS al final (U = 1)</th><th>Se liberan</th></tr></thead><tbody><tr><td>1 · t = 1–4</td><td class="mono"><b class="pfx">3</b> <b class="pfx">2</b> <b class="pfx">1</b> 3</td><td>∅</td><td>3 (3, 2, 1)</td><td><b>{1, 2, 3}</b> · 3 pág.</td><td>—</td></tr><tr><td>2 · t = 5–8</td><td class="mono"><b class="pfx">4</b> 1 <b class="pfx">6</b> 2</td><td>{1, 2, 3}</td><td>2 (4, 6)</td><td><b>{1, 2, 4, 6}</b> · 4 pág.</td><td>{3}</td></tr><tr><td>3 · t = 9–12</td><td class="mono">4 <b class="pfx">3</b> 4 2</td><td>{1, 2, 4, 6}</td><td>1 (3)</td><td><b>{2, 3, 4}</b> · 3 pág.</td><td>{1, 6}</td></tr></tbody></table></div><p class="tiny">6 page faults en 12 accesos con ventanas fijas de Δt = 4 (contando los iniciales). En negrita, el acceso que provocó cada fallo.</p>
+<p>Mismo número de page faults, pero víctimas distintas: justo lo que se revisa al corregir. Cuando llega el 6, FIFO saca el 3 (el primero que entró, aunque se usó en t = 4) y LRU saca el 2 (el 3 se acababa de usar).</p>
+<div class="ans">FIFO 7 (víctimas 3, 2 y 1) · LRU 7 (víctimas 2, 3 y 1) · Working Set 6.</div>
+</div></details>
+</div>
+<div class="ej p3" id="e6-2" data-nav="6.2 · Chuleta, errores y flashcards" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-6.2" aria-label="Hecho"><span class="ej-n">6.2</span><span class="ej-t">La chuleta sin mirar, los errores típicos y las flashcards</span><span class="lv p3">Imprescindible</span><span class="ej-tag">30 min</span></div>
+<p>Escribe la chuleta de memoria, como en 5.5, y lee los errores típicos de la página 0. Después, 10 minutos de flashcards con “Solo las que me cuestan” y un “Examen de 10” con “Solo las que ya salieron”.</p>
+<div class="meta"><p><b>Materia:</b> <a class="inl" href="0-Guia-de-estudio-C2.html#chuleta">página 0 · Chuleta</a> · <a class="inl" href="0-Guia-de-estudio-C2.html#errores">Errores típicos</a> · <a class="inl" href="7-Flashcards.html#fc-practica">página 7 · Flashcards</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p>Los errores que más puntos cuestan en reemplazo: mover la lista de FIFO en un acierto, no contar los page faults iniciales, usar la ventana deslizante en el Working Set y no nombrar la víctima. En las tablas: no justificar con la regla (D = 1 sin W, D = 1 sin U, marco inexistente) y dar como error seguro algo discutible, como una entrada ausente con D = 1.</p>
+</div></details>
+</div>
+<div class="ej p3" id="e6-3" data-nav="6.3 · En la sala" data-p="3">
+<div class="ej-h"><input type="checkbox" data-k="lista-6.3" aria-label="Hecho"><span class="ej-n">6.3</span><span class="ej-t">En la sala</span><span class="lv p3">Imprescindible</span><span class="ej-tag">5 min</span></div>
+<p>Al recibir el certamen, escribe en el margen el formulario de los primeros 3 minutos y empieza por lo más mecánico: el reemplazo y la tabla de páginas.</p>
+<div class="meta"><p><b>Materia:</b> <a class="inl" href="0-Guia-de-estudio-C2.html#g-sala">página 0 · En la sala</a></p></div>
+<details class="ex"><summary>Explicación y respuesta <span class="tag">ábrela al terminar</span></summary><div class="body">
+<p>El formulario mínimo: b = ⌈K / bloque⌉ · @ = BASE + d (d &lt; LÍMITE) · página = d div 2<sup>K</sup>, offset = d mod 2<sup>K</sup>, @ = marco × 2<sup>K</sup> + offset · D = 1 exige U = 1 y W = 1 · TLB 42 / 83 ns · FIFO: el acierto no mueve · LRU: el acierto sube · WS: ventanas fijas · contar los PF iniciales.</p>
+</div></details>
+</div>
+<div class="box tip"><div class="bt">Al terminar el día</div><p>Lleva lápiz, goma y hojas de sobra para las tablas de reemplazo.</p></div>
+</section>
+
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=(localStorage.getItem('so-c2-theme')||localStorage.getItem('so-c2-theme')); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('so-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  var lastBest=-1;
+  function onScroll(){
+    var y=window.scrollY+70, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4) best=secs.length-1;
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+    var sb=document.querySelector('.sidebar'), act=links[best];
+    if(sb && act && window.innerWidth>900 && best!==lastBest){
+      var r=act.getBoundingClientRect(), s=sb.getBoundingClientRect();
+      if(r.top<s.top+40 || r.bottom>s.bottom-40){ sb.scrollTop+=r.top-s.top-sb.clientHeight/2; }
+    }
+    lastBest=best;
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k], .ej input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='so-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+</script>
+</body>
+</html>

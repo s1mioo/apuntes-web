@@ -302,10 +302,69 @@
   table.rp td.n{color:var(--ink);font-weight:700}
   table.rp th.rh{text-align:right;color:var(--muted);background:var(--panel)}
   .tw table.rp{min-width:0}
+  table.pila tr.pl td{border-left:2px solid var(--line);border-right:2px solid var(--line)}
+  table.wsv td{vertical-align:middle}
+  table.wsv b.pfx{color:var(--warn);background:var(--warn-soft);padding:0 4px;border-radius:4px}
   .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.93em}
   .q{font-weight:600}
   .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:14px 0}
   .tiny{font-size:12.5px;color:var(--muted)}
+  /* --- página 7: flashcards --- */
+  [hidden]{display:none!important}
+  .fc-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 14px;margin:14px 0;box-shadow:var(--shadow)}
+  .fc-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .fc-row:last-child{border-bottom:0}
+  .fc-lab{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);min-width:62px}
+  .fc-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 300px}
+  .fc-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;
+    font-size:13.5px;cursor:pointer;background:var(--bg);color:var(--ink);user-select:none}
+  .fc-chip input{accent-color:var(--brand);margin:0}
+  .fc-chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
+  .fc-chip small{color:var(--muted);font-weight:400}
+  .fc-status{font-size:13px;color:var(--muted);margin:10px 2px 6px;min-height:1.3em}
+  .fc-card{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--brand);border-radius:14px;padding:18px 20px;
+    min-height:230px;box-shadow:var(--shadow);cursor:pointer;outline:none;display:flex;flex-direction:column;gap:12px}
+  .fc-card:focus-visible{box-shadow:0 0 0 3px var(--brand-soft),var(--shadow)}
+  .fc-card.flipped{border-left-color:var(--accent);cursor:default}
+  .fc-card.fc-vacio{cursor:default;border-left-color:var(--line)}
+  .fc-meta{display:flex;flex-wrap:wrap;gap:6px}
+  .fc-tag{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .fc-tag.fc-salio{color:var(--no);border-color:var(--no);background:var(--no-soft);font-weight:700}
+  .fc-front{font-size:19px;font-weight:700;line-height:1.45;color:var(--ink)}
+  .fc-hint{font-size:14.5px;color:var(--warn);background:var(--warn-soft);border-radius:8px;padding:8px 12px}
+  .fc-back{border-top:1px dashed var(--line);padding-top:12px;font-size:16px;line-height:1.65}
+  .fc-back b{color:var(--accent)}
+  .fc-src{font-size:12.8px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .fc-src b{color:var(--muted)}
+  .fc-tap{font-size:12.5px;color:var(--muted);margin-top:auto}
+  .fc-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .fc-actions .btn{flex:1 1 150px;padding:11px 12px;font-size:14.5px;font-weight:600;text-align:center}
+  .fc-actions .btn:disabled{opacity:.45;cursor:default}
+  .fc-main{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+  .fc-no{border-color:var(--no);color:var(--no);background:var(--no-soft)}
+  .fc-mid{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+  .fc-yes{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .fc-end{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0;box-shadow:var(--shadow)}
+  .fc-score{font-size:26px;font-weight:800;color:var(--brand)}
+  .fc-end ul{margin:6px 0 10px}
+  table.mini tr.fc-tot td{font-weight:700}
+  details.fc-item .body b{color:var(--accent)}
+  h3 .num{color:var(--muted);font-weight:400;font-size:.8em}
+  /* --- página 6: tarjetas de ejercicio --- */
+  .ej{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:10px;
+    padding:12px 16px 2px;margin:18px 0;box-shadow:var(--shadow)}
+  .ej.p3{border-left-color:var(--accent)} .ej.p1{border-left-color:var(--line)}
+  .ej-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:6px}
+  .ej-h input{transform:scale(1.25);accent-color:var(--brand);flex:0 0 auto;margin:0 2px 0 0}
+  .ej-n{color:var(--brand);font-weight:800;font-variant-numeric:tabular-nums}
+  .ej-t{font-weight:700;font-size:16px;flex:1 1 220px;min-width:0}
+  .ej-h.done .ej-t{text-decoration:line-through;color:var(--muted)}
+  .ej-tag{font-size:12px;color:var(--muted);white-space:nowrap}
+  .ej .meta{background:var(--code);border-radius:8px;padding:8px 12px;margin:10px 0;font-size:14px}
+  .ej .meta p{margin:3px 0}
+  .ej details.ex{margin:10px 0 14px;box-shadow:none}
+  .ej .st{font-weight:700;color:var(--accent);font-size:13.5px;margin:16px 0 4px}
+  .ej pre{white-space:pre;overflow-x:auto}
   @media (max-width:900px){
     .layout{align-items:stretch}
     .content{width:100%;max-width:100%}
@@ -320,26 +379,26 @@
     <div class="dot">C2</div>
     <div><h1>Guía de estudio</h1><small>Sistemas Operativos · INF-246 · Certamen 2</small></div>
   </div>
-  <div class="pages"><a href="0-Guia-de-estudio-C2.html" class="cur"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, reloj · por confirmar</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a></div>
+  <div class="pages"><a href="0-Guia-de-estudio-C2.html" class="cur"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, Working Set</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a><a href="6-Lista-de-estudio.html"><b>6</b><span>Lista de estudio<br><small style="color:var(--muted)">día a día desde hoy, con explicaciones</small></span></a><a href="7-Flashcards.html"><b>7</b><span>Flashcards<br><small style="color:var(--muted)">conceptos al azar, con cajas de repaso</small></span></a></div>
   <div class="toolbar">
     <button class="btn" id="theme">Claro / oscuro</button>
     <button class="btn" id="expand">Abrir todo</button>
   </div>
-  <nav id="nav"><div class="grp">El certamen</div><a href="#g-datos"><span class="nt">Fecha, hora y sala</span></a><a href="#g-temario"><span class="nt">Qué entra y qué no</span></a><a href="#g-formato"><span class="nt">Cómo será el certamen</span></a><a href="#g-triage"><span class="nt">Qué leer y qué saltar</span></a><div class="grp">Estudiar</div><a href="#g-plan"><span class="nt">Plan día por día</span></a><a href="#g-check"><span class="nt">Checklist sin mirar</span></a><a href="#g-sala"><span class="nt">En la sala</span></a><div class="grp">Repaso final</div><a href="#chuleta"><span class="nt">Chuleta / formulario</span></a><a href="#g-relampago"><span class="nt">Repaso relámpago</span></a><a href="#errores"><span class="nt">Errores típicos</span></a><a href="#g-videos"><span class="nt">Todos los videos</span></a><a href="#glosario"><span class="nt">Glosario</span></a><a href="#g-fuentes"><span class="nt">Fuentes y erratas</span></a><div class="grp">Pendiente</div><a href="#g-pendiente"><span class="nt">Cuando lleguen las ayudantías</span></a></nav>
+  <nav id="nav"><div class="grp">El certamen</div><a href="#g-datos"><span class="nt">Fecha, hora y sala</span></a><a href="#g-temario"><span class="nt">Qué entra y qué no</span></a><a href="#g-formato"><span class="nt">Cómo será el certamen</span></a><a href="#g-profe"><span class="nt">Lo que dijo el profe</span></a><a href="#g-triage"><span class="nt">Qué leer y qué saltar</span></a><div class="grp">Estudiar</div><a href="#g-plan"><span class="nt">Plan día a día, desde hoy</span></a><a href="#g-check"><span class="nt">Checklist sin mirar</span></a><a href="#g-sala"><span class="nt">En la sala</span></a><div class="grp">Repaso final</div><a href="#chuleta"><span class="nt">Chuleta / formulario</span></a><a href="#g-relampago"><span class="nt">Repaso relámpago</span></a><a href="#errores"><span class="nt">Errores típicos</span></a><a href="#g-videos"><span class="nt">Todos los videos</span></a><a href="#glosario"><span class="nt">Glosario</span></a><a href="#g-fuentes"><span class="nt">Fuentes y erratas</span></a><div class="grp">Pendiente</div><a href="#g-pendiente"><span class="nt">Lo que falta</span></a></nav>
 </aside>
 <main class="content">
 
 <section id="g-datos" data-nav="Fecha, hora y sala" data-grp="El certamen">
 <h2>Certamen 2 · Gestión de memoria</h2>
-<p class="lead">Guía armada el viernes 23 de octubre con las láminas <code>LinearMemory</code> y <code>VirtualMemory</code>, el Certamen 2 de 2023-1 y las preguntas de memoria de los certámenes 2014, 2015 y 2016. Mismo esquema que la del C1: una página por tema y una de ejercicios por pregunta.</p>
+<p class="lead">Guía armada el 23 de octubre, actualizada el 29 con los Certámenes 2 de 2014, 2015 y 2016 y los audios de memoria lineal, y el 30 con la lámina de reemplazo de páginas, los audios de las clases de paginación y de la última clase antes del certamen, y lo que el profe pidió saber hacer a mano. El 1 de noviembre llegó la Ayudantía 4 (memoria): está resuelta en la página 6, con su pauta revisada. La página 7 tiene flashcards de todos los conceptos, para practicarlos al azar. Mismo esquema que la del C1: una página por tema y una de ejercicios por pregunta. La página 6 trae la lista de estudio día a día desde el 30 de octubre, con cada ejercicio y su explicación aparte.</p>
 <div class="kpis">
-  <div class="kpi"><b>Mié 28 oct</b><span>según el calendario del ramo · por confirmar</span></div>
-  <div class="kpi"><b>14:40 · P407</b><span>bloque 9-10, el horario de los miércoles</span></div>
-  <div class="kpi"><b>70 min · 105 pts</b><span>formato del C2 2023-1</span></div>
+  <div class="kpi"><b>Mié 4 nov, supuesto</b><span>el 28 de octubre del calendario ya pasó</span></div>
+  <div class="kpi"><b>14:40 · P407</b><span>si es un miércoles, como el C1</span></div>
+  <div class="kpi"><b>FIFO · LRU · WS</b><span>a mano, “sí o sí” (lo dijo el profe)</span></div>
   <div class="kpi"><b>Unidad 2</b><span>solo gestión de memoria</span></div>
 </div>
-<div class="box warn"><div class="bt">Confirma la fecha</div>
-<p>El calendario pone el <b>Certamen 2 el miércoles 28 de octubre</b> (y el repaso el jueves 22). Pero el C1 se corrió una semana, del 23 al 30 de septiembre, así que las clases de memoria partieron más tarde y el certamen también podría moverse. Revisa Moodle o pregunta en el curso. El plan de abajo supone el 28; si fuera el 4 de noviembre, estira cada día del plan a dos.</p></div>
+<div class="box warn"><div class="bt">La fecha</div>
+<p>El calendario ponía el Certamen 2 el miércoles 28 de octubre, pero el C1 se corrió una semana y al comienzo de la primera clase de memoria el profe habló de “recuperar” algo “a fines de octubre o principios de noviembre”, con una votación para ver horarios (audio 18, 00:00; el audio parte cortado). Como las clases son los miércoles y los jueves, lo más probable es el <b>miércoles 4 de noviembre a las 14:40</b>, una semana después de lo previsto (el C1 pasó del 23 al 30 de septiembre). Con esa fecha está armada la <a class="inl" href="6-Lista-de-estudio.html">lista de estudio de la página 6</a>; si resulta ser otra, el orden de los días no cambia.</p></div>
 </section>
 
 <section id="g-temario" data-nav="Qué entra y qué no">
@@ -347,34 +406,64 @@
 <div class="tw"><table>
 <thead><tr><th>Materia</th><th>Estado</th><th>Dónde</th></tr></thead>
 <tbody>
-<tr><td><b>Gestión lineal de memoria</b>: MMU, particiones, fragmentación, FIRST/BEST/WORST FIT, compactar, swapping</td><td><span class="pill si">entra</span></td><td><a class="inl" href="1-Memoria-lineal.html">Página 1</a></td></tr>
+<tr><td><b>Gestión lineal de memoria</b>: MMU, particiones, fragmentación, FIRST/BEST/WORST FIT, compactar, swapping</td><td><span class="pill si">entra</span></td><td><a class="inl" href="1-Memoria-lineal.html">Página 1</a> · audios 18 y 19</td></tr>
 <tr><td><b>Memoria virtual: segmentación</b>, bits V, U y D, segmentos compartidos</td><td><span class="pill si">entra</span></td><td><a class="inl" href="2-Segmentacion.html">Página 2</a></td></tr>
-<tr><td><b>Paginación</b>: tabla, page fault, TLB, tablas jerárquica e invertida, segmentación paginada</td><td><span class="pill si">entra</span></td><td><a class="inl" href="3-Paginacion.html">Página 3</a></td></tr>
-<tr><td><b>Reemplazo de páginas</b>: FIFO, LRU, óptimo, reloj, thrashing</td><td><span class="pill p">por confirmar</span></td><td><a class="inl" href="4-Reemplazo-de-paginas.html">Página 4</a> · el calendario le da 2 clases, pero no está la lámina</td></tr>
+<tr><td><b>Paginación</b>: tabla, page fault, TLB, COW, tablas jerárquica e invertida, segmentación paginada</td><td><span class="pill si">entra</span></td><td><a class="inl" href="3-Paginacion.html">Página 3</a> · audios 20, 21 y 22</td></tr>
+<tr><td><b>Reemplazo de páginas</b>: FIFO, LRU y Working Set <b>ejecutados a mano</b>; la víctima, el óptimo, la caída del sistema</td><td><span class="pill si">entra</span></td><td><a class="inl" href="4-Reemplazo-de-paginas.html">Página 4</a> · lámina <code>PageReplacement.pdf</code> · audio 23. NFU y LFU tienen lámina, pero el profe dijo que no los iba a ver.</td></tr>
 <tr><td><b>Gestión del disco</b></td><td><span class="pill no">no entra</span></td><td>Unidad 3 (lo dijo el profe)</td></tr>
-<tr><td>Gestión del tiempo, scheduling (Unidad 1)</td><td><span class="pill no">no entra</span></td><td>Fue en el C1. En el C2 2023 sí estaba, porque ese año no alcanzó a entrar al C1.</td></tr>
+<tr><td>Procesos, <code>fork()</code>, zombies, sincronización</td><td><span class="pill no">no entra</span></td><td>Unidad 3. Salían en los C2 de 2014 y 2015; este año no.</td></tr>
+<tr><td>Gestión del tiempo, scheduling (Unidad 1)</td><td><span class="pill no">no entra</span></td><td>Fue en el C1. En el C2 2023 sí estaba.</td></tr>
 </tbody></table></div>
-<p class="tiny">Algunas ideas de la Unidad 1 reaparecen como herramienta: el TRAP y las interrupciones, el estado bloqueado durante un page fault, el swapping y el estado LISTO_NO_EN_MEMORIA.</p>
+<p class="tiny">Algunas ideas de la Unidad 1 reaparecen como herramienta: el TRAP, el estado bloqueado durante un page fault, el swapping y el estado LISTO_NO_EN_MEMORIA. Y el COW es de la Unidad 3, pero el bit está en la tabla de páginas.</p>
 </section>
 
 <section id="g-formato" data-nav="Cómo será el certamen">
 <h2>Cómo será el certamen</h2>
-<p>La única referencia directa es el <b>Certamen 2 de 2023-1</b> (escaneado en <code>certamenes anteriores/Regalito.pdf</code>, páginas 3 y 4): 70 minutos, 105 puntos.</p>
+<p>Ahora hay <b>cuatro Certámenes 2</b> del profe: 2014-1, 2015-1 y 2016-1 (en <code>certamenes anteriores/c2/</code>) y 2023-1. Todos abren con preguntas de conocimiento y siguen con memoria virtual sobre una tabla de páginas; tres de los cuatro traen reemplazo de páginas.</p>
 <div class="tw"><table>
-<thead><tr><th>Sección 2023</th><th>Puntos</th><th>Qué preguntó</th><th>Este año</th></tr></thead>
+<thead><tr><th>Certamen</th><th>Conocimiento</th><th>Memoria</th><th>Reemplazo</th><th>Lo que este año no entra</th></tr></thead>
 <tbody>
-<tr><td>1 · Conocimiento</td><td>7 × 4 = 28</td><td>Rol de la MMU · fragmentación · particiones estáticas · memoria libre · page fault · segmentation violation · paginación y swapping</td><td>Muy probable que se repita (el profe repitió preguntas textuales en el C1)</td></tr>
-<tr><td>2 · Gestión del tiempo</td><td>42</td><td>RTMAX, TICK</td><td>No entra: fue al C1</td></tr>
-<tr><td>3 · Memoria lineal</td><td>15</td><td>FIRST/BEST/WORST FIT · 50 ns por byte · por qué lo lineal es ineficiente</td><td>Probablemente crece (en 2015 fue de 30 puntos con una tabla)</td></tr>
-<tr><td>4 · Segmentada paginada</td><td>35</td><td>Tamaño de página · bits V, U, D · tabla incorrecta · TLB</td><td>Muy probable con otra tabla</td></tr>
+<tr><td>C2 2014</td><td>6 × 5 = 30</td><td>Segmentación paginada, 30 (tamaño de página, page fault, COW, <code>do_page_fault()</code>)</td><td>dentro de la anterior (víctima, LRU)</td><td>procesos y sincronización, 40</td></tr>
+<tr><td>C2 2015</td><td>7 preguntas</td><td>Memoria virtual, 8 preguntas (tabla, U y D, swap-out, COW, <code>malloc</code>)</td><td>FIFO y LRU con 3 marcos</td><td>procesos</td></tr>
+<tr><td>C2 2016</td><td>7 × 4 = 28</td><td>Memoria virtual, 25 (tabla correcta, páginas de código)</td><td>25: LRU, Working Set, bola de nieve</td><td>disco, 25</td></tr>
+<tr><td>C2 2023</td><td>7 × 4 = 28</td><td>Lineal 15 + segmentada paginada 35</td><td>—</td><td>gestión del tiempo, 42</td></tr>
 </tbody></table></div>
-<p>Sin la gestión del tiempo, lo más probable son <b>tres partes de unos 35 puntos</b>, como el C1: conocimiento, memoria lineal y memoria virtual. En la <a class="inl" href="5-Ejercicios-por-pregunta.html">página 5</a> está todo el material ordenado así, con un simulacro.</p>
+<p>Lo más probable este año: <b>conocimiento</b> (unos 30 puntos), <b>memoria</b> (lineal y virtual, con una tabla de páginas) y <b>reemplazo de páginas</b> con una secuencia para ejecutar a mano, como el C2 2016 sin la parte de disco. En la <a class="inl" href="5-Ejercicios-por-pregunta.html">página 5</a> está todo ordenado así, con la tabla de qué se repite cada año y un simulacro.</p>
+<div class="box tip"><div class="bt">Lo que se repite todos los años</div>
+<p><b>Los bits U y D</b> (para qué sirven, quién los inicializa, quién los modifica) salieron en los cuatro C2. La <b>fragmentación</b>, en los cuatro. El <b>page fault</b>, en tres. <b>“¿Está correcta la tabla?”</b>, en tres (2015, 2016 y 2023). Eso es lo primero que hay que dominar.</p></div>
 <div class="box tip"><div class="bt">El consejo del profe para el C1, que vale igual</div><p>“Dos o tres partes, independientes; empiecen por la más fácil.”</p></div>
+</section>
+
+<section id="g-profe" data-nav="Lo que dijo el profe">
+<h2>Lo que dijo el profe en clases</h2>
+<p class="lead">De los audios de las clases de memoria (transcripciones 18 a 23) y de algunas clases de la Unidad 1. Cada punto está con más detalle, audio y minuto, en su sección.</p>
+<ul>
+<li><b>“Tienen que saber sí o sí ejecutar a mano FIFO, LRU […] con el ejemplo igual que lo que vimos, con esa casilla, y no reclamen”</b>, y el Working Set <i>“la van a hacer también”</i>. Es lo que te mandaron tus compañeros. → <a class="inl" href="4-Reemplazo-de-paginas.html#t4-inicio">Página 4</a></li>
+<li><b>“Lo que viene en el certamen es solamente la gestión de memoria.”</b> NFU y LFU no los iba a ver: <i>“nadie los usa”</i>. → <a class="inl" href="4-Reemplazo-de-paginas.html#t4-inicio">Página 4</a></li>
+<li><b>Los page faults iniciales se cuentan</b>: <i>“son inevitables, ningún algoritmo los va a evitar”</i>. Y el marco donde queda cada página <i>“me da lo mismo”</i>: se dibuja la lista. → <a class="inl" href="4-Reemplazo-de-paginas.html#cadena">Página 4</a></li>
+<li><b>FIFO tiene “eficiencia cero”</b> (bota las páginas más usadas); LRU es <i>“el mejor conocido de todos”</i> pero necesita hardware; el Working Set es <i>“casi lo mismo que LRU, pero además hace limpieza preventiva, a un costo menor”</i>. → <a class="inl" href="4-Reemplazo-de-paginas.html#conjunto">Página 4</a></li>
+<li><b>U y D no son contadores</b>: con dos páginas en U = 1 no se sabe cuál tuvo dos accesos y cuál dos millones. → <a class="inl" href="4-Reemplazo-de-paginas.html#nru">Página 4</a></li>
+<li><b>U = 0 con D = 1 no existe</b>, y con paginación a la demanda U = D = 0 tampoco, hasta que un algoritmo resetea U. → <a class="inl" href="3-Paginacion.html#tabla-pag">Página 3</a></li>
+<li><b>Un page fault espera el disco de 8 a 15 ms</b>, medio quantum o más: por eso hay task switch. → <a class="inl" href="3-Paginacion.html#page-fault">Página 3</a></li>
+<li><b>¿Un malloc de 7 GB con 6 GB libres? “Sí y no”</b>: la memoria virtual es la RAM más la zona de swap. → <a class="inl" href="3-Paginacion.html#demanda">Página 3</a></li>
+<li><b>TLB: HIT 42 ns, MISS 83 ns</b> (RAM de 40 ns). La que se usa hoy en todos los PC y celulares es la asociativa; la jerárquica, <i>“nadie la usa ahora”</i>. → <a class="inl" href="3-Paginacion.html#tlb">Página 3</a></li>
+<li><b>La unidad es “el capítulo más difícil del curso”</b>, lo dijo al empezar la memoria lineal. → <a class="inl" href="1-Memoria-lineal.html#modelos">Página 1</a></li>
+<li><b>Lo central es la fragmentación</b>, y la memoria virtual la arregla: <i>“una de las dos fragmentaciones va a desaparecer totalmente y la otra va a quedar bastante bien controlada”</i>. → <a class="inl" href="1-Memoria-lineal.html#modelos">Página 1</a></li>
+<li><b>Overlays: “un desastre de programación”</b>; él los usó. Un overlay no puede llamar a otro. → <a class="inl" href="1-Memoria-lineal.html#politicas">Página 1</a></li>
+<li><b>Las .so son Shared Objects</b> (la lámina dice “Symbolic Object”); la biblioteca C pesa 4,5 MB y 200 copias serían 800 MB. → <a class="inl" href="2-Segmentacion.html#compartir">Página 2</a></li>
+<li><b>Reubicar es cambiar BASE</b>: la instrucción 100 de una aplicación en la 1000 está en la 1100; si vuelve en la 20 000, en la 20 100. → <a class="inl" href="1-Memoria-lineal.html#mmu-simple">Página 1</a></li>
+<li><b>Fragmentación con números</b>: 4 KB en una partición de 32 pierden 28 (interna); una tarea de 130 KB no cabe si la partición más grande libre es de 128 (externa); con bloques de 4 KB la interna es como máximo 4 095 bytes. → <a class="inl" href="1-Memoria-lineal.html#fijas">Página 1</a></li>
+<li><b>BEST FIT tiene otra desventaja</b>: la tarea queda justa y no puede crecer sin moverla. Y existe un cuarto algoritmo, <b>random</b>, “ni mejor ni peor”. → <a class="inl" href="1-Memoria-lineal.html#fit">Página 1</a></li>
+<li><b>Compactar 1 GB toma 1 minuto 48 segundos</b>: “teóricamente posible, pero totalmente inaceptable”. → <a class="inl" href="1-Memoria-lineal.html#compactar">Página 1</a></li>
+<li><b>El swapping puede ser “una bola de nieve”</b> (Unidad 1), la misma expresión del C2 2016. → <a class="inl" href="4-Reemplazo-de-paginas.html#conjunto">Página 4</a></li>
+<li><b>La memoria de la MMU tarda 1 ns</b> contra 30 a 40 ns de la RAM, pero es mucho más cara: por eso la TLB es chica. → <a class="inl" href="3-Paginacion.html#ubicacion">Página 3</a></li>
+</ul>
+<p class="tiny">Audios del C2 transcritos: 18 y 19 (memoria lineal), 20 y 21 (paginación, TLB, tablas jerárquica e invertida), 22 (tabla invertida y segmentación paginada) y 23 (la última antes del certamen: reemplazo). No hay audio de las clases de segmentación.</p>
 </section>
 
 <section id="g-triage" data-nav="Qué leer y qué saltar">
 <h2>Qué leer y qué saltar</h2>
-<p class="lead">La probabilidad de cada sección según el C2 2023, los certámenes de 2014-2016 y lo que las láminas destacan. La misma etiqueta aparece al comienzo de cada sección, y en el índice de cada página: <span class="pd p3"><i class="on"></i><i class="on"></i><i class="on"></i></span> alta o muy alta, <span class="pd p2"><i class="on"></i><i class="on"></i><i></i></span> media, <span class="pd p1"><i class="on"></i><i></i><i></i></span> baja y <span class="pd p0"><i></i><i></i><i></i></span> por confirmar.</p>
+<p class="lead">La probabilidad de cada sección según los cuatro C2, los C1 de 2014-2016 y lo que el profe destacó en clases. La misma etiqueta aparece al comienzo de cada sección, y en el índice de cada página: <span class="pd p3"><i class="on"></i><i class="on"></i><i class="on"></i></span> alta o muy alta, <span class="pd p2"><i class="on"></i><i class="on"></i><i></i></span> media, <span class="pd p1"><i class="on"></i><i></i><i></i></span> y baja.</p>
 <p><b>Leer completo</b> es leerla entera y hacer sus ejercicios. <b>Pasar por encima</b> es quedarte con la idea y la fórmula. <b>No es necesario</b> es dejarla para el final.</p>
 <div class="tw"><table>
 <thead><tr><th>Sección</th><th>Probabilidad</th><th>Cómo leerla</th></tr></thead>
@@ -396,70 +485,36 @@
 <tr><td colspan="3"><b>2 · Segmentación</b></td></tr>
 <tr><td><a class="inl" href="2-Segmentacion.html#objetivos">Por qué memoria virtual</a> y <a class="inl" href="2-Segmentacion.html#mmu-vm">la MMU en cada acceso</a></td><td><span class="lv p2">Media</span></td><td>Leer completo lo primero; pasar por encima lo segundo.</td></tr>
 <tr><td><a class="inl" href="2-Segmentacion.html#segmento">Segmento</a>, <a class="inl" href="2-Segmentacion.html#tablas-seg">tablas</a> y <a class="inl" href="2-Segmentacion.html#mmu-seg">MMU de segmentación</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo.</td></tr>
-<tr><td><a class="inl" href="2-Segmentacion.html#bitv">Bits V</a>, <a class="inl" href="2-Segmentacion.html#bitu">U</a> y <a class="inl" href="2-Segmentacion.html#bitd">D</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo.</td></tr>
+<tr><td><a class="inl" href="2-Segmentacion.html#bitv">Bits V</a>, <a class="inl" href="2-Segmentacion.html#bitu">U</a> y <a class="inl" href="2-Segmentacion.html#bitd">D</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo. U y D salieron en los cuatro C2.</td></tr>
 <tr><td><a class="inl" href="2-Segmentacion.html#compartir">Segmentos compartidos</a></td><td><span class="lv p2">Media</span></td><td>Leer completo.</td></tr>
-<tr><td><a class="inl" href="2-Segmentacion.html#mmu-completa">Los cuatro controles de la MMU</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo y hacer S1.</td></tr>
-<tr><td><a class="inl" href="2-Segmentacion.html#problemas-seg">Problemas de la segmentación sola</a></td><td><span class="lv p2">Media</span></td><td>Leer completo.</td></tr>
+<tr><td><a class="inl" href="2-Segmentacion.html#mmu-completa">Los cuatro controles de la MMU</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo y hacer S1.</td></tr>
+<tr><td><a class="inl" href="2-Segmentacion.html#problemas-seg">Problemas de la segmentación sola</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo.</td></tr>
 <tr><td colspan="3"><b>3 · Paginación</b></td></tr>
 <tr><td><a class="inl" href="3-Paginacion.html#principio">Páginas y marcos</a> y <a class="inl" href="3-Paginacion.html#tabla-pag">la tabla y sus bits</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo.</td></tr>
 <tr><td><a class="inl" href="3-Paginacion.html#traduccion">Traducir</a> y <a class="inl" href="3-Paginacion.html#control">los tres controles</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo y hacer V1 y V2.</td></tr>
 <tr><td><a class="inl" href="3-Paginacion.html#page-fault">El page fault</a> y <a class="inl" href="3-Paginacion.html#demanda">on demand paging</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo.</td></tr>
-<tr><td><a class="inl" href="3-Paginacion.html#costo-pf">Costo de los page faults</a>, <a class="inl" href="3-Paginacion.html#thrashing">thrashing</a> y <a class="inl" href="3-Paginacion.html#ubicacion">dónde va la tabla</a></td><td><span class="lv p2">Media</span></td><td>Leer completo.</td></tr>
-<tr><td><a class="inl" href="3-Paginacion.html#tipos">Tipos de tabla</a> y <a class="inl" href="3-Paginacion.html#tamano-pag">tamaño de página</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo.</td></tr>
-<tr><td><a class="inl" href="3-Paginacion.html#indexada">Indexada</a>, <a class="inl" href="3-Paginacion.html#jerarquica">jerárquica</a> e <a class="inl" href="3-Paginacion.html#invertida">invertida</a></td><td><span class="lv p2">Media</span></td><td>Leer completo.</td></tr>
-<tr><td><a class="inl" href="3-Paginacion.html#tlb">TLB</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo.</td></tr>
-<tr><td><a class="inl" href="3-Paginacion.html#segpag">Segmentación paginada</a> y <a class="inl" href="3-Paginacion.html#tabla-mala">tabla incorrecta</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo y hacer V6 y V7.</td></tr>
-<tr><td colspan="3"><b>4 · Reemplazo de páginas</b></td></tr>
-<tr><td><a class="inl" href="4-Reemplazo-de-paginas.html">Toda la página</a></td><td><span class="lv p0">Por confirmar</span></td><td>Solo si el profe pasó el capítulo.</td></tr>
+<tr><td><a class="inl" href="3-Paginacion.html#costo-pf">Costo de los page faults</a> y <a class="inl" href="3-Paginacion.html#ubicacion">dónde va la tabla</a></td><td><span class="lv p2">Media</span></td><td>Leer completo.</td></tr>
+<tr><td><a class="inl" href="3-Paginacion.html#thrashing">Reemplazo y thrashing</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo.</td></tr>
+<tr><td><a class="inl" href="3-Paginacion.html#tipos">Tipos de tabla</a>, <a class="inl" href="3-Paginacion.html#tamano-pag">tamaño de página</a> y <a class="inl" href="3-Paginacion.html#tlb">TLB</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo.</td></tr>
+<tr><td><a class="inl" href="3-Paginacion.html#indexada">Indexada</a>, <a class="inl" href="3-Paginacion.html#cow">COW</a>, <a class="inl" href="3-Paginacion.html#jerarquica">jerárquica</a> e <a class="inl" href="3-Paginacion.html#invertida">invertida</a></td><td><span class="lv p2">Media</span></td><td>Leer completo.</td></tr>
+<tr><td><a class="inl" href="3-Paginacion.html#segpag">Segmentación paginada</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo y hacer V6.</td></tr>
+<tr><td><a class="inl" href="3-Paginacion.html#tabla-mala">¿Está correcta la tabla?</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo y hacer V7 y las tablas de 2015 y 2016.</td></tr>
+<tr><td colspan="3"><b>4 · Reemplazo de páginas</b> (confirmado)</td></tr>
+<tr><td><a class="inl" href="4-Reemplazo-de-paginas.html#cadena">Cómo se ejecuta a mano</a>, <a class="inl" href="4-Reemplazo-de-paginas.html#fifo">FIFO</a>, <a class="inl" href="4-Reemplazo-de-paginas.html#lru">LRU</a> y <a class="inl" href="4-Reemplazo-de-paginas.html#conjunto">Working Set</a></td><td><span class="lv p3">Confirmado</span></td><td>Leer completo, copiar a mano los ejemplos de las láminas y hacer 2016, 2015, R1, R3 y R5.</td></tr>
+<tr><td><a class="inl" href="4-Reemplazo-de-paginas.html#problema">La víctima</a> y <a class="inl" href="4-Reemplazo-de-paginas.html#caida">la caída del sistema</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo (2016: 3.1, 3.4 y 3.5).</td></tr>
+<tr><td><a class="inl" href="4-Reemplazo-de-paginas.html#localidad">Localidad</a>, <a class="inl" href="4-Reemplazo-de-paginas.html#opt">el óptimo</a>, <a class="inl" href="4-Reemplazo-de-paginas.html#belady">Belady</a> y <a class="inl" href="4-Reemplazo-de-paginas.html#nru">las clases con U y D</a></td><td><span class="lv p2">Media</span></td><td>Leer completo.</td></tr>
+<tr><td><a class="inl" href="4-Reemplazo-de-paginas.html#reloj">NFU</a>, <a class="inl" href="4-Reemplazo-de-paginas.html#lfu">LFU</a> y <a class="inl" href="4-Reemplazo-de-paginas.html#local-global">local o global</a></td><td><span class="lv p1">Baja</span></td><td>Pasar por encima: el profe dijo que NFU y LFU no los iba a ver.</td></tr>
 </tbody></table></div>
 </section>
 
-<section id="g-plan" data-nav="Plan día por día" data-grp="Estudiar">
-<h2>Plan día por día</h2>
-<p class="lead">Unas 13 horas en total, de viernes a miércoles, con lo más rentable primero. Marca lo que vas terminando: se guarda en este navegador.</p>
-<div class="bar"><i></i></div><p class="tiny barlbl"></p>
-<div class="day"><h4>Viernes 23 · noche</h4><div class="when">≈ 1 h 30</div>
-<ul class="check">
-<li><input type="checkbox" data-k="d1"><span>Leer esta guía (15 min).</span></li>
-<li><input type="checkbox" data-k="d2"><span>Página 1 hasta “FIRST, BEST y WORST FIT” (1 h).</span></li>
-<li><input type="checkbox" data-k="d3"><span>El certamen 2015, sección 3, sin mirar la pauta (15 min).</span></li>
-</ul></div>
-<div class="day"><h4>Sábado 24</h4><div class="when">≈ 3 h</div>
-<ul class="check">
-<li><input type="checkbox" data-k="d4"><span>Página 1: bloques chicos o grandes, compactar, swapping y la conclusión (30 min).</span></li>
-<li><input type="checkbox" data-k="d5"><span>Ejercicios L1, L3 y L4, y las preguntas del tema 1 (45 min).</span></li>
-<li><input type="checkbox" data-k="d6"><span>Videos: FNE Profesor sobre asignación de memoria y Core Dumped sobre protección (40 min).</span></li>
-<li><input type="checkbox" data-k="d7"><span>Página 2 completa (45 min).</span></li>
-<li><input type="checkbox" data-k="d8"><span>Ejercicios S1 y S2 (20 min).</span></li>
-</ul></div>
-<div class="day"><h4>Domingo 25</h4><div class="when">≈ 3 h</div>
-<ul class="check">
-<li><input type="checkbox" data-k="d9"><span>Página 3 hasta “Tamaño de página” (1 h 15).</span></li>
-<li><input type="checkbox" data-k="d10"><span>C2 2023, sección 4 y preguntas 1.5-1.7, sin mirar (30 min).</span></li>
-<li><input type="checkbox" data-k="d11"><span>Ejercicios V1 y V2 (20 min).</span></li>
-<li><input type="checkbox" data-k="d12"><span>Videos de paginación y TLB (30 min).</span></li>
-<li><input type="checkbox" data-k="d13"><span>Preguntas de los temas 1 y 2 con la respuesta tapada (25 min).</span></li>
-</ul></div>
-<div class="day"><h4>Lunes 26</h4><div class="when">≈ 2 h 30</div>
-<ul class="check">
-<li><input type="checkbox" data-k="d14"><span>Página 3: tabla indexada, TLB, jerárquica, invertida, segmentación paginada y tabla incorrecta (1 h).</span></li>
-<li><input type="checkbox" data-k="d15"><span>Ejercicios V3 a V7 (45 min).</span></li>
-<li><input type="checkbox" data-k="d16"><span>Si el reemplazo entra: página 4 y R1. Si no: P1 de la página 5 (45 min).</span></li>
-</ul></div>
-<div class="day"><h4>Martes 27</h4><div class="when">≈ 2 h 30</div>
-<ul class="check">
-<li><input type="checkbox" data-k="d17"><span>Las ayudantías, si llegaron (prioridad máxima).</span></li>
-<li><input type="checkbox" data-k="d18"><span>Página 5: todo el P1 con las respuestas tapadas (45 min).</span></li>
-<li><input type="checkbox" data-k="d19"><span>Simulacro de 70 minutos con reloj y corrección (1 h 20).</span></li>
-</ul></div>
-<div class="day"><h4>Miércoles 28 · mañana</h4><div class="when">≈ 1 h</div>
-<ul class="check">
-<li><input type="checkbox" data-k="d20"><span>Repaso relámpago y errores típicos (20 min).</span></li>
-<li><input type="checkbox" data-k="d21"><span>Escribir la chuleta de memoria, sin mirar (15 min).</span></li>
-<li><input type="checkbox" data-k="d22"><span>Checklist de abajo: lo que no salga, leerlo de nuevo (25 min). Nada nuevo después de almuerzo.</span></li>
-</ul></div>
+<section id="g-plan" data-nav="Plan día a día, desde hoy" data-grp="Estudiar">
+<h2>Plan día a día, desde hoy</h2>
+<p class="lead">El plan con fechas, del viernes 30 de octubre al certamen (supuesto el miércoles 4 de noviembre), está en la <a class="inl" href="6-Lista-de-estudio.html">página 6 · Lista de estudio</a>: cada día con lo que hay que leer antes y sus ejercicios, y cada ejercicio con su explicación aparte, la fórmula que usa y de dónde sale la materia. Aquí, el resumen.</p>
+<div class="tw"><table class="mini"><thead><tr><th>Día</th><th>Tema</th><th>Tiempo</th></tr></thead><tbody><tr><td><a class="inl" href="6-Lista-de-estudio.html#d1"><b>Hoy, viernes 30</b></a></td><td>Reemplazo de páginas: FIFO, LRU y Working Set a mano</td><td>≈ 3 h</td></tr><tr><td><a class="inl" href="6-Lista-de-estudio.html#d2"><b>Sábado 31</b></a></td><td>La tabla de páginas: traducir, bits, ¿está correcta?, TLB</td><td>≈ 3 h</td></tr><tr><td><a class="inl" href="6-Lista-de-estudio.html#d3"><b>Domingo 1</b></a></td><td>Segmentación y segmentación paginada (día corto: cierra el Hito 4 de ADS)</td><td>≈ 2 h 15</td></tr><tr><td><a class="inl" href="6-Lista-de-estudio.html#d4"><b>Lunes 2</b></a></td><td>Ayudantía 4, memoria lineal y conocimiento</td><td>≈ 3 h 10</td></tr><tr><td><a class="inl" href="6-Lista-de-estudio.html#d5"><b>Martes 3</b></a></td><td>Simulacro de 90 minutos, corrección, una secuencia nueva y el banco de conocimiento</td><td>≈ 3 h 05</td></tr><tr><td><a class="inl" href="6-Lista-de-estudio.html#d6"><b>Miércoles 4</b></a></td><td>La mañana del certamen: calentar la mano y flashcards, nada nuevo</td><td>≈ 55 min</td></tr></tbody></table></div>
+<p>Si el certamen es antes, no cambies el orden de los días: haz solo lo marcado como imprescindible y deja el simulacro para el día anterior.</p>
+<p>Las preguntas de concepto, que abren todos los certámenes, se practican mejor con las <a class="inl" href="7-Flashcards.html">flashcards de la página 7</a>: al azar, con cajas de repaso y un examen de 10. El plan las usa el lunes en la noche, el martes después del simulacro y el miércoles en la mañana.</p>
 <div class="box tip"><div class="bt">Si solo hay 4 horas</div>
-<p>1. Fragmentación, MMU con BASE y LÍMITE, FIRST/BEST/WORST FIT y el certamen 2015 (1 h). 2. Bits V, U y D, tabla incorrecta, page fault, TLB y tamaño de página (1 h 15). 3. Las siete preguntas “casi seguro” del P1 (45 min). 4. Segmentación paginada y V6 (30 min). 5. Chuleta (15 min).</p></div>
+<p>1. FIFO, LRU y Working Set a mano con los ejemplos de las láminas y el C2 2016 (1 h). 2. Bits U y D, page fault y “¿está correcta la tabla?” (C2 2016 y 2023) (1 h). 3. Fragmentación, MMU con BASE y LÍMITE y FIT con el C1 2015 (45 min). 4. Las preguntas “casi seguro” del P1 (45 min). 5. Chuleta (15 min).</p></div>
 </section>
 
 <section id="g-check" data-nav="Checklist sin mirar">
@@ -473,7 +528,7 @@
 <li><input type="checkbox" data-k="c4"><span>Explico por qué las particiones fijas no son eficientes.</span></li>
 <li><input type="checkbox" data-k="c5"><span>Calculo b = ⌈K / bloque⌉ y la fragmentación interna que deja.</span></li>
 <li><input type="checkbox" data-k="c6"><span>Aplico FIRST, BEST y WORST FIT a una tabla de zonas libres y la actualizo.</span></li>
-<li><input type="checkbox" data-k="c7"><span>Digo una desventaja de BEST FIT y una de WORST FIT.</span></li>
+<li><input type="checkbox" data-k="c7"><span>Digo las desventajas de BEST FIT (recorre todo, deja migajas, la tarea no puede crecer) y una de WORST FIT.</span></li>
 <li><input type="checkbox" data-k="c8"><span>Calculo cuánto ocupa el arreglo de bits y dibujo la lista de zonas libres (n / s).</span></li>
 <li><input type="checkbox" data-k="c9"><span>Calculo el costo de compactar (2 × 50 ns × bytes) y explico por qué no se usa.</span></li>
 <li><input type="checkbox" data-k="c10"><span>Explico el swapping, cuándo conviene y su peor escenario.</span></li>
@@ -483,27 +538,31 @@
 <li><input type="checkbox" data-k="c14"><span>Explico V, U y D: quién los pone en 0, quién en 1 y para qué sirven.</span></li>
 <li><input type="checkbox" data-k="c15"><span>Distingo segment fault, segmentation violation, memory violation y permission denied.</span></li>
 <li><input type="checkbox" data-k="c16"><span>Traduzco una dirección paginada: página, offset y marco × 2<sup>K</sup> + offset.</span></li>
-<li><input type="checkbox" data-k="c17"><span>Cuento el page fault paso a paso, con el task switch.</span></li>
+<li><input type="checkbox" data-k="c17"><span>Cuento el page fault paso a paso, en el hardware y en el SO, con el task switch.</span></li>
 <li><input type="checkbox" data-k="c18"><span>Explico por qué la paginación no tiene fragmentación externa y por qué mejora el swapping.</span></li>
 <li><input type="checkbox" data-k="c19"><span>Doy ventajas y desventajas de páginas chicas y grandes.</span></li>
 <li><input type="checkbox" data-k="c20"><span>Explico la TLB con HIT y MISS, y por qué usa LRU.</span></li>
 <li><input type="checkbox" data-k="c21"><span>Comparo tabla indexada, jerárquica e invertida (qué indexa cada una y su problema).</span></li>
 <li><input type="checkbox" data-k="c22"><span>Traduzco en segmentación paginada: i = offset div 2<sup>K</sup>, o = offset mod 2<sup>K</sup>.</span></li>
-<li><input type="checkbox" data-k="c23"><span>Encuentro los errores de una tabla de páginas (D sin W, D sin U, V = 0 con D = 1, marco inexistente).</span></li>
-<li><input type="checkbox" data-k="c24"><span>(Si entra) Simulo FIFO, LRU y óptimo sobre una cadena de referencias.</span></li>
+<li><input type="checkbox" data-k="c23"><span>Encuentro los errores de una tabla de páginas (D sin W, D sin U, marco inexistente; una entrada ausente con D = 1, solo como observación) y reconozco las páginas de código (X = 1).</span></li>
+<li><input type="checkbox" data-k="c25"><span>Explico el COW y para qué lo usa el <code>fork()</code>.</span></li>
+<li><input type="checkbox" data-k="c24"><span>Ejecuto a mano FIFO y LRU con la lista como pila (3 o 4 marcos), marco los PF y nombro las víctimas.</span></li>
+<li><input type="checkbox" data-k="c27"><span>Ejecuto el Working Set por ventanas fijas: PF, WS y |WS| de cada ventana, y qué se libera.</span></li>
+<li><input type="checkbox" data-k="c28"><span>Explico cómo construye el sistema el Working Set (U = 0, temporizador, liberar U = 0, escribir D = 1) y su ventaja.</span></li>
+<li><input type="checkbox" data-k="c26"><span>Explico la víctima, por qué el óptimo no se puede aplicar, por qué LRU necesita hardware y el efecto bola de nieve.</span></li>
 </ul>
 </section>
 
 <section id="g-sala" data-nav="En la sala">
 <h2>En la sala</h2>
-<p><b>Los primeros 3 minutos:</b> escribe en una esquina de la hoja la chuleta de abajo. <b>El tiempo:</b> 70 minutos para 105 puntos son unos 40 segundos por punto; una pregunta de 5 puntos no debería tomarte más de 4 minutos. <b>El orden:</b> empieza por la parte que te resulte más fácil; si una pregunta se traba, sáltala y vuelve.</p>
-<p><b>Cómo contestar las preguntas de conocimiento:</b> definición, mecanismo y consecuencia, en 3 a 6 líneas. Usa los nombres de las láminas (MMU, BASE, LÍMITE, TRAP, swap-in, swap-out, page fault, bit V, U, D). En los ejercicios, escribe siempre el cálculo intermedio (la división de b, el div y el mod).</p>
+<p><b>Los primeros 3 minutos:</b> escribe en una esquina de la hoja la chuleta de abajo. <b>El tiempo:</b> 70 minutos para unos 105 puntos son unos 40 segundos por punto; una pregunta de 5 puntos no debería tomarte más de 4 minutos. <b>El orden:</b> empieza por la parte que te resulte más fácil; si una pregunta se traba, sáltala y vuelve.</p>
+<p><b>Cómo contestar las preguntas de conocimiento:</b> definición, mecanismo y consecuencia, en 3 a 6 líneas. Usa los nombres de las láminas (MMU, BASE, LÍMITE, TRAP, swap-in, swap-out, page fault, bit V, U, D). En los ejercicios, escribe siempre el cálculo intermedio (la división de b, el div y el mod) y, en reemplazo, la lista de cada acceso con los PF marcados y las víctimas, como en las láminas 11 y 13; en el Working Set, una fila por ventana.</p>
 </section>
 
 <section id="chuleta" data-nav="Chuleta / formulario" data-grp="Repaso final">
 <h2>Chuleta</h2>
 <pre><code>LINEAL      @física = BASE + d      si d &lt; LÍMITE (si no, TRAP) · modo sistema: acceso directo
-BLOQUES     b = ⌈K / bloque⌉        frag. interna = b × bloque − K
+BLOQUES     b = ⌈K / bloque⌉        frag. interna = b × bloque − K   (máx. un bloque − 1 byte)
 FIT         FIRST: la 1.ª donde cabe · BEST: menor remanente · WORST: mayor remanente
             actualizar: (Start + b, Size − b), o borrar la fila si queda en 0
 BITS        m = (RAM / bloque) / 8 bytes          4 GB con 8 KB → 64 KB
@@ -516,21 +575,25 @@ V U D       V: presente (0 → page fault) · U: usada · D: escrita
             el SO pone U = D = 0 al cargar; la MMU los pone en 1 · D = 1 exige U = 1 y W = 1
 ERRORES     no existe → memory/segmentation violation · fuera del límite → segmentation violation
             V = 0 → page/segment fault (se recupera) · RWX → permission denied
-TLB         asociativa, ≈ 1 ns, cache con LRU · HIT: marco directo · MISS: tabla indexada
+TLB         asociativa, ≈ 1 ns, cache con LRU · HIT 1 + 1 + 40 = 42 ns · MISS 1 + 40 + 1 + 40 = 83 ns
 TABLAS      indexada: 2^(bits de página) entradas por proceso · invertida: RAM / página, una sola
-            jerárquica (X, Y, Z, offset): primaria siempre cargada · table fault</code></pre>
+FIFO        acierto: la lista no se mueve · PF: entra arriba, sale la de abajo (la que entró primero)
+LRU         acierto: la página sube arriba · PF: entra arriba, sale la de abajo (la usada hace más)
+WS (Δt)     ventanas fijas 1..Δt, Δt+1..2Δt · PF si no está (WS anterior + lo cargado en la ventana)
+            al cerrar: WS = páginas de la ventana, |WS| · se liberan las demás (D = 1 → al disco)
+CONTAR      los PF de la carga inicial también · decir cuántos son de carga y cuántos de reemplazo</code></pre>
 </section>
 
 <section id="g-relampago" data-nav="Repaso relámpago">
 <h2>Repaso relámpago</h2>
 <ol>
 <li>La MMU traduce y controla en cada acceso; por eso es hardware.</li>
-<li>Lineal: @física = BASE + d, con d &lt; LÍMITE; el SO carga BASE y LÍMITE en cada conmutación.</li>
+<li>Lineal: @física = BASE + d, con d &lt; LÍMITE; reubicar una tarea es cambiar su BASE.</li>
 <li>Interna = sobra adentro de lo asignado. Externa = libre afuera, en pedazos inútiles.</li>
 <li>Particiones fijas: no se conoce el tamaño de los procesos a priori → las dos fragmentaciones.</li>
-<li>b = ⌈K / bloque⌉. FIRST la primera, BEST el menor remanente, WORST el mayor.</li>
+<li>b = ⌈K / bloque⌉. FIRST la primera, BEST el menor remanente, WORST el mayor. Ninguno es mejor.</li>
 <li>El arreglo de bits gasta memoria; la lista “n / s” vive en los bloques libres.</li>
-<li>Compactar: 2 × 50 ns × bytes; teóricamente posible, impracticable con GB.</li>
+<li>Compactar: 2 × 50 ns × bytes; teóricamente posible, inaceptable con GB.</li>
 <li>Swapping: caro (disco un millón de veces más lento); útil solo con otro proceso listo y con DMA.</li>
 <li>Memoria virtual: transparencia de ubicación y protección.</li>
 <li>Segmento = BASE + LÍMITE; tabla global (V, BASE, LÍMITE, U, D) y tabla por proceso (RWX).</li>
@@ -538,7 +601,8 @@ TABLAS      indexada: 2^(bits de página) entradas por proceso · invertida: RAM
 <li>Paginación: marcos de 2<sup>K</sup>, sin fragmentación externa, page fault cuando V = 0.</li>
 <li>Páginas chicas: menos fragmentación, tablas grandes. Grandes: al revés.</li>
 <li>TLB: cache asociativa de descriptores con LRU; jerárquica para espacios enormes; invertida, una por sistema.</li>
-<li>Segmentación paginada: segmento → su tabla de páginas → marco. Violation si el segmento no existe o el offset se sale.</li>
+<li>COW: padre e hijo comparten hasta la primera escritura.</li>
+<li>Reemplazo: el óptimo existe pero no se puede aplicar. FIFO saca la que entró primero (la lista no se mueve en los aciertos); LRU, la usada hace más (sube en cada acierto); el Working Set deja en memoria las páginas de la última ventana y libera el resto.</li>
 </ol>
 </section>
 
@@ -560,6 +624,11 @@ TABLAS      indexada: 2^(bits de página) entradas por proceso · invertida: RAM
 <tr><td>Indexar la tabla invertida por página</td><td>Se indexa por marco; se busca el par (PID, p).</td></tr>
 <tr><td>Confundir R (Refer) con R (Read)</td><td>Refer es un bit de uso reciente que se borra cada TICK; Read es un derecho.</td></tr>
 <tr><td>Decir que el page fault es un error del programa</td><td>Es el funcionamiento normal de la paginación bajo demanda.</td></tr>
+<tr><td>En FIFO, sacar la página usada hace más tiempo</td><td>Eso es LRU. FIFO saca la que <b>entró</b> primero, aunque se acabe de usar.</td></tr>
+<tr><td>Usar en el Working Set la ventana deslizante de los libros y los videos</td><td>El profe usa ventanas fijas (1-4, 5-8, …): al cerrar cada una quedan solo las páginas usadas en ella. Con el C2 2016 da 6 page faults, no 7.</td></tr>
+<tr><td>En LRU, dejar la lista quieta en un acierto</td><td>La página accedida sube arriba aunque no haya page fault. En FIFO, en cambio, no se mueve nada.</td></tr>
+<tr><td>No contar los page faults de la carga inicial</td><td>Se cuentan: “son inevitables”. Escribe cuántos son de carga y cuántos de reemplazo.</td></tr>
+<tr><td>Dibujar los marcos M0, M1, M2 como en los libros</td><td>El profe dibuja la lista (pila): arriba la que entra, abajo la víctima. El marco “me da lo mismo”.</td></tr>
 <tr><td>Usar 1 KB = 1000 B</td><td>En las láminas, 1 KB = 1024 B y 1 GB = 1024³ B.</td></tr>
 </tbody></table></div>
 </section>
@@ -611,9 +680,11 @@ TABLAS      indexada: 2^(bits de página) entradas por proceso · invertida: RAM
 <tr><td><b>BASE / LÍMITE</b></td><td>Dónde empieza la zona del proceso y cuánto mide.</td></tr>
 <tr><td><b>Bloque</b></td><td>Unidad de asignación de tamaño fijo en particiones dinámicas.</td></tr>
 <tr><td><b>Remanente</b></td><td>Lo que sobra de una zona libre después de asignar: Size − b.</td></tr>
+<tr><td><b>Blockchain</b></td><td>El nombre que le da el profe a la lista de zonas libres guardada en los propios bloques.</td></tr>
 <tr><td><b>Swap-in / swap-out</b></td><td>Cargar desde / descargar hacia la zona de swap del disco.</td></tr>
 <tr><td><b>DMA</b></td><td>Direct Memory Access: transferencias sin ocupar la CPU.</td></tr>
 <tr><td><b>Dynamic linker</b></td><td>Resuelve las direcciones de las bibliotecas y de un programa reubicado al ejecutar.</td></tr>
+<tr><td><b>DLL / .so</b></td><td>Dynamic Link Library (Windows) / Shared Object (Linux): bibliotecas compartidas.</td></tr>
 <tr><td><b>Overlay</b></td><td>Parte del programa que se carga encima de otra cuando hace falta.</td></tr>
 <tr><td><b>Segmento</b></td><td>Zona lógica del proceso (código, datos, pila) con BASE y LÍMITE.</td></tr>
 <tr><td><b>Página / marco (frame)</b></td><td>Trozo de 2<sup>K</sup> bytes del espacio virtual / de la RAM.</td></tr>
@@ -622,7 +693,13 @@ TABLAS      indexada: 2^(bits de página) entradas por proceso · invertida: RAM
 <tr><td><b>Memory violation / segmentation violation</b></td><td>Acceso a algo que no existe o fuera del límite: error del proceso.</td></tr>
 <tr><td><b>Permission denied</b></td><td>La operación no está permitida por los derechos R, W, X.</td></tr>
 <tr><td><b>On demand paging</b></td><td>Cargar cada página solo cuando se la necesita (al ocurrir el page fault).</td></tr>
-<tr><td><b>Thrashing (hiperpaginación)</b></td><td>Page faults continuos con páginas recién descargadas; el sistema colapsa.</td></tr>
+<tr><td><b>Víctima</b></td><td>La página que el algoritmo de reemplazo elige para descargar.</td></tr>
+<tr><td><b>Working Set</b></td><td>WS(t, Δt): las páginas usadas en la ventana [t, t + Δt[. También el algoritmo que, al final de cada ventana, deja en memoria solo esas y libera el resto.</td></tr>
+<tr><td><b>Localidad temporal / espacial</b></td><td>Lo usado se vuelve a usar pronto / lo vecino a lo usado también se usa.</td></tr>
+<tr><td><b>Anomalía de Belady</b></td><td>Con FIFO, más marcos pueden dar más page faults. LRU no la tiene.</td></tr>
+<tr><td><b>FINUFO</b></td><td>First Not In Use First Out: aproximación de LRU por software.</td></tr>
+<tr><td><b>NFU (del profe)</b></td><td>Segunda oportunidad: en un PF, las páginas con U = 1 pasan a U = 0 y sale la primera con U = 0.</td></tr>
+<tr><td><b>Thrashing (hiperpaginación)</b></td><td>Page faults continuos con páginas recién descargadas; el sistema colapsa. El “efecto bola de nieve”.</td></tr>
 <tr><td><b>TLB</b></td><td>Translation Lookaside Buffer: memoria asociativa que guarda descriptores recientes.</td></tr>
 <tr><td><b>LRU</b></td><td>Least Recently Used: sale lo que se usó hace más tiempo.</td></tr>
 <tr><td><b>Table fault</b></td><td>En la tabla jerárquica, falta una subtabla durante la búsqueda.</td></tr>
@@ -632,29 +709,40 @@ TABLAS      indexada: 2^(bits de página) entradas por proceso · invertida: RAM
 
 <section id="g-fuentes" data-nav="Fuentes y erratas">
 <h2>Fuentes y erratas</h2>
-<p><b>Material del ramo:</b> <code>clases/LinearMemory.pdf</code> (37 láminas) y <code>clases/VirtualMemory.pdf</code> (47 láminas), ambas de Xavier Bonnaire, 2026-2. Certámenes: 2014-1 y 2015-1 con pauta, 2016-1 sin pauta, Certamen 2 de 2023-1 en <code>Regalito.pdf</code> (escaneado, sin pauta). <b>Libros:</b> Wolf et al., <i>Fundamentos de sistemas operativos</i> (UNAM, 2015), cap. 5; Silberschatz, <i>Operating System Concepts</i> (10.ª ed.), cap. 9 y 10; el ejemplo de reemplazo es de Stallings.</p>
+<p><b>Material del ramo:</b> <code>clases/LinearMemory.pdf</code> (37 láminas), <code>clases/VirtualMemory.pdf</code> (47 láminas) y <code>clases/PageReplacement.pdf</code> (46 páginas, 34 láminas numeradas), de Xavier Bonnaire, 2026-2. <b>Certámenes 2</b> de 2014-1, 2015-1 y 2016-1 en <code>certamenes anteriores/c2/</code> (sin pauta), y el de 2023-1 en <code>c2/2023-1-Cert2.pdf</code> y escaneado en <code>Regalito.pdf</code> (sin pauta). Preguntas de memoria de los <b>C1</b> de 2014-1 y 2015-1 (con pauta) y 2016-1. <b>Audios:</b> las dos clases de memoria lineal (18 y 19), dos de paginación (20 y 21), la de tabla invertida y segmentación paginada (22) y la última antes del certamen (23), de <code>So audios c2(1).zip</code>, transcritas en <code>clases/transcripciones-audios/</code>, y clases de la Unidad 1 (05, 08 y 13). <b>Libros:</b> Wolf et al., <i>Fundamentos de sistemas operativos</i> (UNAM, 2015), cap. 5; Silberschatz, <i>Operating System Concepts</i> (10.ª ed.), cap. 9 y 10; el ejemplo de reemplazo R1 es de Stallings.</p>
 <div class="tw"><table class="mini">
 <thead><tr><th>Dónde</th><th>Qué hay que saber</th></tr></thead>
 <tbody>
-<tr><td>LinearMemory, lámina 9</td><td>Dice “.SO (Symbolic Object)”; el nombre usual es <i>shared object</i>.</td></tr>
+<tr><td>LinearMemory, lámina 9</td><td>Dice “.SO (Symbolic Object)”; en clase el profe dijo <b>Shared Object</b> (audio 18, 42:46).</td></tr>
 <tr><td>LinearMemory, lámina 27</td><td>“Sinon” es francés: “si no”.</td></tr>
 <tr><td>VirtualMemory, láminas 10 y 12</td><td>El recuadro dice que U marca un acceso “en lectura”; el texto dice “leído o escrito”. Vale el texto.</td></tr>
 <tr><td>VirtualMemory, lámina 23</td><td>La página 2 tiene V = 0 y U = 1 con marco 2: el profe no trata como error que una página ausente conserve U.</td></tr>
-<tr><td>C2 2023, sección 3</td><td>Vale 15 puntos (3 × 5) pero en la copia solo hay dos preguntas; el dato de 50 ns queda sin pregunta.</td></tr>
+<tr><td>PageReplacement, lámina 12</td><td>Dice que R−1 es “la página la menos recientemente usada (la última que tuvo acceso)”: es la <b>más</b> recientemente usada (la de arriba en la lámina 13).</td></tr>
+<tr><td>PageReplacement, lámina 18</td><td>“Si no hay página con V == 0” debe decir U == 0.</td></tr>
+<tr><td>Ayudantía 4, tabla de segmentos</td><td>El segmento 2 tiene V = 0, U = 1 y D = 1 sin comentario: el profe tampoco trata como error que una entrada ausente quede con D = 1.</td></tr>
+<tr><td>Ayudantía 4, pauta 1.1</td><td>FirstFit entrega cada bloque entero: P3 va al bloque 3. Si el sobrante se reutiliza (como en las láminas), P3 iría al resto del bloque 2.</td></tr>
+<tr><td>Ayudantía 4, pauta 2.2</td><td>Dice que la base del segmento 1 es “24KB”: es su tamaño; la base es 32 500 (el cálculo está bien).</td></tr>
+<tr><td>Ayudantía 4, pauta 3.2</td><td>Dice “4 accesos”: son 5 (i = 0, 40 000, 80 000, 120 000 y 160 000), y 5 page faults.</td></tr>
+<tr><td>Ayudantía 4, pauta 3.3</td><td>160 000 / 32 768 = 4,88 es la página de datos de índice 4: la página virtual es 4 + 4 = <b>8</b>, no la 7. El ciclo toca las páginas 4, 8, 13, 18 y 23; la 7 queda con V = 0.</td></tr>
+<tr><td>Ayudantía 4, enunciado y pauta 4.1</td><td>El segmento 2 mide 64 KB (páginas 0 y 1): [2, 2] no existe. La pauta igual responde marco 0 y en esa línea escribe [0, 0] por [2, 2]. En 4.3 escribe 120 000 por 1 200 000 (el resultado está bien).</td></tr>
+<tr><td>PageReplacement, nombres</td><td>Su NFU es la segunda oportunidad (en Tanenbaum, NFU es otro algoritmo, con contadores) y su LFU es lo que Tanenbaum llama envejecimiento (<i>aging</i>).</td></tr>
+<tr><td>PageReplacement, Working Set</td><td>Usa ventanas fijas [t, t + Δt[; los libros y los videos usan ventana deslizante y dan otros conteos.</td></tr>
+<tr><td><code>c2/2014_2.pdf</code></td><td>El encabezado dice “Certamen 1 – 2014-1”, pero por el contenido (memoria virtual, procesos, sincronización) es el C2 de ese semestre.</td></tr>
+<tr><td>C2 2015, tabla de la sección 2</td><td>La página 2 tiene D = 1 con W = 0; con la regla de la pregunta 2.4, tampoco calza. El enunciado no lo pregunta.</td></tr>
+<tr><td>C2 2023, sección 3</td><td>Vale 15 puntos (3 × 5) pero solo hay dos preguntas, también en la versión digital; el dato de 50 ns queda sin pregunta.</td></tr>
 <tr><td>C2 2023, encabezado</td><td>Dice 105 puntos, pero las secciones suman 28 + 42 + 15 + 35 = 120.</td></tr>
+<tr><td>Audio 18, 08:00</td><td>La transcripción dice que un SSD es “un millón de veces” más lento que la RAM; en la Unidad 1 dijo mil veces (el disco mecánico es el del millón).</td></tr>
 <tr><td>Videos</td><td>Las erratas o simplificaciones de cada video están anotadas en su tarjeta.</td></tr>
 </tbody></table></div>
 </section>
 
-<section id="g-pendiente" data-nav="Cuando lleguen las ayudantías" data-grp="Pendiente">
-<h2>Cuando lleguen las ayudantías</h2>
-<p>En el C1, lo que más se pareció al certamen fueron las ayudantías. Cuando las mandes:</p>
+<section id="g-pendiente" data-nav="Lo que falta" data-grp="Pendiente">
+<h2>Lo que falta</h2>
 <ol>
-<li>Las resuelvo y reviso sus pautas (en el C1, la de la Ayudantía 3 tenía una errata).</li>
-<li>Subo la probabilidad de las secciones que cubren, y lo anoto en cada sección.</li>
-<li>Las agrego a la página 5 como el bloque de mayor prioridad, y reajusto el plan.</li>
+<li><b>La fecha del certamen.</b> Con ella paso el plan a fechas.</li>
+<li><b>La Ayudantía 4 (memoria) llegó el 1 de noviembre.</b> Está resuelta en la página 6 (4.1 a 4.4), con su pauta revisada. Si suben otra ayudantía de memoria o una de reemplazo de páginas, va primero.</li>
+<li><b>Audios de segmentación</b>, si existen.</li>
 </ol>
-<p>Si tienes grabaciones de las clases de memoria, mándalas también: en el C1 los audios mostraron cosas que no estaban en las láminas (como lo que el profe excluyó). Y si encuentras la lámina de reemplazo de páginas, la página 4 deja de estar “por confirmar”.</p>
 </section>
 
 </main>
@@ -694,7 +782,7 @@ TABLAS      indexada: 2^(bits de página) entradas por proceso · invertida: RAM
     lastBest=best;
   }
   window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
-  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k], .ej input[data-k]'));
   function upd(){
     var done=boxes.filter(function(b){return b.checked;}).length;
     document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });

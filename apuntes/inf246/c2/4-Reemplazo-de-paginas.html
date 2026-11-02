@@ -302,10 +302,69 @@
   table.rp td.n{color:var(--ink);font-weight:700}
   table.rp th.rh{text-align:right;color:var(--muted);background:var(--panel)}
   .tw table.rp{min-width:0}
+  table.pila tr.pl td{border-left:2px solid var(--line);border-right:2px solid var(--line)}
+  table.wsv td{vertical-align:middle}
+  table.wsv b.pfx{color:var(--warn);background:var(--warn-soft);padding:0 4px;border-radius:4px}
   .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.93em}
   .q{font-weight:600}
   .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:14px 0}
   .tiny{font-size:12.5px;color:var(--muted)}
+  /* --- página 7: flashcards --- */
+  [hidden]{display:none!important}
+  .fc-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 14px;margin:14px 0;box-shadow:var(--shadow)}
+  .fc-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .fc-row:last-child{border-bottom:0}
+  .fc-lab{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);min-width:62px}
+  .fc-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 300px}
+  .fc-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;
+    font-size:13.5px;cursor:pointer;background:var(--bg);color:var(--ink);user-select:none}
+  .fc-chip input{accent-color:var(--brand);margin:0}
+  .fc-chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
+  .fc-chip small{color:var(--muted);font-weight:400}
+  .fc-status{font-size:13px;color:var(--muted);margin:10px 2px 6px;min-height:1.3em}
+  .fc-card{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--brand);border-radius:14px;padding:18px 20px;
+    min-height:230px;box-shadow:var(--shadow);cursor:pointer;outline:none;display:flex;flex-direction:column;gap:12px}
+  .fc-card:focus-visible{box-shadow:0 0 0 3px var(--brand-soft),var(--shadow)}
+  .fc-card.flipped{border-left-color:var(--accent);cursor:default}
+  .fc-card.fc-vacio{cursor:default;border-left-color:var(--line)}
+  .fc-meta{display:flex;flex-wrap:wrap;gap:6px}
+  .fc-tag{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .fc-tag.fc-salio{color:var(--no);border-color:var(--no);background:var(--no-soft);font-weight:700}
+  .fc-front{font-size:19px;font-weight:700;line-height:1.45;color:var(--ink)}
+  .fc-hint{font-size:14.5px;color:var(--warn);background:var(--warn-soft);border-radius:8px;padding:8px 12px}
+  .fc-back{border-top:1px dashed var(--line);padding-top:12px;font-size:16px;line-height:1.65}
+  .fc-back b{color:var(--accent)}
+  .fc-src{font-size:12.8px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .fc-src b{color:var(--muted)}
+  .fc-tap{font-size:12.5px;color:var(--muted);margin-top:auto}
+  .fc-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .fc-actions .btn{flex:1 1 150px;padding:11px 12px;font-size:14.5px;font-weight:600;text-align:center}
+  .fc-actions .btn:disabled{opacity:.45;cursor:default}
+  .fc-main{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+  .fc-no{border-color:var(--no);color:var(--no);background:var(--no-soft)}
+  .fc-mid{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+  .fc-yes{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .fc-end{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0;box-shadow:var(--shadow)}
+  .fc-score{font-size:26px;font-weight:800;color:var(--brand)}
+  .fc-end ul{margin:6px 0 10px}
+  table.mini tr.fc-tot td{font-weight:700}
+  details.fc-item .body b{color:var(--accent)}
+  h3 .num{color:var(--muted);font-weight:400;font-size:.8em}
+  /* --- página 6: tarjetas de ejercicio --- */
+  .ej{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:10px;
+    padding:12px 16px 2px;margin:18px 0;box-shadow:var(--shadow)}
+  .ej.p3{border-left-color:var(--accent)} .ej.p1{border-left-color:var(--line)}
+  .ej-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:6px}
+  .ej-h input{transform:scale(1.25);accent-color:var(--brand);flex:0 0 auto;margin:0 2px 0 0}
+  .ej-n{color:var(--brand);font-weight:800;font-variant-numeric:tabular-nums}
+  .ej-t{font-weight:700;font-size:16px;flex:1 1 220px;min-width:0}
+  .ej-h.done .ej-t{text-decoration:line-through;color:var(--muted)}
+  .ej-tag{font-size:12px;color:var(--muted);white-space:nowrap}
+  .ej .meta{background:var(--code);border-radius:8px;padding:8px 12px;margin:10px 0;font-size:14px}
+  .ej .meta p{margin:3px 0}
+  .ej details.ex{margin:10px 0 14px;box-shadow:none}
+  .ej .st{font-weight:700;color:var(--accent);font-size:13.5px;margin:16px 0 4px}
+  .ej pre{white-space:pre;overflow-x:auto}
   @media (max-width:900px){
     .layout{align-items:stretch}
     .content{width:100%;max-width:100%}
@@ -320,117 +379,276 @@
     <div class="dot">T4</div>
     <div><h1>Reemplazo de páginas</h1><small>Sistemas Operativos · INF-246 · Certamen 2</small></div>
   </div>
-  <div class="pages"><a href="0-Guia-de-estudio-C2.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html" class="cur"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, reloj · por confirmar</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a></div>
+  <div class="pages"><a href="0-Guia-de-estudio-C2.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">plan, chuleta, videos</small></span></a><a href="1-Memoria-lineal.html"><b>1</b><span>Memoria lineal<br><small style="color:var(--muted)">MMU, particiones, FIT, swapping</small></span></a><a href="2-Segmentacion.html"><b>2</b><span>Segmentación<br><small style="color:var(--muted)">memoria virtual y bits V, U, D</small></span></a><a href="3-Paginacion.html"><b>3</b><span>Paginación<br><small style="color:var(--muted)">tablas, TLB, segmentación paginada</small></span></a><a href="4-Reemplazo-de-paginas.html" class="cur"><b>4</b><span>Reemplazo de páginas<br><small style="color:var(--muted)">FIFO, LRU, Working Set</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2, P3 y simulacro</small></span></a><a href="6-Lista-de-estudio.html"><b>6</b><span>Lista de estudio<br><small style="color:var(--muted)">día a día desde hoy, con explicaciones</small></span></a><a href="7-Flashcards.html"><b>7</b><span>Flashcards<br><small style="color:var(--muted)">conceptos al azar, con cajas de repaso</small></span></a></div>
   <div class="toolbar">
     <button class="btn" id="theme">Claro / oscuro</button>
     <button class="btn" id="expand">Abrir todo</button>
   </div>
-  <nav id="nav"><div class="grp">Tema 4</div><a href="#t4-inicio"><span class="nt">Antes de leer: por confirmar</span></a><a href="#problema"><span class="nt">El problema: elegir la víctima</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#cadena"><span class="nt">Cadena de referencias y fallos</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#fifo"><span class="nt">FIFO</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#opt"><span class="nt">Óptimo (OPT)</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#lru"><span class="nt">LRU</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#belady"><span class="nt">Anomalía de Belady</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#reloj"><span class="nt">Bit R y reloj (segunda oportunidad)</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#nru"><span class="nt">NRU: clases con U y D</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><a href="#conjunto"><span class="nt">Conjunto de trabajo y thrashing</span><span class="pd p0" title="Por confirmar"><i></i><i></i><i></i></span></a><div class="grp">Práctica</div><a href="#t4-receta"><span class="nt">Receta: simular una cadena</span></a><a href="#t4-videos"><span class="nt">Videos del tema</span></a><a href="#R1"><span class="nt">R1 · La cadena de Stallings</span></a><a href="#R2"><span class="nt">R2 · LRU no tiene anomalía</span></a><a href="#R3"><span class="nt">R3 · Elegir víctima con U y D</span></a><a href="#R4"><span class="nt">R4 · Conjunto de trabajo</span></a><a href="#R5"><span class="nt">R5 · Thrashing, conceptual</span></a><a href="#t4-preguntas"><span class="nt">Preguntas del tema</span></a></nav>
+  <nav id="nav"><div class="grp">Tema 4</div><a href="#t4-inicio"><span class="nt">Antes de leer: lo confirmado</span></a><a href="#problema"><span class="nt">El problema: elegir la víctima</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#localidad"><span class="nt">Localidad y bits U y D</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#opt"><span class="nt">Los algoritmos y el óptimo</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#cadena"><span class="nt">Cómo se ejecuta a mano</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#fifo"><span class="nt">FIFO</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#lru"><span class="nt">LRU</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#belady"><span class="nt">Anomalía de Belady</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><a href="#reloj"><span class="nt">NFU: segunda oportunidad</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a><a href="#lfu"><span class="nt">LFU: vectores de uso</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a><a href="#local-global"><span class="nt">Local, global y necesidades variables</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a><a href="#conjunto"><span class="nt">Working Set</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#caida"><span class="nt">Multiprogramación y caída</span><span class="pd p3" title="Probabilidad alta o muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a><a href="#nru"><span class="nt">Elegir con U y D: cuatro clases</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a><div class="grp">Práctica</div><a href="#t4-receta"><span class="nt">Receta para el certamen</span></a><a href="#t4-videos"><span class="nt">Videos del tema</span></a><a href="#ex2016r"><span class="nt">C2 2016 · reemplazo completo</span></a><a href="#ex2015r"><span class="nt">C2 2015 · FIFO y LRU</span></a><a href="#ex2014r"><span class="nt">C2 2014 · víctima y LRU</span></a><a href="#R1"><span class="nt">R1 · Las láminas con 3 marcos</span></a><a href="#R2"><span class="nt">R2 · LRU no tiene anomalía</span></a><a href="#R3"><span class="nt">R3 · Secuencia larga: FIFO, LRU, WS</span></a><a href="#R4"><span class="nt">R4 · La secuencia de Stallings</span></a><a href="#R5"><span class="nt">R5 · Working Set con escrituras</span></a><a href="#R6"><span class="nt">R6 · Elegir víctima con U y D</span></a><a href="#R7"><span class="nt">R7 · Caída del sistema, conceptual</span></a><a href="#R8"><span class="nt">R8 · LFU con la lámina 21</span></a><a href="#t4-preguntas"><span class="nt">Preguntas del tema</span></a></nav>
 </aside>
 <main class="content">
 
-<section id="t4-inicio" data-nav="Antes de leer: por confirmar" data-grp="Tema 4">
-<h2>Tema 4 · Reemplazo de páginas <span class="lv p0">Por confirmar</span></h2>
-<p class="lead">No hay lámina de este tema en tu carpeta de clases. El calendario del ramo le da dos clases dentro de la Unidad 2 (“Reemplazo de Páginas 1/2 y 2/2”, justo antes del repaso y del certamen), y la lámina de memoria virtual lo anuncia dos veces: “Ver capítulo sobre el reemplazo de página para el LRU” y “la paginación necesita un algoritmo para manejar los reemplazos de páginas”. Esta página está armada con Wolf (misma escuela que el profe), Silberschatz y Stallings.</p>
+<section id="t4-inicio" data-nav="Antes de leer: lo confirmado" data-grp="Tema 4">
+<h2>Tema 4 · Reemplazo de páginas <span class="lv p3">Confirmado</span></h2>
+<p class="lead">Ya no es condicional. El profe pasó el capítulo (lámina <code>clases/PageReplacement.pdf</code>, 34 láminas) y dijo qué va a preguntar: <b>FIFO, LRU y Working Set, y saber ejecutarlos a mano, sí o sí</b>. Esta página sigue el orden de su lámina, usa sus nombres y dibuja las tablas igual que él.</p>
 <div class="hero">
-  <div class="big">Peso en el certamen: depende de si se pasó en clases</div>
-  <div class="sub">Si el profe alcanzó a pasar este capítulo, lo más probable es un ejercicio con una cadena de referencias (FIFO, LRU, óptimo, reloj) y alguna pregunta sobre thrashing. Si no lo pasó, basta con lo que dice la lámina de paginación, resumido en la sección <a class="inl" href="3-Paginacion.html#thrashing">“Reemplazo y thrashing”</a> de la página 3. El C2 2023 no tuvo preguntas de este tema.</div>
+  <div class="big">Lo que dijo el profe: FIFO · LRU · Working Set · ejecutarlos a mano</div>
+  <div class="sub">Es lo mismo que preguntó en 2015 (FIFO y LRU con 3 marcos) y en 2016 (LRU y Working Set con ventana de 4, más el efecto bola de nieve). Espera una cadena de referencias, contar los page faults, decir cuál es la víctima y, en el Working Set, el tamaño del conjunto en cada ventana.</div>
 </div>
-<div class="box warn"><div class="bt">Qué hacer con esta página</div>
-<p>Revisa en Moodle si hay una lámina de reemplazo de páginas, o pregúntale a alguien del curso si el profe la pasó. Si existe, mándamela y ajusto esta página a lo que dice él (nombres, convenciones del reloj, qué cuenta como fallo). Mientras tanto, la marca <span class="lv p0">Por confirmar</span> de cada sección significa “léelo solo si el tema entra”.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · “sí o sí, a mano”<span class="ref">Audio 23 · última clase · 42:06 / 42:35 / 43:45</span></div>
+<p>Al cerrar la clase: <i>“lo que viene en el [certamen] es solamente la gestión de memoria”</i>, y <i>“tienen que saber sí o sí ejecutar a mano FIFO, LRU […] con el ejemplo igual que lo que vimos, con esa casilla, tienen que saber hacerlo, y no reclamen”</i>. Del Working Set dijo que <i>“la van a hacer también”</i>. Es lo mismo que te mandaron tus compañeros.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · lo que no va a ver<span class="ref">Audio 23 · última clase · 16:45 / 17:08 / 42:53</span></div>
+<p>Al presentar la lista de algoritmos dijo que FIFO y LRU sí los iba a ver y que <b>LFU y NFU no</b>: <i>“no solamente porque toma tiempo verlo, es que nadie lo usa […] no son muy eficientes”</i>. FIFO lo ve <i>“porque es el primero, fácil de entender, pero es totalmente ineficiente”</i>; LRU <i>“es súper eficiente pero necesita una ayuda adicional en el procesador”</i>, y el Working Set <i>“es eficiente y no necesita ninguna ayuda adicional”</i>.</p></div>
+<div class="box warn"><div class="bt">Lo que cambia respecto de los libros</div>
+<p><b>1.</b> El profe dibuja la lista como una <b>pila</b>: arriba la página más nueva (FIFO) o la usada más recientemente (LRU), y la víctima sale siempre de abajo. <b>2.</b> Su Working Set usa <b>ventanas fijas</b> que no se traslapan (accesos 1-4, 5-8, 9-12): al final de cada ventana se quedan solo las páginas usadas en ella. Los libros y los videos usan una ventana deslizante que se mueve en cada acceso y da otros números. En el certamen, usa la del profe. <b>3.</b> Su “NFU” es lo que los libros llaman segunda oportunidad o reloj, y su “LFU” es lo que Tanenbaum llama envejecimiento (<i>aging</i>).</p></div>
 <div class="cols">
-  <div class="card"><h5>Lo que tendrías que poder hacer</h5>
-    <p>· Simular FIFO, óptimo, LRU y reloj sobre una cadena de referencias y contar los fallos.</p>
-    <p>· Explicar por qué el óptimo no se puede implementar y por qué LRU es caro.</p>
-    <p>· Mostrar la anomalía de Belady con FIFO.</p>
-    <p>· Usar los bits U y D para elegir una víctima.</p>
-    <p>· Explicar el thrashing, el conjunto de trabajo y qué hace el sistema para evitarlo.</p>
+  <div class="card"><h5>Lo que tienes que poder hacer</h5>
+    <p>· Ejecutar FIFO y LRU a mano con 3 o 4 marcos: la pila en cada acceso, los page faults y las víctimas.</p>
+    <p>· Ejecutar el Working Set con una ventana Δt dada: el conjunto de cada ventana, su tamaño, los fallos y qué se libera.</p>
+    <p>· Explicar por qué el óptimo no se puede aplicar, por qué LRU necesita hardware y qué ventaja tiene el Working Set.</p>
+    <p>· Explicar la caída del sistema por exceso de multiprogramación (el efecto bola de nieve).</p>
   </div>
-  <div class="card"><h5>Dónde está en los libros</h5>
-    <p><b>Wolf</b>: §5.5.3 “Reemplazo de páginas” (pp. 196-204), §5.5.4 “Asignación de marcos” (p. 204) y §5.5.5 “Hiperpaginación” (p. 208).</p>
-    <p><b>Silberschatz</b> (10.ª ed.): §10.4 <i>Page Replacement</i> (p. 401), §10.5 <i>Allocation of Frames</i> y §10.6 <i>Thrashing</i> (p. 419).</p>
+  <div class="card"><h5>Dónde está</h5>
+    <p><b>Lámina del profe</b>: <code>PageReplacement.pdf</code>; FIFO en la 11, LRU en la 13, Working Set de la 25 a la 31, caída en la 32 a la 34 (numeración del pie de página).</p>
+    <p><b>Wolf</b>: §5.5.3 “Reemplazo de páginas” (pp. 196-204) y §5.5.5 “Hiperpaginación” (p. 208). <b>Silberschatz</b> (10.ª ed.): §10.4 y §10.6.</p>
   </div>
-  <div class="card"><h5>Plan para este tema (≈ 1 h 30)</h5>
-    <p>1. Leer las secciones (45 min).</p>
-    <p>2. Videos del Mtro. Elvira: óptimo, LRU y FIFO (17 min) y el reloj (7 min).</p>
-    <p>3. Ejercicio R1 a mano, sin mirar la tabla, y R2 (30 min).</p>
+  <div class="card"><h5>Plan para este tema (≈ 2 h 15)</h5>
+    <p>1. Leer las secciones de FIFO, LRU y Working Set y copiar a mano los ejemplos de las láminas (45 min).</p>
+    <p>2. Los ejercicios de 2016 y 2015 sin mirar, y después R1, R3 y R5 (1 h).</p>
+    <p>3. El resto de las secciones, por encima (30 min).</p>
   </div>
 </div>
 </section>
 
-<section id="problema" data-nav="El problema: elegir la víctima" data-p="0">
+<section id="problema" data-nav="El problema: elegir la víctima" data-p="3">
 <h2>El problema: elegir la página víctima</h2>
-<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong> Es la idea que une todos los algoritmos.</p>
-<p>Cuando hay un page fault y no queda ningún marco libre, el sistema tiene que elegir una página para descargar: la <b>víctima</b>. Si la víctima tiene D = 1 hay que escribirla en el disco antes de usar su marco (dos transferencias); si D = 0 basta con marcarla como ausente (una sola transferencia, la de la página nueva).</p>
-<p>El objetivo de un algoritmo de reemplazo es producir <b>la menor cantidad posible de page faults</b> para un patrón de accesos dado. Se apoya en la <b>localidad</b>: durante un rato, un programa usa un conjunto pequeño de páginas (las de un ciclo, un arreglo, la pila), así que el pasado reciente predice bastante bien el futuro cercano.</p>
-<div class="box tip"><div class="bt">El paralelo con la Unidad 1</div>
-<p>Es el mismo esquema del scheduling: hay un algoritmo óptimo que necesita conocer el futuro (como SJN con tiempos exactos), uno simple que no mira nada (FIFO) y aproximaciones baratas que usan información del pasado (como las prioridades dinámicas). El SO “no tiene bola de cristal”.</p></div>
-</section>
-
-<section id="cadena" data-nav="Cadena de referencias y fallos" data-p="0">
-<h2>La cadena de referencias y cómo se cuentan los fallos</h2>
-<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong> Es el formato de cualquier ejercicio de este tema.</p>
-<p>Para comparar algoritmos se usa una <b>cadena de referencias</b>: la lista de los números de página que el proceso va accediendo (varios accesos seguidos a la misma página cuentan como uno). Además hace falta saber <b>cuántos marcos</b> tiene el proceso.</p>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> “¿Para qué sirve un algoritmo de reemplazo? ¿Cuál es la página víctima?” fue la 3.1 del C2 2016, y “¿qué característica debe tener la víctima?”, la 2.5 del C2 2014.</p>
+<p>Con memoria virtual, cuando hay un page fault el sistema debe cargar la página. Si <b>no queda ni un marco libre</b>, tiene que descargar antes una o más páginas. La que sale se llama <b>página víctima</b> y el sistema le hace un <b>swap out</b> (lámina 7). Para elegirla, el profe pide dos cosas (lámina 2):</p>
 <ul>
-  <li>Se dibuja una columna por referencia y una fila por marco; se marca F en cada fallo.</li>
-  <li>La memoria parte vacía, así que la primera referencia a cada página es siempre un fallo. Algunos enunciados los cuentan y otros no: <b>di cuál convención usas</b>.</li>
-  <li>Con tantos marcos como páginas distintas, solo hay esos fallos iniciales; con un solo marco, cada cambio de página es un fallo.</li>
+  <li><b>Minimizar el costo de la descarga</b>: si la víctima no fue modificada (D = 0) no hay que escribirla en el disco.</li>
+  <li><b>No volver a cargar la misma página justo después</b>: la víctima debería ser una página que no se va a necesitar pronto.</li>
 </ul>
-<p>En las tablas de esta página, las celdas naranjas son las que cambiaron por un fallo, y la fila “víctima” dice qué página salió.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · también se reemplaza para prevenir<span class="ref">Audio 23 · última clase · 00:34 / 01:12 / 01:51</span></div>
+<p>Hay dos momentos para sacar páginas: cuando la memoria está saturada (ahí <i>“tengo que hacerlo sí o sí”</i>) o <b>de forma preventiva</b>, porque ya se sabe que esas páginas no son útiles ahora. Como en la biblioteca: <i>“si no lo abrí hace 8 años atrás, no me sirve, eso lo voy a poner en la caja, en la bodega”</i>, aunque todavía haya espacio. Es la idea que después usa el Working Set.</p></div>
+<div class="box def"><div class="bt">Definición del profe (lámina 7)</div>
+<p>El algoritmo de reemplazo de página elige cuál página será descargada de la memoria por el sistema cuando la memoria está saturada. La página descargada se llama la página víctima, y el sistema hace un swap out con ella.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase (Unidad 1) · el libro que menos usas<span class="ref">Planificación de tareas · Voz 002_1 · 21:40 / 22:09 / 24:14</span></div>
+<p>La repisa está llena y llega un libro nuevo: <i>“¿Qué libro van a sacar? ¿El más viejo? No el más viejo en términos de fecha: el que menos usan actualmente”</i>, porque la probabilidad de necesitarlo es baja. Es la diferencia entre FIFO (el que llegó primero) y LRU (el usado hace más tiempo), dicha con libros. Y agregó que el sistema <b>se puede equivocar</b>: no tiene bola de cristal, y dos días después puedes necesitar justo el libro que mandaste a la bodega.</p></div>
 </section>
 
-<section id="fifo" data-nav="FIFO" data-p="0">
-<h2>FIFO: la que llegó primero</h2>
-<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong></p>
-<p>Se reemplaza la página que lleva <b>más tiempo cargada</b>. Se implementa con una cola de las páginas en memoria. Es simple, pero no mira el uso: puede sacar una página que se usa todo el tiempo (por ejemplo, la del ciclo principal, que se cargó al comienzo). Además sufre la anomalía de Belady.</p>
-<p><b>La cadena clásica</b> (Silberschatz y Wolf), con 3 marcos:</p>
-<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">7</td><td class="n">0</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">3</td><td class="n">0</td><td class="n">4</td><td class="n">2</td><td class="n">3</td><td class="n">0</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">1</td><td class="n">7</td><td class="n">0</td><td class="n">1</td></tr><tr><th class="rh">M0</th><td class="f">7</td><td>7</td><td>7</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td class="f">4</td><td>4</td><td>4</td><td class="f">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="f">7</td><td>7</td><td>7</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">0</td><td>0</td><td>0</td><td>0</td><td class="f">3</td><td>3</td><td>3</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="f">0</td><td>0</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">1</td><td>1</td><td>1</td><td>1</td><td class="f">0</td><td>0</td><td>0</td><td class="f">3</td><td>3</td><td>3</td><td>3</td><td>3</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">1</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td></td><td class="f">F</td><td class="f">F</td><td></td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td>7</td><td></td><td>0</td><td>1</td><td>2</td><td>3</td><td>0</td><td>4</td><td></td><td></td><td>2</td><td>3</td><td></td><td></td><td>0</td><td>1</td><td>2</td></tr></table></div><p class="tiny">15 fallos de página en 20 referencias (contando los iniciales).</p>
+<section id="localidad" data-nav="Localidad y bits U y D" data-p="2">
+<h2>Por qué funciona: la localidad, y los bits U y D</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Es la justificación de LRU y del Working Set; sirve para cualquier pregunta de “explique”.</p>
+<p>Los accesos de un programa no son al azar (láminas 3 y 4):</p>
+<ul>
+  <li><b>Localidad temporal</b>: un elemento usado tiene una alta probabilidad de volver a usarse muy pronto (un ciclo, una variable local).</li>
+  <li><b>Localidad espacial</b>: los elementos vecinos tienen alta probabilidad de usarse también (un arreglo, un string, el código secuencial).</li>
+  <li>Durante un período corto, <b>pocas páginas son útiles</b>. Hay cinco veces más instrucciones en secuencia que saltos, y <b>el 80 % de los accesos involucra solo el 20 % de las páginas</b>.</li>
+</ul>
+<p>Por eso cargar todo el espacio de trabajo de un proceso es inútil y caro: basta con cargar lo necesario (<b>on demand paging</b>, lámina 5), y el pasado reciente predice bastante bien qué se va a usar.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · el 80 % de las páginas no sirve<span class="ref">Audio 23 · última clase · 07:42 / 08:45 / 09:24</span></div>
+<p>Los tiempos de la localidad son cortos: <i>“no estamos hablando de horas o días, estamos hablando de a todo dar segundos”</i>. Y dio la otra lectura del 80/20: durante ese intervalo, <i>“hay 80 % de las páginas virtuales de un proceso que no sirven para nada”</i>. Si se supiera cuáles son, serían las víctimas perfectas.</p></div>
+<h4>Los bits U y D en el reemplazo (lámina 6)</h4>
+<div class="tw"><table class="mini">
+<thead><tr><th>Quién</th><th>Qué hace con U y D</th></tr></thead>
+<tbody>
+<tr><td>El sistema</td><td>Los inicializa al crear la tabla de páginas y al cargar una página. Es el <b>único que los consulta</b>.</td></tr>
+<tr><td>El hardware (MMU)</td><td>Los actualiza en <b>cada acceso</b> a la página.</td></tr>
+</tbody></table></div>
+<p>Si la página no fue modificada (<b>D = 0</b>), no hay que descargarla: se ahorra una escritura en el disco. Si no fue usada (<b>U = 0</b>) desde varios quantum, aparece como poco útil y se puede reemplazar por una más útil.</p>
 </section>
 
-<section id="opt" data-nav="Óptimo (OPT)" data-p="0">
-<h2>Óptimo (OPT o MIN)</h2>
-<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong></p>
-<p>Se reemplaza la página que <b>no se va a usar por más tiempo</b> (o nunca más). Está demostrado que produce el mínimo de fallos posible, pero <b>no se puede implementar</b>: exige conocer el futuro. Sirve como cota: dice qué tan cerca del ideal queda otro algoritmo.</p>
-<p>Para elegir la víctima, mira hacia adelante en la cadena y saca la página cuya próxima referencia está más lejos.</p>
-<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">7</td><td class="n">0</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">3</td><td class="n">0</td><td class="n">4</td><td class="n">2</td><td class="n">3</td><td class="n">0</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">1</td><td class="n">7</td><td class="n">0</td><td class="n">1</td></tr><tr><th class="rh">M0</th><td class="f">7</td><td>7</td><td>7</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">7</td><td>7</td><td>7</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="f">4</td><td>4</td><td>4</td><td class="f">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">1</td><td>1</td><td>1</td><td class="f">3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td class="f">1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td></td><td></td><td class="f">F</td><td></td><td></td><td class="f">F</td><td></td><td></td><td></td><td class="f">F</td><td></td><td></td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td>7</td><td></td><td>1</td><td></td><td>0</td><td></td><td></td><td>4</td><td></td><td></td><td>3</td><td></td><td></td><td></td><td>2</td><td></td><td></td></tr></table></div><p class="tiny">9 fallos de página en 20 referencias (contando los iniciales).</p>
+<section id="opt" data-nav="Los algoritmos y el óptimo" data-p="2">
+<h2>Los algoritmos del profe y el óptimo</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> Es teoría corta y sale de una pregunta de conocimiento (“¿existe el algoritmo óptimo?”).</p>
+<p>Los cinco algoritmos que nombra la lámina 7: <b>FIFO</b> (First In First Out), <b>LRU</b> (Least Recently Used), <b>NFU</b> (Not Frequently Used), <b>PFF</b> (Page Fault Frequency) y <b>WS</b> (Working Set). En las láminas siguientes aparece además <b>LFU</b> (Least Frequently Used).</p>
+<div class="box def"><div class="bt">¿Existe el algoritmo óptimo? (lámina 8)</div>
+<p><b>Sí</b>: sacar la página que no se va a usar por más tiempo. <b>Pero</b> necesita conocer la secuencia de uso de las páginas de cada proceso, y es imposible conocerla a priori: hay procesos que no son deterministas (no ejecutan siempre las mismas instrucciones con los mismos datos de entrada). <b>Conclusión</b>: el sistema solo intenta aplicar aproximaciones del óptimo.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · “nos vamos a equivocar”<span class="ref">Audio 23 · última clase · 17:40 / 18:50 / 19:03</span></div>
+<p><i>“¿Existe un algoritmo de reemplazo de páginas óptimo? Sí, existe. ¿Se puede aplicar? No”</i>: haría falta <i>“la famosa bola de cristal”</i>. Así que se usan aproximaciones, y eso significa que <i>“en algunos casos nos vamos a equivocar, y en esos casos lo vamos a pagar más caro”</i>; la idea es que esos casos sean escasos.</p></div>
+<p><b>Cómo se evalúan los algoritmos</b> (lámina 9). Hipótesis: el número de marcos N es fijo y se mira el estado estable, cuando los N marcos ya están asignados. Criterios: la calidad de las páginas que se quedan en memoria (realmente usadas, frecuencia de uso), el costo en espacio y tiempo del algoritmo y el costo de la carga adicional del disco. Se comparan con simulaciones de secuencias de acceso y con modelos matemáticos.</p>
 </section>
 
-<section id="lru" data-nav="LRU" data-p="0">
-<h2>LRU: la usada hace más tiempo</h2>
-<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong> Es el que la lámina de memoria virtual nombra para la TLB.</p>
-<p>Se reemplaza la página que <b>no se ha usado hace más tiempo</b> (<i>Least Recently Used</i>). Usa el pasado reciente para predecir el futuro, apoyándose en la localidad. Para la cadena clásica queda entre OPT y FIFO:</p>
-<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">7</td><td class="n">0</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">3</td><td class="n">0</td><td class="n">4</td><td class="n">2</td><td class="n">3</td><td class="n">0</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">1</td><td class="n">7</td><td class="n">0</td><td class="n">1</td></tr><tr><th class="rh">M0</th><td class="f">7</td><td>7</td><td>7</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td class="f">4</td><td>4</td><td>4</td><td class="f">0</td><td>0</td><td>0</td><td class="f">1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="f">3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td class="f">0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">1</td><td>1</td><td>1</td><td class="f">3</td><td>3</td><td>3</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">7</td><td>7</td><td>7</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td></td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td></td><td></td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td>7</td><td></td><td>1</td><td></td><td>2</td><td>3</td><td>0</td><td>4</td><td></td><td></td><td>0</td><td></td><td>3</td><td></td><td>2</td><td></td><td></td></tr></table></div><p class="tiny">12 fallos de página en 20 referencias (contando los iniciales).</p>
-<p><b>Su problema es el costo.</b> Hay que registrar el momento de <b>cada</b> acceso a memoria (un contador por marco, o una lista que se reordena en cada referencia), y eso solo es viable con apoyo de hardware. Por eso los sistemas usan aproximaciones con el bit de referencia. La TLB sí puede usar LRU de verdad porque tiene muy pocas entradas.</p>
-<div class="box tip"><div class="bt">Truco para hacerlo a mano</div><p>En cada fallo, lee la cadena <b>hacia atrás</b> desde la posición actual: la víctima es la página en memoria cuya última aparición está más lejos. Para OPT es lo mismo, pero leyendo <b>hacia adelante</b>.</p></div>
-</section>
-
-<section id="belady" data-nav="Anomalía de Belady" data-p="0">
-<h2>La anomalía de Belady</h2>
-<p class="prio"><span class="lv p0">Por confirmar</span><strong>Pasar por encima si el tema entra.</strong> Es una pregunta conceptual típica.</p>
-<p>Lo lógico es que con más marcos haya menos fallos. Con <b>FIFO</b> no siempre: con la cadena 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5, tres marcos dan 9 fallos y cuatro marcos dan 10.</p>
-<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">5</td></tr><tr><th class="rh">M0</th><td class="f">1</td><td>1</td><td>1</td><td class="f">4</td><td>4</td><td>4</td><td class="f">5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">2</td><td>2</td><td>2</td><td class="f">1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="f">3</td><td>3</td><td>3</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">3</td><td>3</td><td>3</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">4</td><td>4</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td></td><td class="f">F</td><td class="f">F</td><td></td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td></td><td></td><td>1</td><td>2</td><td></td></tr></table></div><p class="tiny">9 fallos de página en 12 referencias (contando los iniciales).</p>
-<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">5</td></tr><tr><th class="rh">M0</th><td class="f">1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="f">5</td><td>5</td><td>5</td><td>5</td><td class="f">4</td><td>4</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">1</td><td>1</td><td>1</td><td>1</td><td class="f">5</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td class="f">2</td><td>2</td><td>2</td><td>2</td></tr><tr><th class="rh">M3</th><td class="f"></td><td></td><td></td><td class="f">4</td><td>4</td><td>4</td><td>4</td><td>4</td><td>4</td><td class="f">3</td><td>3</td><td>3</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>1</td></tr></table></div><p class="tiny">10 fallos de página en 12 referencias (contando los iniciales).</p>
-<p>LRU y OPT no sufren la anomalía: con n + 1 marcos, las páginas en memoria siempre incluyen a las que habría con n marcos.</p>
-</section>
-
-<section id="reloj" data-nav="Bit R y reloj (segunda oportunidad)" data-p="0">
-<h2>Aproximar LRU: el bit R y el reloj</h2>
-<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong> Usa justo el bit R (Refer) de la tabla de la lámina 23, que se borra cada TICK.</p>
-<p><b>Segunda oportunidad (reloj).</b> Los marcos forman una lista circular con un puntero, la “manecilla”. En un fallo:</p>
+<section id="cadena" data-nav="Cómo se ejecuta a mano" data-p="3">
+<h2>Cómo se ejecuta a mano (el formato del profe)</h2>
+<p class="prio"><span class="lv p3">Confirmado</span><strong>Leer completo.</strong> Es el formato de las láminas 11 y 13, el que conviene copiar en el certamen.</p>
+<p>Te dan una <b>secuencia de accesos</b> a páginas virtuales (por ejemplo 1 | 2 | 3 | 1 | 1 | 4) y el número de marcos. Se dibuja una columna por acceso:</p>
 <div class="steps">
-<div class="step">Mira el marco al que apunta el puntero.</div>
-<div class="step">Si su bit de referencia es <b>0</b>, esa es la víctima.</div>
-<div class="step">Si es <b>1</b>, le da una segunda oportunidad: lo pone en 0 y avanza el puntero. Repite.</div>
-<div class="step">La página nueva entra con el bit en 1 y el puntero avanza al marco siguiente.</div>
+<div class="step">Arriba, el número de la página accedida. Encima, un recuadro <b>PF</b> si ese acceso provoca un page fault.</div>
+<div class="step">Debajo, la <b>lista</b> del algoritmo, con tantas casillas como marcos. Arriba va la página que acaba de entrar (FIFO) o la usada más recientemente (LRU).</div>
+<div class="step">Cuando la lista está llena y hay un page fault, la página de <b>abajo</b> es la víctima: sale, y la nueva entra arriba. Escribe debajo “la página x es la víctima”.</div>
+<div class="step">Al final, cuenta los PF. El profe cuenta también los de la carga inicial (en sus láminas, los cuatro primeros accesos tienen PF).</div>
 </div>
-<p>Si todas las páginas tienen el bit en 1, el puntero da la vuelta completa apagándolos y el algoritmo degenera en FIFO. Con la cadena clásica (el superíndice es el bit de referencia de cada marco después de cada paso):</p>
-<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">7</td><td class="n">0</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">3</td><td class="n">0</td><td class="n">4</td><td class="n">2</td><td class="n">3</td><td class="n">0</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">1</td><td class="n">7</td><td class="n">0</td><td class="n">1</td></tr><tr><th class="rh">M0</th><td class="f">7<sup>1</sup></td><td>7<sup>1</sup></td><td>7<sup>1</sup></td><td class="f">2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td class="f">4<sup>1</sup></td><td>4<sup>1</sup></td><td>4<sup>1</sup></td><td>4<sup>0</sup></td><td class="f">3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>0</sup></td><td>3<sup>0</sup></td><td class="f">0<sup>1</sup></td><td>0<sup>1</sup></td><td>0<sup>0</sup></td><td>0<sup>1</sup></td><td>0<sup>1</sup></td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">0<sup>1</sup></td><td>0<sup>1</sup></td><td>0<sup>0</sup></td><td>0<sup>1</sup></td><td>0<sup>0</sup></td><td>0<sup>1</sup></td><td>0<sup>0</sup></td><td class="f">2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>0</sup></td><td>2<sup>0</sup></td><td>2<sup>1</sup></td><td class="f">1<sup>1</sup></td><td>1<sup>1</sup></td><td>1<sup>1</sup></td><td>1<sup>1</sup></td><td class="f">7<sup>1</sup></td><td>7<sup>1</sup></td><td>7<sup>1</sup></td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">1<sup>1</sup></td><td>1<sup>0</sup></td><td>1<sup>0</sup></td><td class="f">3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>0</sup></td><td>3<sup>0</sup></td><td>3<sup>1</sup></td><td class="f">0<sup>1</sup></td><td>0<sup>1</sup></td><td>0<sup>1</sup></td><td>0<sup>0</sup></td><td class="f">2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>0</sup></td><td>2<sup>0</sup></td><td class="f">1<sup>1</sup></td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td>7</td><td></td><td>1</td><td></td><td>2</td><td>0</td><td></td><td>3</td><td>4</td><td></td><td>2</td><td>0</td><td>3</td><td></td><td>1</td><td></td><td>2</td></tr><tr><th class="rh">puntero</th><td>M1</td><td>M2</td><td>M0</td><td>M1</td><td>M1</td><td>M0</td><td>M0</td><td>M1</td><td>M2</td><td>M2</td><td>M0</td><td>M1</td><td>M1</td><td>M2</td><td>M0</td><td>M1</td><td>M1</td><td>M2</td><td>M2</td><td>M0</td></tr></table></div><p class="tiny">14 fallos de página en 20 referencias (contando los iniciales).</p>
-<p class="tiny">Convención usada: la página nueva entra con bit 1 (como en Stallings), un acierto pone el bit en 1 sin mover el puntero, y el puntero avanza después de cada carga. Hay libros que cargan con bit 0; con otra convención el conteo puede cambiar, así que en un certamen escribe cuál usas.</p>
+<div class="box tip"><div class="bt">La única diferencia entre FIFO y LRU, a mano</div>
+<p>En un <b>acierto</b> (la página ya está): con <b>FIFO la lista no se mueve</b>; con <b>LRU la página sube arriba</b> y las que estaban sobre ella bajan un puesto. En un page fault los dos hacen lo mismo: la nueva entra arriba y sale la de abajo.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · cómo lo dibujó en la pizarra<span class="ref">Audio 23 · última clase · 23:41 / 24:22 / 26:57</span></div>
+<p>Empezó con la memoria vacía: cada página nueva <i>“la pone arriba de su lista”</i>. Sobre en qué marco queda: <i>“¿Qué frame le asignó? No sé, y me da lo mismo, porque eso no es el problema del modelo. El problema es qué página se va a ir”</i>. Y sobre la carga inicial: <i>“los cuatro [page faults] que generó son inevitables […] ningún algoritmo lo va a evitar”</i>. O sea: <b>no dibujes marcos, dibuja la lista</b>, y cuenta los page faults iniciales.</p></div>
+<p class="tiny">En las tablas de esta página: la fila “acceso” es la página pedida, “PF” marca los page faults, las filas del medio son la lista de arriba (↑) a abajo (↓), la celda naranja es la página que acaba de entrar y la fila “sale” es la víctima.</p>
 </section>
 
-<section id="nru" data-nav="NRU: clases con U y D" data-p="0">
-<h2>Usar los bits U y D: las cuatro clases</h2>
-<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong> Junta lo que dicen las láminas sobre U (U = 0 es buen candidato) y D (D = 1 no es buen candidato).</p>
+<section id="fifo" data-nav="FIFO" data-p="3">
+<h2>FIFO: First In First Out</h2>
+<p class="prio"><span class="lv p3">Confirmado · a mano</span><strong>Leer completo y hacer los ejercicios.</strong> Salió en el C2 2015 (2.5, junto con LRU) y el profe lo nombró para este certamen.</p>
+<p>El reemplazo ocurre <b>sistemáticamente en el orden de carga</b> (lámina 10). El sistema maneja una lista de las páginas en el orden en que se cargaron: la víctima es la primera de la lista (la que entró hace más tiempo) y la página que se carga entra al final. Los marcos se van reemplazando cada uno en su turno, como en un <b>Round Robin</b>.</p>
+<p><b>El ejemplo de la lámina 11</b>, con 4 marcos:</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="f">4</td><td>4</td><td>4</td><td class="f">5</td><td class="f">1</td><td class="f">2</td><td class="f">3</td></tr><tr class="pl"><th class="rh"></th><td></td><td>1</td><td>2</td><td>3</td><td>3</td><td>3</td><td>4</td><td>5</td><td>1</td><td>2</td></tr><tr class="pl"><th class="rh"></th><td></td><td></td><td>1</td><td>2</td><td>2</td><td>2</td><td>3</td><td>4</td><td>5</td><td>1</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td></td><td>1</td><td>1</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td></tr></table></div><p class="tiny">8 page faults en 10 accesos (contando los 4 de la carga inicial).</p>
+<p>Los accesos 1 y 2 de los tiempos 5 y 6 son aciertos y no mueven nada. Cuando llega el 5, sale el 1 (el primero que entró) aunque se acaba de usar; por eso el 1 vuelve a fallar enseguida, y así en cadena: <b>8 page faults</b>, con víctimas 1, 2, 3 y 4. Es justo el defecto de FIFO: no mira el uso de las páginas.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · “eficiencia cero”<span class="ref">Audio 23 · última clase · 27:31 / 28:35 / 44:27</span></div>
+<p>Las páginas 1 y 2 eran las que tenían más accesos, y FIFO las botó: <i>“FIFO no mira esto, lo único que mira es cuál es la más antigua que está en la memoria, y piensa que la más antigua es la más inútil”</i>. Su conclusión: súper simple, costo O(1) para insertar y para elegir la víctima, <i>“pero la eficiencia cero”</i>. Y al final de la clase: <i>“para todo el resto, el FIFO es pésimo; la única ventaja del FIFO es el costo”</i>.</p></div>
+
+</section>
+
+<section id="lru" data-nav="LRU" data-p="3">
+<h2>LRU: Least Recently Used</h2>
+<p class="prio"><span class="lv p3">Confirmado · a mano</span><strong>Leer completo y hacer los ejercicios.</strong> Salió en los tres C2 con reemplazo: 2014 (2.6, explicarlo), 2015 (2.5) y 2016 (3.2, simularlo).</p>
+<p>El objetivo es saber cuáles son las páginas <b>menos recientemente usadas</b>, así que hay que conocer la secuencia de los accesos anteriores (lámina 12). El sistema maneja una lista ordenada por uso:</p>
+<ul>
+  <li><b>R−1</b> es la página usada más recientemente (la última que tuvo acceso), y <b>R−i</b> la de rango i.</li>
+  <li>Cuando hay un acceso a la página R−i, la lista <b>rota entre R−1 y R−i</b>: esa página pasa a ser R−1 y las de encima bajan un puesto.</li>
+  <li>Con k marcos, las páginas R−1 a R−k están en memoria. En un page fault, la víctima es <b>R−k</b>.</li>
+</ul>
+<p class="tiny">Errata de la lámina 12: dice que R−1 es “la página la menos recientemente usada (la última que tuvo acceso)”. El paréntesis y la figura de la lámina 13 muestran que R−1 es la <b>más</b> recientemente usada, la de arriba.</p>
+<p><b>El ejemplo de la lámina 13</b>, la misma secuencia con 4 marcos:</p>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td></td><td></td><td class="f">PF</td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="f">4</td><td class="h">1</td><td class="h">2</td><td class="f">5</td><td class="h">1</td><td class="h">2</td><td class="f">3</td></tr><tr class="pl"><th class="rh"></th><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>2</td><td>5</td><td>1</td><td>2</td></tr><tr class="pl"><th class="rh"></th><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>2</td><td>5</td><td>1</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>4</td><td>4</td><td>5</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td></td><td>3</td><td></td><td></td><td>4</td></tr></table></div><p class="tiny">6 page faults en 10 accesos (contando los 4 de la carga inicial).</p>
+<p>Ahora los aciertos sí mueven la lista: el 1 y el 2 suben arriba, así que cuando llega el 5 la de abajo es el 3, la que no se usa hace más tiempo. Resultado: <b>6 page faults</b> contra 8 de FIFO, con víctimas 3 y 4.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · los cubos<span class="ref">Audio 23 · última clase · 30:53 / 32:45 / 33:37</span></div>
+<p>En cada acceso la página vuelve a la primera posición: <i>“la sacamos de acá, todo eso se cae de un lugar, y la página 1 vuelve acá”</i>. Lo comparó con un juego de cubos apilados: sacas un cubo, los de arriba caen, y lo pones encima. Con la secuencia de la lámina: <i>“4 page faults iniciales, inevitables […] y aquí ahorramos 2”</i>, porque no sacó las más usadas. Y advirtió que sigue siendo una apuesta: si la página que sale se vuelve a pedir, <i>“mala suerte, vamos a pagarlo más caro”</i>.</p></div>
+
+<h4>El problema de LRU (láminas 14 y 15)</h4>
+<ul>
+  <li><b>Necesita una implementación en hardware</b>: hay que rotar la lista en <b>cada</b> acceso a memoria. Se puede usar un TLB ordenado.</li>
+  <li>En la práctica, LRU no se puede usar para la gestión de memoria si el procesador no lo implementa en hardware: se usan <b>aproximaciones por software</b>, como el Working Set o FINUFO (First Not In Use First Out).</li>
+  <li>Su eficiencia: toma en cuenta la utilidad de las páginas y <b>no tiene anomalía de Belady</b>.</li>
+  <li>LRU sí se usa para objetos del sistema con un tiempo de uso más largo (unos milisegundos), como el <b>buffer del disco</b>.</li>
+</ul>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · el mejor conocido, pero caro<span class="ref">Audio 23 · última clase · 35:47 / 36:28 / 37:01 / 38:15</span></div>
+<p>Elegir la víctima cuesta O(1) (es la de abajo); lo caro es mover la página en la lista: <i>“lo que tiene costo es buscar dónde está”</i>. Por eso <i>“necesitamos un hardware que haga la gestión de esa lista, y no por software”</i>. Aun así, <i>“es el mejor conocido de todos; no hay ninguno mejor que él”</i>, y se usa donde el tiempo alcanza: las bases de datos, que mueven a la RAM los datos más pedidos, y el caché del navegador web.</p></div>
+<div class="box tip"><div class="bt">Truco para no equivocarte</div><p>Antes de cada page fault, revisa que la lista esté ordenada como la secuencia leída <b>hacia atrás</b>: la de arriba es el último acceso, la siguiente es la página distinta anterior, y así. La de abajo es la víctima.</p></div>
+</section>
+
+<section id="belady" data-nav="Anomalía de Belady" data-p="2">
+<h2>La anomalía de Belady</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> La lámina 15 dice “no hay anomalía de Belady” como virtud de LRU: puede salir como pregunta de conocimiento.</p>
+<p>Lo lógico es que con más marcos haya menos page faults. Con <b>FIFO</b> no siempre. La secuencia de las láminas del profe, completa (1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5), es justo la de Belady:</p>
+<div class="st">FIFO con 3 marcos</div>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">5</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td></td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="f">4</td><td class="f">1</td><td class="f">2</td><td class="f">5</td><td>5</td><td>5</td><td class="f">3</td><td class="f">4</td><td>4</td></tr><tr class="pl"><th class="rh"></th><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>2</td><td>2</td><td>2</td><td>5</td><td>3</td><td>3</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>1</td><td>1</td><td>2</td><td>5</td><td>5</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td></td><td></td><td>1</td><td>2</td><td></td></tr></table></div><p class="tiny">9 page faults en 12 accesos (contando los 3 de la carga inicial).</p>
+<div class="st">FIFO con 4 marcos</div>
+<div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">5</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="f">4</td><td>4</td><td>4</td><td class="f">5</td><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="f">4</td><td class="f">5</td></tr><tr class="pl"><th class="rh"></th><td></td><td>1</td><td>2</td><td>3</td><td>3</td><td>3</td><td>4</td><td>5</td><td>1</td><td>2</td><td>3</td><td>4</td></tr><tr class="pl"><th class="rh"></th><td></td><td></td><td>1</td><td>2</td><td>2</td><td>2</td><td>3</td><td>4</td><td>5</td><td>1</td><td>2</td><td>3</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td></td><td>1</td><td>1</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>1</td><td>2</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>1</td></tr></table></div><p class="tiny">10 page faults en 12 accesos (contando los 4 de la carga inicial).</p>
+<p>Con un marco más, FIFO pasa de 9 a <b>10</b> page faults. Con LRU no ocurre: con k + 1 marcos, las páginas en memoria son siempre las mismas que con k marcos más una (las R−1 a R−k siguen ahí). Ver <a class="inl" href="#R2">R2</a>.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · más memoria, más page faults<span class="ref">Audio 23 · última clase · 44:47 / 45:05 / 45:27</span></div>
+<p>Lo mencionó al final: FIFO tiene la anomalía de Belady, <i>“si uno le da más frames libres […] puede ser capaz de generar más page faults que con 4”</i>, aunque con más memoria deberían ser menos: <i>“le puedo dar más memoria y es peor que con menos memoria”</i>.</p></div>
+
+</section>
+
+<section id="reloj" data-nav="NFU: segunda oportunidad" data-p="1">
+<h2>NFU (Not Frequently Used): la segunda oportunidad</h2>
+<p class="prio"><span class="lv p1">Probabilidad baja</span><strong>Pasar por encima.</strong> En la última clase dijo que no lo iba a ver (“nadie lo usa”). Tiene lámina propia, así que basta con saber la idea por si aparece en una pregunta corta.</p>
+<p>El profe lo presenta como el <b>algoritmo de la segunda oportunidad</b> (<i>Second Chance</i>). Busca estimar bastante bien la utilidad de las páginas con poco costo: <b>solo actúa cuando hay un page fault</b> (es tan simple como FIFO) y usa únicamente los bits V y U (láminas 16 y 17).</p>
+<div class="steps">
+<div class="step">Cuando se carga una página, el sistema la marca válida y útil: <b>V = 1, U = 1</b>.</div>
+<div class="step">En un page fault, examina las páginas presentes en orden circular.</div>
+<div class="step">Si una página es útil (U = 1), la pone como inútil (<b>U = 0</b>): tiene una segunda oportunidad de demostrar que es útil. Pasa a la siguiente.</div>
+<div class="step">La primera página con <b>U = 0</b> es la víctima: se descarga y queda con V = 0.</div>
+<div class="step">Si ninguna tenía U = 0, vuelve a la primera a la que le dio la segunda oportunidad (que ahora tiene U = 0): esa es la víctima.</div>
+</div>
+<p><b>Evaluación</b> (lámina 19): buen compromiso entre FIFO y LRU; toma en cuenta la utilidad, es más eficiente que FIFO y cuesta menos que LRU; solo cuesta en los page faults y en la primera carga; no necesita hardware especial. Sus problemas: cuesta más que FIFO y no toma bien en cuenta el <b>orden</b> de uso.</p>
+<p>Ejemplo con 3 marcos, en el formato de los libros (cada marco con su bit U como superíndice; el puntero marca dónde empieza el siguiente examen):</p>
+<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">2</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">5</td><td class="n">2</td><td class="n">4</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">2</td></tr><tr><th class="rh">M0</th><td class="f">2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td class="f">5<sup>1</sup></td><td>5<sup>1</sup></td><td>5<sup>1</sup></td><td>5<sup>1</sup></td><td class="f">3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>1</sup></td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>0</sup></td><td class="f">2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>0</sup></td><td>2<sup>1</sup></td><td>2<sup>0</sup></td><td>2<sup>1</sup></td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td></td><td class="f">1<sup>1</sup></td><td>1<sup>0</sup></td><td>1<sup>0</sup></td><td class="f">4<sup>1</sup></td><td>4<sup>1</sup></td><td>4<sup>0</sup></td><td>4<sup>0</sup></td><td class="f">5<sup>1</sup></td><td>5<sup>1</sup></td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td></td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td></td><td>2</td><td>3</td><td>1</td><td></td><td>5</td><td></td><td>4</td><td></td></tr><tr><th class="rh">puntero</th><td>M1</td><td>M2</td><td>M2</td><td>M0</td><td>M1</td><td>M2</td><td>M0</td><td>M0</td><td>M1</td><td>M1</td><td>M0</td><td>M0</td></tr></table></div><p class="tiny">8 fallos de página en 12 referencias (contando los iniciales).</p>
+<p class="tiny">Errata de la lámina 18: el recuadro dice “si no hay página con V == 0”; debe decir <b>U == 0</b>. Y ojo con los nombres: en Tanenbaum, NFU es otro algoritmo (un contador por página); lo que el profe llama NFU es la segunda oportunidad, también llamada reloj.</p>
+</section>
+
+<section id="lfu" data-nav="LFU: vectores de uso" data-p="1">
+<h2>LFU (Least Frequently Used): el historial de bits U</h2>
+<p class="prio"><span class="lv p1">Probabilidad baja</span><strong>Pasar por encima.</strong> El profe dijo que no lo iba a ver: “nadie lo usa”. Basta con entender la fórmula.</p>
+<p>Elige como víctima la página <b>menos frecuentemente usada</b> durante un intervalo N × Δt (lámina 20). Contar todos los accesos sería muy caro, así que cuenta por períodos: en cada período mira si la página tuvo al menos un acceso (su bit U).</p>
+<p>Mantiene <b>N vectores</b> con los bits U de cada página en los últimos N períodos; el vector 0 es el más reciente. Cada Δt hace un <b>shift a la derecha</b> de todos los vectores (lámina 21) y calcula la utilidad de cada página p, dándole más peso a lo reciente (lámina 22):</p>
+<p style="text-align:center">P<sub>u</sub><sup>p</sup> = Σ<sub>i = 0</sub><sup>N−1</sup> V<sub>i,p</sub> × 1/2<sup>i</sup></p>
+<p>La víctima es la página con el <b>P<sub>u</sub> más pequeño</b>. Ver el ejemplo <a class="inl" href="#R8">R8</a>, hecho con los valores de la lámina 21.</p>
+</section>
+
+<section id="local-global" data-nav="Local, global y necesidades variables" data-p="1">
+<h2>Reemplazo local o global, y necesidades que cambian</h2>
+<p class="prio"><span class="lv p1">Probabilidad baja</span><strong>Pasar por encima.</strong> Es el puente hacia el Working Set.</p>
+<p>En todos los algoritmos anteriores, el reemplazo ocurre solo dentro de las páginas del mismo proceso: son <b>reemplazos locales</b>. Un reemplazo <b>global</b> (buscar la víctima entre todas las páginas de todos los procesos) tendría un costo demasiado alto (lámina 23).</p>
+<p>La solución del profe es una <b>gestión jerárquica</b>: controlar dinámicamente el número de marcos asignados a cada proceso, gestionar qué páginas se cargan en esos marcos y estimar cuántos marcos le sirven a cada proceso usando los page faults (de ahí PFF, <i>Page Fault Frequency</i>).</p>
+<p>Durante su ejecución, un proceso <b>no siempre necesita la misma cantidad de páginas</b>: el número de páginas útiles cambia con el tiempo, por fases (lámina 24). Un número fijo de marcos sobra en unas fases y falta en otras.</p>
+</section>
+
+<section id="conjunto" data-nav="Working Set" data-p="3">
+<h2>Working Set (conjunto de trabajo)</h2>
+<p class="prio"><span class="lv p3">Confirmado · a mano</span><strong>Leer completo y hacer los ejercicios.</strong> El C2 2016 pidió ejecutarlo con una ventana de 4 (3.3) y su ventaja (3.4), y el profe lo nombró para este certamen.</p>
+<div class="box def"><div class="bt">Definición del profe (láminas 25 y 26)</div>
+<p>Se define una ventana de tiempo T = [t, t + Δt[. El <b>Working Set WS(t, Δt)</b> es el conjunto de las páginas útiles (usadas) durante esa ventana, y |WS(t, Δt)| es su número de páginas. <b>Solo estas páginas se quedan en memoria durante la ventana siguiente.</b></p></div>
+<p>Así el número de marcos de cada proceso <b>se adapta</b> a lo que de verdad necesita: la evaluación se hace de forma discreta, cada Δt. La ventana tiene que ser lo bastante grande para no generar inestabilidad y lo bastante pequeña para dar una idea realista.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · casi LRU, con limpieza preventiva<span class="ref">Audio 23 · última clase · 39:50 / 40:17 / 41:31</span></div>
+<p>Como LRU exige hardware, <i>“afortunadamente hay [un algoritmo] que se llama el Working Set que no es costoso”</i>: se hace por software, durante la interrupción del reloj, y es <i>“casi igual que LRU”</i> en eficiencia, con muy pocas diferencias; según el profe, es lo que usa la mayoría de los sistemas, como Linux. La idea: la cantidad de páginas útiles cambia en el tiempo, así que el Working Set mira cuáles se usaron en el último período, las mantiene, y las otras, <i>“aunque la memoria no esté saturada todavía”</i>, las saca. <i>“Va a ser casi lo mismo que LRU, pero además va a hacer limpieza preventiva, y a un costo menor”</i>.</p></div>
+<h4>Cómo lo construye el sistema (lámina 30)</h4>
+<div class="steps">
+<div class="step"><b>Al principio de la ventana</b>: pone U[p] = 0 para todas las páginas del proceso y arma un temporizador T<sub>WS</sub> = Δt.</div>
+<div class="step"><b>Durante la ventana</b>: la MMU pone U[p] = 1 en cada página accedida. El Working Set <b>crece a cada page fault</b>: si quedan marcos libres el sistema asigna uno; si no, le pide páginas a otro proceso.</div>
+<div class="step"><b>Cuando termina el temporizador</b> (interrupción): WS(t, Δt) = las páginas con U[p] = 1. Los marcos de las páginas con U[p] = 0 se liberan, y las liberadas que tienen D[p] = 1 se escriben en el disco.</div>
+</div>
+<h4>Ejecutarlo a mano</h4>
+<div class="steps">
+<div class="step">Corta la secuencia en <b>ventanas de Δt accesos</b>: 1 a Δt, Δt + 1 a 2Δt, etc. No se traslapan.</div>
+<div class="step">Dentro de cada ventana, hay un <b>page fault</b> si la página pedida no está en memoria. En memoria están el Working Set de la ventana anterior y las páginas que ya fallaron en esta.</div>
+<div class="step">Al cerrar la ventana, el nuevo Working Set son las páginas <b>distintas</b> que aparecieron en ella. Todo lo demás se libera.</div>
+<div class="step">Anota por ventana: los page faults, el WS y su tamaño |WS|, y qué se liberó.</div>
+</div>
+<p><b>Los ejemplos de las láminas 27 a 29</b>, con la secuencia 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5:</p>
+<div class="st">Δt = 4 (lámina 27: WS de 4, 3 y 4 páginas)</div>
+<div class="tw"><table class="mini wsv"><thead><tr><th>Ventana</th><th>Accesos</th><th>En memoria al empezar</th><th>Page faults</th><th>WS al final (U = 1)</th><th>Se liberan</th></tr></thead><tbody><tr><td>1 · t = 1–4</td><td class="mono"><b class="pfx">1</b> <b class="pfx">2</b> <b class="pfx">3</b> <b class="pfx">4</b></td><td>∅</td><td>4 (1, 2, 3, 4)</td><td><b>{1, 2, 3, 4}</b> · 4 pág.</td><td>—</td></tr><tr><td>2 · t = 5–8</td><td class="mono">1 2 <b class="pfx">5</b> 1</td><td>{1, 2, 3, 4}</td><td>1 (5)</td><td><b>{1, 2, 5}</b> · 3 pág.</td><td>{3, 4}</td></tr><tr><td>3 · t = 9–12</td><td class="mono">2 <b class="pfx">3</b> <b class="pfx">4</b> 5</td><td>{1, 2, 5}</td><td>2 (3, 4)</td><td><b>{2, 3, 4, 5}</b> · 4 pág.</td><td>{1}</td></tr></tbody></table></div><p class="tiny">7 page faults en 12 accesos con ventanas fijas de Δt = 4 (contando los iniciales). En negrita, el acceso que provocó cada fallo.</p>
+<div class="st">Δt = 6 (lámina 28: WS de 4 y 5 páginas)</div>
+<div class="tw"><table class="mini wsv"><thead><tr><th>Ventana</th><th>Accesos</th><th>En memoria al empezar</th><th>Page faults</th><th>WS al final (U = 1)</th><th>Se liberan</th></tr></thead><tbody><tr><td>1 · t = 1–6</td><td class="mono"><b class="pfx">1</b> <b class="pfx">2</b> <b class="pfx">3</b> <b class="pfx">4</b> 1 2</td><td>∅</td><td>4 (1, 2, 3, 4)</td><td><b>{1, 2, 3, 4}</b> · 4 pág.</td><td>—</td></tr><tr><td>2 · t = 7–12</td><td class="mono"><b class="pfx">5</b> 1 2 3 4 5</td><td>{1, 2, 3, 4}</td><td>1 (5)</td><td><b>{1, 2, 3, 4, 5}</b> · 5 pág.</td><td>—</td></tr></tbody></table></div><p class="tiny">5 page faults en 12 accesos con ventanas fijas de Δt = 6 (contando los iniciales). En negrita, el acceso que provocó cada fallo.</p>
+<div class="st">Δt = 12 (lámina 29: WS de 5 páginas)</div>
+<div class="tw"><table class="mini wsv"><thead><tr><th>Ventana</th><th>Accesos</th><th>En memoria al empezar</th><th>Page faults</th><th>WS al final (U = 1)</th><th>Se liberan</th></tr></thead><tbody><tr><td>1 · t = 1–12</td><td class="mono"><b class="pfx">1</b> <b class="pfx">2</b> <b class="pfx">3</b> <b class="pfx">4</b> 1 2 <b class="pfx">5</b> 1 2 3 4 5</td><td>∅</td><td>5 (1, 2, 3, 4, 5)</td><td><b>{1, 2, 3, 4, 5}</b> · 5 pág.</td><td>—</td></tr></tbody></table></div><p class="tiny">5 page faults en 12 accesos con ventanas fijas de Δt = 12 (contando los iniciales). En negrita, el acceso que provocó cada fallo.</p>
+<p>Con Δt = 4, en la segunda ventana el proceso solo usó las páginas 1, 2 y 5: las páginas 3 y 4 se liberan al cerrarla, y por eso vuelven a fallar en la tercera. Con una ventana más grande hay menos fallos, pero el proceso ocupa más marcos. La lámina 29 lo resume: <i>“una ventana más grande pero razonable permite una visión más realista de los accesos a las páginas para un proceso”</i>.</p>
+<h4>Ventajas (lámina 31)</h4>
+<ul>
+  <li>Toma en cuenta la utilidad de cada página: es prácticamente igual a LRU o FINUFO (en algunos casos genera más page faults).</li>
+  <li><b>Adapta dinámicamente el número de marcos</b> a las necesidades de cada proceso.</li>
+  <li>Su implementación es bastante fácil (solo el bit U y un temporizador).</li>
+  <li>Optimiza el uso del disco para el swap out: escribe <b>varias páginas de una sola vez</b>.</li>
+  <li>Desventajas, según la lámina: <i>“¡No hay!”</i></li>
+</ul>
+<p class="tiny">Los libros (Denning, Silberschatz, Stallings) y casi todos los videos usan una ventana <b>deslizante</b>: el conjunto de trabajo son las páginas de los últimos Δ accesos, recalculado en cada acceso. Con esa versión, el ejercicio del C2 2016 da 7 page faults en vez de 6. La lámina del profe evalúa el conjunto cada Δt, con ventanas fijas: usa esa.</p>
+</section>
+
+<section id="caida" data-nav="Multiprogramación y caída" data-p="3">
+<h2>Multiprogramación y caída del sistema</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> “El peor escenario y el efecto bola de nieve” fue la 3.5 del C2 2016, y “¿qué tasa permite aumentar el Working Set?”, la 3.4.</p>
+<div class="two">
+<div class="card"><h5>Tasa de multiprogramación baja</h5><p>Pocos procesos en memoria. Si hacen mucha E/S, el procesador pasa mucho tiempo IDLE porque no hay procesos listos.</p></div>
+<div class="card"><h5>Tasa de multiprogramación alta</h5><p>Muchos procesos, menos marcos para cada uno, más page faults y más uso del disco. El procesador también queda IDLE, pero esperando páginas del disco.</p></div>
+</div>
+<p>Hay que distinguir los dos IDLE: uno porque no hay procesos listos, y otro por la <b>sobrecarga de idas y vueltas de páginas con el disco</b> (lámina 32). Si la tasa de multiprogramación sube razonablemente, sube la ocupación del procesador. Si sube demasiado (lámina 33): hay un <b>aumento explosivo de los page faults</b>, tiempos de espera del disco prohibitivos que perjudican a todos los procesos, y una <b>brusca disminución</b> de la ocupación del procesador.</p>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 520 250" width="520" role="img" aria-label="Ocupación del procesador según el número de procesos">
+<line x1="60" y1="210" x2="500" y2="210" stroke="currentColor" stroke-opacity=".6"/>
+<line x1="60" y1="210" x2="60" y2="20" stroke="currentColor" stroke-opacity=".6"/>
+<rect x="125" y="30" width="70" height="180" fill="var(--accent-soft)"/>
+<line x1="60" y1="50" x2="500" y2="50" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="3 4"/>
+<line x1="60" y1="98" x2="500" y2="98" stroke="currentColor" stroke-opacity=".25" stroke-dasharray="3 4"/>
+<text x="50" y="54" text-anchor="end" font-size="12" fill="currentColor">1</text>
+<text x="50" y="102" text-anchor="end" font-size="12" fill="currentColor">0,7</text>
+<path d="M62 190 C 110 140, 140 110, 175 96 C 210 100, 225 150, 260 175 C 300 200, 380 205, 495 206" fill="none" stroke="var(--no)" stroke-width="2.5"/>
+<path d="M175 96 C 240 70, 330 55, 495 52" fill="none" stroke="currentColor" stroke-opacity=".5" stroke-dasharray="6 4"/>
+<text x="160" y="232" text-anchor="middle" font-size="12" fill="currentColor">zona óptima</text>
+<text x="490" y="232" text-anchor="end" font-size="12" fill="currentColor">número de procesos →</text>
+<text x="300" y="168" font-size="12" fill="var(--no)">caída (thrashing)</text>
+<text x="330" y="45" font-size="12" fill="currentColor" fill-opacity=".7">lo ideal, sin page faults</text>
+</svg></div>
+<figcaption>Lámina 34 redibujada: la ocupación del procesador sube con el número de procesos hasta una zona óptima (cerca de 0,7) y después cae bruscamente.</figcaption>
+</figure>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase (Unidad 1) · la bola de nieve<span class="ref">Planificación de tareas · Voz 002_1 · 26:38 / 30:36 / 31:05</span></div>
+<p>Cuando explicó el swapping dijo que un swap-in puede obligar a un swap-out, y ese a otro: <i>“el riesgo del swapping es que puede ser como una bola de nieve o un círculo vicioso”</i>, swap-in, swap-out, swap-in, swap-out, y el sistema deja de ser eficiente. Es el “efecto bola de nieve” de la pregunta 3.5 del C2 2016.</p></div>
+<p><b>Qué hace el sistema.</b> Bajar la tasa de multiprogramación (sacar procesos completos de la memoria) y dar a cada proceso los marcos de su Working Set. Como el Working Set libera las páginas que no se usaron en la ventana, no desperdicia marcos: caben más procesos sin caer, así que permite <b>aumentar la tasa de multiprogramación</b> y con ella la <b>tasa de ocupación del procesador</b>.</p>
+</section>
+
+<section id="nru" data-nav="Elegir con U y D: cuatro clases" data-p="2">
+<h2>Elegir la víctima con los bits U y D: las cuatro clases</h2>
+<p class="prio"><span class="lv p2">Probabilidad media</span><strong>Leer completo.</strong> El C2 2015 (2.3) pidió elegir qué páginas sacar con U y D. No está en la lámina de reemplazo, pero sale directo de la lámina 6.</p>
 <div class="tw"><table class="mini">
 <thead><tr><th>Clase</th><th>U</th><th>D</th><th>Significado</th></tr></thead>
 <tbody>
@@ -439,43 +657,37 @@
 <tr><td><b>2</b></td><td>1</td><td>0</td><td>Usada hace poco, limpia</td></tr>
 <tr><td><b>3</b></td><td>1</td><td>1</td><td>Usada y sucia: la peor víctima</td></tr>
 </tbody></table></div>
-<p>Se elige una víctima de la <b>clase más baja que no esté vacía</b> (dentro de la clase, al azar o en orden FIFO). La clase 1 existe porque el sistema borra el bit de uso periódicamente, pero no el de escritura. Wolf lo llama <b>segunda oportunidad mejorada</b>: el reloj recorre buscando primero (0, 0), después (0, 1), y así.</p>
+<p>Se elige una víctima de la <b>clase más baja que no esté vacía</b>. La clase 1 existe porque el sistema borra el bit U periódicamente (como el Working Set al empezar cada ventana), pero no el D.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · U y D no son contadores<span class="ref">Audio 23 · última clase · 03:16 / 04:08 / 14:15</span></div>
+<p>Las mejores candidatas son las no modificadas (D = 0): <i>“no necesito hacer realmente el swap out”</i>. Pero no basta: los bits U y D <i>“me indican solamente si hubo o no un acceso”</i>; si dos páginas tienen U = 1, <i>“no soy capaz de decir que esa tuvo dos accesos y la otra dos millones; no es un contador”</i>. Por eso hacen falta algoritmos que miren el orden o la frecuencia de uso.</p></div>
 </section>
 
-<section id="conjunto" data-nav="Conjunto de trabajo y thrashing" data-p="0">
-<h2>Conjunto de trabajo, thrashing y cómo evitarlo</h2>
-<p class="prio"><span class="lv p0">Por confirmar</span><strong>Leer completo si el tema entra.</strong> El thrashing sí está en la lámina de paginación; aquí está su explicación completa.</p>
-<div class="box def"><div class="bt">Conjunto de trabajo W(t, Δ)</div>
-<p>El conjunto de páginas distintas referenciadas en las últimas Δ referencias. Si un proceso tiene su conjunto de trabajo en memoria, casi no produce fallos.</p></div>
-<p><b>Por qué aparece el thrashing.</b> Cuando la suma de los conjuntos de trabajo de los procesos en memoria supera los marcos disponibles, cada proceso le quita marcos a otro, todos producen fallos y la CPU queda esperando al disco. Un sistema ingenuo ve la CPU ociosa y admite más procesos, lo que empeora todo: el colapso que menciona la lámina.</p>
-<p><b>Qué hace el sistema</b> (el “limitar la frecuencia de page faults” de la lámina 31):</p>
-<ul>
-  <li><b>Bajar el grado de multiprogramación</b>: descargar procesos completos (vuelve el swapping) para que a los demás les alcancen los marcos.</li>
-  <li><b>Asignar marcos según el conjunto de trabajo</b> de cada proceso.</li>
-  <li><b>Frecuencia de fallos (PFF)</b>: si un proceso falla demasiado, se le dan más marcos; si falla muy poco, se le quitan.</li>
-</ul>
-<p><b>Reemplazo local o global.</b> Global: la víctima puede ser de cualquier proceso (más flexible, pero un proceso no controla su propia tasa de fallos). Local: solo entre los marcos del mismo proceso.</p>
-</section>
-
-<section id="t4-receta" data-nav="Receta: simular una cadena" data-grp="Práctica">
-<h2>Receta para simular una cadena de referencias</h2>
+<section id="t4-receta" data-nav="Receta para el certamen" data-grp="Práctica">
+<h2>Receta para el certamen</h2>
 <div class="cols">
-<div class="card"><h5>La tabla</h5>
-<p>1. Una columna por referencia, una fila por marco, una fila de fallos.</p>
-<p>2. Si la página ya está: acierto, no cambia nada (en LRU, actualiza su “última vez”; en reloj, su bit queda en 1).</p>
-<p>3. Si no está y hay marco libre: se carga ahí (fallo).</p>
-<p>4. Si no hay marco libre: aplica la regla del algoritmo y anota la víctima.</p></div>
+<div class="card"><h5>FIFO y LRU</h5>
+<p>1. Una columna por acceso; arriba PF si falla; debajo la lista con tantas casillas como marcos.</p>
+<p>2. Acierto: FIFO no mueve nada; LRU sube la página arriba.</p>
+<p>3. Fallo: la nueva entra arriba; si la lista estaba llena, sale la de abajo (anótala como víctima).</p>
+<p>4. Cuenta los PF, incluidos los de la carga inicial, y dilo.</p></div>
+<div class="card"><h5>Working Set</h5>
+<p>1. Corta la secuencia en ventanas de Δt accesos.</p>
+<p>2. En cada ventana, PF si la página no está en el WS anterior ni falló antes en la misma ventana.</p>
+<p>3. Al cerrar: WS = páginas distintas de la ventana, |WS|, y las que se liberan (las sucias se escriben).</p>
+<p>4. Suma los PF de todas las ventanas.</p></div>
 <div class="card"><h5>La víctima, en una línea</h5>
+<p><b>Óptimo:</b> la que no se usará por más tiempo (no aplicable).</p>
 <p><b>FIFO:</b> la cargada hace más tiempo.</p>
-<p><b>OPT:</b> la que se usará más tarde (o nunca).</p>
 <p><b>LRU:</b> la usada hace más tiempo.</p>
-<p><b>Reloj:</b> la primera con bit 0 desde el puntero, apagando los 1.</p>
-<p><b>NRU:</b> la de clase (U, D) más baja.</p></div>
+<p><b>NFU del profe:</b> la primera con U = 0, apagando los U = 1.</p>
+<p><b>LFU:</b> la de menor Σ V<sub>i</sub>/2<sup>i</sup>.</p>
+<p><b>Working Set:</b> todas las no usadas en la ventana.</p></div>
 </div>
 </section>
 
 <section id="t4-videos" data-nav="Videos del tema">
 <h2>Videos del tema</h2>
+<p class="tiny">Ojo: los videos usan el formato de los libros (una fila por marco) y el Working Set con ventana deslizante. Sirven para entender la idea; para ejecutar a mano, usa el formato de esta página.</p>
 <p class="lead">Elegidos entre unos cuarenta candidatos. De cada uno se transcribió el audio para comprobar qué explica y en qué minuto; los marcados como recomendados son los que más se parecen a las láminas del profe.</p>
 <div class="box tip"><div class="bt">Cómo ver los videos doblados</div>
 <p>En los marcados “Audio en español (doblaje)”: ⚙ Configuración → <b>Pista de audio</b> → Español. Es un doblaje automático de YouTube; se entiende bien.</p></div>
@@ -555,32 +767,104 @@
 <p class="tiny">Descartado: “Memoria virtual: Thrashing (hiperpaginación)” del canal de Gunnar Wolf: es una exposición de estudiantes, más floja que el video de Elvira.</p>
 </section>
 
-<details class="ex" id="R1" data-nav="R1 · La cadena de Stallings">
-<summary>R1 · Cuatro algoritmos con la cadena de Stallings <span class="tag">verificado con un simulador</span></summary>
+<details class="ex" id="ex2016r" data-nav="C2 2016 · reemplazo completo">
+<summary>Certamen 2 2016-1 · sección 3 “Reemplazo de Páginas” completa <span class="tag">25 pts · 5 por pregunta · sin pauta · verificado</span></summary>
 <div class="body">
-<div class="enun"><div class="et">Enunciado</div><p>Tres marcos, cadena 2, 3, 2, 1, 5, 2, 4, 5, 3, 2, 5, 2. Cuenta los fallos con FIFO, OPT, LRU y reloj. ¿Cuál queda más cerca del óptimo?</p></div>
+<div class="enun"><div class="et">Enunciado</div>
+<p><b>3.1</b> ¿Para qué sirve un algoritmo de reemplazo de páginas? ¿Cuál es la página víctima? Considere la secuencia de accesos <b>1 | 2 | 3 | 1 | 1 | 4 | 5 | 2 | 1 | 2 | 3 | 1</b> y una memoria de solo <b>3 marcos</b>. <b>3.2</b> Ejecutar la secuencia con LRU: ¿cuántos page faults provoca? <b>3.3</b> Ejecutarla con Working Set con una ventana de 4 accesos: ¿cuántos page faults? <b>3.4</b> En el caso general, ¿cuál es la ventaja del Working Set para la gestión de la saturación de la memoria? ¿Qué tasa permite aumentar en el sistema operativo? <b>3.5</b> ¿Cuál es el peor escenario para un algoritmo de reemplazo de páginas? Explicar en particular el efecto bola de nieve.</p></div>
 <div class="sol">
-<div class="st">FIFO</div><div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">2</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">5</td><td class="n">2</td><td class="n">4</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">2</td></tr><tr><th class="rh">M0</th><td class="f">2</td><td>2</td><td>2</td><td>2</td><td class="f">5</td><td>5</td><td>5</td><td>5</td><td class="f">3</td><td>3</td><td>3</td><td>3</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">3</td><td>3</td><td>3</td><td>3</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">5</td><td>5</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td></td><td class="f">1</td><td>1</td><td>1</td><td class="f">4</td><td>4</td><td>4</td><td>4</td><td>4</td><td class="f">2</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td></td><td>2</td><td>3</td><td>1</td><td></td><td>5</td><td></td><td>2</td><td>4</td></tr></table></div><p class="tiny">9 fallos de página en 12 referencias (contando los iniciales).</p>
-<div class="st">OPT</div><div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">2</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">5</td><td class="n">2</td><td class="n">4</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">2</td></tr><tr><th class="rh">M0</th><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">4</td><td>4</td><td>4</td><td class="f">2</td><td>2</td><td>2</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td></td><td class="f">1</td><td class="f">5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td></td><td class="f">F</td><td></td><td></td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td></td><td>1</td><td></td><td>2</td><td></td><td></td><td>4</td><td></td><td></td></tr></table></div><p class="tiny">6 fallos de página en 12 referencias (contando los iniciales).</p>
-<div class="st">LRU</div><div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">2</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">5</td><td class="n">2</td><td class="n">4</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">2</td></tr><tr><th class="rh">M0</th><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">3</td><td>3</td><td>3</td><td>3</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">3</td><td>3</td><td>3</td><td class="f">5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td><td>5</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td></td><td class="f">1</td><td>1</td><td>1</td><td class="f">4</td><td>4</td><td>4</td><td class="f">2</td><td>2</td><td>2</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td></td><td></td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td></td><td>3</td><td></td><td>1</td><td></td><td>2</td><td>4</td><td></td><td></td></tr></table></div><p class="tiny">7 fallos de página en 12 referencias (contando los iniciales).</p>
-<div class="st">Reloj</div><div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">2</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">5</td><td class="n">2</td><td class="n">4</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">2</td></tr><tr><th class="rh">M0</th><td class="f">2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td class="f">5<sup>1</sup></td><td>5<sup>1</sup></td><td>5<sup>1</sup></td><td>5<sup>1</sup></td><td class="f">3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>1</sup></td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>1</sup></td><td>3<sup>0</sup></td><td class="f">2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>1</sup></td><td>2<sup>0</sup></td><td>2<sup>1</sup></td><td>2<sup>0</sup></td><td>2<sup>1</sup></td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td></td><td class="f">1<sup>1</sup></td><td>1<sup>0</sup></td><td>1<sup>0</sup></td><td class="f">4<sup>1</sup></td><td>4<sup>1</sup></td><td>4<sup>0</sup></td><td>4<sup>0</sup></td><td class="f">5<sup>1</sup></td><td>5<sup>1</sup></td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td class="f">F</td><td></td><td class="f">F</td><td></td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td></td><td>2</td><td>3</td><td>1</td><td></td><td>5</td><td></td><td>4</td><td></td></tr><tr><th class="rh">puntero</th><td>M1</td><td>M2</td><td>M2</td><td>M0</td><td>M1</td><td>M2</td><td>M0</td><td>M0</td><td>M1</td><td>M1</td><td>M0</td><td>M0</td></tr></table></div><p class="tiny">8 fallos de página en 12 referencias (contando los iniciales).</p>
-<p>OPT 6, LRU 7, reloj 8, FIFO 9 (los mismos de la figura de Stallings). LRU queda más cerca del óptimo, y el reloj, que lo aproxima con un solo bit, queda entre LRU y FIFO.</p>
+<div class="st">3.1</div><p>Cuando hay un page fault y la memoria está saturada (no queda ningún marco libre), el algoritmo elige qué página descargar para hacerle espacio a la que falta, buscando el menor costo de descarga y no tener que volver a cargarla enseguida. La <b>víctima</b> es la página elegida, a la que el sistema le hace un swap out: idealmente la que no se va a usar por más tiempo; en la práctica, una poco usada últimamente y, si se puede, limpia (D = 0).</p>
+<div class="st">3.2 · LRU con 3 marcos</div><div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">1</td><td class="n">1</td><td class="n">4</td><td class="n">5</td><td class="n">2</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">1</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="h">1</td><td class="h">1</td><td class="f">4</td><td class="f">5</td><td class="f">2</td><td class="f">1</td><td class="h">2</td><td class="f">3</td><td class="h">1</td></tr><tr class="pl"><th class="rh"></th><td></td><td>1</td><td>2</td><td>3</td><td>3</td><td>1</td><td>4</td><td>5</td><td>2</td><td>1</td><td>2</td><td>3</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td>1</td><td>2</td><td>2</td><td>3</td><td>1</td><td>4</td><td>5</td><td>5</td><td>1</td><td>2</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td>2</td><td>3</td><td>1</td><td>4</td><td></td><td>5</td><td></td></tr></table></div><p class="tiny">8 page faults en 12 accesos (contando los 3 de la carga inicial).</p>
+<p><b>8 page faults</b> (3 de la carga inicial y 5 reemplazos; víctimas 2, 3, 1, 4 y 5).</p>
+<div class="st">3.3 · Working Set con ventana de 4</div><div class="tw"><table class="mini wsv"><thead><tr><th>Ventana</th><th>Accesos</th><th>En memoria al empezar</th><th>Page faults</th><th>WS al final (U = 1)</th><th>Se liberan</th></tr></thead><tbody><tr><td>1 · t = 1–4</td><td class="mono"><b class="pfx">1</b> <b class="pfx">2</b> <b class="pfx">3</b> 1</td><td>∅</td><td>3 (1, 2, 3)</td><td><b>{1, 2, 3}</b> · 3 pág.</td><td>—</td></tr><tr><td>2 · t = 5–8</td><td class="mono">1 <b class="pfx">4</b> <b class="pfx">5</b> 2</td><td>{1, 2, 3}</td><td>2 (4, 5)</td><td><b>{1, 2, 4, 5}</b> · 4 pág.</td><td>{3}</td></tr><tr><td>3 · t = 9–12</td><td class="mono">1 2 <b class="pfx">3</b> 1</td><td>{1, 2, 4, 5}</td><td>1 (3)</td><td><b>{1, 2, 3}</b> · 3 pág.</td><td>{4, 5}</td></tr></tbody></table></div><p class="tiny">6 page faults en 12 accesos con ventanas fijas de Δt = 4 (contando los iniciales). En negrita, el acceso que provocó cada fallo.</p>
+<p><b>6 page faults</b>. Conviene comentar en la respuesta que con Working Set el número de marcos lo decide el algoritmo: en la segunda ventana el proceso llega a tener 5 páginas en memoria (el WS anterior {1, 2, 3} más el 4 y el 5), más que los 3 marcos del enunciado; se supone que el sistema le asigna marcos libres o se los pide a otro proceso, como dice la lámina 26.</p>
+<div class="st">3.4</div><p>El Working Set adapta dinámicamente el número de marcos de cada proceso a lo que de verdad usa: al final de cada ventana libera los marcos de las páginas que no se usaron, <b>antes</b> de que la memoria se sature y sin quitarle marcos a un proceso que los está usando, y escribe en el disco varias páginas de una vez. Al no desperdiciar marcos, caben más procesos en memoria sin caer en la bola de nieve: permite aumentar la <b>tasa de multiprogramación</b> y, con ella, la <b>tasa de ocupación del procesador</b>.</p>
+<div class="st">3.5</div><p>El peor escenario es elegir como víctima justo la página que se va a necesitar enseguida: el page fault siguiente la trae de vuelta y, para hacerle espacio, saca otra que también se necesita, que provoca otro page fault… Cada fallo provoca el siguiente, como una <b>bola de nieve</b>. Con mucha multiprogramación, los page faults aumentan de forma explosiva, todos los procesos esperan al disco y la ocupación del procesador cae bruscamente: la caída del sistema de las láminas 32 a 34.</p>
+</div></div>
+</details>
+
+<details class="ex" id="ex2015r" data-nav="C2 2015 · FIFO y LRU">
+<summary>Certamen 2 2015-1 · 2.5: FIFO y LRU con tres marcos <span class="tag">sin pauta · verificado con el simulador</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Las páginas virtuales de P0 se usaron en este orden: {3, 1, 2, 3, 3, 1, 4, 3, 4, 1, 3}, y el sistema dispone solo de 3 marcos. Cuando los 3 marcos están ocupados, debe elegir una víctima para un swap out. ¿Cuál es la página elegida por FIFO y por LRU? ¿Cuántos page faults genera cada uno?</p></div>
+<div class="sol">
+<div class="st">FIFO</div><div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">3</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">3</td><td class="n">1</td><td class="n">4</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">3</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">3</td><td class="f">1</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td class="f">4</td><td class="f">3</td><td>3</td><td class="f">1</td><td>1</td></tr><tr class="pl"><th class="rh"></th><td></td><td>3</td><td>1</td><td>1</td><td>1</td><td>1</td><td>2</td><td>4</td><td>4</td><td>3</td><td>3</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td>3</td><td>3</td><td>3</td><td>3</td><td>1</td><td>2</td><td>2</td><td>4</td><td>4</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td></td><td>3</td><td>1</td><td></td><td>2</td><td></td></tr></table></div><p class="tiny">6 page faults en 11 accesos (contando los 3 de la carga inicial).</p>
+<div class="st">LRU</div><div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">3</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">3</td><td class="n">1</td><td class="n">4</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">3</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td></td><td class="f">PF</td><td></td><td></td><td></td><td></td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">3</td><td class="f">1</td><td class="f">2</td><td class="h">3</td><td class="h">3</td><td class="h">1</td><td class="f">4</td><td class="h">3</td><td class="h">4</td><td class="h">1</td><td class="h">3</td></tr><tr class="pl"><th class="rh"></th><td></td><td>3</td><td>1</td><td>2</td><td>2</td><td>3</td><td>1</td><td>4</td><td>3</td><td>4</td><td>1</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td>3</td><td>1</td><td>1</td><td>2</td><td>3</td><td>1</td><td>1</td><td>3</td><td>4</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td></td><td>2</td><td></td><td></td><td></td><td></td></tr></table></div><p class="tiny">4 page faults en 11 accesos (contando los 3 de la carga inicial).</p>
+<p><b>La primera víctima</b> (cuando llega la página 4, con 3, 1 y 2 en memoria): FIFO saca la <b>3</b>, la primera que entró, aunque se acaba de usar dos veces; LRU saca la <b>2</b>, la que no se usa hace más tiempo. Con FIFO, sacar la 3 obliga a traerla de vuelta en el acceso siguiente, y eso arrastra otras dos víctimas (1 y 2).</p>
+<p><b>Page faults:</b> FIFO <b>6</b>, LRU <b>4</b> (contando los 3 iniciales).</p>
+</div></div>
+</details>
+
+<details class="ex" id="ex2014r" data-nav="C2 2014 · víctima y LRU">
+<summary>Certamen 2 2014-1 · 2.5 y 2.6: la página víctima y el LRU <span class="tag">sin pauta</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>En la función <code>do_page_fault()</code> (ver la <a class="inl" href="3-Paginacion.html#ex2014v">página 3</a>), <code>do_swap_out()</code> libera un marco. <b>2.5</b> ¿Qué característica debe tener la página víctima de un algoritmo de reemplazo de páginas? <b>2.6</b> Para <code>do_swap_out()</code> el sistema usa LRU. Explicar cómo funciona.</p></div>
+<div class="sol">
+<div class="st">2.5</div><p>Idealmente, ser la página que <b>no se va a usar por más tiempo</b> (así no hay un page fault con ella justo después). Como el futuro no se conoce, se busca una página <b>poco usada últimamente</b> (U = 0 o usada hace mucho) y, si se puede, <b>limpia</b> (D = 0), para no tener que escribirla en el disco.</p>
+<div class="st">2.6</div><p>LRU (<i>Least Recently Used</i>) mantiene una lista de las páginas ordenada por uso: R−1 es la usada más recientemente y R−k la usada hace más tiempo. En cada acceso a la página R−i, la lista rota entre R−1 y R−i (esa página pasa arriba). Con k marcos están en memoria R−1 a R−k, y en un page fault la víctima es R−k. Se apoya en la localidad: lo que no se usó hace rato probablemente no se use pronto. Su problema es que hay que actualizar la lista en <b>cada</b> acceso, lo que exige hardware (un TLB ordenado); si no, se aproxima por software.</p>
+</div></div>
+</details>
+
+<details class="ex" id="R1" data-nav="R1 · Las láminas con 3 marcos">
+<summary>R1 · La secuencia de las láminas 11 y 13, con 3 marcos <span class="tag">verificado con el simulador</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Secuencia 1, 2, 3, 4, 1, 2, 5, 1, 2, 3 (la de las láminas), pero con <b>3 marcos</b>. Ejecuta FIFO y LRU. ¿Cuántos page faults da cada uno? ¿Cambia algo respecto de los 4 marcos de las láminas?</p></div>
+<div class="sol">
+<div class="st">FIFO</div><div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="f">4</td><td class="f">1</td><td class="f">2</td><td class="f">5</td><td>5</td><td>5</td><td class="f">3</td></tr><tr class="pl"><th class="rh"></th><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>2</td><td>2</td><td>2</td><td>5</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>1</td><td>1</td><td>2</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td></td><td></td><td>1</td></tr></table></div><p class="tiny">8 page faults en 10 accesos (contando los 3 de la carga inicial).</p>
+<div class="st">LRU</div><div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="f">4</td><td class="f">1</td><td class="f">2</td><td class="f">5</td><td class="h">1</td><td class="h">2</td><td class="f">3</td></tr><tr class="pl"><th class="rh"></th><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>2</td><td>5</td><td>1</td><td>2</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>2</td><td>5</td><td>1</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td></td><td></td><td>5</td></tr></table></div><p class="tiny">8 page faults en 10 accesos (contando los 3 de la carga inicial).</p>
+<p>Los dos dan <b>8</b>. Con 3 marcos, LRU pierde su ventaja: la secuencia recorre 4 páginas seguidas y cada una sale justo antes de volver a usarse. Con 4 marcos, LRU baja a 6 y FIFO se queda en 8.</p>
 </div></div>
 </details>
 
 <details class="ex" id="R2" data-nav="R2 · LRU no tiene anomalía">
 <summary>R2 · La cadena de Belady con LRU <span class="tag">verificado</span></summary>
 <div class="body">
-<div class="enun"><div class="et">Enunciado</div><p>Con la cadena 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5, simula LRU con 3 y con 4 marcos. ¿Aparece la anomalía?</p></div>
+<div class="enun"><div class="et">Enunciado</div><p>Con la secuencia 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5, ejecuta LRU con 3 y con 4 marcos. ¿Aparece la anomalía?</p></div>
 <div class="sol">
-<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">5</td></tr><tr><th class="rh">M0</th><td class="f">1</td><td>1</td><td>1</td><td class="f">4</td><td>4</td><td>4</td><td class="f">5</td><td>5</td><td>5</td><td class="f">3</td><td>3</td><td>3</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">2</td><td>2</td><td>2</td><td class="f">1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="f">4</td><td>4</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">3</td><td>3</td><td>3</td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td class="f">5</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td></td><td></td><td>5</td><td>1</td><td>2</td></tr></table></div><p class="tiny">10 fallos de página en 12 referencias (contando los iniciales).</p>
-<div class="tw"><table class="rp"><tr><th class="rh">ref.</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">5</td></tr><tr><th class="rh">M0</th><td class="f">1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td class="f">5</td></tr><tr><th class="rh">M1</th><td class="f"></td><td class="f">2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td></tr><tr><th class="rh">M2</th><td class="f"></td><td></td><td class="f">3</td><td>3</td><td>3</td><td>3</td><td class="f">5</td><td>5</td><td>5</td><td>5</td><td class="f">4</td><td>4</td></tr><tr><th class="rh">M3</th><td class="f"></td><td></td><td></td><td class="f">4</td><td>4</td><td>4</td><td>4</td><td>4</td><td>4</td><td class="f">3</td><td>3</td><td>3</td></tr><tr><th class="rh">fallo</th><td class="f">F</td><td class="f">F</td><td class="f">F</td><td class="f">F</td><td></td><td></td><td class="f">F</td><td></td><td></td><td class="f">F</td><td class="f">F</td><td class="f">F</td></tr><tr><th class="rh">víctima</th><td></td><td></td><td></td><td></td><td></td><td></td><td>3</td><td></td><td></td><td>4</td><td>5</td><td>1</td></tr></table></div><p class="tiny">8 fallos de página en 12 referencias (contando los iniciales).</p>
-<p>Con LRU, pasar de 3 a 4 marcos baja los fallos. No hay anomalía; FIFO, con la misma cadena, subía de 9 a 10.</p>
+<div class="st">LRU con 3 marcos</div><div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">5</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="f">4</td><td class="f">1</td><td class="f">2</td><td class="f">5</td><td class="h">1</td><td class="h">2</td><td class="f">3</td><td class="f">4</td><td class="f">5</td></tr><tr class="pl"><th class="rh"></th><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>2</td><td>5</td><td>1</td><td>2</td><td>3</td><td>4</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>2</td><td>5</td><td>1</td><td>2</td><td>3</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td></td><td></td><td>5</td><td>1</td><td>2</td></tr></table></div><p class="tiny">10 page faults en 12 accesos (contando los 3 de la carga inicial).</p>
+<div class="st">LRU con 4 marcos</div><div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">1</td><td class="n">2</td><td class="n">5</td><td class="n">1</td><td class="n">2</td><td class="n">3</td><td class="n">4</td><td class="n">5</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">1</td><td class="f">2</td><td class="f">3</td><td class="f">4</td><td class="h">1</td><td class="h">2</td><td class="f">5</td><td class="h">1</td><td class="h">2</td><td class="f">3</td><td class="f">4</td><td class="f">5</td></tr><tr class="pl"><th class="rh"></th><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>2</td><td>5</td><td>1</td><td>2</td><td>3</td><td>4</td></tr><tr class="pl"><th class="rh"></th><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>1</td><td>2</td><td>5</td><td>1</td><td>2</td><td>3</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td><td>4</td><td>4</td><td>4</td><td>5</td><td>1</td><td>2</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td></td><td></td><td>3</td><td></td><td></td><td>4</td><td>5</td><td>1</td></tr></table></div><p class="tiny">8 page faults en 12 accesos (contando los 4 de la carga inicial).</p>
+<p>Con LRU, pasar de 3 a 4 marcos baja los page faults de 10 a 8: no hay anomalía. FIFO, con la misma secuencia, subía de 9 a 10 (ver <a class="inl" href="#belady">Belady</a>).</p>
 </div></div>
 </details>
 
-<details class="ex" id="R3" data-nav="R3 · Elegir víctima con U y D">
-<summary>R3 · Elegir la víctima con los bits U y D <span class="tag">nuevo</span></summary>
+<details class="ex" id="R3" data-nav="R3 · Secuencia larga: FIFO, LRU, WS">
+<summary>R3 · La secuencia clásica de 20 accesos con FIFO, LRU y Working Set <span class="tag">verificado con el simulador</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Secuencia 7, 0, 1, 2, 0, 3, 0, 4, 2, 3, 0, 3, 2, 1, 2, 0, 1, 7, 0, 1 (la de Silberschatz y Wolf). a) FIFO con 3 marcos. b) LRU con 3 marcos. c) Working Set con Δt = 5: el WS de cada ventana y los page faults.</p></div>
+<div class="sol">
+<div class="st">a) FIFO</div><div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">7</td><td class="n">0</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">3</td><td class="n">0</td><td class="n">4</td><td class="n">2</td><td class="n">3</td><td class="n">0</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">1</td><td class="n">7</td><td class="n">0</td><td class="n">1</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">7</td><td class="f">0</td><td class="f">1</td><td class="f">2</td><td>2</td><td class="f">3</td><td class="f">0</td><td class="f">4</td><td class="f">2</td><td class="f">3</td><td class="f">0</td><td>0</td><td>0</td><td class="f">1</td><td class="f">2</td><td>2</td><td>2</td><td class="f">7</td><td class="f">0</td><td class="f">1</td></tr><tr class="pl"><th class="rh"></th><td></td><td>7</td><td>0</td><td>1</td><td>1</td><td>2</td><td>3</td><td>0</td><td>4</td><td>2</td><td>3</td><td>3</td><td>3</td><td>0</td><td>1</td><td>1</td><td>1</td><td>2</td><td>7</td><td>0</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td>7</td><td>0</td><td>0</td><td>1</td><td>2</td><td>3</td><td>0</td><td>4</td><td>2</td><td>2</td><td>2</td><td>3</td><td>0</td><td>0</td><td>0</td><td>1</td><td>2</td><td>7</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td>7</td><td></td><td>0</td><td>1</td><td>2</td><td>3</td><td>0</td><td>4</td><td></td><td></td><td>2</td><td>3</td><td></td><td></td><td>0</td><td>1</td><td>2</td></tr></table></div><p class="tiny">15 page faults en 20 accesos (contando los 3 de la carga inicial).</p>
+<div class="st">b) LRU</div><div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">7</td><td class="n">0</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">3</td><td class="n">0</td><td class="n">4</td><td class="n">2</td><td class="n">3</td><td class="n">0</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">2</td><td class="n">0</td><td class="n">1</td><td class="n">7</td><td class="n">0</td><td class="n">1</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td></td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td></td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">7</td><td class="f">0</td><td class="f">1</td><td class="f">2</td><td class="h">0</td><td class="f">3</td><td class="h">0</td><td class="f">4</td><td class="f">2</td><td class="f">3</td><td class="f">0</td><td class="h">3</td><td class="h">2</td><td class="f">1</td><td class="h">2</td><td class="f">0</td><td class="h">1</td><td class="f">7</td><td class="h">0</td><td class="h">1</td></tr><tr class="pl"><th class="rh"></th><td></td><td>7</td><td>0</td><td>1</td><td>2</td><td>0</td><td>3</td><td>0</td><td>4</td><td>2</td><td>3</td><td>0</td><td>3</td><td>2</td><td>1</td><td>2</td><td>0</td><td>1</td><td>7</td><td>0</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td>7</td><td>0</td><td>1</td><td>2</td><td>2</td><td>3</td><td>0</td><td>4</td><td>2</td><td>2</td><td>0</td><td>3</td><td>3</td><td>1</td><td>2</td><td>0</td><td>1</td><td>7</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td>7</td><td></td><td>1</td><td></td><td>2</td><td>3</td><td>0</td><td>4</td><td></td><td></td><td>0</td><td></td><td>3</td><td></td><td>2</td><td></td><td></td></tr></table></div><p class="tiny">12 page faults en 20 accesos (contando los 3 de la carga inicial).</p>
+<div class="st">c) Working Set, Δt = 5</div><div class="tw"><table class="mini wsv"><thead><tr><th>Ventana</th><th>Accesos</th><th>En memoria al empezar</th><th>Page faults</th><th>WS al final (U = 1)</th><th>Se liberan</th></tr></thead><tbody><tr><td>1 · t = 1–5</td><td class="mono"><b class="pfx">7</b> <b class="pfx">0</b> <b class="pfx">1</b> <b class="pfx">2</b> 0</td><td>∅</td><td>4 (7, 0, 1, 2)</td><td><b>{0, 1, 2, 7}</b> · 4 pág.</td><td>—</td></tr><tr><td>2 · t = 6–10</td><td class="mono"><b class="pfx">3</b> 0 <b class="pfx">4</b> 2 3</td><td>{0, 1, 2, 7}</td><td>2 (3, 4)</td><td><b>{0, 2, 3, 4}</b> · 4 pág.</td><td>{1, 7}</td></tr><tr><td>3 · t = 11–15</td><td class="mono">0 3 2 <b class="pfx">1</b> 2</td><td>{0, 2, 3, 4}</td><td>1 (1)</td><td><b>{0, 1, 2, 3}</b> · 4 pág.</td><td>{4}</td></tr><tr><td>4 · t = 16–20</td><td class="mono">0 1 <b class="pfx">7</b> 0 1</td><td>{0, 1, 2, 3}</td><td>1 (7)</td><td><b>{0, 1, 7}</b> · 3 pág.</td><td>{2, 3}</td></tr></tbody></table></div><p class="tiny">8 page faults en 20 accesos con ventanas fijas de Δt = 5 (contando los iniciales). En negrita, el acceso que provocó cada fallo.</p>
+<p>FIFO 15, LRU 12 y Working Set 8 (pero con hasta 6 páginas en memoria en la segunda ventana, contra 3 marcos fijos). El 0 se usa en las cuatro ventanas y por eso el Working Set nunca lo saca; FIFO lo saca tres veces y LRU dos.</p>
+</div></div>
+</details>
+
+<details class="ex" id="R4" data-nav="R4 · La secuencia de Stallings">
+<summary>R4 · FIFO, LRU y Working Set con la secuencia de Stallings <span class="tag">verificado con el simulador</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Secuencia 2, 3, 2, 1, 5, 2, 4, 5, 3, 2, 5, 2. a) FIFO y LRU con 3 marcos. b) Working Set con Δt = 4 y con Δt = 3. ¿Qué pasa con el tamaño del Working Set?</p></div>
+<div class="sol">
+<div class="st">FIFO</div><div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">2</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">5</td><td class="n">2</td><td class="n">4</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">2</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td></tr><tr class="pl"><th class="rh">FIFO ↑</th><td class="f">2</td><td class="f">3</td><td>3</td><td class="f">1</td><td class="f">5</td><td class="f">2</td><td class="f">4</td><td>4</td><td class="f">3</td><td>3</td><td class="f">5</td><td class="f">2</td></tr><tr class="pl"><th class="rh"></th><td></td><td>2</td><td>2</td><td>3</td><td>1</td><td>5</td><td>2</td><td>2</td><td>4</td><td>4</td><td>3</td><td>5</td></tr><tr class="pl"><th class="rh">FIFO ↓</th><td></td><td></td><td></td><td>2</td><td>3</td><td>1</td><td>5</td><td>5</td><td>2</td><td>2</td><td>4</td><td>3</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td>2</td><td>3</td><td>1</td><td></td><td>5</td><td></td><td>2</td><td>4</td></tr></table></div><p class="tiny">9 page faults en 12 accesos (contando los 3 de la carga inicial).</p>
+<div class="st">LRU</div><div class="tw"><table class="rp pila"><tr><th class="rh">acceso</th><td class="n">2</td><td class="n">3</td><td class="n">2</td><td class="n">1</td><td class="n">5</td><td class="n">2</td><td class="n">4</td><td class="n">5</td><td class="n">3</td><td class="n">2</td><td class="n">5</td><td class="n">2</td></tr><tr><th class="rh">page fault</th><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td><td></td><td class="f">PF</td><td></td><td class="f">PF</td><td class="f">PF</td><td></td><td></td></tr><tr class="pl"><th class="rh">LRU ↑</th><td class="f">2</td><td class="f">3</td><td class="h">2</td><td class="f">1</td><td class="f">5</td><td class="h">2</td><td class="f">4</td><td class="h">5</td><td class="f">3</td><td class="f">2</td><td class="h">5</td><td class="h">2</td></tr><tr class="pl"><th class="rh"></th><td></td><td>2</td><td>3</td><td>2</td><td>1</td><td>5</td><td>2</td><td>4</td><td>5</td><td>3</td><td>2</td><td>5</td></tr><tr class="pl"><th class="rh">LRU ↓</th><td></td><td></td><td></td><td>3</td><td>2</td><td>1</td><td>5</td><td>2</td><td>4</td><td>5</td><td>3</td><td>3</td></tr><tr><th class="rh">sale</th><td></td><td></td><td></td><td></td><td>3</td><td></td><td>1</td><td></td><td>2</td><td>4</td><td></td><td></td></tr></table></div><p class="tiny">7 page faults en 12 accesos (contando los 3 de la carga inicial).</p>
+<div class="st">Working Set, Δt = 4</div><div class="tw"><table class="mini wsv"><thead><tr><th>Ventana</th><th>Accesos</th><th>En memoria al empezar</th><th>Page faults</th><th>WS al final (U = 1)</th><th>Se liberan</th></tr></thead><tbody><tr><td>1 · t = 1–4</td><td class="mono"><b class="pfx">2</b> <b class="pfx">3</b> 2 <b class="pfx">1</b></td><td>∅</td><td>3 (2, 3, 1)</td><td><b>{1, 2, 3}</b> · 3 pág.</td><td>—</td></tr><tr><td>2 · t = 5–8</td><td class="mono"><b class="pfx">5</b> 2 <b class="pfx">4</b> 5</td><td>{1, 2, 3}</td><td>2 (5, 4)</td><td><b>{2, 4, 5}</b> · 3 pág.</td><td>{1, 3}</td></tr><tr><td>3 · t = 9–12</td><td class="mono"><b class="pfx">3</b> 2 5 2</td><td>{2, 4, 5}</td><td>1 (3)</td><td><b>{2, 3, 5}</b> · 3 pág.</td><td>{4}</td></tr></tbody></table></div><p class="tiny">6 page faults en 12 accesos con ventanas fijas de Δt = 4 (contando los iniciales). En negrita, el acceso que provocó cada fallo.</p>
+<div class="st">Working Set, Δt = 3</div><div class="tw"><table class="mini wsv"><thead><tr><th>Ventana</th><th>Accesos</th><th>En memoria al empezar</th><th>Page faults</th><th>WS al final (U = 1)</th><th>Se liberan</th></tr></thead><tbody><tr><td>1 · t = 1–3</td><td class="mono"><b class="pfx">2</b> <b class="pfx">3</b> 2</td><td>∅</td><td>2 (2, 3)</td><td><b>{2, 3}</b> · 2 pág.</td><td>—</td></tr><tr><td>2 · t = 4–6</td><td class="mono"><b class="pfx">1</b> <b class="pfx">5</b> 2</td><td>{2, 3}</td><td>2 (1, 5)</td><td><b>{1, 2, 5}</b> · 3 pág.</td><td>{3}</td></tr><tr><td>3 · t = 7–9</td><td class="mono"><b class="pfx">4</b> 5 <b class="pfx">3</b></td><td>{1, 2, 5}</td><td>2 (4, 3)</td><td><b>{3, 4, 5}</b> · 3 pág.</td><td>{1, 2}</td></tr><tr><td>4 · t = 10–12</td><td class="mono"><b class="pfx">2</b> 5 2</td><td>{3, 4, 5}</td><td>1 (2)</td><td><b>{2, 5}</b> · 2 pág.</td><td>{3, 4}</td></tr></tbody></table></div><p class="tiny">7 page faults en 12 accesos con ventanas fijas de Δt = 3 (contando los iniciales). En negrita, el acceso que provocó cada fallo.</p>
+<p>FIFO 9, LRU 7. Con Δt = 4, el Working Set da 6 page faults y tiene 3 páginas al cerrar cada ventana (durante la segunda llega a haber 5 en memoria, porque el 1 y el 3 solo se liberan al cerrarla); con Δt = 3 da 7, porque las ventanas cortas liberan páginas que se vuelven a usar en la ventana siguiente (como el 2). Es lo que dice la lámina 25: la ventana no puede ser demasiado pequeña.</p>
+</div></div>
+</details>
+
+<details class="ex" id="R5" data-nav="R5 · Working Set con escrituras">
+<summary>R5 · Working Set con bits D: qué se libera y qué se escribe en el disco <span class="tag">nuevo · verificado</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Secuencia de 16 accesos con Δt = 4; los marcados con * son escrituras: 1, 2*, 1, 3 | 2, 4, 4*, 1 | 5*, 1, 2, 5 | 3, 3, 4, 1. a) Page faults y Working Set de cada ventana. b) Al final de cada ventana, ¿qué marcos se liberan y cuáles de esas páginas hay que escribir en el disco?</p></div>
+<div class="sol">
+<div class="tw"><table class="mini wsv"><thead><tr><th>Ventana</th><th>Accesos</th><th>En memoria al empezar</th><th>Page faults</th><th>WS al final (U = 1)</th><th>Se liberan</th></tr></thead><tbody><tr><td>1 · t = 1–4</td><td class="mono"><b class="pfx">1</b> <b class="pfx">2</b> 1 <b class="pfx">3</b></td><td>∅</td><td>3 (1, 2, 3)</td><td><b>{1, 2, 3}</b> · 3 pág.</td><td>—</td></tr><tr><td>2 · t = 5–8</td><td class="mono">2 <b class="pfx">4</b> 4 1</td><td>{1, 2, 3}</td><td>1 (4)</td><td><b>{1, 2, 4}</b> · 3 pág.</td><td>{3}</td></tr><tr><td>3 · t = 9–12</td><td class="mono"><b class="pfx">5</b> 1 2 5</td><td>{1, 2, 4}</td><td>1 (5)</td><td><b>{1, 2, 5}</b> · 3 pág.</td><td>{4}</td></tr><tr><td>4 · t = 13–16</td><td class="mono"><b class="pfx">3</b> 3 <b class="pfx">4</b> 1</td><td>{1, 2, 5}</td><td>2 (3, 4)</td><td><b>{1, 3, 4}</b> · 3 pág.</td><td>{2, 5}</td></tr></tbody></table></div><p class="tiny">7 page faults en 16 accesos con ventanas fijas de Δt = 4 (contando los iniciales). En negrita, el acceso que provocó cada fallo.</p>
+<p><b>a)</b> 7 page faults; el Working Set tiene 3 páginas en todas las ventanas.</p>
+<p><b>b)</b> El bit D se pone en 1 con la escritura y no se borra al empezar la ventana (solo U se borra). Fin de la ventana 2: se libera la 3, que nunca se escribió (D = 0): no va al disco. Fin de la ventana 3: se libera la 4, escrita en t = 7 (D = 1): se escribe. Fin de la ventana 4: se liberan la 2 (escrita en t = 2) y la 5 (escrita en t = 9), las dos con D = 1: se escriben juntas, en una sola operación. Es la ventaja de la lámina 31: el swap out de varias páginas de una vez.</p>
+</div></div>
+</details>
+
+<details class="ex" id="R6" data-nav="R6 · Elegir víctima con U y D">
+<summary>R6 · Elegir la víctima con los bits U y D <span class="tag">nuevo</span></summary>
 <div class="body">
 <div class="enun"><div class="et">Enunciado</div><p>Páginas en memoria (U, D): A (1, 1) · B (0, 1) · C (1, 0) · D (0, 1). a) ¿Qué clase tiene cada una y cuál sale? b) Si además hubiera E (0, 0), ¿cuál saldría? c) ¿Cuántas transferencias de disco cuesta el fallo en cada caso?</p></div>
 <div class="sol">
@@ -590,35 +874,37 @@
 </div></div>
 </details>
 
-<details class="ex" id="R4" data-nav="R4 · Conjunto de trabajo">
-<summary>R4 · Calcular el conjunto de trabajo <span class="tag">nuevo</span></summary>
-<div class="body">
-<div class="enun"><div class="et">Enunciado</div><p>Cadena (t = 1 a 12): 1, 2, 1, 3, 2, 4, 4, 4, 4, 5, 5, 4. Con Δ = 4: a) W en t = 6. b) W en t = 12. c) Si hay 3 marcos para este proceso, ¿cuándo esperas más fallos?</p></div>
-<div class="sol">
-<p><b>a)</b> Referencias 3 a 6: 1, 3, 2, 4 → W = {1, 2, 3, 4} (4 páginas).</p>
-<p><b>b)</b> Referencias 9 a 12: 4, 5, 5, 4 → W = {4, 5} (2 páginas).</p>
-<p><b>c)</b> Al comienzo, cuando el conjunto de trabajo (4 páginas) no cabe en 3 marcos. Al final el proceso vive en 2 páginas y le sobran marcos.</p>
-</div></div>
-</details>
-
-<details class="ex" id="R5" data-nav="R5 · Thrashing, conceptual">
-<summary>R5 · El sistema que se ahoga <span class="tag">nuevo · pregunta conceptual</span></summary>
+<details class="ex" id="R7" data-nav="R7 · Caída del sistema, conceptual">
+<summary>R7 · El sistema que se ahoga <span class="tag">nuevo · pregunta conceptual</span></summary>
 <div class="body">
 <div class="enun"><div class="et">Enunciado</div><p>Un sistema tiene la CPU al 15 % y el disco de swap al 100 %. El administrador decide admitir más procesos para “aprovechar la CPU”. ¿Qué está pasando y por qué la decisión es mala? ¿Qué debería hacer el sistema?</p></div>
 <div class="sol">
-<p>Está en <b>thrashing</b>: la suma de los conjuntos de trabajo supera los marcos, así que los procesos pasan el tiempo en page faults (bloqueados esperando al disco). Más procesos significa menos marcos por proceso y todavía más fallos. Hay que hacer lo contrario: bajar el grado de multiprogramación (descargar procesos completos) y repartir los marcos según el conjunto de trabajo o la frecuencia de fallos de cada uno.</p>
+<p>El procesador está IDLE, pero no porque falten procesos listos: está esperando páginas del disco. Es la caída de la lámina 34: la tasa de multiprogramación pasó la zona óptima, cada proceso tiene muy pocos marcos y los page faults aumentan de forma explosiva (la bola de nieve). Admitir más procesos deja todavía menos marcos por proceso y empeora la caída. Hay que hacer lo contrario: bajar la tasa de multiprogramación (sacar procesos completos de la memoria) y repartir los marcos según el Working Set de cada proceso.</p>
+</div></div>
+</details>
+
+<details class="ex" id="R8" data-nav="R8 · LFU con la lámina 21">
+<summary>R8 · Calcular la utilidad P<sub>u</sub> de LFU <span class="tag">nuevo · con los valores de la lámina 21</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Con los 4 primeros vectores de la lámina 21 (Vec 0 es el más reciente): Page 0 = 1, 0, 0, 1 · Page 1 = 0, 1, 1, 0 · Page p = 0, 0, 1, 0 · Page q = 1, 1, 1, 1 · Page P−1 = 0, 1, 0, 0. Calcula P<sub>u</sub> de cada página. ¿Cuál es la víctima?</p></div>
+<div class="sol">
+<p>Los pesos son 1, 1/2, 1/4 y 1/8. Page 0 = 1 + 1/8 = <b>1,125</b>. Page 1 = 1/2 + 1/4 = <b>0,75</b>. Page p = 1/4 = <b>0,25</b>. Page q = 1 + 1/2 + 1/4 + 1/8 = <b>1,875</b>. Page P−1 = 1/2 = <b>0,5</b>.</p>
+<p>La víctima es la <b>página p</b>, con el P<sub>u</sub> más pequeño. Fíjate que Page 1 se usó en dos períodos y Page 0 también, pero Page 0 se usó en el más reciente: por eso vale más.</p>
 </div></div>
 </details>
 
 <section id="t4-preguntas" data-nav="Preguntas del tema">
 <h2>Preguntas del tema</h2>
 <p class="lead">Tapa la respuesta y contesta en voz alta.</p>
-<details class="ex"><summary>¿Por qué el algoritmo óptimo no se puede implementar?</summary><div class="body"><p>Porque necesita saber cuándo se va a usar cada página en el futuro. Solo sirve como referencia para comparar otros algoritmos.</p></div></details>
-<details class="ex"><summary>¿Por qué LRU es caro y cómo se aproxima?</summary><div class="body"><p>Porque hay que registrar el momento de cada acceso a memoria. Se aproxima con un bit de referencia que pone la MMU y que el sistema borra periódicamente (reloj, NRU).</p></div></details>
-<details class="ex"><summary>¿Qué es la anomalía de Belady?</summary><div class="body"><p>Que con FIFO, para algunas cadenas, aumentar los marcos aumenta los fallos. LRU y OPT no la tienen.</p></div></details>
-<details class="ex"><summary>¿Por qué el reloj se llama “segunda oportunidad”?</summary><div class="body"><p>Porque una página con bit de referencia en 1 no sale: se le apaga el bit y el puntero sigue. Solo sale si en la siguiente pasada sigue con el bit en 0.</p></div></details>
-<details class="ex"><summary>¿Por qué conviene sacar una página limpia antes que una sucia?</summary><div class="body"><p>Porque la limpia no hay que escribirla en el disco: el fallo cuesta una transferencia en vez de dos.</p></div></details>
-<details class="ex"><summary>¿Qué es el thrashing y cómo se evita?</summary><div class="body"><p>El sistema produce page faults todo el tiempo porque los procesos no tienen sus conjuntos de trabajo en memoria. Se evita bajando el grado de multiprogramación y asignando marcos según el conjunto de trabajo o la frecuencia de fallos.</p></div></details>
+<details class="ex"><summary>¿Existe el algoritmo de reemplazo óptimo? ¿Se puede aplicar?</summary><div class="body"><p>Existe (sacar la página que no se usará por más tiempo), pero necesita conocer a priori la secuencia de accesos de cada proceso, y hay procesos no deterministas. Es imposible aplicarlo: el sistema usa aproximaciones.</p></div></details>
+<details class="ex"><summary>En FIFO, ¿qué pasa con la lista cuando hay un acierto? ¿Y en LRU?</summary><div class="body"><p>En FIFO, nada: la lista solo cambia con los page faults. En LRU, la página accedida sube al primer lugar (R−1) y las que estaban encima bajan un puesto.</p></div></details>
+<details class="ex"><summary>¿Por qué LRU no se puede usar en la práctica para la memoria?</summary><div class="body"><p>Porque hay que rotar la lista en cada acceso a memoria, y eso solo es viable si el procesador lo implementa en hardware (un TLB ordenado). Si no, se usan aproximaciones por software como el Working Set o FINUFO.</p></div></details>
+<details class="ex"><summary>¿Qué es la anomalía de Belady? ¿La tiene LRU?</summary><div class="body"><p>Que con FIFO, para algunas secuencias, más marcos dan más page faults (con 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5: 9 con 3 marcos y 10 con 4). LRU no la tiene.</p></div></details>
+<details class="ex"><summary>¿Cómo construye el sistema el Working Set?</summary><div class="body"><p>Al empezar la ventana pone U = 0 en todas las páginas del proceso y arma un temporizador de Δt. Durante la ventana la MMU pone U = 1 en las páginas accedidas y el WS crece con cada page fault. Al terminar el temporizador, el WS son las páginas con U = 1; los marcos de las demás se liberan y las sucias (D = 1) se escriben en el disco.</p></div></details>
+<details class="ex"><summary>¿Qué pasa si la ventana del Working Set es muy chica o muy grande?</summary><div class="body"><p>Muy chica: libera páginas que se vuelven a usar enseguida, hay más page faults y el sistema se vuelve inestable. Muy grande: el proceso guarda páginas que ya no usa y ocupa marcos de más; se pierde la idea realista de lo que está usando.</p></div></details>
+<details class="ex"><summary>¿Qué ventaja tiene el Working Set y qué tasa permite aumentar?</summary><div class="body"><p>Adapta el número de marcos de cada proceso a lo que usa y libera los que no usa, escribiendo varias páginas de una vez. Permite aumentar la tasa de multiprogramación (y con ella la ocupación del procesador) sin caer en la bola de nieve.</p></div></details>
+<details class="ex"><summary>¿Por qué el NFU del profe se llama “segunda oportunidad”?</summary><div class="body"><p>Porque una página con U = 1 no sale: el sistema le pone U = 0 y sigue con la siguiente. Si cuando vuelve a pasar sigue con U = 0, sale.</p></div></details>
+<details class="ex"><summary>¿Por qué el procesador puede estar IDLE con muchos procesos en memoria?</summary><div class="body"><p>Porque todos esperan páginas del disco: con demasiada multiprogramación cada uno tiene pocos marcos, los page faults explotan y la ocupación del procesador cae bruscamente.</p></div></details>
 </section>
 
 </main>
@@ -658,7 +944,7 @@
     lastBest=best;
   }
   window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
-  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k], .ej input[data-k]'));
   function upd(){
     var done=boxes.filter(function(b){return b.checked;}).length;
     document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
