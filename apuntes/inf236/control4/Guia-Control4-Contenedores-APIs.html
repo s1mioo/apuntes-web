@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Caleb Baez">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control 4 · Contenedores y APIs · INF-236</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --code:#f0f1f4;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:280px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --code:#232733;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --code:#232733;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62;font-size:16.5px;-webkit-font-smoothing:antialiased}
+  .layout{display:flex;align-items:flex-start}
+  .sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;
+    overflow-y:auto;background:var(--panel);border-right:1px solid var(--line);padding:22px 16px 60px}
+  .content{flex:1 1 auto;min-width:0;padding:38px clamp(16px,4vw,64px) 120px;max-width:960px;margin:0 auto}
+  .brand{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+  .brand .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--ex));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;flex:0 0 auto}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:6px 10px;border-radius:7px;
+    font-size:13.5px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  main a{color:var(--brand);text-underline-offset:2px}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer}
+  .btn:hover{background:var(--brand-soft)}
+  .marcador{margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+    font-size:13px;background:var(--bg)}
+  .marcador b{color:var(--accent);font-size:16px}
+  h2{font-size:26px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:19px;margin:28px 0 6px;scroll-margin-top:20px}
+  h4{font-size:15.5px;margin:18px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:46px}
+  section:first-of-type{border-top:0;margin-top:0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border-radius:10px;padding:12px 14px;overflow-x:auto;font-size:13.5px;line-height:1.5}
+  pre code{background:none;padding:0}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14.5px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-size:13px}
+  .tw{overflow-x:auto}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;margin-bottom:2px}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)}
+  .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)}
+  .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+  .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)}
+  .box.ana .bt{color:var(--ana)}
+  .box.sgm{border-left-color:var(--ex);background:var(--ex-soft)}
+  .box.sgm .bt{color:var(--ex)}
+  .orig{font-size:12px;color:var(--muted);font-weight:600}
+  .meta{color:var(--muted);font-size:13.5px}
+  details.sol{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:14px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.sol>summary{cursor:pointer;padding:11px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);font-size:14px}
+  details.sol>summary::-webkit-details-marker{display:none}
+  details.sol>summary::before{content:"\25B8";font-size:11px;margin-right:8px;display:inline-block;transition:transform .15s}
+  details.sol[open]>summary::before{transform:rotate(90deg)}
+  details.sol .body{padding:6px 18px 16px}
+  .ejer{margin-top:30px;padding:16px 18px;border:1px dashed var(--line);border-radius:12px}
+  .ejer>h3{margin-top:0}
+  .q{border-left:3px solid var(--brand);padding:2px 0 2px 14px;margin:18px 0 8px}
+  .q b{color:var(--brand)}
+  .mc{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0;
+    background:var(--panel);box-shadow:var(--shadow)}
+  .mc .qt{margin:0 0 8px;font-weight:600;font-size:15.5px}
+  .mc .qt .n{color:var(--brand)}
+  .mc ol.ops{list-style:none;padding:0;margin:0}
+  .mc ol.ops li{border:1px solid var(--line);border-radius:8px;padding:7px 10px;margin:6px 0;
+    cursor:pointer;font-size:15px;display:flex;gap:9px}
+  .mc ol.ops li .k{font-weight:700;color:var(--brand);flex:0 0 auto}
+  .mc ol.ops li:hover{background:var(--brand-soft)}
+  .mc.done ol.ops li{cursor:default}
+  .mc.done ol.ops li:hover{background:transparent}
+  .mc ol.ops li.ok,.mc.done ol.ops li.ok:hover{background:var(--accent-soft);border-color:var(--accent)}
+  .mc ol.ops li.bad,.mc.done ol.ops li.bad:hover{background:var(--warn-soft);border-color:var(--warn)}
+  .mc .exp{display:none;margin-top:10px;font-size:14.5px;border-top:1px dashed var(--line);padding-top:8px}
+  .mc.done .exp{display:block}
+  .mc .exp b{color:var(--accent)}
+  .mc .tag{float:right;font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;margin:0 0 6px 10px;
+    background:var(--ana-soft);color:var(--ana)}
+  .mc .afi{margin:4px 0 8px;padding-left:4px;font-size:15px}
+  .mc .afi div{margin:3px 0}
+  figure.fig{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;
+    margin:18px 0;box-shadow:var(--shadow)}
+  figure.fig svg{width:100%;height:auto;display:block;max-width:640px;margin:0 auto}
+  figure.fig figcaption{font-size:13px;color:var(--muted);margin-top:8px}
+  .s-t{fill:var(--ink);font-size:13px;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  .s-h{fill:var(--ink);font-size:14px;font-weight:700;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  .s-app{fill:var(--brand-soft);stroke:var(--brand);stroke-width:1.3}
+  .s-os{fill:var(--ana-soft);stroke:var(--ana);stroke-width:1.3}
+  .s-eng{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.3}
+  .s-base{fill:var(--code);stroke:var(--muted);stroke-width:1.3}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:900px){
+    .sidebar{display:none}
+    .grid2{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">C4</div>
+    <div><h1>Control 4 · Ponerse al día</h1><small>INF-236 · Contenedores y APIs</small></div>
+  </div>
+  <div class="toolbar">
+    <button class="btn" onclick="tema()">Claro / oscuro</button>
+    <button class="btn" onclick="abrir(true)">Abrir respuestas</button>
+    <button class="btn" onclick="abrir(false)">Cerrar respuestas</button>
+  </div>
+  <div class="marcador">Ejercicios: <b id="pts">0</b> correctas de <span id="tot">0</span> respondidas
+    <div class="toolbar" style="margin-top:8px">
+      <button class="btn" onclick="reiniciar()">Reiniciar</button>
+    </div>
+  </div>
+  <nav>
+    <div class="grp">Antes de partir</div>
+    <a href="#inicio">Qué entra y cómo usar esto</a>
+    <div class="grp">Clase 10 · Contenedores</div>
+    <a href="#t1">1 · Contenedores vs. máquinas virtuales</a>
+    <a href="#t2">2 · Docker en la práctica</a>
+    <div class="grp">Clase 11 · APIs</div>
+    <a href="#t3">3 · Qué es una API y qué es REST</a>
+    <a href="#t4">4 · Diseñar una API RESTful</a>
+    <div class="grp">Cierre</div>
+    <a href="#chuleta">Chuleta</a>
+  </nav>
+</aside>
+<main class="content">
+
+<!-- ============================================================ -->
+<section id="inicio">
+<h2>Control 4 · Contenedores y APIs</h2>
+<p class="lead">Resumen para ponerse al día con las clases 10 (<i>Contenedores e imágenes</i>) y 11 (<i>APIs: REST y patrones</i>) de INF-236. Cada tema termina con ejercicios para comprobar que lo entendiste.</p>
+
+<div class="box tip">
+  <div class="bt">Para qué sirve esta guía</div>
+  <p>No es para rendir el Control 4, que ya pasó: es la base que el Control 5 da por sabida. Saga, CQRS y API Gateway suponen que entiendes qué es una API, qué hace un contenedor y por qué REST pide ciertas cosas. Además, los certámenes del C2 siempre traen 2 o 3 alternativas de estos temas.</p>
+</div>
+
+<h3>Plan para hoy (1 hora)</h3>
+<div class="tw"><table>
+<tr><th>Tiempo</th><th>Qué hacer</th></tr>
+<tr><td>15 min</td><td><a href="#t1">Tema 1</a> y sus ejercicios.</td></tr>
+<tr><td>10 min</td><td><a href="#t2">Tema 2</a> y sus ejercicios. Si usaste Docker en el proyecto, este tema va rápido.</td></tr>
+<tr><td>15 min</td><td><a href="#t3">Tema 3</a> y sus ejercicios.</td></tr>
+<tr><td>20 min</td><td><a href="#t4">Tema 4</a>, que es el más preguntado, y la <a href="#chuleta">chuleta</a>.</td></tr>
+</table></div>
+
+<h3>Cómo leer las cajas</h3>
+<div class="grid2">
+  <div class="box def"><div class="bt">Definición</div>Lo que dicen las láminas, casi textual.</div>
+  <div class="box warn"><div class="bt">Trampa</div>Lo que el profesor ya usó para armar alternativas falsas.</div>
+  <div class="box ana"><div class="bt">Analogía</div>Para entender la idea, no para escribirla en la prueba.</div>
+  <div class="box sgm"><div class="bt">En el SGM</div>El mismo concepto en tu proyecto.</div>
+</div>
+<p class="meta">Las preguntas con la etiqueta <span class="pill" style="background:var(--ana-soft);color:var(--ana)">estilo certamen</span> son preguntas de certámenes anteriores del C2, reescritas.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="t1">
+<h2>1 · Contenedores vs. máquinas virtuales</h2>
+<p class="lead">El problema que resuelven, las dos soluciones y en qué se diferencian.</p>
+
+<h3>El problema: mover aplicaciones entre ambientes</h3>
+<p>La clase parte con el transporte de fruta. Mandarla suelta en un barco funciona, pero se complica cuando hay que pasarla a un camión y después a un tren, cuando viajan distintas cargas a distintos destinos, o cuando en el mismo barco va veneno. La solución fue el <b>contenedor estandarizado</b>: aísla las cargas entre sí y permite moverlas de un medio a otro sin desarmarlas. <b>La estandarización es fundamental y «empaquetar» es parte de la solución.</b></p>
+<p>En software pasa lo mismo: hay que mover la aplicación entre ambientes (el PC de cada desarrollador, pruebas, producción), cada aplicación tiene sus dependencias, esas dependencias pueden chocar entre sí, y muchas veces una aplicación que funcionaba deja de funcionar al cambiar de ambiente.</p>
+
+<h3>Solución 1: máquinas virtuales (VM)</h3>
+<div class="box def"><div class="bt">Máquina virtual</div>Una forma popular de virtualización. Cada VM es, en la práctica, un <b>sistema operativo independiente</b> con sus propios recursos virtuales.</div>
+<ul>
+  <li><b>A favor:</b> logran aislamiento de la máquina donde se encuentran, porque cada una es un SO independiente.</li>
+  <li><b>En contra:</b> son de mayor tamaño y se suelen usar con aplicaciones monolíticas. Correr cada aplicación en su propio SO es caro en recursos, porque se emula todo el SO. Las aplicaciones pequeñas en la nube, como las partes de un sistema más grande, necesitan ser más ligeras, y cargar y arrancar todas las dependencias de un SO no lo es.</li>
+</ul>
+
+<h3>Solución 2: contenedores</h3>
+<div class="box def"><div class="bt">Contenedor</div>A diferencia de la VM, los contenedores <b>comparten el kernel de la máquina donde se encuentran</b>. En la práctica, los procesos de un contenedor se ejecutan como si estuvieran en la máquina que los aloja.</div>
+<ul>
+  <li><b>No necesitan cargar todas las dependencias de un SO</b>, porque comparten el kernel.</li>
+  <li><b>No hay overhead adicional por acceder al hardware</b>, así que son mucho más rápidos de iniciar y detener.</li>
+  <li><b>Pueden compartir librerías.</b></li>
+  <li>Usar el kernel del anfitrión puede verse como una restricción, pero la simplicidad que se gana al «subir y bajar» aplicaciones lo compensa.</li>
+</ul>
+
+<figure class="fig">
+<svg viewBox="0 0 640 250" role="img" aria-label="Pilas de una máquina virtual y de un contenedor">
+  <text class="s-h" x="150" y="20" text-anchor="middle">Máquinas virtuales</text>
+  <text class="s-h" x="490" y="20" text-anchor="middle">Contenedores</text>
+  <rect class="s-app" x="30" y="34" width="110" height="34" rx="6"/><text class="s-t" x="85" y="56" text-anchor="middle">App A + libs</text>
+  <rect class="s-app" x="160" y="34" width="110" height="34" rx="6"/><text class="s-t" x="215" y="56" text-anchor="middle">App B + libs</text>
+  <rect class="s-os" x="30" y="74" width="110" height="34" rx="6"/><text class="s-t" x="85" y="96" text-anchor="middle">SO invitado</text>
+  <rect class="s-os" x="160" y="74" width="110" height="34" rx="6"/><text class="s-t" x="215" y="96" text-anchor="middle">SO invitado</text>
+  <rect class="s-eng" x="30" y="114" width="240" height="34" rx="6"/><text class="s-t" x="150" y="136" text-anchor="middle">Hipervisor</text>
+  <rect class="s-base" x="30" y="154" width="240" height="34" rx="6"/><text class="s-t" x="150" y="176" text-anchor="middle">SO del anfitrión (kernel)</text>
+  <rect class="s-base" x="30" y="194" width="240" height="34" rx="6"/><text class="s-t" x="150" y="216" text-anchor="middle">Hardware</text>
+  <rect class="s-app" x="370" y="74" width="110" height="34" rx="6"/><text class="s-t" x="425" y="96" text-anchor="middle">App A + libs</text>
+  <rect class="s-app" x="500" y="74" width="110" height="34" rx="6"/><text class="s-t" x="555" y="96" text-anchor="middle">App B + libs</text>
+  <rect class="s-eng" x="370" y="114" width="240" height="34" rx="6"/><text class="s-t" x="490" y="136" text-anchor="middle">Motor de contenedores (Docker)</text>
+  <rect class="s-base" x="370" y="154" width="240" height="34" rx="6"/><text class="s-t" x="490" y="176" text-anchor="middle">SO del anfitrión (kernel compartido)</text>
+  <rect class="s-base" x="370" y="194" width="240" height="34" rx="6"/><text class="s-t" x="490" y="216" text-anchor="middle">Hardware</text>
+</svg>
+<figcaption>Cada VM carga un SO invitado completo; los contenedores no tienen esa capa y comparten el kernel del anfitrión. Redibujado de la comparación de la clase (Mouat, <i>Using Docker</i>).</figcaption>
+</figure>
+
+<div class="tw"><table>
+<tr><th></th><th>Máquina virtual</th><th>Contenedor</th></tr>
+<tr><td>Qué es</td><td>Un SO completo e independiente</td><td>Procesos aislados que comparten el kernel del anfitrión</td></tr>
+<tr><td>Tamaño</td><td>Mayor</td><td>Liviano</td></tr>
+<tr><td>Iniciar / detener</td><td>Lento: arranca un SO</td><td>Rápido: sin overhead de hardware</td></tr>
+<tr><td>Aislamiento de la máquina anfitriona</td><td><b>Mayor</b> (SO propio)</td><td>Menor (kernel compartido)</td></tr>
+<tr><td>Uso típico en la clase</td><td>Aplicaciones monolíticas</td><td>Aplicaciones pequeñas en la nube, microservicios</td></tr>
+</table></div>
+
+<div class="box warn"><div class="bt">Trampa: el aislamiento</div>La VM aísla <b>más</b> de la máquina anfitriona que el contenedor, porque trae su propio SO. El certamen 2025-2 puso como falsa «el aislamiento respecto a la máquina que los aloja es mayor con contenedores».</div>
+
+<h3>Otras ventajas que menciona la clase</h3>
+<ul>
+  <li>Hacer <b>pruebas de concepto y prototipos más rápido</b>: todas las dependencias quedan encapsuladas sin afectar la máquina donde se prueba.</li>
+  <li>Encapsular las dependencias en <b>imágenes que se usan en distintos ambientes</b>, lo que facilita mucho el despliegue.</li>
+</ul>
+
+<h3>Lo que agregan los certámenes</h3>
+<p>Estas afirmaciones se han dado por <b>correctas</b> en certámenes anteriores:</p>
+<ul>
+  <li>Son ideales para arquitecturas de microservicios, y por ser livianos <b>facilitan desplegar y escalar</b> servicios con costos eficientes.</li>
+  <li>Facilitan los <b>pipelines de integración y entrega continua</b> (CI/CD).</li>
+  <li>Permiten <b>separar responsabilidades</b> entre desarrolladores y administradores de sistemas.</li>
+  <li>Las VM y los contenedores son <b>alternativas para el mismo problema</b>: encapsular dependencias y mover una aplicación entre ambientes.</li>
+</ul>
+<p>Y estas se han dado por <b>falsas</b>:</p>
+<ul>
+  <li>«Los microservicios <b>solo</b> se pueden desarrollar con contenedores.» Ayudan mucho, pero no son obligatorios.</li>
+  <li>«Para llevar una aplicación a la nube, contenerizar es un paso que se puede omitir.»</li>
+  <li>«Cada contenedor debe incluir un SO completo.» Eso es la VM.</li>
+  <li>«Las VM tienen más poder de procesamiento y por eso escalan mejor.» El contenedor no tiene poder de cómputo propio: depende de la infraestructura. Como es más liviano de replicar, escala con menos costo.</li>
+</ul>
+
+<div class="ejer">
+<h3>Ejercicios del tema 1</h3>
+
+<div class="mc" data-ok="C"><span class="tag">estilo certamen 2023-1</span><p class="qt">Respecto a los contenedores, ¿cuál afirmación <u>no</u> es correcta?</p><ol class="ops">
+<li><span class="k">A)</span>No necesitan cargar todas las dependencias de un SO.</li>
+<li><span class="k">B)</span>No hay overhead adicional por acceder al hardware.</li>
+<li><span class="k">C)</span>Reparten la preparación del ambiente entre los desarrolladores: cada uno arma el suyo.</li>
+<li><span class="k">D)</span>Pueden compartir librerías.</li>
+<li><span class="k">E)</span>Todas las afirmaciones son correctas.</li>
+</ol><div class="exp"><b>C.</b> Es al revés: el ambiente queda definido una sola vez en la imagen y todos usan exactamente el mismo. A, B y D son textuales de la lámina de contenedores.</div></div>
+
+<div class="mc" data-ok="A"><p class="qt">¿Cuál es la diferencia de fondo entre una máquina virtual y un contenedor?</p><ol class="ops">
+<li><span class="k">A)</span>El contenedor comparte el kernel del anfitrión; la VM es un SO independiente con recursos virtuales.</li>
+<li><span class="k">B)</span>La VM comparte el kernel del anfitrión; el contenedor trae su propio SO.</li>
+<li><span class="k">C)</span>El contenedor emula el hardware completo y por eso es más liviano.</li>
+<li><span class="k">D)</span>La VM es más rápida de iniciar porque ya trae todas las dependencias.</li>
+</ol><div class="exp"><b>A.</b> B está invertida, que es la trampa clásica. C es falsa porque el contenedor justamente no emula el hardware. D es falsa: la VM es más lenta porque tiene que arrancar un SO completo.</div></div>
+
+<div class="mc" data-ok="B"><span class="tag">estilo certamen 2025-2</span><p class="qt">Sobre contenedores y máquinas virtuales:</p>
+<div class="afi"><div>(i) Los microservicios solo pueden desarrollarse usando contenedores.</div><div>(ii) Son soluciones alternativas a un mismo problema: encapsular dependencias y mover una aplicación entre ambientes.</div><div>(iii) El aislamiento respecto a la máquina que los aloja es mayor con contenedores.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i)</li>
+<li><span class="k">B)</span>Solo (ii)</li>
+<li><span class="k">C)</span>(ii) y (iii)</li>
+<li><span class="k">D)</span>(i), (ii) y (iii)</li>
+<li><span class="k">E)</span>Ninguna es correcta.</li>
+</ol><div class="exp"><b>B.</b> (i) es falsa por el «solo»: el contenedor facilita, pero no es obligatorio. (iii) está invertida, porque la VM aísla más al traer su propio SO.</div></div>
+
+<div class="mc" data-ok="B"><span class="tag">estilo certamen 2023-2</span><p class="qt">¿Cuáles de estas afirmaciones sobre contenedores son <u>incorrectas</u>?</p>
+<div class="afi"><div>(i) No tienen valor en la industria, porque las empresas buscan especialistas en sistemas operativos.</div><div>(ii) Permiten escalar las aplicaciones con costos eficientes.</div><div>(iii) Sirven como base de datos para las aplicaciones móviles.</div><div>(iv) Los grandes sistemas orientados a objetos se construyen con conocimiento, experiencia y contenedores con sistemas operativos.</div></div><ol class="ops">
+<li><span class="k">A)</span>(i) y (iii)</li>
+<li><span class="k">B)</span>(i), (iii) y (iv)</li>
+<li><span class="k">C)</span>(iii) y (iv)</li>
+<li><span class="k">D)</span>(ii) y (iv)</li>
+<li><span class="k">E)</span>Solo (ii)</li>
+</ol><div class="exp"><b>B.</b> Solo (ii) es correcta. (iii) confunde contenedor con base de datos, aunque una base de datos puede <i>correr dentro</i> de un contenedor. (iv) mezcla un contenedor con un SO completo.</div></div>
+
+<div class="mc" data-ok="E"><span class="tag">estilo certamen 2025-2</span><p class="qt">Hay que levantar un clúster de MongoDB con 3 réplicas: una primaria y dos secundarias. ¿Qué afirmaciones son correctas?</p>
+<div class="afi"><div>(i) Conviene usar máquinas virtuales, porque se gana simplicidad al subir y bajar réplicas, cosa que no se logra con contenedores.</div><div>(ii) Se podría usar contenedores, pero cargar y arrancar todas las dependencias del SO es costoso.</div><div>(iii) Se podría usar contenedores, que dan aislamiento, portabilidad y uso eficiente de recursos.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i) y (ii)</li>
+<li><span class="k">B)</span>Solo (ii) y (iii)</li>
+<li><span class="k">C)</span>Solo (iii) y (i)</li>
+<li><span class="k">D)</span>Solo (ii)</li>
+<li><span class="k">E)</span>Solo (iii)</li>
+</ol><div class="exp"><b>E.</b> (i) le atribuye a la VM la ventaja del contenedor: la simplicidad de subir y bajar. (ii) le atribuye al contenedor la desventaja de la VM: cargar todo el SO.</div></div>
+
+<div class="q"><b>Pregunta corta.</b> Comente: «Las máquinas virtuales tienen más poder de procesamiento que los contenedores, por eso se prefieren cuando importa escalar y el rendimiento.»</div>
+<details class="sol"><summary>Ver respuesta</summary><div class="body">
+<p>Es falsa (pauta del certamen 2023-2). El contenedor <b>no tiene poder de cómputo propio</b>: usa el de la infraestructura donde corre, igual que la VM. Para escalar, el contenedor tiene ventaja, porque es más liviano de replicar cuando sube la carga. La VM es más pesada, porque cada réplica arrastra un SO completo, y por eso cuesta más en recursos.</p>
+</div></details>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="t2">
+<h2>2 · Docker en la práctica</h2>
+<p class="lead">Imagen, contenedor, Dockerfile y docker compose: los comandos que muestra la clase.</p>
+
+<p>La clase usa <b>Docker</b> como herramienta de referencia para trabajar con contenedores.</p>
+
+<h3>Imagen vs. contenedor</h3>
+<div class="grid2">
+  <div class="box def"><div class="bt">Imagen</div>La plantilla: trae la aplicación con todas sus dependencias. <b>Se crea a partir de un <code>Dockerfile</code>.</b></div>
+  <div class="box def"><div class="bt">Contenedor</div>Lo que se ejecuta: se <b>crea a partir de una imagen</b>. De una imagen se pueden generar uno o más contenedores.</div>
+</div>
+<div class="box ana"><div class="bt">Analogía</div>La imagen es como una clase y el contenedor como un objeto: de una clase se crean muchos objetos, y borrar un objeto no borra la clase.</div>
+<div class="box warn"><div class="bt">Trampa</div>«La existencia de imágenes <b>no</b> implica la existencia de contenedores.» Puedes tener imágenes descargadas y ningún contenedor creado.</div>
+
+<h3>Comandos que aparecen en las láminas</h3>
+<div class="tw"><table>
+<tr><th>Comando</th><th>Qué hace</th></tr>
+<tr><td><code>docker images</code></td><td>Lista las imágenes disponibles localmente.</td></tr>
+<tr><td><code>docker ps</code></td><td>Lista los contenedores <b>levantados</b>.</td></tr>
+<tr><td><code>docker ps -a</code></td><td>Lista <b>todos</b> los contenedores, detenidos o no.</td></tr>
+<tr><td><code>docker run --rm -p 8001:8000 wormaza/fia-lem-api:latest</code></td><td>Crea un contenedor a partir de la imagen <code>wormaza/fia-lem-api</code> con el tag <code>latest</code>. <code>--rm</code> lo borra automáticamente cuando se detiene. <code>-p 8001:8000</code> mapea el puerto <b>8000 del contenedor</b> al <b>8001 del host</b>.</td></tr>
+<tr><td><code>docker stop &lt;id&gt;</code></td><td>Detiene el contenedor. Como se creó con <code>--rm</code>, al detenerse se borra, <b>pero la imagen no desaparece</b>.</td></tr>
+<tr><td><code>docker run -it -v C:\host:/pruebas --name myalpine alpine /bin/sh</code></td><td><code>-it</code>: entrar al contenedor y ejecutar <code>/bin/sh</code>. <code>--name</code>: llamarlo <code>myalpine</code>. <code>-v</code>: montar un <b>volumen</b>, es decir, la carpeta del host dentro del contenedor. <code>alpine</code>: la imagen, una distribución liviana de Linux. Así se puede compilar C sin instalar nada en tu máquina.</td></tr>
+<tr><td><code>docker exec -it myalpine /bin/sh</code></td><td>Entrar a ese contenedor si ya existe.</td></tr>
+</table></div>
+<div class="box warn"><div class="bt">Trampa: el orden de los puertos</div><code>-p HOST:CONTENEDOR</code>. En <code>-p 8001:8000</code> la aplicación escucha en el 8000 dentro del contenedor y tú la abres en <code>localhost:8001</code>.</div>
+
+<h3>El Dockerfile: cómo se arma una imagen</h3>
+<p>Tiene las definiciones para crear la imagen: indica las dependencias, los pasos que hay que ejecutar y copia el código del desarrollo a la estructura que necesita el contenedor.</p>
+<div class="tw"><table>
+<tr><th>Instrucción</th><th>Para qué (según la clase)</th></tr>
+<tr><td><code>FROM</code></td><td>La imagen <b>en la que nos basamos</b>. «La clave está en el FROM»: la imagen base del ejemplo (<code>rstudio/plumber</code>) ya trae las instrucciones para ejecutar el archivo con el código.</td></tr>
+<tr><td><code>RUN</code></td><td>Pasos previos que hay que ejecutar, por ejemplo instalar otras dependencias.</td></tr>
+<tr><td><code>WORKDIR</code></td><td>El directorio donde se va a trabajar.</td></tr>
+<tr><td><code>COPY</code></td><td>Copia los archivos de nuestro desarrollo al directorio de trabajo.</td></tr>
+</table></div>
+
+<div class="box sgm"><div class="bt">En el SGM: el Dockerfile de API_TRAMITACION</div>
+<pre><code>FROM node:18-alpine        # imagen base: Node 18 sobre Alpine
+WORKDIR /usr/app           # directorio de trabajo
+COPY ./package.json ./     # copia la lista de dependencias
+RUN npm install            # instala las dependencias
+COPY ./ ./                 # copia el resto del código
+CMD ["npm","start"]        # comando por defecto al crear el contenedor</code></pre>
+<p><code>CMD</code> no aparece en las láminas: indica qué se ejecuta cuando se crea un contenedor desde la imagen.</p></div>
+
+<h3>Docker compose: varios contenedores a la vez</h3>
+<ul>
+  <li>El <code>Dockerfile</code> describe <b>una imagen</b>, desde la que se generan uno o más contenedores.</li>
+  <li><b><code>docker-compose</code> gestiona la creación de múltiples contenedores de forma conjunta</b>, desde un archivo YML. La clase lo llama <b>una forma de «orquestación»</b>. Con muchos contenedores deja de ser trivial.</li>
+  <li>En sistemas grandes se usa <b>Kubernetes</b> o <b>Docker Swarm</b>.</li>
+  <li>Se ejecuta con <code>docker-compose -f docker-compose-2.yml up</code>. En el ejemplo de la clase, eso creó una imagen nueva y dos contenedores, expuestos en los puertos 8001 y 8002.</li>
+</ul>
+<div class="box sgm"><div class="bt">En el SGM</div>El <code>docker-compose.yml</code> de la raíz levanta MySQL y la API de ejemplo. Cada API del grupo tiene el suyo, con <code>build:</code>, que construye la imagen desde su Dockerfile, y <code>ports: "8080:8080"</code>. Las bases de datos comparten un contenedor de MySQL, pero cada API usa la suya. Por eso, al levantar el proyecto, <code>docker ps</code> muestra cuatro contenedores.</div>
+
+<div class="ejer">
+<h3>Ejercicios del tema 2</h3>
+
+<div class="mc" data-ok="D"><p class="qt"><code>docker images</code> muestra tres imágenes y <code>docker ps</code> no muestra nada. ¿Qué se puede concluir?</p><ol class="ops">
+<li><span class="k">A)</span>Docker tiene un error: si hay imágenes, tiene que haber contenedores.</li>
+<li><span class="k">B)</span>Hay tres contenedores detenidos, uno por imagen.</li>
+<li><span class="k">C)</span>Las imágenes están corruptas y hay que volver a descargarlas.</li>
+<li><span class="k">D)</span>Hay imágenes, pero ningún contenedor levantado. Podría haber contenedores detenidos, que se ven con <code>docker ps -a</code>.</li>
+</ol><div class="exp"><b>D.</b> La lámina lo dice: la existencia de imágenes no implica la existencia de contenedores. <code>docker ps</code> muestra solo los levantados; <code>docker ps -a</code>, todos.</div></div>
+
+<div class="mc" data-ok="B"><p class="qt">En <code>docker run --rm -p 8001:8000 wormaza/fia-lem-api:latest</code>, ¿qué hace <code>-p 8001:8000</code>?</p><ol class="ops">
+<li><span class="k">A)</span>Mapea el puerto 8001 del contenedor al puerto 8000 del host.</li>
+<li><span class="k">B)</span>Mapea el puerto 8000 del contenedor al puerto 8001 del host.</li>
+<li><span class="k">C)</span>Limita el contenedor a 8001 procesos y 8000 MB de memoria.</li>
+<li><span class="k">D)</span>Crea dos contenedores, uno en cada puerto.</li>
+</ol><div class="exp"><b>B.</b> El formato es <code>HOST:CONTENEDOR</code>: la aplicación escucha en el 8000 dentro del contenedor y se abre en <code>localhost:8001</code>.</div></div>
+
+<div class="mc" data-ok="B"><p class="qt">Se detiene con <code>docker stop</code> el contenedor del comando anterior. ¿Qué pasa?</p><ol class="ops">
+<li><span class="k">A)</span>Se borran el contenedor y la imagen.</li>
+<li><span class="k">B)</span>Se borra el contenedor, porque se creó con <code>--rm</code>, pero la imagen sigue disponible.</li>
+<li><span class="k">C)</span>El contenedor queda detenido y aparece en <code>docker ps -a</code>.</li>
+<li><span class="k">D)</span>No pasa nada: un contenedor creado con <code>--rm</code> no se puede detener.</li>
+</ol><div class="exp"><b>B.</b> Textual de la lámina: «por la forma en que lo iniciamos, el contenedor al detenerse se borra. Pero la imagen no desaparece». C sería lo correcto sin <code>--rm</code>.</div></div>
+
+<div class="mc" data-ok="C"><p class="qt">¿Qué instrucción del Dockerfile indica la imagen en la que nos basamos?</p><ol class="ops">
+<li><span class="k">A)</span><code>WORKDIR</code></li>
+<li><span class="k">B)</span><code>COPY</code></li>
+<li><span class="k">C)</span><code>FROM</code></li>
+<li><span class="k">D)</span><code>RUN</code></li>
+<li><span class="k">E)</span><code>CMD</code></li>
+</ol><div class="exp"><b>C.</b> <code>FROM</code> es la imagen base («la clave está en el FROM»). <code>RUN</code> ejecuta pasos previos, <code>WORKDIR</code> fija el directorio y <code>COPY</code> copia el código.</div></div>
+
+<div class="mc" data-ok="C"><p class="qt">Sobre docker compose, es correcto afirmar que:</p><ol class="ops">
+<li><span class="k">A)</span>Reemplaza al Dockerfile: con compose ya no hace falta describir las imágenes.</li>
+<li><span class="k">B)</span>Es lo mismo que Kubernetes, pero con otro nombre.</li>
+<li><span class="k">C)</span>Gestiona la creación de varios contenedores de forma conjunta desde un archivo YML, y es una forma de orquestación.</li>
+<li><span class="k">D)</span>Solo sirve para ambientes de producción.</li>
+</ol><div class="exp"><b>C.</b> El compose puede usar los Dockerfile para construir imágenes (en el ejemplo de la clase creó una). Para sistemas grandes la clase menciona Kubernetes o Docker Swarm, que son herramientas distintas.</div></div>
+
+<div class="q"><b>Pregunta corta.</b> Quieres repasar C sin instalar nada en tu computador. ¿Qué comando de la clase usarías y qué hace cada parte?</div>
+<details class="sol"><summary>Ver respuesta</summary><div class="body">
+<p><code>docker run -it -v C:\host:/pruebas --name myalpine alpine /bin/sh</code></p>
+<ul>
+<li><code>alpine</code>: la imagen desde la que se crea el contenedor, una distribución liviana de Linux.</li>
+<li><code>-it</code>: entrar al contenedor de forma interactiva, ejecutando <code>/bin/sh</code>.</li>
+<li><code>-v C:\host:/pruebas</code>: montar la carpeta del host como volumen, para ver tus archivos <code>.c</code> dentro del contenedor.</li>
+<li><code>--name myalpine</code>: nombre del contenedor. Para volver a entrar después se usa <code>docker exec -it myalpine /bin/sh</code>.</li>
+</ul>
+<p>Dentro del contenedor se instalan las dependencias, como el compilador, y se compila y ejecuta el código. Tu máquina no queda con nada instalado.</p>
+</div></details>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="t3">
+<h2>3 · Qué es una API y qué es REST</h2>
+<p class="lead">La definición de API, lo que una API <i>no</i> busca, y los principios y restricciones de REST.</p>
+
+<h3>API</h3>
+<div class="box def"><div class="bt">API: Application Programming Interface</div>Son las interfaces que los programas presentan a otros programas o a humanos. Son <b>interfaces directas</b>: reciben entradas y exponen salidas. Están diseñadas para interactuar con otros programas, pero las tienen que entender los humanos que escriben esos programas. <span class="orig">(Lauret, <i>The Design of Web APIs</i>, 2019)</span></div>
+<ul>
+  <li><b>No dicen mucho de la lógica de negocio interna</b> ni de cómo están construidas por dentro.</li>
+  <li><b>Encapsulan el estado</b> de los objetos, de modo que solo se modifique por medio de la interfaz.</li>
+  <li>En el curso se habla de <b>APIs web</b>: APIs remotas a las que se accede con HTTP.</li>
+  <li>Pueden tener <b>salidas indirectas</b>, que no son resultado directo de una entrada. Ejemplo: el manejo de intentos fallidos de login.</li>
+  <li>Una API web <b>no es lo mismo que una página web</b>. El impacto de rediseñar una API es distinto al de rediseñar una página, porque otros programas dependen de ella. Las APIs <b>deben verse como un producto de software en sí mismo</b>: pueden cambiar, pero hay que intentar mantener la interfaz.</li>
+</ul>
+<div class="box warn"><div class="bt">Trampa muy repetida: el reuso</div><b>Las APIs NO aseguran reuso ni lo buscan.</b> Pensando en microservicios, <b>desacoplar es más importante que reusar</b>. El reuso puede darse como consecuencia, pero no es el objetivo. Cae en casi todos los certámenes: «usemos APIs para garantizar el reuso» es falsa.</div>
+
+<h3>REST</h3>
+<div class="box def"><div class="bt">REST: REpresentational State Transfer</div>Un <b>estilo de arquitectura</b> propuesto por <b>Roy Fielding en 2000</b>. Su objetivo es facilitar la construcción de sistemas distribuidos que sean <b>eficientes</b> (comunicar y procesar peticiones), <b>escalables</b> (manejar más peticiones) y <b>confiables</b> (resistir fallas).</div>
+<ul>
+  <li><b>No todas las APIs web son RESTful.</b> Una API RESTful es la que cumple, o trata de cumplir, las restricciones del estilo REST.</li>
+  <li>El lema: <b>«Request things rather than actions»</b>, es decir, pedir cosas y no acciones.</li>
+  <li><b>El consumidor decide cómo usa el recurso.</b> Ejemplo de la clase: la interfaz recibe el recurso «Profesor» y decide cuánto mostrar según sea web, web móvil o app.</li>
+</ul>
+
+<div class="grid2">
+<div>
+<h4>Los 4 principios de REST</h4>
+<ol>
+  <li>Recursos con identificadores (URIs).</li>
+  <li>Manipulación de recursos por medio de representaciones.</li>
+  <li>Mensajes auto-descriptivos.</li>
+  <li>Hypermedia como base para el estado de la aplicación (HATEOAS).</li>
+</ol>
+</div>
+<div>
+<h4>Las restricciones que debe respetar</h4>
+<ol>
+  <li><b>Separación cliente / servidor.</b></li>
+  <li><b>Sin estado</b> (stateless): el servidor no guarda el estado del cliente entre solicitudes.</li>
+  <li><b>Cacheability</b>: indicar si una respuesta se puede almacenar y por cuánto tiempo.</li>
+  <li><b>Sistema en capas</b> (layered system).</li>
+  <li><b>Code on demand</b> (opcional).</li>
+  <li><b>Interfaz uniforme</b>: recursos identificados que se manipulan con <b>verbo HTTP + recurso</b>.</li>
+</ol>
+</div>
+</div>
+
+<div class="box warn"><div class="bt">Trampa: restricción con la descripción cambiada</div>En el certamen 2024-1 las alternativas emparejaban cada restricción con la descripción de otra. Por ejemplo, «los servidores pueden ampliar las funciones del cliente transfiriendo código ejecutable» es <b>code on demand</b>, no «sistema en capas». La que estaba bien era: el estado se guarda en el cliente y no en el servidor, que es <b>sin estado</b>.</div>
+
+<h3>La solicitud HTTP y sus formatos</h3>
+<ul>
+  <li><b>Headers:</b> son informativos, por ejemplo para indicar si se espera <code>text/html</code> o <code>application/json</code>.</li>
+  <li><b>Method:</b> el verbo HTTP de la solicitud.</li>
+  <li><b>Content-Length:</b> en POST o PUT, permite al servidor revisar si el contenido llegó truncado.</li>
+  <li><b>Content-Type:</b> el formato del cuerpo, por ejemplo <code>application/json</code>.</li>
+  <li><b>Body:</b> en un GET puede ir vacío.</li>
+</ul>
+<p>Las representaciones se escriben en <b>JSON</b> (pares <code>{nombre: valor}</code> separados por comas, llaves para objetos, corchetes para arreglos) o <b>XML</b> (un elemento raíz, toda etiqueta con su cierre, sensible a mayúsculas, atributos entre comillas). Los dos se usan para representar <b>DTOs</b> (Data Transfer Objects). A veces conviene incluir un link <code>self</code> al recurso.</p>
+
+<div class="ejer">
+<h3>Ejercicios del tema 3</h3>
+
+<div class="mc" data-ok="B"><span class="tag">estilo certamen 2024-2</span><p class="qt">En una reunión de arquitectura se dice:<br>· Analista 1: «Con microservicios la aplicación será más mantenible.»<br>· Desarrollador: «Usemos APIs RESTful para garantizar el reuso. Ojo, las URIs deben identificar recursos de forma opaca.»<br>· Analista 2: «Con microservicios y APIs RESTful, la seguridad y la idempotencia vienen sin desarrollo adicional.»<br>¿Qué alternativa es correcta?</p><ol class="ops">
+<li><span class="k">A)</span>El Analista 2 se equivoca, porque la seguridad y la idempotencia se implementan. El Analista 1 tiene razón, sin importar la complejidad del sistema.</li>
+<li><span class="k">B)</span>Lo del Analista 1 depende de la complejidad: para algo simple pierde sentido. El Desarrollador debe saber que el reuso puede ser una consecuencia, no el objetivo de una API RESTful.</li>
+<li><span class="k">C)</span>El Desarrollador tiene razón en lo de las URIs, y el Analista 2, en lo de la seguridad e idempotencia.</li>
+<li><span class="k">D)</span>El Analista 1 se equivoca, porque lo que se gana es desacoplamiento y no mantenibilidad, y el Desarrollador también, porque las APIs RESTful no garantizan reuso.</li>
+<li><span class="k">E)</span>Ninguna es correcta.</li>
+</ol><div class="exp"><b>B.</b> Corrige las dos ideas falsas sin agregar otras: el reuso no es objetivo de una API, y la conveniencia de los microservicios depende del contexto. El Analista 2 se equivoca, porque la seguridad y la idempotencia las garantiza el proveedor (tema 4). A falla en el «sin importar la complejidad».</div></div>
+
+<div class="mc" data-ok="D"><p class="qt">Según la clase, REST busca facilitar sistemas distribuidos que sean:</p><ol class="ops">
+<li><span class="k">A)</span>Reutilizables, seguros y portables.</li>
+<li><span class="k">B)</span>Aislados, atómicos y duraderos.</li>
+<li><span class="k">C)</span>Consistentes, disponibles y tolerantes a particiones.</li>
+<li><span class="k">D)</span>Eficientes, escalables y confiables.</li>
+</ol><div class="exp"><b>D.</b> Eficientes (comunicar y procesar peticiones), escalables (manejar más) y confiables (resistir fallas). C es el teorema CAP y B son propiedades de transacciones. Las dos vuelven en el Control 5.</div></div>
+
+<div class="mc" data-ok="B"><span class="tag">estilo certamen 2024-1</span><p class="qt">«Las APIs RESTful son las que cumplen, o tratan de cumplir, las restricciones del estilo REST. Entre ellas está: ______.» ¿Qué completa mejor la frase?</p><ol class="ops">
+<li><span class="k">A)</span>Mientras más sabe el servidor del cliente, más acoplados están y más fácil es cambiar componentes: arquitectura cliente-servidor.</li>
+<li><span class="k">B)</span>El estado se guarda y se mantiene en el cliente, no en el servidor: sistema sin estado.</li>
+<li><span class="k">C)</span>Ninguna interacción entre cliente y servidor se puede evitar: capacidad de caché.</li>
+<li><span class="k">D)</span>El servidor puede ampliar las funciones del cliente transfiriéndole código ejecutable: sistema en capas.</li>
+<li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>B.</b> A se contradice: más acoplamiento hace <i>más difícil</i> el cambio. C se contradice, porque la caché sirve justamente para evitar interacciones. D describe code on demand, no sistema en capas.</div></div>
+
+<div class="mc" data-ok="E"><p class="qt">¿Cuál <u>no</u> es uno de los cuatro principios de REST de la clase?</p><ol class="ops">
+<li><span class="k">A)</span>Recursos con identificadores (URIs).</li>
+<li><span class="k">B)</span>Manipulación de recursos por medio de representaciones.</li>
+<li><span class="k">C)</span>Mensajes auto-descriptivos.</li>
+<li><span class="k">D)</span>Hypermedia como base del estado de la aplicación (HATEOAS).</li>
+<li><span class="k">E)</span>Sesiones guardadas en el servidor para recordar a cada cliente.</li>
+</ol><div class="exp"><b>E.</b> Además de no ser un principio, contradice la restricción <b>sin estado</b>: el servidor no recuerda al cliente entre solicitudes.</div></div>
+
+<div class="mc" data-ok="B"><span class="tag">estilo certamen 2025-2</span><p class="qt">Sobre las APIs web que <u>no</u> son RESTful:</p>
+<div class="afi"><div>(i) Pueden exponer acciones directamente en la URI, como <code>/createUser</code>.</div><div>(ii) No están obligadas a cumplir las restricciones cliente-servidor ni sin estado.</div><div>(iii) No pueden usar HTTP como protocolo.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i)</li>
+<li><span class="k">B)</span>Solo (i) y (ii)</li>
+<li><span class="k">C)</span>Solo (ii)</li>
+<li><span class="k">D)</span>Solo (iii)</li>
+<li><span class="k">E)</span>Solo (i) y (iii)</li>
+</ol><div class="exp"><b>B.</b> Una API web, RESTful o no, se accede por HTTP: así la define el curso. Lo que la hace RESTful son las restricciones, no el protocolo. Por eso (iii) es falsa.</div></div>
+
+<div class="q"><b>Pregunta corta.</b> Comente: «Una API es el código de la aplicación publicado en la web, y su objetivo principal es reutilizar ese código en otros sistemas.»</div>
+<details class="sol"><summary>Ver respuesta</summary><div class="body">
+<p>Tiene dos errores:</p>
+<ol>
+<li><b>Una API no es el código:</b> es la <b>interfaz</b> que un programa presenta a otros. Recibe entradas y expone salidas sin mostrar la lógica de negocio interna, y encapsula el estado para que solo se modifique a través de ella.</li>
+<li><b>El reuso no es su objetivo:</b> las APIs no aseguran reuso ni lo buscan. Pensando en microservicios, lo importante es <b>desacoplar</b>. Que otros sistemas la usen, como una API del clima, puede pasar, pero es una consecuencia.</li>
+</ol>
+</div></details>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="t4">
+<h2>4 · Diseñar una API RESTful</h2>
+<p class="lead">URIs, opacidad, seguridad e idempotencia, códigos de respuesta, el proceso de diseño y el patrón API Layer. Es lo que más se pregunta.</p>
+
+<h3>URIs: pedir cosas, no acciones</h3>
+<div class="box def"><div class="bt">URI (Uniform Resource Identifier)</div>Identifica un recurso <b>de forma opaca</b>, como el RUT identifica a cada uno de nosotros. Tiene: esquema (<code>http</code>, <code>https</code>; no distingue mayúsculas), número de puerto, ruta con uno o más segmentos (distingue mayúsculas) y consulta (distingue mayúsculas).</div>
+<p>En REST, <b>las acciones las ponen los verbos HTTP, no la ruta</b>: <code>GET /get_profesor</code> está mal y <code>GET /Profesor</code> está bien.</p>
+<ul>
+  <li><b>Subdominios</b> para agrupar recursos: <code>sp.myserver.com/books</code>, <code>en.myserver.com/books</code>.</li>
+  <li><b><code>/</code> para la jerarquía</b> entre recursos: <code>/world/project/milestones</code>.</li>
+  <li><b><code>-</code> o <code>_</code></b> para leer mejor nombres largos: <code>/project/research-project</code>.</li>
+  <li><b>Sin extensiones</b> de archivo: <code>/image</code> y no <code>/image.jpg</code>.</li>
+  <li><b><code>&amp;</code> para separar parámetros</b> de la consulta: <code>/book?isbn=…&amp;edition=…</code>.</li>
+</ul>
+
+<h3>Preservar la opacidad</h3>
+<p>La URI es un identificador opaco: por ejemplo, la de <i>Profesor</i> no debe traer datos de <i>Curso</i> que dejen inferir la estructura interna. Los tres errores comunes de la clase:</p>
+<div class="tw"><table>
+<tr><th>Error</th><th>Solución</th></tr>
+<tr><td>1. Usar cabeceras personalizadas para procesar</td><td>Las cabeceras son solo informativas, nunca para procesar (por ejemplo, para filtrar).</td></tr>
+<tr><td>2. Usar recursos como gateways</td><td>No usar un recurso genérico tipo «endpoint» para pedir filtrados de información.</td></tr>
+<tr><td>3. Pedirle al cliente que construya la URI de otro recurso</td><td>No devolver parámetros para que el cliente arme la URI: devolver directamente <b>un link al recurso</b>.</td></tr>
+</table></div>
+
+<h3>Seguridad e idempotencia</h3>
+<div class="grid2">
+  <div class="box def"><div class="bt">Seguro</div>No causa efectos secundarios. En la práctica, un método seguro es <b>read-only</b>. Ojo: read-only <b>no</b> significa que el servidor responda siempre lo mismo.</div>
+  <div class="box def"><div class="bt">Idempotente</div>Repetir la solicitud tiene <b>el mismo efecto</b> que enviarla una sola vez (f(x) = y), salvo casos concurrentes.</div>
+</div>
+<div class="tw"><table>
+<tr><th>Método</th><th>Seguro</th><th>Idempotente</th></tr>
+<tr><td><code>GET</code>, <code>HEAD</code>, <code>OPTIONS</code></td><td>Sí</td><td>Sí</td></tr>
+<tr><td><code>PUT</code></td><td>No</td><td>Sí</td></tr>
+<tr><td><code>DELETE</code></td><td>No</td><td>Sí</td></tr>
+<tr><td><code>POST</code></td><td><b>No</b></td><td><b>No</b></td></tr>
+</table></div>
+<div class="box warn"><div class="bt">La frase que más se pregunta</div><b>La seguridad y la idempotencia no son propiedades intrínsecas de los métodos</b>: son <b>garantías que el proveedor del servicio debe dar</b>. «Somos nosotros los responsables de garantizarlas.» Usar GET no hace segura una operación si el código modifica datos.</div>
+<ul>
+  <li><b>PUT es el ejemplo fácil:</b> mandar la misma actualización 5 veces deja el recurso igual que mandarla una vez.</li>
+  <li><b>DELETE es el caso especial:</b> para ser idempotente debe responder lo mismo siempre, por ejemplo <code>200 OK</code>. Responder <code>200</code> la segunda y tercera vez obliga al servidor a <b>registrar los recursos ya borrados</b>; si no, desde la segunda vez respondería <code>404 Not Found</code>.</li>
+  <li><b>POST también puede ser asíncrono:</b> se responde <code>202 Accepted</code> con una representación del recurso creado, que permite consultar el estado de la tarea. Lo mismo vale para un DELETE asíncrono.</li>
+  <li><b>Al consultar esa tarea con GET:</b> <code>200 OK</code> si sigue en ejecución, con su estado; <code>303 See Other</code> si terminó, con <code>Location</code> apuntando al resultado; <code>200 OK</code> si falló, con las razones.</li>
+</ul>
+
+<h3>Verbos y códigos de respuesta</h3>
+<div class="grid2">
+<div class="tw"><table>
+<tr><th>Verbo</th><th>Operación</th></tr>
+<tr><td><code>GET</code></td><td>Listar, buscar, ver, mostrar, obtener</td></tr>
+<tr><td><code>POST</code></td><td>Crear, agregar</td></tr>
+<tr><td><code>PUT</code></td><td>Reemplazar, actualizar</td></tr>
+<tr><td><code>DELETE</code></td><td>Borrar, remover, limpiar, resetear</td></tr>
+</table></div>
+<div class="tw"><table>
+<tr><th>Código</th><th>Significado</th></tr>
+<tr><td>200</td><td>Solicitud exitosa</td></tr>
+<tr><td>201</td><td>Recurso creado</td></tr>
+<tr><td>202</td><td>Aceptada, pero aún no completada</td></tr>
+<tr><td>204</td><td>Recurso eliminado</td></tr>
+<tr><td>400</td><td>Parámetros no válidos</td></tr>
+<tr><td>401</td><td>No se entregaron credenciales</td></tr>
+<tr><td>403</td><td>Usuario no autorizado</td></tr>
+<tr><td>404</td><td>Recurso no encontrado</td></tr>
+</table></div>
+</div>
+<p class="meta">Según la clase: GET → 200, 400, 401, 403, 404 · POST → 200, 201, 202, 400, 401, 403 · PUT → 200, 400, 401, 403 · DELETE → 200, 202, 204, 401, 404.</p>
+
+<h3>El proceso de diseño de una API</h3>
+<p>Una API mal diseñada puede hacer caer un negocio, o al menos frenar su crecimiento. Por eso se diseña de forma sistemática y no ad hoc:</p>
+<div class="tw"><table>
+<tr><th>Paso</th><th>Qué se hace</th><th>Sale</th></tr>
+<tr><td>1. Identificar actores y tareas</td><td>Desde requisitos funcionales y no funcionales</td><td>Casos de uso / diagramas de secuencia</td></tr>
+<tr><td>2. Identificar recursos y candidatos a API</td><td>Buscar <b>sustantivos</b> que se puedan crear, buscar, actualizar o borrar</td><td>Modelo de API preliminar</td></tr>
+<tr><td>3. Validar modelos de API</td><td>Revisión del Comité de Diseño de API</td><td>Modelo de API</td></tr>
+<tr><td>4. Elaborar estructura de recursos</td><td>Relaciones de independencia, dependencia (parentalidad) y asociatividad</td><td>Diseño preliminar</td></tr>
+<tr><td>5. Mapear ciclo de vida</td><td>Qué verbos HTTP tiene cada recurso</td><td>Diseño preliminar</td></tr>
+<tr><td>6. Mapear códigos de respuesta</td><td>Qué códigos devuelve cada operación</td><td>Diseño preliminar</td></tr>
+<tr><td>7. Validar diseño</td><td>Que cumpla lo que necesitan los desarrolladores que la usarán; unifica la documentación (con especificación RAML)</td><td>Diseño de API</td></tr>
+<tr><td>8. Documentar API</td><td>En paralelo a todos los pasos, por ejemplo con RAML</td><td>Documentación</td></tr>
+</table></div>
+<div class="box warn"><div class="bt">Ojo con la granularidad</div>No se mapea cada entidad u objeto directamente a un recurso: el recurso lo usa un «cliente desarrollador». La granularidad depende de la eficiencia en el uso de la red, del tamaño de la representación y de la conveniencia del cliente. Los recursos similares se agrupan en colecciones: <code>user</code> → <code>users</code>.</div>
+
+<h3>Patrón de diseño de API: API Layer</h3>
+<div class="tw"><table>
+<tr><td><b>Contexto</b></td><td>Arquitectura de microservicios.</td></tr>
+<tr><td><b>Problema</b></td><td>Hoy hay interfaz web; a futuro habrá interfaces para otros dispositivos, como el celular.</td></tr>
+<tr><td><b>Solución</b></td><td>Poner una <b>capa de APIs entre los microservicios y la interfaz gráfica</b>. La interfaz, sea web o móvil, habla con la capa y no directamente con los microservicios.</td></tr>
+<tr><td><b>Beneficios</b></td><td>Desacopla la interfaz: una sola API entrega lo necesario para web y para móvil. La capa también puede encargarse de la <b>autenticación y autorización</b>.</td></tr>
+<tr><td><b>Tradeoff</b></td><td><b>Mantenibilidad</b>: es una pieza más que mantener.</td></tr>
+</table></div>
+<p class="meta">El Control 5 retoma esta idea con el <b>API Gateway</b> de la clase 12.</p>
+
+<div class="box sgm"><div class="bt">En el SGM: qué tan RESTful es API_TRAMITACION</div>
+<ul>
+<li><b>Bien:</b> <code>GET /propuestas/:id</code>, <code>POST /propuestas</code> (201 o 400 si falta un elemento), <code>POST /propuestas/:id/revisiones</code> (403 si el profesor no dirige al memorista, 409 si la propuesta no espera revisión) y <code>GET /memorias/:id</code>. Son sustantivos con jerarquía y el verbo pone la acción.</li>
+<li><b>Mal:</b> <code>GET /createTable</code>, que venía en el proyecto base. Es una acción en la ruta y además un GET que modifica datos: no es seguro.</li>
+<li><b>Para discutir:</b> <code>GET /memoristas-sin-avances?desde=…&amp;hasta=…</code> usa parámetros de consulta, lo que está bien, pero el recurso es un filtro con nombre propio. Una alternativa más REST sería <code>GET /memoristas?sinAvancesDesde=…&amp;hasta=…</code>.</li>
+<li><b>El 409:</b> no está en la tabla de la clase. Significa «conflicto con el estado del recurso».</li>
+</ul></div>
+
+<div class="ejer">
+<h3>Ejercicios del tema 4</h3>
+
+<div class="mc" data-ok="C"><span class="tag">estilo certamen 2024-2</span><p class="qt">Para consultar los alumnos de una asignatura por su sigla (por ejemplo INF236), se proponen:<br>(i) <code>/asignatura/&lt;sigla&gt;</code> · (ii) <code>/asignatura/obtener_alumnos?asignatura=&lt;sigla&gt;</code> · (iii) <code>/asignatura/&lt;sigla&gt;/alumnos</code><br>Es correcto afirmar que:</p><ol class="ops">
+<li><span class="k">A)</span>(i) es correcta porque cumple la opacidad, y con eso basta para ser REST.</li>
+<li><span class="k">B)</span>(ii) es incorrecta porque no cumple las restricciones de una API web, así que no puede ser REST.</li>
+<li><span class="k">C)</span>(iii) es adecuada: se basa en una jerarquía de conceptos que se materializa en los recursos.</li>
+<li><span class="k">D)</span>Todas son válidas, porque el consumidor decide cómo usar el recurso.</li>
+<li><span class="k">E)</span>Ninguna es correcta.</li>
+</ol><div class="exp"><b>C.</b> (iii) usa <code>/</code> para la jerarquía asignatura → alumnos. (i) devuelve la asignatura, no sus alumnos, y la opacidad sola no basta. (ii) sí es una API web, pero tiene una acción en la ruta (<code>obtener_</code>): falla como REST, no como API web.</div></div>
+
+<div class="mc" data-ok="B"><p class="qt">Sobre seguridad e idempotencia:</p>
+<div class="afi"><div>(i) PUT es idempotente pero no seguro.</div><div>(ii) POST es idempotente: enviar el mismo POST dos veces deja el sistema igual.</div><div>(iii) Son garantías que el proveedor del servicio debe dar, no propiedades intrínsecas de los métodos.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i)</li>
+<li><span class="k">B)</span>(i) y (iii)</li>
+<li><span class="k">C)</span>(ii) y (iii)</li>
+<li><span class="k">D)</span>Todas</li>
+<li><span class="k">E)</span>Solo (iii)</li>
+</ol><div class="exp"><b>B.</b> POST no es seguro ni idempotente: dos POST iguales crean dos recursos. (iii) es la frase textual de la lámina.</div></div>
+
+<div class="mc" data-ok="C"><span class="tag">estilo certamen 2024-1</span><p class="qt">Sobre APIs RESTful, ¿qué es correcto?</p>
+<div class="afi"><div>(i) Operación POST, URI <code>http://api.film.com/AddNewFilm</code>.</div><div>(ii) Operación PUT, recurso <code>/aves/7565</code>: agrega una ave nueva.</div><div>(iii) La seguridad y la idempotencia no son propiedades intrínsecas de los métodos.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i)</li>
+<li><span class="k">B)</span>Solo (ii)</li>
+<li><span class="k">C)</span>Solo (iii)</li>
+<li><span class="k">D)</span>(i) y (ii)</li>
+<li><span class="k">E)</span>(ii) y (iii)</li>
+</ol><div class="exp"><b>C.</b> (i) pone una acción en la URI: debería ser <code>POST /films</code>. (ii) usa PUT para crear, que corresponde a POST; PUT reemplaza o actualiza. El mismo error aparece en el certamen 2025-2 con «PUT + <code>/addSolicitud</code>».</div></div>
+
+<div class="mc" data-ok="C"><p class="qt">Un cliente hace un POST que inicia una tarea larga. El servidor la acepta, pero no la termina de inmediato. ¿Qué código corresponde, según la clase?</p><ol class="ops">
+<li><span class="k">A)</span>200 OK</li>
+<li><span class="k">B)</span>201 Created</li>
+<li><span class="k">C)</span>202 Accepted, con una representación de la tarea para consultar su estado</li>
+<li><span class="k">D)</span>204 No Content</li>
+<li><span class="k">E)</span>303 See Other</li>
+</ol><div class="exp"><b>C.</b> Es el POST asíncrono. El <b>303</b> aparece después, cuando el cliente consulta la tarea con GET y esta ya terminó: lo redirige al resultado.</div></div>
+
+<div class="mc" data-ok="A"><p class="qt">Un sistema de microservicios hoy tiene solo interfaz web, y el próximo año tendrá una app móvil. Se propone que ambas interfaces hablen con una capa intermedia de APIs y no directamente con los microservicios. ¿Qué patrón es y cuál es su tradeoff?</p><ol class="ops">
+<li><span class="k">A)</span>API Layer; el tradeoff es la mantenibilidad.</li>
+<li><span class="k">B)</span>API Layer; el tradeoff es que ya no se pueden autenticar los usuarios.</li>
+<li><span class="k">C)</span>Docker compose; el tradeoff es el consumo de recursos.</li>
+<li><span class="k">D)</span>API Layer; su beneficio principal es garantizar el reuso de los microservicios.</li>
+</ol><div class="exp"><b>A.</b> B está invertida: la capa <i>puede encargarse</i> de autenticar y autorizar. D vuelve a la trampa del reuso: el beneficio es el <b>desacoplamiento</b> de la interfaz.</div></div>
+
+<div class="q"><b>Pregunta corta.</b> En el SGM, diseña con <b>verbo HTTP + recurso</b> el servicio para (a) consultar una propuesta y (b) que el profesor guía registre su revisión. ¿Qué código respondes en (b) si el profesor no dirige al memorista?</div>
+<details class="sol"><summary>Ver respuesta</summary><div class="body">
+<ul>
+<li><b>(a)</b> <code>GET /propuestas/{id}</code> → <code>200</code> con la propuesta, o <code>404</code> si no existe. Es seguro e idempotente.</li>
+<li><b>(b)</b> <code>POST /propuestas/{id}/revisiones</code>, con el resultado y las observaciones en el cuerpo, en JSON → <code>201</code> si queda registrada. La revisión depende de la propuesta (parentalidad), por eso va bajo ella.</li>
+<li>Si el profesor no dirige al memorista: <code>403</code>, porque no está autorizado. Si no hubiera sesión ni credenciales, sería <code>401</code>.</li>
+</ul>
+<p>Lo que quita puntaje en los certámenes: no indicar el verbo, o usar acciones como <code>GET /propuestas/registrarRevision</code>. En el certamen 2024-2 eso quitaba el 80 % de la pregunta.</p>
+</div></details>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="chuleta">
+<h2>Chuleta</h2>
+<div class="tw"><table>
+<tr><th>Tema</th><th>Lo que tienes que poder decir sin mirar</th></tr>
+<tr><td>VM vs. contenedor</td><td>La VM es un SO independiente: aísla más, pero pesa más y arranca más lento. El contenedor comparte el kernel del anfitrión: es liviano, no tiene overhead de hardware y puede compartir librerías. Los dos resuelven el mismo problema: encapsular dependencias y mover la aplicación entre ambientes.</td></tr>
+<tr><td>Ventajas del contenedor</td><td>Pruebas de concepto rápidas, imágenes reutilizables en distintos ambientes, despliegue fácil, escalar con costo eficiente y CI/CD. No son obligatorios para microservicios.</td></tr>
+<tr><td>Docker</td><td>La imagen se crea desde un Dockerfile (<code>FROM</code>, <code>RUN</code>, <code>WORKDIR</code>, <code>COPY</code>) y el contenedor, desde una imagen. Tener imágenes no implica tener contenedores. <code>-p HOST:CONT</code>, <code>--rm</code> borra el contenedor y no la imagen, <code>-v</code> monta un volumen. Docker compose orquesta varios contenedores desde un YML; en sistemas grandes, Kubernetes o Swarm.</td></tr>
+<tr><td>API</td><td>Interfaz directa (entradas → salidas) que no muestra la lógica interna y encapsula el estado. No busca reuso: lo importante es desacoplar. Es un producto en sí misma.</td></tr>
+<tr><td>REST</td><td>Fielding, 2000: eficiente, escalable y confiable. «Request things rather than actions». 4 principios: URIs, representaciones, mensajes auto-descriptivos, HATEOAS. Restricciones: cliente/servidor, sin estado, caché, capas, code on demand e interfaz uniforme (verbo + recurso).</td></tr>
+<tr><td>URIs</td><td>Sustantivos y no verbos, <code>/</code> para la jerarquía, sin extensiones, <code>&amp;</code> en la consulta. Opacas: sin cabeceras para procesar, sin recursos-gateway, y con links en vez de pedirle al cliente que arme URIs.</td></tr>
+<tr><td>Seguro / idempotente</td><td>GET, HEAD y OPTIONS: sí/sí. PUT y DELETE: no/sí. POST: no/no. Son garantías del proveedor. DELETE idempotente obliga a recordar lo borrado. POST asíncrono: 202, y luego 303 al resultado.</td></tr>
+<tr><td>Códigos</td><td>200 ok · 201 creado · 202 aceptado sin terminar · 204 eliminado · 400 parámetros inválidos · 401 sin credenciales · 403 no autorizado · 404 no encontrado.</td></tr>
+<tr><td>API Layer</td><td>Una capa de APIs entre la UI (web o móvil) y los microservicios. Desacopla y puede autenticar. Tradeoff: mantenibilidad.</td></tr>
+</table></div>
+<div class="box tip"><div class="bt">Siguiente paso</div>Con esto ya tienes la base del Control 5: patrones de microservicios (Saga, API Composition, CQRS, API Gateway) y patrones IoT.</div>
+</section>
+
+</main>
+</div>
+
+<script>
+function tema(){
+  var r=document.documentElement;
+  var actual=r.getAttribute("data-theme");
+  if(!actual){
+    var oscuro=window.matchMedia("(prefers-color-scheme: dark)").matches;
+    actual=oscuro?"dark":"light";
+  }
+  r.setAttribute("data-theme", actual==="dark"?"light":"dark");
+}
+function abrir(v){
+  var ds=document.querySelectorAll("details.sol");
+  for(var i=0;i<ds.length;i++){ ds[i].open=v; }
+}
+function numerar(){
+  var bloques=document.querySelectorAll(".ejer");
+  for(var b=0;b<bloques.length;b++){
+    var qs=bloques[b].querySelectorAll(".mc");
+    for(var i=0;i<qs.length;i++){
+      var qt=qs[i].querySelector(".qt");
+      var n=document.createElement("span"); n.className="n"; n.textContent=(i+1)+". ";
+      qt.insertBefore(n,qt.firstChild);
+    }
+  }
+}
+function contar(){
+  var hechas=document.querySelectorAll(".mc.done");
+  var buenas=0;
+  for(var i=0;i<hechas.length;i++){ if(hechas[i].getAttribute("data-res")==="1") buenas++; }
+  document.getElementById("pts").textContent=buenas;
+  document.getElementById("tot").textContent=hechas.length;
+}
+function marcar(mc,elegida){
+  var ok=mc.getAttribute("data-ok");
+  var lis=mc.querySelectorAll("ol.ops li");
+  for(var i=0;i<lis.length;i++){
+    var k=lis[i].querySelector(".k").textContent.charAt(0);
+    if(k===ok) lis[i].classList.add("ok");
+    else if(lis[i]===elegida) lis[i].classList.add("bad");
+  }
+  mc.classList.add("done");
+}
+document.addEventListener("click",function(e){
+  var li=e.target.closest(".mc ol.ops li");
+  if(!li) return;
+  var mc=li.closest(".mc");
+  if(mc.classList.contains("done")) return;
+  var k=li.querySelector(".k").textContent.charAt(0);
+  mc.setAttribute("data-res", k===mc.getAttribute("data-ok")?"1":"0");
+  marcar(mc,li);
+  contar();
+});
+function reiniciar(){
+  var qs=document.querySelectorAll(".mc");
+  for(var i=0;i<qs.length;i++){
+    qs[i].classList.remove("done");
+    qs[i].removeAttribute("data-res");
+    var lis=qs[i].querySelectorAll("li");
+    for(var j=0;j<lis.length;j++){ lis[j].classList.remove("ok","bad"); }
+  }
+  contar();
+}
+numerar();
+var navLinks=[].slice.call(document.querySelectorAll("nav a"));
+var secciones=[].slice.call(document.querySelectorAll("main section[id]"));
+var barra=document.querySelector(".sidebar");
+var seccionActual=null;
+function espiar(){
+  if(!secciones.length) return;
+  var y=window.scrollY+140, id=secciones[0].id;
+  for(var i=0;i<secciones.length;i++){ if(secciones[i].offsetTop<=y) id=secciones[i].id; }
+  if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4) id=secciones[secciones.length-1].id;
+  if(id===seccionActual) return;
+  seccionActual=id;
+  var activo=null;
+  navLinks.forEach(function(a){
+    var on=a.getAttribute("href")==="#"+id;
+    a.classList.toggle("active",on);
+    if(on) activo=a;
+  });
+  if(activo && barra){
+    var r=activo.getBoundingClientRect(), s=barra.getBoundingClientRect();
+    if(r.top<s.top+60 || r.bottom>s.bottom-40){ barra.scrollTop+=(r.top-s.top)-barra.clientHeight/3; }
+  }
+}
+window.addEventListener("scroll",espiar,{passive:true});
+window.addEventListener("resize",function(){ seccionActual=null; espiar(); });
+espiar();
+</script>
+</body>
+</html>
