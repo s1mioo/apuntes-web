@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Caleb Baez">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control 5 · Patrones de microservicios e IoT · INF-236</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --code:#f0f1f4;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:290px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --code:#232733;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --code:#232733;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62;font-size:16.5px;-webkit-font-smoothing:antialiased}
+  .layout{display:flex;align-items:flex-start}
+  .sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;
+    overflow-y:auto;background:var(--panel);border-right:1px solid var(--line);padding:22px 16px 60px}
+  .content{flex:1 1 auto;min-width:0;padding:38px clamp(16px,4vw,64px) 120px;max-width:1000px;margin:0 auto}
+  .brand{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+  .brand .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--ex));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;flex:0 0 auto}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:6px 10px;border-radius:7px;
+    font-size:13.5px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  main a{color:var(--brand);text-underline-offset:2px}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer}
+  .btn:hover{background:var(--brand-soft)}
+  .btn.on{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+  .marcador{margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+    font-size:13px;background:var(--bg)}
+  .marcador b{color:var(--accent);font-size:16px}
+  h2{font-size:26px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:19px;margin:28px 0 6px;scroll-margin-top:20px}
+  h4{font-size:15.5px;margin:18px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  .meta{color:var(--muted);font-size:13.5px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:46px}
+  section:first-of-type{border-top:0;margin-top:0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14.5px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-size:13px}
+  .tw{overflow-x:auto}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px}
+  .pill.libro{background:var(--ex-soft);color:var(--ex)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;margin-bottom:2px}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)}
+  .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)}
+  .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+  .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)}
+  .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--ex);background:var(--ex-soft)}
+  .box.libro .bt{color:var(--ex)}
+  .box.sgm{border-left-color:var(--accent);background:var(--panel)}
+  .box.sgm .bt{color:var(--accent)}
+  .orig{font-size:12px;color:var(--muted);font-weight:600}
+  details.sol{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:14px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.sol>summary{cursor:pointer;padding:11px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);font-size:14px}
+  details.sol>summary::-webkit-details-marker{display:none}
+  details.sol>summary::before{content:"\25B8";font-size:11px;margin-right:8px;display:inline-block;transition:transform .15s}
+  details.sol[open]>summary::before{transform:rotate(90deg)}
+  details.sol .body{padding:6px 18px 16px}
+  .q{border-left:3px solid var(--brand);padding:2px 0 2px 14px;margin:20px 0 8px}
+  .q b{color:var(--brand)}
+  /* alternativas */
+  .mc{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0;
+    background:var(--panel);box-shadow:var(--shadow)}
+  .mc .qt{margin:0 0 8px;font-weight:600;font-size:15.5px}
+  .mc .qt .n{color:var(--brand)}
+  .mc .afi{margin:4px 0 8px;padding-left:4px;font-size:15px}
+  .mc .afi div{margin:3px 0}
+  .mc ol.ops{list-style:none;padding:0;margin:0}
+  .mc ol.ops li{border:1px solid var(--line);border-radius:8px;padding:7px 10px;margin:6px 0;
+    cursor:pointer;font-size:15px;display:flex;gap:9px}
+  .mc ol.ops li .k{font-weight:700;color:var(--brand);flex:0 0 auto}
+  .mc ol.ops li:hover{background:var(--brand-soft)}
+  .mc.done ol.ops li{cursor:default}
+  .mc.done ol.ops li:hover{background:transparent}
+  .mc ol.ops li.ok,.mc.done ol.ops li.ok:hover{background:var(--accent-soft);border-color:var(--accent)}
+  .mc ol.ops li.bad,.mc.done ol.ops li.bad:hover{background:var(--warn-soft);border-color:var(--warn)}
+  .mc .exp{display:none;margin-top:10px;font-size:14.5px;border-top:1px dashed var(--line);padding-top:8px}
+  .mc.done .exp{display:block}
+  .mc .exp b{color:var(--accent)}
+  .mc .tags{float:right;margin:0 0 6px 10px;display:flex;gap:6px}
+  .mc .tag{font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;background:var(--brand-soft);color:var(--brand)}
+  .mc .tag.c{background:var(--ana-soft);color:var(--ana)}
+  #modo{display:none;border:1px solid var(--warn);border-left-width:4px;border-radius:10px;padding:12px 16px;
+    margin:16px 0;background:var(--warn-soft)}
+  #modo b{color:var(--warn)}
+  #reloj{font-variant-numeric:tabular-nums;font-weight:700}
+  /* figuras */
+  figure.fig{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;
+    margin:18px 0;box-shadow:var(--shadow)}
+  figure.fig svg{width:100%;height:auto;display:block;max-width:720px;margin:0 auto}
+  figure.fig figcaption{font-size:13px;color:var(--muted);margin-top:8px}
+  .s-t{fill:var(--ink);font-size:13px;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  .s-s{fill:var(--muted);font-size:11.5px;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  .s-h{fill:var(--ink);font-size:14px;font-weight:700;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+  .s-a{fill:var(--brand-soft);stroke:var(--brand);stroke-width:1.3}
+  .s-b{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.3}
+  .s-c{fill:var(--ana-soft);stroke:var(--ana);stroke-width:1.3}
+  .s-w{fill:var(--warn-soft);stroke:var(--warn);stroke-width:1.3}
+  .s-g{fill:var(--code);stroke:var(--muted);stroke-width:1.3}
+  .s-ln{stroke:var(--muted);fill:none;stroke-width:1.4}
+  .s-lw{stroke:var(--warn);fill:none;stroke-width:1.4;stroke-dasharray:5 4}
+  .s-ah{fill:var(--muted)}
+  .s-aw{fill:var(--warn)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  @media (max-width:900px){
+    .sidebar{display:none}
+    .grid2,.grid3{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">C5</div>
+    <div><h1>Control 5 · Patrones</h1><small>INF-236 · Microservicios e IoT</small></div>
+  </div>
+  <div class="toolbar">
+    <button class="btn" onclick="tema()">Claro / oscuro</button>
+    <button class="btn" onclick="abrir(true)">Abrir pautas</button>
+    <button class="btn" onclick="abrir(false)">Cerrar pautas</button>
+  </div>
+  <div class="marcador">Alternativas: <b id="pts">0</b> correctas de <span id="tot">0</span> respondidas
+    <div class="toolbar" style="margin-top:8px">
+      <button class="btn" onclick="modoControl()">Modo control (5 al azar)</button>
+      <button class="btn" onclick="barajar()">Barajar</button>
+      <button class="btn" onclick="reiniciar()">Reiniciar</button>
+      <button class="btn" onclick="revelar()">Ver todas</button>
+    </div>
+  </div>
+  <nav>
+    <div class="grp">Antes de partir</div>
+    <a href="#inicio">Qué entra y cómo estudiar</a>
+    <a href="#plan">Plan hasta el jueves</a>
+    <a href="#mapa">Mapa de la materia</a>
+    <div class="grp">Clase 12 · Patrones de microservicios</div>
+    <a href="#ms">1 · El punto de partida</a>
+    <a href="#patron">2 · Qué es un patrón</a>
+    <a href="#desafios">3 · Los desafíos al dividir</a>
+    <a href="#apicomp">4 · API Composition</a>
+    <a href="#cqrs">5 · CQRS</a>
+    <a href="#elegir">6 · API Composition vs. CQRS</a>
+    <a href="#consistencia">7 · Consistencia: ACID, CAP y eventual</a>
+    <a href="#dosfases">8 · Commit de dos fases</a>
+    <a href="#saga">9 · SAGA</a>
+    <a href="#sagaprop">10 · Propiedades y anomalías de SAGA</a>
+    <div class="grp">Clase 13 · Patrones IoT</div>
+    <a href="#iot">11 · IoT: dispositivos y limitantes</a>
+    <a href="#iotpat">12 · Gateway, Shadow y Wakeup Trigger</a>
+    <div class="grp">Para el control</div>
+    <a href="#trampas">Las trampas que se repiten</a>
+    <a href="#alt">Alternativas y modo control</a>
+    <a href="#chuleta">Chuleta</a>
+    <div class="grp">Extra (sirve para el certamen)</div>
+    <a href="#sgm">Aplicación al SGM</a>
+  </nav>
+</aside>
+<main class="content">
+
+<!-- ============================================================ -->
+<section id="inicio">
+<h2>Control 5 · Patrones de microservicios e IoT</h2>
+<p class="lead">Guía para el control de las clases 12 (<i>Patrones de microservicios</i>) y 13 (<i>Patrones IoT</i>) de INF-236. Control de alternativas, con 4 o 5 opciones por pregunta.</p>
+
+<div class="box warn">
+  <div class="bt">Qué entra</div>
+  <p><b>Clase 12:</b> DDD y bounded context, qué es un patrón, los desafíos de dividir en microservicios, los patrones de consulta (<b>API Composition</b> y <b>CQRS</b>), la consistencia (ACID, <b>teorema CAP</b>, consistencia eventual), el <b>commit de dos fases</b> y el patrón <b>SAGA</b>. <b>Clase 13:</b> IoT y sus tres patrones: <b>Gateway</b>, <b>Shadow / Virtual Device</b> y <b>Wakeup Trigger</b>.</p>
+  <p>Contenedores y APIs (clases 10 y 11) eran del Control 4. Están resumidos en <a href="../control4/Guia-Control4-Contenedores-APIs.html">la guía del Control 4</a>, que conviene leer antes, porque esta guía los da por sabidos.</p>
+</div>
+
+<h3>Cómo usar esta guía</h3>
+<ol>
+  <li><b>Lee los temas en orden.</b> Cada uno sigue las láminas. Las cajas moradas <span class="pill libro">del libro</span> agregan lo que explica mejor Richardson (<i>Microservices Patterns</i>, 2018). La clase 12 se basa en ese libro.</li>
+  <li><b>Al terminar cada tema</b>, usa los botones de filtro del <a href="#alt">banco de alternativas</a> para practicar solo ese tema.</li>
+  <li><b>El último día</b>, usa el <b>Modo control</b> (barra lateral): saca 5 preguntas al azar y toma el tiempo. Repítelo varias veces.</li>
+</ol>
+
+<h3>Cómo leer las cajas</h3>
+<div class="grid2">
+  <div class="box def"><div class="bt">Definición</div>Lo que dicen las láminas, casi textual.</div>
+  <div class="box warn"><div class="bt">Trampa</div>Lo que el profesor ya usó para armar alternativas falsas.</div>
+  <div class="box ana"><div class="bt">Analogía</div>Para entender la idea, no para escribirla en la prueba.</div>
+  <div class="box libro"><div class="bt">Del libro</div>Richardson u otra fuente de la bibliografía, cuando explica mejor lo que está en las láminas.</div>
+</div>
+<p class="meta">Las preguntas con la etiqueta <span class="pill" style="background:var(--ana-soft);color:var(--ana)">certamen</span> vienen de los certámenes del C2 de 2023-1 a 2025-2 y del recuperativo 2024-2, reescritas. Esos certámenes no traen la pauta de las alternativas: la respuesta está razonada desde las láminas y las pautas de desarrollo.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="plan">
+<h2>Plan hasta el jueves</h2>
+<div class="tw"><table>
+<tr><th>Día</th><th>Tiempo</th><th>Qué hacer</th></tr>
+<tr><td><b>Domingo 8</b></td><td>1 h</td><td><a href="../control4/Guia-Control4-Contenedores-APIs.html">Guía del Control 4</a> completa, con sus ejercicios. Es la base de todo lo demás.</td></tr>
+<tr><td rowspan="4"><b>Lunes 9</b></td><td>30 min</td><td><a href="#mapa">Mapa</a> y temas <a href="#ms">1</a>, <a href="#patron">2</a> y <a href="#desafios">3</a>. Lo clave: «trabajo en conjunto» (orquestar o coreografiar) no es lo mismo que «comunicación» (síncrona o asíncrona).</td></tr>
+<tr><td>1 h 15</td><td>Temas <a href="#apicomp">4</a>, <a href="#cqrs">5</a> y <a href="#elegir">6</a>, y después el filtro <b>Consultas</b> del banco.</td></tr>
+<tr><td>1 h 30</td><td>Temas <a href="#consistencia">7</a> a <a href="#sagaprop">10</a>. SAGA es lo que más se pregunta. Después, el filtro <b>Consistencia y SAGA</b>.</td></tr>
+<tr><td>45 min</td><td>Filtro <b>Microservicios</b> y repasar las preguntas que fallaste.</td></tr>
+<tr><td rowspan="3"><b>Martes 10</b></td><td>40 min</td><td>Temas <a href="#iot">11</a> y <a href="#iotpat">12</a>, y el filtro <b>IoT</b>.</td></tr>
+<tr><td>30 min</td><td><a href="#sgm">Aplicación al SGM</a>: sirve para el certamen y obliga a usar los patrones en un caso real.</td></tr>
+<tr><td>50 min</td><td>El banco completo, una pasada, sin filtros.</td></tr>
+<tr><td rowspan="3"><b>Miércoles 11</b></td><td>20 min</td><td><a href="#trampas">Trampas</a> y <a href="#chuleta">chuleta</a>.</td></tr>
+<tr><td>1 h 15</td><td><b>Modo control</b>, unas 8 rondas. Anota el tema de cada error y vuelve a leer esa sección.</td></tr>
+<tr><td>25 min</td><td>La chuleta otra vez, sin mirar: intenta decir cada fila en voz alta.</td></tr>
+</table></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="mapa">
+<h2>Mapa de la materia</h2>
+<p>La clase 12 tiene una sola historia: al dividir un sistema en microservicios, cada uno con su base de datos, aparecen <b>dos problemas</b>, y cada uno tiene sus patrones. La clase 13 repite la estructura problema → patrón con dispositivos IoT.</p>
+<figure class="fig">
+<svg viewBox="0 0 720 330" role="img" aria-label="Mapa de problemas y patrones">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-ah"/></marker></defs>
+  <rect class="s-g" x="230" y="10" width="260" height="46" rx="8"/>
+  <text class="s-h" x="360" y="30" text-anchor="middle">Microservicios con BD propia</text>
+  <text class="s-s" x="360" y="47" text-anchor="middle">el dato del negocio queda en varios contextos</text>
+  <path class="s-ln" d="M300,56 L180,96" marker-end="url(#ah)"/>
+  <path class="s-ln" d="M420,56 L540,96" marker-end="url(#ah)"/>
+  <rect class="s-a" x="40" y="98" width="280" height="46" rx="8"/>
+  <text class="s-h" x="180" y="118" text-anchor="middle">Problema 1: consultas</text>
+  <text class="s-s" x="180" y="135" text-anchor="middle">que requieren varios contextos</text>
+  <rect class="s-c" x="400" y="98" width="280" height="46" rx="8"/>
+  <text class="s-h" x="540" y="118" text-anchor="middle">Problema 2: consistencia</text>
+  <text class="s-s" x="540" y="135" text-anchor="middle">al modificar datos de varios contextos</text>
+  <path class="s-ln" d="M130,144 L100,184" marker-end="url(#ah)"/>
+  <path class="s-ln" d="M230,144 L260,184" marker-end="url(#ah)"/>
+  <rect class="s-a" x="30" y="186" width="140" height="58" rx="8"/>
+  <text class="s-h" x="100" y="208" text-anchor="middle">API Composition</text>
+  <text class="s-s" x="100" y="224" text-anchor="middle">consultar a cada uno</text>
+  <text class="s-s" x="100" y="238" text-anchor="middle">y combinar · síncrono</text>
+  <rect class="s-a" x="190" y="186" width="140" height="58" rx="8"/>
+  <text class="s-h" x="260" y="208" text-anchor="middle">CQRS</text>
+  <text class="s-s" x="260" y="224" text-anchor="middle">vista de solo lectura</text>
+  <text class="s-s" x="260" y="238" text-anchor="middle">con eventos · asíncrono</text>
+  <path class="s-lw" d="M490,144 L470,184" marker-end="url(#ah)"/>
+  <path class="s-ln" d="M590,144 L610,184" marker-end="url(#ah)"/>
+  <rect class="s-w" x="390" y="186" width="150" height="58" rx="8"/>
+  <text class="s-h" x="465" y="208" text-anchor="middle">Commit 2 fases</text>
+  <text class="s-s" x="465" y="224" text-anchor="middle">transacción distribuida</text>
+  <text class="s-s" x="465" y="238" text-anchor="middle">descartada</text>
+  <rect class="s-c" x="550" y="186" width="140" height="58" rx="8"/>
+  <text class="s-h" x="620" y="208" text-anchor="middle">SAGA</text>
+  <text class="s-s" x="620" y="224" text-anchor="middle">transacciones locales</text>
+  <text class="s-s" x="620" y="238" text-anchor="middle">+ compensaciones</text>
+  <rect class="s-b" x="40" y="270" width="640" height="48" rx="8"/>
+  <text class="s-h" x="360" y="290" text-anchor="middle">Clase 13 · IoT: tres problemas de los dispositivos</text>
+  <text class="s-s" x="360" y="308" text-anchor="middle">no pueden conectarse → Gateway · no siempre disponibles → Shadow · se duermen → Wakeup Trigger</text>
+</svg>
+<figcaption>Las dos ramas de la clase 12 y los tres patrones de la clase 13. La línea punteada marca la opción que la clase descarta.</figcaption>
+</figure>
+
+<div class="box warn"><div class="bt">La regla que más puntos da</div>
+<b>API Composition y CQRS son para consultar. SAGA es para mantener la consistencia al modificar.</b> En los certámenes, proponer SAGA para una consulta quita la mitad del puntaje (pauta 2024-1 y 2024-2). Y si la consulta usa datos de <b>un solo servicio</b>, no hace falta ningún patrón.
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="ms">
+<h2>1 · El punto de partida</h2>
+<p class="lead">DDD, el caso del monolito y las ventajas y desventajas de los microservicios.</p>
+
+<h3>Domain-Driven Design: bounded context</h3>
+<div class="box def"><div class="bt">Integridad: bounded context</div>Separar los modelos para que crezcan de forma independiente, pero sin perder de vista el todo.</div>
+<p>Cada <b>contexto acotado</b> (bounded context) tiene su propio modelo del negocio, y de ahí salen los microservicios: uno por dominio de negocio independiente.</p>
+<div class="box warn"><div class="bt">Trampa (certamen 2025-2)</div>
+<ul style="margin:0">
+<li>Bounded context es un concepto de <b>DDD</b>, no de microservicios.</li>
+<li>DDD <b>no</b> es «una forma de documentar el diseño», ni un estilo de arquitectura que englobe a microservicios o REST.</li>
+<li>Lo correcto: DDD propone un modelado basado en la realidad del negocio, y microservicios es un estilo de arquitectura para desarrollar una aplicación.</li>
+</ul></div>
+
+<h3>El caso de estudio: del monolito a los microservicios</h3>
+<div class="grid2">
+<div class="box def"><div class="bt">Monolito</div>
+<ul style="margin:0">
+<li>Funcionalidades en <b>n capas</b>: presentación, servicio y acceso a datos.</li>
+<li>Una o más bases de datos <b>compartidas</b> por todas las funcionalidades, con acceso único a los datos.</li>
+<li>Sirve para sistemas o negocios <b>de tamaño acotado</b>. El desarrollo es rápido y más sencillo.</li>
+<li><b>Pero:</b> ¿qué pasa si el negocio crece, si cambia un subnegocio o si aumenta el uso en ciertos períodos?</li>
+</ul></div>
+<div class="box def"><div class="bt">Microservicios</div>
+<ul style="margin:0">
+<li>Se identifican <b>dominios de negocio independientes</b>.</li>
+<li><b>La base de datos también se separa</b>, según el ámbito de cada microservicio.</li>
+<li>Cada microservicio es un <b>desarrollo independiente</b>, incluso en su base de datos.</li>
+<li>El sistema consume los microservicios y <b>se abstrae del detalle</b> de cada implementación.</li>
+</ul></div>
+</div>
+
+<div class="tw"><table>
+<tr><th>Ventajas</th><th>Desventajas</th></tr>
+<tr><td>
+<ul style="margin:0">
+<li>Tienen poco código, son simples y tienen un solo propósito.</li>
+<li>Se despliegan y escalan <b>de manera independiente</b>.</li>
+<li>Son <b>independientes de la tecnología</b> entre sí: múltiples stacks y evolución incremental.</li>
+<li>Los equipos despliegan cambios por separado, con un pipeline de despliegue más rápido.</li>
+<li>Mejor aislamiento ante fallas.</li>
+</ul></td><td>
+<ul style="margin:0">
+<li>Las arquitecturas distribuidas tienen otras consideraciones: <b>CAP</b>.</li>
+<li><b>La información del negocio queda distribuida en distintos contextos</b>, y eso exige medidas adicionales: los patrones de esta clase.</li>
+<li>Complejidad de lo distribuido: <b>consistencia eventual</b> y comunicación entre servicios.</li>
+<li>Operaciones más complejas, como la observabilidad y la solución de problemas. Pueden ser difíciles de administrar, aunque existen herramientas.</li>
+</ul></td></tr>
+</table></div>
+
+<div class="box warn"><div class="bt">Trampa: «la información distribuida» es una desventaja</div>El recuperativo 2024-2 preguntó «¿cuál NO es una ventaja?», y la respuesta era «la información del negocio queda distribuida en varios contextos». Las otras opciones (despliegue separado, escalar por separado, ser agnósticos de la tecnología) son ventajas textuales.</div>
+
+<h3>No son una bala de plata</h3>
+<ul>
+  <li>La arquitectura adecuada depende de muchos factores. <b>Recomendar microservicios siempre es un mal consejo, pero no recomendarlos nunca también.</b></li>
+  <li>Las decisiones dependen de aspectos emocionales y racionales. El <b>formato de patrones</b> es una buena forma de debatir la tecnología, porque es objetivo.</li>
+</ul>
+
+<div class="box libro"><div class="bt">Del libro (Richardson, cap. 1)</div>
+<ul style="margin:0">
+<li><b>Definición:</b> la arquitectura de microservicios es un estilo que descompone una aplicación en un conjunto de servicios <b>desplegables de forma independiente</b> y débilmente acoplados, organizados en torno a <b>capacidades del negocio</b>.</li>
+<li><b>Acelerar la entrega no depende solo de la arquitectura:</b> también importan el proceso, como DevOps y la entrega continua, y la organización de los equipos.</li>
+<li><b>Cada servicio es dueño de sus datos.</b> Compartir una base de datos entre servicios rompe el débil acoplamiento.</li>
+</ul>
+Las tres ideas aparecen en alternativas del certamen 2024-2 y del 2025-2.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="patron">
+<h2>2 · Qué es un patrón</h2>
+<div class="box def"><div class="bt">Patrón</div>Describe un <b>problema recurrente</b> y entrega una <b>propuesta de solución genérica</b> aplicable a ese problema. En ingeniería de software: «una idea que ha sido útil en un contexto práctico y probablemente será útil en otros» <span class="orig">(Fowler, <i>Analysis Patterns</i>)</span>. Dicho de otra forma: <b>una solución reutilizable a un problema que ocurre en un contexto, junto con sus consecuencias.</b></div>
+<ul>
+  <li>Algunos patrones se pueden llevar directamente al código, pero <b>no son una solución completa</b>.</li>
+  <li>Los sistemas bien diseñados se construyen, en general, con patrones.</li>
+</ul>
+
+<h3>La estructura de un patrón</h3>
+<div class="tw"><table>
+<tr><th>Parte</th><th>Qué es</th></tr>
+<tr><td><b>Contexto</b></td><td>La situación.</td></tr>
+<tr><td><b>Problema</b></td><td>Lo que hay que resolver en ese contexto.</td></tr>
+<tr><td><b>Fuerzas</b></td><td>Los requerimientos y recursos que hay que abordar. <b>Pueden entrar en conflicto</b>, y quizás no se puedan resolver todos: hay que priorizar según el contexto. Ejemplo: la lógica asíncrona rinde mejor, pero la síncrona es más fácil de entender.</td></tr>
+<tr><td><b>Solución</b></td><td>El patrón.</td></tr>
+<tr><td><b>Contexto resultante (consecuencias)</b></td><td><b>Beneficios</b> (incluidas las fuerzas resueltas), <b>inconvenientes</b> (incluidas las fuerzas no resueltas) y <b>problemas nuevos</b> que aparecen al aplicarlo. Da una visión más completa y menos sesgada para decidir.</td></tr>
+<tr><td><b>Patrones relacionados</b></td><td>Alternativas, y patrones que abordan los problemas nuevos.</td></tr>
+</table></div>
+<div class="box warn"><div class="bt">Trampa</div>«La única consecuencia del patrón es que soluciona el problema; si hubiese otras consecuencias no sería un patrón» es <b>falsa</b>. Todo patrón tiene inconvenientes y problemas nuevos: es parte de su definición. Esta alternativa salió en tres certámenes.</div>
+<p class="meta">El catálogo que usa la clase está en <code>microservices.io/patterns</code>, el sitio de Richardson.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="desafios">
+<h2>3 · Los desafíos al dividir</h2>
+<p class="lead">Tres desafíos que la clase plantea antes de los patrones, con base en Newman (<i>Building Microservices</i>).</p>
+
+<h3>Desafío 1: integrar datos de más de un microservicio</h3>
+<p>Por necesidades del negocio hay que integrar datos de varios microservicios. Una salida es <b>una base de datos compartida</b>. Pero eso choca con el <b>«débilmente acoplado»</b>. Si se desacopla, se gana independencia, pero <b>el problema no desaparece</b>: hay que verlo desde otra perspectiva, y para eso están los patrones.</p>
+
+<h3>Desafío 2: la forma de comunicación</h3>
+<div class="grid2">
+  <div class="box def"><div class="bt">Síncrona</div>Llamada y respuesta. Es lo familiar: quien llama espera la respuesta.</div>
+  <div class="box def"><div class="bt">Asíncrona</div>No siempre se puede esperar una respuesta. La lógica cambia: ahora se <b>«avisa» sin esperar respuesta</b>, con mensajes o eventos.</div>
+</div>
+
+<h3>Desafío 3: procesos que necesitan a varios microservicios</h3>
+<p>Algunos procesos de negocio requieren el trabajo de más de un microservicio. Ese <b>trabajo en conjunto</b> se puede <b>orquestar</b> o <b>coreografiar</b>.</p>
+<div class="grid2">
+  <div class="box def"><div class="bt">Orquestar</div>Alguien asume la responsabilidad de <b>decir qué hace cada uno y a quién le toca</b>. Hay un coordinador central.</div>
+  <div class="box def"><div class="bt">Coreografiar</div>No hay coordinador: cada participante reacciona a los <b>eventos</b> de los demás. Las decisiones quedan distribuidas.</div>
+</div>
+<div class="box ana"><div class="bt">Analogía</div>Orquestar es una orquesta con director: cada músico espera su indicación. Coreografiar es un grupo de baile que se sabe la coreografía: cada uno entra cuando ve el paso anterior, sin que nadie lo mande.</div>
+
+<div class="box warn"><div class="bt">La distinción favorita del profesor</div>
+<p><b>Trabajo en conjunto</b> (orquestado o coreografiado) y <b>comunicación</b> (síncrona o asíncrona) son dos ejes <b>independientes</b>:</p>
+<ul>
+<li>«Al <b>orquestar</b> el trabajo en conjunto, <b>no implica</b> necesariamente que la comunicación deba ser <b>síncrona</b>.» Salió completa en los certámenes 2023-2 y 2025-2.</li>
+<li>SAGA siempre usa comunicación <b>asíncrona</b>, y aun así se puede <b>orquestar o coreografiar</b> (pauta 2023-2). Decir que «SAGA se coordina coreografiada porque usa mensajería asíncrona» es falso.</li>
+<li>No mezcles los ejes: «mensajería orquestada» o «trabajo en conjunto síncrono» son frases mal construidas que el profesor usa como distractores.</li>
+</ul></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="apicomp">
+<h2>4 · API Composition</h2>
+<p class="lead">Primer patrón para el problema 1: consultas que necesitan datos de varios contextos.</p>
+
+<p>Cuando los datos están centralizados, consultar es relativamente simple. Al separar, hay consultas que necesitan <b>más de un contexto de negocio</b>.</p>
+
+<div class="box def"><div class="bt">API Composition</div>Para hacer una consulta que requiere varios servicios, <b>se consulta a cada uno de ellos (vía sus APIs) y luego se combinan los resultados</b> de cada llamada.</div>
+
+<p>La definición tiene dos elementos:</p>
+<ul>
+  <li><b>El API Composer:</b> quien hace las consultas a cada servicio y compone la respuesta.</li>
+  <li><b>Los servicios proveedores:</b> cada uno de los servicios a los que se consulta.</li>
+</ul>
+
+<h3>¿Quién hace de composer?</h3>
+<p><b>El patrón no lo dice.</b> Hay tres alternativas, y la diferencia está en la responsabilidad:</p>
+<ol>
+  <li><b>Una aplicación (frontend)</b> que hace la consulta. Es poco práctico.</li>
+  <li><b>Como parte del API Gateway.</b></li>
+  <li><b>Como un servicio independiente.</b></li>
+</ol>
+
+<h3>La lógica de la composición</h3>
+<ul>
+  <li>A veces las llamadas se pueden hacer <b>en paralelo</b>, porque no dependen de los resultados de las otras.</li>
+  <li>Otras veces el resultado de una llamada se necesita para la siguiente. La idea es que no todo sea así.</li>
+  <li><b>La lógica de composición afecta la latencia.</b></li>
+</ul>
+<div class="box warn"><div class="bt">Trampas (certamen 2024-2)</div>
+<ul style="margin:0">
+<li>«Las consultas se deben hacer siempre de forma secuencial»: <b>falso</b>, pueden ser en paralelo.</li>
+<li>«Asegura consistencia, porque no hay duplicidad de datos»: <b>falso</b>, la consistencia es una de sus desventajas.</li>
+<li>Se puede inferir que el trabajo en conjunto es <b>orquestado</b>: el composer decide a quién llamar. <b>Verdadero.</b></li>
+</ul></div>
+
+<h3>Resumen</h3>
+<div class="tw"><table>
+<tr><th>Ventajas</th><th>Desventajas</th></tr>
+<tr><td><b>Simple e intuitivo.</b></td><td>
+<ul style="margin:0">
+<li><b>Overhead:</b> muchas llamadas y consultas.</li>
+<li><b>Riesgo en la disponibilidad:</b> si un proveedor se cae, la consulta falla.</li>
+<li><b>Caché.</b></li>
+<li><b>Consistencia:</b> cada servicio responde en un momento distinto.</li>
+<li><b>Aumento de complejidad.</b></li>
+</ul></td></tr>
+</table></div>
+
+<div class="box libro"><div class="bt">Del libro (Richardson, cap. 7): cuándo API Composition no alcanza</div>
+<p>Richardson la recomienda como opción por defecto, por su simplicidad, pero la descarta cuando la consulta obligaría a hacer <b>joins en memoria de grandes conjuntos de datos</b>: traer miles de registros de cada servicio para cruzarlos en el composer. En ese caso conviene CQRS. Sus desventajas, en sus palabras: mayor overhead, menor disponibilidad y falta de consistencia transaccional.</p>
+<p>Por eso los criterios para decidir son: <b>cuántos servicios hay que consultar</b>, <b>qué tan crítica es la disponibilidad</b> y si hay que <b>procesar en memoria grandes volúmenes de datos</b>. Todos son válidos (certamen 2024-2).</p></div>
+
+<h3>API Gateway</h3>
+<p>Las láminas lo nombran como uno de los lugares donde puede vivir el composer. El certamen 2025-2 lo preguntó directamente:</p>
+<div class="box libro"><div class="bt">Del libro (Richardson, cap. 8): API Gateway</div>Es un servicio que funciona como <b>punto de entrada único</b> para los clientes externos. Enruta cada petición al servicio que corresponde, puede <b>componer</b> respuestas de varios servicios, de modo que el cliente hace una sola llamada en vez de muchas, y concentra funciones transversales como la <b>autenticación</b>. Es la misma idea del patrón <b>API Layer</b> de la clase 11: una capa entre los clientes (web, móvil) y los microservicios.</div>
+<div class="box warn"><div class="bt">Trampa</div>El API Gateway <b>no</b> garantiza consistencia fuerte ni atomicidad: solo enruta y compone. Si la pregunta habla de «un único punto de acceso para no hacer múltiples llamadas», la respuesta es API Gateway.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="cqrs">
+<h2>5 · CQRS</h2>
+<p class="lead">Segundo patrón para consultas: una vista de solo lectura que se mantiene actualizada con eventos.</p>
+
+<div class="box def"><div class="bt">CQRS: Command Query Responsibility Segregation</div>Para hacer la consulta que requiere varios servicios, <b>usa eventos para mantener una «vista» de solo lectura que replica los datos desde cada servicio</b>.</div>
+<p>La definición tiene dos elementos:</p>
+<ul>
+  <li><b>Una o más «vistas»</b>: bases de datos de solo lectura, diseñadas para consultar.</li>
+  <li><b>Eventos que replican los datos</b> y actualizan las vistas.</li>
+</ul>
+<div class="box warn"><div class="bt">Qué se segrega</div>La «segregación de responsabilidades» separa <b>comandos</b> (lo que modifica datos) de <b>queries</b> (lo que consulta). No separa «lecturas y queries», que son lo mismo, ni «SAGAs y queries» (certamen 2025-2).</div>
+
+<h3>Dos formas de aplicarlo</h3>
+<ul>
+  <li><b>Dentro de un mismo servicio:</b> la separación entre comandos y consultas también se puede hacer dentro de un servicio.</li>
+  <li><b>Como servicio de consultas aparte:</b> se crean servicios que <b>solo tienen consultas</b> sobre la vista generada para eso.</li>
+</ul>
+<p>En ambos casos la lógica es la misma: <b>una vista, y eventos que actualizan o replican los datos desde sus orígenes.</b></p>
+
+<h3>Diseñar la vista</h3>
+<p>El patrón <b>no indica cómo diseñar las vistas</b>, pero da pistas de qué considerar:</p>
+<ul>
+  <li><b>El tipo de base de datos y su diseño</b>, según la naturaleza de lo que se guarda y la forma en que se va a consultar.</li>
+  <li><b>Cómo se accede a los datos</b> y los casos de especial atención: <b>concurrencia</b>, <b>manejo de eventos e idempotencia</b> (un evento repetido no debe aplicarse dos veces) y <b>consistencia eventual</b>.</li>
+</ul>
+
+<h3>Resumen</h3>
+<div class="tw"><table>
+<tr><th>Ventajas</th><th>Desventajas</th></tr>
+<tr><td>
+<ul style="margin:0">
+<li>Permite <b>consultas complejas de forma eficiente</b>.</li>
+<li>Permite <b>diseñar vistas especializadas</b>.</li>
+<li><b>Refuerza la separación de responsabilidades.</b></li>
+</ul></td><td>
+<ul style="margin:0">
+<li><b>Más complejo de implementar.</b></li>
+<li><b>Demoras de actualización:</b> la vista queda atrás mientras los eventos llegan. Eso es consistencia eventual.</li>
+</ul></td></tr>
+</table></div>
+
+<div class="box libro"><div class="bt">Del libro (Richardson, cap. 7)</div>
+<ul style="margin:0">
+<li>El <b>lado de los comandos</b> modifica los datos y publica eventos. El <b>lado de las consultas</b> tiene <b>manejadores de eventos</b> que actualizan la vista y una <b>capa de acceso a datos</b> para consultarla. Por eso, en el certamen 2024-2, «disponer de un manejador de eventos y una capa de acceso a los datos» era correcto.</li>
+<li>Con CQRS un servicio puede implementar de forma eficiente <b>un conjunto diverso de consultas</b>, con una vista por tipo de consulta. Las vistas se pueden <b>escalar por separado</b> según la demanda.</li>
+<li>El retraso entre que cambia el dato y que se actualiza la vista se llama <i>replication lag</i>, y es lo que la lámina llama «demoras de actualización».</li>
+</ul></div>
+
+<div class="box tip"><div class="bt">Cómo reconocer CQRS en un enunciado</div>«Cuando se crea o actualiza X, se guarda un <b>evento</b>; los <b>suscriptores</b> actualizan los datos que <b>consulta</b> otra área»: eso es CQRS, no API Composition (escenario Kanban, certamen 2025-2). La señal es que nadie consulta a los servicios en el momento: la vista ya tiene los datos.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="elegir">
+<h2>6 · API Composition vs. CQRS</h2>
+<div class="tw"><table>
+<tr><th></th><th>API Composition</th><th>CQRS</th></tr>
+<tr><td>Idea</td><td>Preguntarle a cada servicio y combinar al vuelo</td><td>Tener los datos ya replicados en una vista de solo lectura</td></tr>
+<tr><td>Comunicación</td><td><b>Síncrona</b>: llamadas a las APIs</td><td><b>Asíncrona</b>: eventos</td></tr>
+<tr><td>Trabajo en conjunto</td><td>Orquestado por el composer</td><td>Los servicios publican y la vista se suscribe</td></tr>
+<tr><td>Datos duplicados</td><td>No</td><td>Sí, en la vista</td></tr>
+<tr><td>Ventaja principal</td><td>Simple e intuitivo</td><td>Consultas complejas y eficientes, vistas especializadas</td></tr>
+<tr><td>Desventaja principal</td><td>Overhead, disponibilidad, consistencia</td><td>Complejidad, demoras de actualización</td></tr>
+<tr><td>Consistencia eventual</td><td>No está a salvo: los servicios responden en momentos distintos</td><td>Sí, en la vista, por las demoras</td></tr>
+</table></div>
+
+<div class="box def"><div class="bt">Cómo se relacionan (certamen 2023-2, recuperativo 2024-2 y 2025-2)</div>
+<ul style="margin:0">
+<li><b>Son patrones alternativos</b>: dos enfoques para el mismo problema. CQRS usa comunicación <b>asíncrona</b> y API Composition, <b>síncrona</b>.</li>
+<li><b>No son incompatibles en un mismo sistema</b>: no se mezclan en una misma consulta, pero cada consulta puede resolverse con el que convenga.</li>
+<li>Ninguno es una generalización del otro, y CQRS no es «API Composition con mensajería asíncrona».</li>
+</ul></div>
+
+<h3>Cómo responder las preguntas de escenario</h3>
+<p>Los certámenes ponen un escenario con varios servicios y cuatro propuestas. Sigue estos pasos:</p>
+<ol>
+  <li><b>¿Es una consulta o una modificación?</b> Si es una consulta, SAGA está descartada.</li>
+  <li><b>¿La consulta necesita datos de más de un servicio?</b> Si los datos están en un solo servicio, no hace falta ningún patrón. Ejemplo del 2023-1: listar los tipos de atención, que están todos en un solo servicio.</li>
+  <li><b>¿El enunciado dice cómo se almacenan los datos, cuántos son o si hay eventos o un bróker?</b> Si no lo dice, la respuesta suele ser «<b>faltan antecedentes</b>: se puede usar API Composition o CQRS, pero no elegir uno a priori» (2023-2, 2024-1 y 2025-2).</li>
+  <li><b>Si menciona eventos, suscriptores o vistas</b>, es CQRS. <b>Si menciona joins en memoria de grandes volúmenes</b>, conviene CQRS. <b>Si pide lo más simple, sin más datos</b>, es API Composition.</li>
+</ol>
+<div class="box warn"><div class="bt">Trampas frecuentes</div>
+<ul style="margin:0">
+<li>«Siempre se debe usar API Composition para hacer consultas» o «siempre CQRS»: <b>falso</b>, depende.</li>
+<li>«Si hay que preguntar a varios microservicios, es síntoma de mal diseño»: <b>falso</b>, es el problema normal que resuelven estos patrones.</li>
+<li>«CQRS usa mensajería síncrona»: <b>falso</b>, usa eventos.</li>
+<li>«Usar claves de negocio como el RUT elimina los riesgos de consistencia»: <b>falso</b>.</li>
+</ul></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="consistencia">
+<h2>7 · Consistencia: ACID, CAP y eventual</h2>
+<p class="lead">El problema 2: modificar un dato «compartido» por varios contextos.</p>
+
+<p>En un monolito el dato está en un solo lugar. Modificar datos es tan normal como consultarlos, pero cuando el dato es <b>compartido por varios contextos</b>, mantener la consistencia se vuelve un desafío. La clase no aborda el diseño de los esquemas de base de datos.</p>
+
+<h3>Dos significados de «consistencia»</h3>
+<div class="grid2">
+<div class="box def"><div class="bt">ACID (base de datos relacional)</div><b>A</b>tomicidad, <b>C</b>onsistencia, a<b>I</b>slamiento (isolation) y <b>D</b>urabilidad. Al terminar toda transacción, la base de datos queda en un estado consistente: <b>transita entre estados consistentes</b>.</div>
+<div class="box def"><div class="bt">Teorema CAP (Brewer, 2000)</div><b>C</b>onsistencia, disponibilidad (<b>A</b>vailability) y tolerancia a la <b>P</b>artición. <b>En un contexto distribuido solo se pueden asegurar dos de los tres.</b> La consistencia de CAP no es la misma que la de ACID.</div>
+</div>
+
+<h3>El ejemplo de los colores</h3>
+<p>La clase usa 6 nodos (A a F) que guardan un «color», que es el dato:</p>
+<ul>
+  <li><b>Tolerancia a la partición:</b> la falla o ausencia de un nodo no afecta al sistema como un todo.</li>
+  <li><b>Disponibilidad:</b> el sistema entrega una respuesta cuando se consulta un dato.</li>
+  <li><b>Consistencia:</b> da el mismo color sin importar a qué nodo se pregunte.</li>
+</ul>
+<figure class="fig">
+<svg viewBox="0 0 720 210" role="img" aria-label="Las tres combinaciones del teorema CAP">
+  <rect class="s-a" x="10" y="10" width="220" height="190" rx="10"/>
+  <text class="s-h" x="120" y="36" text-anchor="middle">C + A</text>
+  <text class="s-t" x="120" y="62" text-anchor="middle">sin tolerancia a la partición</text>
+  <text class="s-s" x="120" y="96" text-anchor="middle">Si un nodo se desconecta,</text>
+  <text class="s-s" x="120" y="114" text-anchor="middle">el sistema falla.</text>
+  <text class="s-s" x="120" y="150" text-anchor="middle">(Un sistema distribuido</text>
+  <text class="s-s" x="120" y="168" text-anchor="middle">casi nunca puede elegirlo)</text>
+  <rect class="s-c" x="250" y="10" width="220" height="190" rx="10"/>
+  <text class="s-h" x="360" y="36" text-anchor="middle">C + P</text>
+  <text class="s-t" x="360" y="62" text-anchor="middle">sin disponibilidad</text>
+  <text class="s-s" x="360" y="96" text-anchor="middle">El dato puede no estar disponible:</text>
+  <text class="s-s" x="360" y="114" text-anchor="middle">para entregar el valor consistente</text>
+  <text class="s-s" x="360" y="132" text-anchor="middle">pese a la partición, hay que esperar.</text>
+  <rect class="s-b" x="490" y="10" width="220" height="190" rx="10"/>
+  <text class="s-h" x="600" y="36" text-anchor="middle">A + P</text>
+  <text class="s-t" x="600" y="62" text-anchor="middle">sin consistencia</text>
+  <text class="s-s" x="600" y="96" text-anchor="middle">Preguntar el color en F no es</text>
+  <text class="s-s" x="600" y="114" text-anchor="middle">lo mismo que preguntarlo en C.</text>
+  <text class="s-s" x="600" y="150" text-anchor="middle">Lo que suelen elegir</text>
+  <text class="s-s" x="600" y="168" text-anchor="middle">los microservicios</text>
+</svg>
+<figcaption>Las tres combinaciones del ejemplo de la clase: en cada una se sacrifica lo que falta.</figcaption>
+</figure>
+
+<div class="box def"><div class="bt">Consistencia eventual</div>En el ejemplo, la consistencia es «tener el mismo valor». En un negocio distribuido se entiende como <b>coherencia respecto al negocio</b>. Que en un momento no se tenga el valor coherente no impide obtenerlo en el futuro: <b>eventualmente se alcanzará el valor consistente</b>. Eso es la consistencia eventual (<i>eventual consistency</i>).</div>
+<p>En muchos escenarios se le da más atención a la <b>disponibilidad</b> que a la consistencia. El problema es cómo mantener la consistencia en una arquitectura de microservicios.</p>
+
+<div class="box warn"><div class="bt">Trampas sobre la consistencia eventual</div>
+<ul style="margin:0">
+<li><b>No es una ventaja</b> de los microservicios, ni un problema del monolito que los microservicios resuelvan, ni un patrón de diseño (recuperativo 2024-2).</li>
+<li><b>SAGA no la elimina:</b> con SAGA se alcanza el estado consistente, pero <i>eventualmente</i>. Seguimos en consistencia eventual, y por CAP no se pueden asegurar las tres propiedades a la vez (pauta 2023-1).</li>
+<li><b>No es una preocupación «siempre» que haya microservicios.</b> Solo lo es cuando la coherencia depende de datos guardados en más de un contexto y con bases de datos separadas. Con una base de datos compartida, o si los datos no están distribuidos, no es problema (pauta 2024-1).</li>
+<li><b>Débil acoplamiento y CAP:</b> el débil acoplamiento apunta a la <b>disponibilidad del todo</b> y a tolerar la falla de algún servicio. En consecuencia, no se puede asegurar consistencia (certamen 2024-2).</li>
+</ul></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="dosfases">
+<h2>8 · Commit de dos fases</h2>
+<p class="lead">La primera solución que se viene a la mente, y por qué la clase la descarta.</p>
+<p>Un enfoque es usar <b>transacciones distribuidas</b>: una transacción que usa recursos distintos. Están ligadas a productos existentes y usan el <b>commit de dos fases</b> (two-phase commit). El problema es que <b>no todos los motores las soportan</b>, como las bases de datos no relacionales, ni todos los brókers de mensajería.</p>
+
+<div class="box def"><div class="bt">Commit de dos fases</div>
+<ol style="margin:0">
+<li><b>Votación:</b> los participantes de la transacción distribuida «votan»: le indican al administrador de transacciones si pudieron llevar adelante la transacción o no.</li>
+<li><b>Decisión:</b> si todos votaron que sí, el administrador les indica a todos que hagan <b>commit</b>. Si no, que hagan <b>rollback</b>.</li>
+</ol></div>
+<p>Los escenarios problemáticos:</p>
+<ul>
+  <li>Que se caiga el administrador de la transacción.</li>
+  <li>Que se caiga algún participante al momento de votar.</li>
+  <li>Que la transacción falle después de haber votado que no había problema. Se asume que no pasará.</li>
+  <li><b>Los recursos quedan tomados</b> mientras se espera la decisión.</li>
+</ul>
+<p>Conclusión de la clase: hace falta un enfoque que <b>no dependa de transacciones distribuidas</b> y que mantenga la consistencia entre varios servicios. Ese enfoque es <b>SAGA</b>.</p>
+<div class="box tip"><div class="bt">Cuándo sí es la respuesta</div>Si el enunciado exige que <b>ningún otro componente pueda leer valores intermedios</b>, es decir, que todo se confirme o nada sea visible, la respuesta es el <b>commit de dos fases</b> y no SAGA, porque SAGA no tiene aislamiento (certamen 2025-2, el préstamo con Solicitudes y Pagos).</div>
+<div class="box warn"><div class="bt">Trampas</div>No es «ejecutar dos veces el mismo comando», ni «detectar problemas con una doble validación», ni «pasos secuenciales con compensaciones»: eso último es SAGA.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="saga">
+<h2>9 · SAGA</h2>
+<p class="lead">El patrón para mantener la consistencia entre servicios. Es lo que más se pregunta.</p>
+
+<div class="box def"><div class="bt">SAGA</div>Para mantener la consistencia de los datos entre distintos servicios, se usa <b>una secuencia de transacciones locales coordinadas por medio de mensajería asíncrona</b>.</div>
+<ul>
+  <li><b>Se define una saga por cada comando</b> que requiere actualizar datos en varios servicios.</li>
+  <li>Una saga es una <b>secuencia de transacciones locales</b>. Cada una se ejecuta de forma independiente, según la implementación de cada servicio.</li>
+  <li>La idea viene de Garcia-Molina y Salem (1987), en bases de datos distribuidas. En la clase 9: «¿Rollback? ¡NO! Compensación, desde el punto de vista del negocio.»</li>
+</ul>
+
+<h3>Tres observaciones clave</h3>
+<ol>
+  <li><b>La mensajería asíncrona importa:</b> permite ejecutar los pasos incluso si un participante no está disponible en ese momento.</li>
+  <li><b>Las sagas no están aisladas entre sí</b>, como sí lo están las transacciones ACID.</li>
+  <li><b>Las sagas se revierten con transacciones compensatorias.</b> Como una saga tiene n pasos, si uno falla no se puede hacer un simple rollback de cada transacción, porque las anteriores ya hicieron commit. Hay que ejecutar <b>compensaciones</b>, <b>en orden inverso</b>.</li>
+</ol>
+
+<figure class="fig">
+<svg viewBox="0 0 720 200" role="img" aria-label="Saga con compensaciones en orden inverso">
+  <defs>
+    <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-ah"/></marker>
+    <marker id="aw2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-aw"/></marker>
+  </defs>
+  <rect class="s-a" x="20" y="30" width="140" height="50" rx="8"/><text class="s-h" x="90" y="52" text-anchor="middle">T1 · Pedidos</text><text class="s-s" x="90" y="70" text-anchor="middle">crea pedido pendiente</text>
+  <rect class="s-a" x="200" y="30" width="140" height="50" rx="8"/><text class="s-h" x="270" y="52" text-anchor="middle">T2 · Cocina</text><text class="s-s" x="270" y="70" text-anchor="middle">crea ticket pendiente</text>
+  <rect class="s-a" x="380" y="30" width="140" height="50" rx="8"/><text class="s-h" x="450" y="52" text-anchor="middle">T3 · Pagos</text><text class="s-s" x="450" y="70" text-anchor="middle">autoriza la tarjeta</text>
+  <rect class="s-w" x="560" y="30" width="140" height="50" rx="8"/><text class="s-h" x="630" y="52" text-anchor="middle">✗ falla</text><text class="s-s" x="630" y="70" text-anchor="middle">tarjeta rechazada</text>
+  <path class="s-ln" d="M160,55 L198,55" marker-end="url(#ah2)"/>
+  <path class="s-ln" d="M340,55 L378,55" marker-end="url(#ah2)"/>
+  <path class="s-ln" d="M520,55 L558,55" marker-end="url(#ah2)"/>
+  <rect class="s-c" x="200" y="128" width="140" height="50" rx="8"/><text class="s-h" x="270" y="150" text-anchor="middle">C2 · Cocina</text><text class="s-s" x="270" y="168" text-anchor="middle">rechaza el ticket</text>
+  <rect class="s-c" x="20" y="128" width="140" height="50" rx="8"/><text class="s-h" x="90" y="150" text-anchor="middle">C1 · Pedidos</text><text class="s-s" x="90" y="168" text-anchor="middle">rechaza el pedido</text>
+  <path class="s-lw" d="M630,80 L630,153 L342,153" marker-end="url(#aw2)"/>
+  <path class="s-lw" d="M200,153 L162,153" marker-end="url(#aw2)"/>
+  <text class="s-s" x="490" y="146" text-anchor="middle">compensaciones en orden inverso</text>
+</svg>
+<figcaption>Simplificado del ejemplo «Create Order Saga» de Richardson. Si falla la autorización de la tarjeta, se compensan los pasos anteriores, del último al primero.</figcaption>
+</figure>
+
+<h3>Los pasos de una saga, resumidos</h3>
+<ol>
+  <li>Se ejecuta un <b>comando</b> que gatilla una serie de transacciones locales: se inicia la saga.</li>
+  <li>Cada paso es una transacción local en un servicio distinto.</li>
+  <li>Los <b>participantes</b> son los servicios afectados por el cambio, y ejecutan sus transacciones en cierto orden.</li>
+  <li>Si una transacción local falla, se gatillan las <b>transacciones compensatorias</b>.</li>
+</ol>
+
+<h3>Cómo se coordina: coreografía u orquestación</h3>
+<div class="grid2">
+<div class="box def"><div class="bt">Coreografía</div>
+<p style="margin-top:0">Cada participante se comunica por <b>eventos</b> y se suscribe a los eventos de los otros. La toma de decisiones y el orden de los pasos quedan <b>distribuidos</b>.</p>
+<p><b>A favor:</b> para sagas sencillas es un enfoque simple, con poco acoplamiento, porque cada uno solo se suscribe a eventos.</p>
+<p style="margin-bottom:0"><b>En contra:</b> puede ser difícil de entender al desarrollar, puede haber dependencias cíclicas (no necesariamente malas) y a veces la suscripción crea cierto acoplamiento.</p></div>
+<div class="box def"><div class="bt">Orquestación</div>
+<p style="margin-top:0">Alguien, el <b>orquestador</b>, asume la responsabilidad de <b>decir qué hace cada uno</b>. Hay <b>mensajes comando</b> hacia los participantes, se procesan sus respuestas y se deciden los próximos pasos.</p>
+<p><b>A favor:</b> dependencias simples, bajo acoplamiento, separación de responsabilidades y lógica de negocio más simple.</p>
+<p style="margin-bottom:0"><b>En contra:</b> se puede <b>concentrar demasiada lógica en el orquestador</b>. Hay que repartir las responsabilidades donde corresponde.</p></div>
+</div>
+<div class="box warn"><div class="bt">Trampas sobre la coordinación</div>
+<ul style="margin:0">
+<li>El riesgo de <b>concentrar demasiada lógica</b> es de la <b>orquestación</b>, no de la coreografía, y además <b>no es una ventaja</b> (certamen 2024-2).</li>
+<li>«SAGA se debe coordinar por coreografía porque la comunicación asíncrona lo impone»: <b>falso</b>, se puede orquestar (2023-1 y 2025-2).</li>
+<li>SAGA <b>coordina</b> microservicios y <b>permite orquestarlos</b>. Lo que <b>no</b> hace es dar una base de datos de solo lectura: eso es CQRS (2023-2).</li>
+</ul></div>
+
+<h3>Los tipos de transacción dentro de una saga</h3>
+<div class="tw"><table>
+<tr><th>Tipo</th><th>Qué es</th></tr>
+<tr><td><b>Compensable</b></td><td>Se puede anular con una compensación.</td></tr>
+<tr><td><b>Pivote</b></td><td>El punto de no retorno: <b>si es exitosa, la saga seguirá hasta completarse</b>. Podría ser la última compensable.</td></tr>
+<tr><td><b>Recuperable</b></td><td><b>Tiene garantía de ser exitosa.</b> Va después de la pivote.</td></tr>
+</table></div>
+<div class="box libro"><div class="bt">Del libro (Richardson, cap. 4)</div>En el ejemplo del pedido, la <b>pivote</b> es autorizar la tarjeta: si se autoriza, lo que sigue (aprobar el ticket, aprobar el pedido) son pasos <b>recuperables</b>, que se reintentan hasta que resulten. Antes de la pivote todo es compensable. Por eso el orden de los pasos es una decisión de diseño: conviene dejar al final los pasos que no pueden fallar.</div>
+<div class="box warn"><div class="bt">Trampas sobre la pivote y la compensación</div>
+<ul style="margin:0">
+<li>«La pivote debe ir a la mitad, para equilibrar las compensaciones»: <b>falso</b>, no hay tal recomendación.</li>
+<li>«Una compensación es un ROLLBACK, solo que asíncrono»: <b>falso</b>. El rollback ya no es posible porque las transacciones locales hicieron commit: la compensación es <b>otra transacción</b> que deshace el efecto desde el negocio.</li>
+<li>«La pivote es intrascendente, da lo mismo cuántas compensaciones haya»: <b>falso</b>.</li>
+</ul></div>
+
+<h3>Publicar y suscribirse</h3>
+<p>La última lámina resume cómo se comunican: cada servicio <b>publica los eventos relevantes</b> y <b>se suscribe a los canales que quiere escuchar</b>. Los demás se suscriben solo si lo necesitan. Es la base de la coreografía y de CQRS.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="sagaprop">
+<h2>10 · Propiedades y anomalías de SAGA</h2>
+
+<div class="box def"><div class="bt">Qué asegura una saga</div>
+<ul style="margin:0">
+<li><b>Atomicidad:</b> todas sus transacciones se ejecutan, o no se ejecuta ninguna (las que correspondan se compensan).</li>
+<li><b>Consistencia:</b> <b>eventual</b> entre servicios. Cada servicio la asegura internamente.</li>
+<li><b>Durabilidad:</b> los efectos son duraderos en cada servicio.</li>
+<li><b>Pero NO asegura el aislamiento</b> (isolation): una saga no hace uso exclusivo del recurso.</li>
+</ul></div>
+<div class="box ana"><div class="bt">Para recordarlo</div>Una saga es <b>ACD sin I</b>: tiene la A, la C (eventual) y la D de ACID, pero no la I.</div>
+
+<h3>Las anomalías por falta de aislamiento</h3>
+<div class="tw"><table>
+<tr><th>Anomalía</th><th>Qué pasa</th></tr>
+<tr><td><b>Lost updates</b></td><td>Una saga actualiza datos sin leer los cambios que hizo otra.</td></tr>
+<tr><td><b>Dirty reads</b></td><td>Una saga lee datos que otra saga todavía está modificando.</td></tr>
+<tr><td><b>Fuzzy / nonrepeatable reads</b></td><td>Una saga lee el mismo dato en distintos pasos y obtiene valores distintos, porque otra saga lo modificó entre medio.</td></tr>
+</table></div>
+
+<h3>Contramedidas: son parte del diseño</h3>
+<p>Cómo enfrentar estos problemas es parte del diseño e implementación de la saga:</p>
+<div class="tw"><table>
+<tr><th>Contramedida</th><th>En qué consiste</th></tr>
+<tr><td><b>Semantic lock</b></td><td>Las transacciones compensables ponen una <b>marca (flag)</b> en los datos que pueden cambiar, como un estado «pendiente».</td></tr>
+<tr><td><b>Commutative updates</b></td><td>Diseñar las actualizaciones para que se puedan aplicar <b>en cualquier orden</b>.</td></tr>
+<tr><td><b>Pessimistic view</b></td><td>Ordenar los pasos de la saga para <b>disminuir el riesgo del negocio</b>.</td></tr>
+<tr><td><b>Reread value</b></td><td><b>Volver a leer</b> los valores antes de actualizarlos y verificar que no cambiaron.</td></tr>
+<tr><td><b>Version file</b></td><td><b>Guardar un registro</b> de las operaciones requeridas.</td></tr>
+</table></div>
+<p class="meta">Los nombres en inglés vienen de Richardson (cap. 4); las láminas dan solo la descripción en español.</p>
+
+<div class="box warn"><div class="bt">Trampas sobre las propiedades</div>
+<ul style="margin:0">
+<li>«Una saga no puede usar un dato mientras otra saga lo esté usando»: <b>falso</b>, no hay aislamiento.</li>
+<li>«Las sagas son aisladas entre sí, porque una compensación solo anula los cambios de la propia saga»: <b>falso</b>.</li>
+<li>«Las sagas no son atómicas porque las compensaciones anulan cambios»: <b>falso</b>, la compensación es justamente lo que hace posible la atomicidad.</li>
+<li>«Las sagas solo son duraderas si se supera la pivote»: <b>falso</b>, siempre son duraderas.</li>
+<li>«Una saga no puede asegurar consistencia porque los microservicios privilegian A y P»: <b>falso</b>, asegura consistencia <i>eventual</i>.</li>
+<li>Leer datos que otra saga está modificando es un problema de <b>aislamiento</b>, no de atomicidad.</li>
+<li>«Una vez terminada, el resultado se mantiene hasta que otra acción lo modifique» (durabilidad) y «todas se realizan o se compensan» (atomicidad) son <b>verdaderas</b>.</li>
+</ul></div>
+
+<div class="box tip"><div class="bt">Cómo reconocer SAGA en un enunciado</div>Una <b>operación de negocio que modifica datos</b> en varios servicios, con pasos que <b>pueden fallar</b> y obligan a deshacer lo hecho: procesar un pedido, actualizar el inventario y registrar el pago. Si el enunciado solo pide <b>consultar o reportar</b>, no es SAGA.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="iot">
+<h2>11 · IoT: dispositivos y limitantes</h2>
+<div class="box def"><div class="bt">IoT (Internet of Things, internet de las cosas)</div>Término genérico que en la práctica abarca varias tecnologías: redes de sensores, computación embebida y otras. Son <b>dispositivos con ciertas capacidades, conectados con su entorno</b>. Se usa en redes, ciudades y agricultura inteligentes, y en la industria. Ejemplo de la clase: Ericsson y los productores de vino del valle del Mosela, que con sensores deciden cuándo fertilizar, regar o cosechar.</div>
+
+<h3>Qué tiene un dispositivo</h3>
+<div class="grid2">
+  <div class="box def"><div class="bt">Sensores</div>«Capturan» los cambios del ambiente.</div>
+  <div class="box def"><div class="bt">Actuadores</div>Realizan acciones sobre el entorno.</div>
+</div>
+<p>Además tienen <b>cierta capacidad de procesamiento</b>, que puede variar, la capacidad de <b>comunicarse</b> con otros dispositivos o con un servidor backend, y una <b>fuente de energía</b>.</p>
+
+<h3>Las limitantes que motivan los patrones</h3>
+<ul>
+  <li><b>Protocolos de comunicación</b>, como BLE o Zigbee, y la <b>capacidad de procesamiento</b>.</li>
+  <li><b>La alimentación</b>: reemplazable, finita, dependiente del ambiente o siempre conectada.</li>
+</ul>
+<p>Por eso los principales problemas de disponibilidad de los dispositivos son <b>la conexión y la energía</b>, que son los insumos esenciales para que funcionen como sensores (certamen 2024-1).</p>
+
+<p>El escenario de toda la clase: un <b>sistema de riego</b>. Los sensores miden la humedad del suelo y, según el resultado, se gatillan o no los procesos de riego.</p>
+</section>
+
+<!-- ============================================================ -->
+<section id="iotpat">
+<h2>12 · Gateway, Shadow y Wakeup Trigger</h2>
+<p class="lead">Tres problemas del sistema de riego y tres patrones. Hay que reconocerlos por el problema que describe el enunciado.</p>
+
+<div class="tw"><table>
+<tr><th></th><th>Gateway</th><th>Shadow / Virtual Device</th><th>Wakeup Trigger</th></tr>
+<tr><td><b>Problema</b></td><td>Por la <b>naturaleza heterogénea</b> de los dispositivos, no todos pueden conectarse a la red.</td><td>Algunos dispositivos <b>no pueden estar siempre disponibles</b>, por razones ambientales o propias, y otros dispositivos necesitan interactuar con ellos.</td><td>Algunos dispositivos <b>se van a «dormir»</b>, y mientras tanto sus canales de comunicación no están disponibles.</td></tr>
+<tr><td><b>Solución</b></td><td>Conectar los dispositivos a uno que permita la comunicación <b>en ambos sentidos</b>: traduce entre su protocolo y la red.</td><td>Generar una <b>representación virtual</b> del dispositivo, una especie de «mini backend» con sus datos. Los demás se comunican con ella, y ella <b>se sincroniza con el dispositivo en ambos sentidos</b>.</td><td>Establecer un <b>canal de comunicación de bajo consumo de energía</b> que funcione como despertador. El dispositivo despierta al escuchar el mensaje.</td></tr>
+<tr><td><b>Beneficios</b></td><td>Conectividad. Independencia.</td><td>Comunicación siempre posible, virtualmente. Evita accesos no permitidos (seguridad).</td><td>Ahorro de energía en el dispositivo.</td></tr>
+<tr><td><b>Inconvenientes</b></td><td>Es un punto «débil» en seguridad. Complejidad: ¿de quién?</td><td><b>Obsolescencia de las acciones. Consistencia eventual.</b></td><td>Infraestructura más compleja.</td></tr>
+<tr><td><b>La palabra clave</b></td><td>protocolos distintos, heterogéneos, traducir</td><td>se desconecta, intermitente, no siempre disponible, copia</td><td>dormir, energía, despertar, bajo consumo</td></tr>
+</table></div>
+
+<figure class="fig">
+<svg viewBox="0 0 720 190" role="img" aria-label="Esquema de los tres patrones IoT">
+  <defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="s-ah"/></marker></defs>
+  <text class="s-h" x="120" y="18" text-anchor="middle">Gateway</text>
+  <rect class="s-b" x="4" y="40" width="84" height="30" rx="6"/><text class="s-s" x="46" y="59" text-anchor="middle">sensor BLE</text>
+  <rect class="s-b" x="4" y="90" width="84" height="30" rx="6"/><text class="s-s" x="46" y="109" text-anchor="middle">sensor Zigbee</text>
+  <rect class="s-a" x="110" y="62" width="70" height="36" rx="6"/><text class="s-t" x="145" y="85" text-anchor="middle">Gateway</text>
+  <rect class="s-g" x="200" y="62" width="40" height="36" rx="6"/><text class="s-s" x="220" y="84" text-anchor="middle">red</text>
+  <path class="s-ln" d="M88,55 L108,72" marker-end="url(#ah3)" marker-start="url(#ah3)"/>
+  <path class="s-ln" d="M88,105 L108,90" marker-end="url(#ah3)" marker-start="url(#ah3)"/>
+  <path class="s-ln" d="M180,80 L198,80" marker-end="url(#ah3)" marker-start="url(#ah3)"/>
+  <text class="s-h" x="360" y="18" text-anchor="middle">Shadow / Virtual Device</text>
+  <rect class="s-g" x="260" y="62" width="60" height="36" rx="6"/><text class="s-s" x="290" y="84" text-anchor="middle">otros</text>
+  <rect class="s-c" x="335" y="56" width="80" height="48" rx="6"/><text class="s-t" x="375" y="78" text-anchor="middle">copia</text><text class="s-s" x="375" y="94" text-anchor="middle">virtual</text>
+  <rect class="s-b" x="430" y="62" width="40" height="36" rx="6" stroke-dasharray="4 3"/><text class="s-s" x="450" y="84" text-anchor="middle">disp.</text>
+  <path class="s-ln" d="M320,80 L333,80" marker-end="url(#ah3)" marker-start="url(#ah3)"/>
+  <path class="s-lw" d="M415,80 L428,80" marker-end="url(#ah3)" marker-start="url(#ah3)"/>
+  <text class="s-s" x="375" y="130" text-anchor="middle">se sincroniza cuando el</text>
+  <text class="s-s" x="375" y="145" text-anchor="middle">dispositivo vuelve</text>
+  <text class="s-h" x="610" y="18" text-anchor="middle">Wakeup Trigger</text>
+  <rect class="s-g" x="500" y="62" width="60" height="36" rx="6"/><text class="s-s" x="530" y="84" text-anchor="middle">backend</text>
+  <rect class="s-b" x="640" y="62" width="70" height="36" rx="6"/><text class="s-s" x="675" y="78" text-anchor="middle">dispositivo</text><text class="s-s" x="675" y="92" text-anchor="middle">durmiendo</text>
+  <path class="s-lw" d="M560,72 L638,72" marker-end="url(#ah3)"/>
+  <text class="s-s" x="598" y="50" text-anchor="middle">canal de bajo consumo</text>
+  <path class="s-ln" d="M560,92 L638,92" marker-end="url(#ah3)" marker-start="url(#ah3)"/>
+  <text class="s-s" x="600" y="110" text-anchor="middle">canal normal, ya despierto</text>
+</svg>
+<figcaption>Gateway traduce protocolos, Shadow pone una copia virtual delante del dispositivo y Wakeup Trigger agrega un canal de bajo consumo para despertarlo.</figcaption>
+</figure>
+
+<div class="box warn"><div class="bt">Las confusiones que el profesor usa como distractores</div>
+<ul style="margin:0">
+<li>El <b>«canal de comunicación adicional de bajo consumo»</b> es de <b>Wakeup Trigger</b>, no de Shadow.</li>
+<li><b>«Variados protocolos de comunicación»</b> es <b>Gateway</b>, no Shadow.</li>
+<li>La <b>«copia del dispositivo con su última información»</b> es <b>Shadow / Virtual Device</b>, no Wakeup Trigger ni Gateway.</li>
+<li>La consecuencia de Shadow es que la información de los sensores o las acciones de los actuadores <b>pueden estar desactualizadas</b>: obsolescencia. No que estén «siempre actualizadas».</li>
+<li>Si la pregunta sobre Shadow ofrece «canal adicional», «protocolos» y «siempre actualizada», la respuesta es <b>«Ninguna de las anteriores»</b> (certamen 2025-2).</li>
+<li>«Para la desconexión no hay solución, porque no depende del programa»: <b>falso</b>. La estrategia es generar representaciones virtuales, es decir, Shadow.</li>
+<li>Para el <b>costo de la disponibilidad</b> (energía), la estrategia es el canal de bajo consumo para despertar: Wakeup Trigger.</li>
+</ul></div>
+
+<div class="box tip"><div class="bt">Desconexión: ¿Shadow o Wakeup Trigger?</div>
+<p>Las pautas de los certámenes no siempre coinciden en esto, así que conviene leer el motivo de la desconexión:</p>
+<ul style="margin:0">
+<li>Si el dispositivo <b>pierde la red</b> por el ambiente (zonas sin señal en una mina, interferencia) y <b>otros necesitan interactuar con él</b> → <b>Shadow</b> (pauta 2024-1, certamen 2025-2).</li>
+<li>Si el dispositivo <b>se apaga o duerme</b> para ahorrar energía y hay que activarlo → <b>Wakeup Trigger</b>.</li>
+<li>Si el enunciado menciona dos protocolos, por ejemplo una máquina que lee BLE y reporta por WiFi → <b>Gateway</b> (pauta 2025-2).</li>
+</ul></div>
+
+<div class="box def"><div class="bt">Obsolescencia de las acciones (pauta 2024-1)</div>Si el dispositivo pierde conectividad, la orden que se le mandó a la copia virtual, como «prender la luz de alerta», puede llegarle tarde, cuando ya no sirve. Eso es la <b>obsolescencia de las acciones</b>. La pérdida de valores del sensor mientras está desconectado es, en cambio, un problema de <b>consistencia eventual</b>.</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="trampas">
+<h2>Las trampas que se repiten</h2>
+<p class="lead">Revisando los certámenes del C2 de 2023-1 a 2025-2, estas son las formas en que el profesor arma las alternativas falsas.</p>
+<ol>
+  <li><b>El patrón equivocado para el problema:</b> SAGA para consultar, CQRS para modificar, Shadow para protocolos distintos.</li>
+  <li><b>Los ejes cruzados:</b> «orquestar implica síncrono», «asíncrono implica coreografía», «mensajería orquestada».</li>
+  <li><b>Las propiedades de SAGA al revés:</b> decir que no es atómica o no es duradera, o que sí es aislada.</li>
+  <li><b>Los absolutos:</b> «siempre», «solo», «nunca», «la única consecuencia». En esta materia casi todo «depende del escenario».</li>
+  <li><b>«Faltan antecedentes» es una respuesta real.</b> Cuando el enunciado no dice cómo se guardan los datos ni si hay eventos, no se puede elegir entre API Composition y CQRS. Tampoco recomendar un patrón sin antecedentes: en la pauta 2024-1, Wakeup Trigger, Gateway, SAGA y CQRS daban puntos solo si se decía que <b>no había antecedentes</b> para usarlos.</li>
+  <li><b>«Ninguna» sí sale.</b> En 2023-1 y 2025-2 hubo preguntas cuya respuesta era «ninguna es correcta».</li>
+  <li><b>Con afirmaciones (i), (ii), (iii):</b> marca cada una como V o F por separado antes de mirar las opciones, y fíjate si la pregunta pide las <b>correctas</b> o las <b>incorrectas</b>.</li>
+</ol>
+</section>
+
+<!-- ============================================================ -->
+<section id="alt">
+<h2>Alternativas</h2>
+<p class="lead">Haz clic en la opción que elijas: se marca y aparece la explicación. El marcador de la barra lateral lleva la cuenta.</p>
+
+<div class="box tip">
+  <div class="bt">Modo control</div>
+  <p>El botón <b>Modo control (5 al azar)</b> de la barra lateral deja visibles solo 5 preguntas elegidas al azar y toma el tiempo. Al responder la quinta te muestra el resultado. Cada ronda sale distinta.</p>
+</div>
+
+<div class="toolbar" id="filtros">
+  <button class="btn on" data-f="" onclick="filtrar(this)">Todas</button>
+  <button class="btn" data-f="ms" onclick="filtrar(this)">Microservicios y patrones</button>
+  <button class="btn" data-f="cons" onclick="filtrar(this)">Consultas</button>
+  <button class="btn" data-f="saga" onclick="filtrar(this)">Consistencia y SAGA</button>
+  <button class="btn" data-f="iot" onclick="filtrar(this)">IoT</button>
+</div>
+
+<div id="modo">
+  <b>Modo control:</b> 5 preguntas al azar. Tiempo: <span id="reloj">0:00</span>. <span id="resmodo"></span>
+  <div class="toolbar"><button class="btn" onclick="modoControl()">Otras 5</button><button class="btn" onclick="salirModo()">Volver al banco completo</button></div>
+</div>
+
+<div id="banco">
+
+<!-- ===================== MICROSERVICIOS Y PATRONES ===================== -->
+
+<div class="mc" data-t="ms" data-c="2024-2" data-ok="A"><p class="qt">Sobre microservicios, ¿cuáles afirmaciones son <u>incorrectas</u>?</p>
+<div class="afi"><div>(i) En una arquitectura de microservicios, los servicios no se organizan en torno a las preocupaciones del negocio.</div><div>(ii) Para acelerar la entrega de software se necesita algo más que la arquitectura de microservicios.</div><div>(iii) Es un patrón de arquitectura que descompone un sistema en un conjunto de aplicaciones desplegables de forma independiente.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i)</li><li><span class="k">B)</span>Solo (ii)</li><li><span class="k">C)</span>Solo (iii)</li><li><span class="k">D)</span>Solo (ii) y (iii)</li><li><span class="k">E)</span>Solo (i) y (ii)</li>
+</ol><div class="exp"><b>A.</b> Los servicios se organizan justamente en torno a capacidades del negocio (bounded contexts). (ii) y (iii) son de Richardson: hacen falta DevOps y equipos adecuados, y la definición es la descomposición en servicios desplegables de forma independiente.</div></div>
+
+<div class="mc" data-t="ms" data-c="2025-2" data-ok="D"><p class="qt">Sobre la relación entre microservicios y Domain-Driven Design (DDD), ¿cuáles son <u>incorrectas</u>?</p>
+<div class="afi"><div>(i) En DDD el concepto relevante es la consistencia eventual; en microservicios, el bounded context.</div><div>(ii) Microservicios es una arquitectura y DDD es una forma de documentar el diseño usado al implementarla.</div><div>(iii) DDD propone un modelado basado en la realidad del negocio, y microservicios es un estilo de arquitectura para desarrollar una aplicación.</div><div>(iv) DDD es el estilo de arquitectura que engloba a otras como microservicios o REST.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i), (ii) y (iii)</li><li><span class="k">B)</span>Solo (ii), (iii) y (iv)</li><li><span class="k">C)</span>Solo (iii), (iv) y (i)</li><li><span class="k">D)</span>Solo (iv), (i) y (ii)</li><li><span class="k">E)</span>Todas son correctas.</li>
+</ol><div class="exp"><b>D.</b> Solo (iii) es correcta. (i) está invertida: el bounded context es de DDD. (ii) reduce DDD a documentación y (iv) lo presenta como un estilo de arquitectura.</div></div>
+
+<div class="mc" data-t="ms" data-c="2025-2" data-ok="B"><p class="qt">Sobre la independencia en una arquitectura de microservicios, son correctas:</p>
+<div class="afi"><div>(i) Cada microservicio debe ser dueño de sus propios datos.</div><div>(ii) Reutilizar una misma base de datos para todos los microservicios favorece el débil acoplamiento.</div><div>(iii) La comunicación entre microservicios suele hacerse con mecanismos livianos, como HTTP.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i)</li><li><span class="k">B)</span>Solo (i) y (iii)</li><li><span class="k">C)</span>Solo (ii)</li><li><span class="k">D)</span>Solo (ii) y (iii)</li><li><span class="k">E)</span>Solo (iii)</li>
+</ol><div class="exp"><b>B.</b> La base de datos compartida es justo lo que choca con el «débilmente acoplado» en la lámina de los desafíos. Separar da independencia, aunque el problema de integrar datos no desaparece.</div></div>
+
+<div class="mc" data-t="ms" data-c="2024-2" data-ok="C"><p class="qt">En una arquitectura de microservicios, ¿se puede construir el sistema en varios lenguajes?</p><ol class="ops">
+<li><span class="k">A)</span>No, porque debe ser una arquitectura estable y no una definición con múltiples lenguajes.</li>
+<li><span class="k">B)</span>No, porque las conexiones a las bases de datos se deben hacer con un solo controlador.</li>
+<li><span class="k">C)</span>Sí, porque los servicios se integran a través de interfaces y son agnósticos de los lenguajes que hay detrás.</li>
+<li><span class="k">D)</span>Depende solo de cómo esté compuesto el equipo de desarrollo.</li>
+<li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>C.</b> «Son independientes de la tecnología entre sí» y «múltiples stacks de tecnología» son ventajas textuales de la lámina.</div></div>
+
+<div class="mc" data-t="ms" data-c="2025-2" data-ok="A"><p class="qt">Una empresa de delivery con una aplicación monolítica que hasta ahora se ha comportado bien sabe que en Navidad aumenta la demanda. Sobre migrar a microservicios, ¿qué es correcto?</p>
+<div class="afi"><div>(i) Si desea migrar, una de las preguntas que debe responder es qué elementos de la aplicación son o no son microservicios.</div><div>(ii) Un desarrollador dice que el débil acoplamiento también se puede lograr en la aplicación actual, así que por sí solo no basta como argumento para migrar.</div><div>(iii) La mantenibilidad no va a mejorar, porque la arquitectura de microservicios no afecta la mantenibilidad.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i) y (ii)</li><li><span class="k">B)</span>Solo (ii) y (iii)</li><li><span class="k">C)</span>Solo (iii) y (i)</li><li><span class="k">D)</span>Solo (ii)</li><li><span class="k">E)</span>Solo (iii)</li>
+</ol><div class="exp"><b>A.</b> (iii) es un absoluto falso: la mantenibilidad es uno de los argumentos a favor (pauta 2024-2). Y como no son bala de plata, la decisión requiere analizar el caso, no basta un solo argumento.</div></div>
+
+<div class="mc" data-t="ms" data-ok="E"><p class="qt">Según la clase, ¿cuál es la mejor forma de decidir si usar microservicios?</p><ol class="ops">
+<li><span class="k">A)</span>Recomendarlos siempre, porque resuelven los problemas de escala.</li>
+<li><span class="k">B)</span>No recomendarlos nunca en sistemas pequeños ni medianos.</li>
+<li><span class="k">C)</span>Usarlos solo si el equipo ya trabaja con contenedores.</li>
+<li><span class="k">D)</span>Decidir por aspectos emocionales, porque los racionales no aplican a la arquitectura.</li>
+<li><span class="k">E)</span>Depende de muchos factores. Recomendarlos siempre es mal consejo, pero no recomendarlos nunca también, y el formato de patrones ayuda a debatirlo de forma objetiva.</li>
+</ol><div class="exp"><b>E.</b> Es la lámina «Microservices Architecture is not a Silver Bullet». La decisión depende de aspectos emocionales <i>y</i> racionales.</div></div>
+
+<div class="mc" data-t="ms" data-ok="B"><p class="qt">Según la estructura de un patrón vista en clases, el «contexto resultante» o las consecuencias de aplicarlo incluyen:</p><ol class="ops">
+<li><span class="k">A)</span>Solo los beneficios: si tuviera desventajas no sería un patrón.</li>
+<li><span class="k">B)</span>Los beneficios, los inconvenientes y los problemas nuevos que aparecen al aplicarlo.</li>
+<li><span class="k">C)</span>El código fuente completo de la solución.</li>
+<li><span class="k">D)</span>Solo las fuerzas que quedaron resueltas.</li>
+</ol><div class="exp"><b>B.</b> Beneficios (con las fuerzas resueltas), inconvenientes (con las no resueltas) y problemas nuevos. Por eso los patrones «no son una solución completa».</div></div>
+
+<div class="mc" data-t="ms" data-ok="C"><p class="qt">«La lógica asíncrona rinde mejor que la síncrona, pero la síncrona es más fácil de entender.» En la estructura de un patrón, esto es un ejemplo de:</p><ol class="ops">
+<li><span class="k">A)</span>Contexto resultante.</li>
+<li><span class="k">B)</span>Patrones alternativos.</li>
+<li><span class="k">C)</span>Fuerzas que pueden entrar en conflicto, y que hay que priorizar según el contexto.</li>
+<li><span class="k">D)</span>Un problema nuevo introducido por el patrón.</li>
+</ol><div class="exp"><b>C.</b> Es el ejemplo exacto de la lámina de fuerzas: código fácil de entender y además con buen desempeño.</div></div>
+
+<div class="mc" data-t="ms" data-c="2023-2 y 2025-2" data-ok="D"><p class="qt">Complete: «Al ______ el trabajo en conjunto, ______ necesariamente que la comunicación deba ser ______.»</p><ol class="ops">
+<li><span class="k">A)</span>sincronizar · implica · orquestada</li>
+<li><span class="k">B)</span>sincronizar · no implica · orquestada</li>
+<li><span class="k">C)</span>orquestar · implica · síncrona</li>
+<li><span class="k">D)</span>orquestar · no implica · síncrona</li>
+<li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>D.</b> El trabajo en conjunto (orquestar o coreografiar) y la comunicación (síncrona o asíncrona) son ejes independientes. A y B mezclan los ejes: no se «sincroniza el trabajo en conjunto» y la comunicación no es «orquestada».</div></div>
+
+<!-- ===================== CONSULTAS ===================== -->
+
+<div class="mc" data-t="cons" data-c="2023-1" data-ok="B"><p class="qt">Sobre CQRS, ¿cuál afirmación <u>no</u> es correcta?</p><ol class="ops">
+<li><span class="k">A)</span>Permite implementar de forma eficiente las consultas en una arquitectura de microservicios.</li>
+<li><span class="k">B)</span>Unifica toda la operación de los datos en una sola base de datos.</li>
+<li><span class="k">C)</span>Permite implementar de forma eficiente consultas diversas.</li>
+<li><span class="k">D)</span>Mejora la separación de responsabilidades.</li>
+<li><span class="k">E)</span>Todas son correctas.</li>
+</ol><div class="exp"><b>B.</b> Es al revés: CQRS agrega una o más vistas aparte, con datos replicados desde cada servicio. A, C y D son sus ventajas.</div></div>
+
+<div class="mc" data-t="cons" data-c="2023-1" data-ok="D"><p class="qt">Hay 3 microservicios: (1) usuarios de salud (RUT, nombre, edad); (2) atenciones recibidas por paciente (RUT, fecha, tipo de atención); (3) detalle de cada tipo de atención (tipo, descripción, costo, riesgos). Se pide <b>el listado de los tipos de atención existentes</b>. ¿Qué es correcto?</p><ol class="ops">
+<li><span class="k">A)</span>Hay riesgo de joins en memoria, así que conviene CQRS, y además SAGA porque las atenciones cambian en el tiempo.</li>
+<li><span class="k">B)</span>Como se usa el RUT y no identificadores, API Composition es lo más simple, y no hay riesgos de consistencia.</li>
+<li><span class="k">C)</span>CQRS siempre es lo recomendado para consultas, porque es el patrón más robusto.</li>
+<li><span class="k">D)</span>No hay un problema que resolver: los tipos de atención están en un solo servicio, así que basta con consumir su API, sin API Composition, CQRS ni SAGA.</li>
+<li><span class="k">E)</span>Preguntar a varios microservicios es síntoma de mal diseño y de acoplamiento.</li>
+</ol><div class="exp"><b>D.</b> Lee qué se pide: los tipos de atención están todos en el servicio (3). Los patrones de consulta son para consultas que necesitan <b>varios</b> contextos. Y SAGA nunca es para consultar.</div></div>
+
+<div class="mc" data-t="cons" data-c="2023-2" data-ok="C"><p class="qt">Hay 3 microservicios: (1) libros (título, género, resumen, autores) con un código único; (2) autores, con la lista de códigos de sus libros; (3) bibliotecas, con la lista de códigos de los libros que tienen. Se pide un reporte de las bibliotecas donde están los libros de un autor, con el nombre y el género de cada libro. ¿Qué es correcto?</p><ol class="ops">
+<li><span class="k">A)</span>Solo hay que consumir datos, así que no hay problemas de consistencia ni hace falta ningún patrón: basta saber si las APIs son REST.</li>
+<li><span class="k">B)</span>Si hace falta API Composition o CQRS, el diseño de microservicios es muy malo.</li>
+<li><span class="k">C)</span>Faltan detalles, pero sí se ve la necesidad de consultar varios contextos, así que se puede recurrir a API Composition o a CQRS. Sin saber cómo se almacenan o se accede a los datos, no se puede elegir uno a priori.</li>
+<li><span class="k">D)</span>Si las APIs no son REST, API Composition es imposible y hay que usar CQRS sí o sí.</li>
+<li><span class="k">E)</span>Solo hay que resolver la coherencia cuando un autor publica libros nuevos, con SAGA. Lo demás se resuelve con mensajería asíncrona.</li>
+</ol><div class="exp"><b>C.</b> Aquí sí se necesitan los tres servicios. Pero el enunciado no da antecedentes para preferir uno de los dos patrones. «Faltan antecedentes» es una respuesta típica de este profesor.</div></div>
+
+<div class="mc" data-t="cons" data-c="2023-2 y recuperativo 2024-2" data-ok="D"><p class="qt">Sobre las diferencias entre API Composition y CQRS, es correcto afirmar:</p><ol class="ops">
+<li><span class="k">A)</span>API Composition es una generalización de CQRS: CQRS decide quién compone la consulta.</li>
+<li><span class="k">B)</span>CQRS es una generalización de API Composition: API Composition decide quién actualiza los datos consultados.</li>
+<li><span class="k">C)</span>Se complementan: CQRS usa eventos para mantener consistentes los datos del negocio y API Composition permite consultarlos.</li>
+<li><span class="k">D)</span>Son alternativos: dos enfoques para el mismo problema. CQRS usa comunicación asíncrona y API Composition, síncrona.</li>
+<li><span class="k">E)</span>Son alternativos: CQRS usa comunicación síncrona y API Composition, asíncrona.</li>
+</ol><div class="exp"><b>D.</b> E tiene la comunicación invertida. C le atribuye a CQRS la consistencia del negocio, que es tarea de SAGA.</div></div>
+
+<div class="mc" data-t="cons" data-c="2024-1" data-ok="E"><p class="qt">En un sistema de microservicios, una app móvil debe mostrar información. Se afirma: (i) lo mejor es CQRS, porque su mensajería síncrona y su vista especializada darán datos a la app; (ii) lo mejor es API Composition, porque permite consultas complejas independiente de cómo cada servicio guarde sus datos. ¿Qué es correcto?</p><ol class="ops">
+<li><span class="k">A)</span>(i) usa mensajería asíncrona y (ii) depende de cómo se almacenan los datos. Con esas correcciones, ambas son buenas opciones.</li>
+<li><span class="k">B)</span>Con esas correcciones, en microservicios siempre se usa API Composition para consultar.</li>
+<li><span class="k">C)</span>(i) usa «mensajería orquestada». En microservicios siempre se usa CQRS para consultar.</li>
+<li><span class="k">D)</span>(i) usa mensajería coreografiada. SAGA se puede adaptar para responder consultas.</li>
+<li><span class="k">E)</span>(i) usa mensajería asíncrona y (ii) depende de cómo se almacenan los datos. Pero del enunciado no queda claro si hace falta algún patrón para consultar.</li>
+</ol><div class="exp"><b>E.</b> Corrige las dos afirmaciones y además nota que «mostrar información» no dice si se necesitan varios servicios. A da por hecho que hace falta un patrón. B y C son absolutos, C mezcla los ejes y D usa SAGA para consultar.</div></div>
+
+<div class="mc" data-t="cons" data-c="2024-2" data-ok="D"><p class="qt">Al implementar CQRS en una arquitectura de microservicios, ¿qué consideraciones son correctas?</p>
+<div class="afi"><div>(i) Hay que gestionar la consistencia eventual de las vistas.</div><div>(ii) Permite resolver consultas más complejas, aunque es más complejo de implementar.</div><div>(iii) Hay que disponer de un manejador de eventos y una capa con la lógica de acceso a los datos.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i) y (ii)</li><li><span class="k">B)</span>Solo (ii) y (iii)</li><li><span class="k">C)</span>Solo (iii) y (i)</li><li><span class="k">D)</span>(i), (ii) y (iii)</li><li><span class="k">E)</span>Solo (ii)</li>
+</ol><div class="exp"><b>D.</b> (i) es la desventaja «demoras de actualización», (ii) resume ventajas y desventajas, y (iii) es el lado de consultas según Richardson: manejadores de eventos que actualizan la vista y una capa de acceso a datos.</div></div>
+
+<div class="mc" data-t="cons" data-c="2024-2" data-ok="E"><p class="qt">Para decidir si usar API Composition en consultas que involucran varios servicios, un colega usará estos criterios: (i) la cantidad de servicios que hay que consultar; (ii) qué tan crítica es la disponibilidad para el negocio; (iii) si las consultas requieren procesar en memoria grandes conjuntos de datos. ¿Cuáles son <u>incorrectos</u>?</p><ol class="ops">
+<li><span class="k">A)</span>Solo (i)</li><li><span class="k">B)</span>Solo (ii)</li><li><span class="k">C)</span>Solo (iii)</li><li><span class="k">D)</span>Solo (ii) y (iii)</li><li><span class="k">E)</span>Ninguno es incorrecto.</li>
+</ol><div class="exp"><b>E.</b> Los tres son las desventajas de API Composition: el overhead crece con la cantidad de servicios, si un proveedor falla se pierde la disponibilidad, y los joins en memoria de grandes volúmenes son ineficientes (Richardson).</div></div>
+
+<div class="mc" data-t="cons" data-c="2024-2" data-ok="A"><p class="qt">Sobre el patrón API Composition, es correcto decir:</p><ol class="ops">
+<li><span class="k">A)</span>Es una estrategia simple para integrar datos de distintas fuentes, coordinándolas de alguna forma.</li>
+<li><span class="k">B)</span>Es muy complejo, porque integra la información de varios servicios por medio de eventos.</li>
+<li><span class="k">C)</span>Tiene más de una base de datos intermedia.</li>
+<li><span class="k">D)</span>Permite una serie de pasos que en ciertos escenarios se deben «compensar».</li>
+<li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>A.</b> «Simple e intuitivo» es su ventaja. B y C describen CQRS (eventos, vistas intermedias) y D describe SAGA (compensaciones).</div></div>
+
+<div class="mc" data-t="cons" data-c="2024-2" data-ok="A"><p class="qt">Sobre API Composition, aunque no se diga explícitamente en su definición, se puede inferir que:</p>
+<div class="afi"><div>(i) El trabajo en conjunto es orquestado.</div><div>(ii) Las consultas se deben hacer siempre de forma secuencial.</div><div>(iii) Asegura consistencia, porque no hay duplicidad de datos.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i)</li><li><span class="k">B)</span>(i) y (iii)</li><li><span class="k">C)</span>Solo (ii)</li><li><span class="k">D)</span>(ii) y (iii)</li><li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>A.</b> El composer decide a quién llamar, así que el trabajo es orquestado. Las llamadas pueden ser paralelas, y la consistencia aparece en la lámina como una de sus desventajas.</div></div>
+
+<div class="mc" data-t="cons" data-c="2025-2" data-ok="C"><p class="qt">Una aplicación Kanban permite crear y editar tableros y tareas. Cada vez que se crea o actualiza algo, se guarda un <b>evento</b> en un almacén de eventos, que lo entrega a los <b>suscriptores</b>. Estos actualizan los datos que <b>consulta</b> el área que monitorea los proyectos. ¿Qué es correcto?</p>
+<div class="afi"><div>(i) El escenario muestra la necesidad de separar responsabilidades y no sobrecargar algunos servicios con demasiadas funciones.</div><div>(ii) El patrón aplicado es API Composition: el área de monitoreo recupera datos de Tablero y Tarea para componer su respuesta.</div><div>(iii) El escenario permite que un servicio implemente de forma eficiente consultas diversas, con una o más vistas, cada una para consultas específicas.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i) y (ii)</li><li><span class="k">B)</span>Solo (ii) y (iii)</li><li><span class="k">C)</span>Solo (i) y (iii)</li><li><span class="k">D)</span>Solo (ii)</li><li><span class="k">E)</span>Solo (iii)</li>
+</ol><div class="exp"><b>C.</b> Eventos, suscriptores y datos preparados para consultar: es CQRS. (i) y (iii) son sus ventajas (refuerza la separación de responsabilidades, vistas especializadas). En API Composition nadie mantiene datos replicados.</div></div>
+
+<div class="mc" data-t="cons" data-c="2025-2" data-ok="C"><p class="qt">Sobre el uso de API Composition y CQRS, ¿qué es correcto?</p>
+<div class="afi"><div>(i) API Composition es más simple y resuelve de forma más eficiente las consultas complejas que CQRS.</div><div>(ii) Hay que elegir a cuál adherir, porque no son compatibles en un mismo sistema.</div><div>(iii) No pueden mezclarse en la misma consulta, pero distintas consultas se pueden resolver de forma distinta según sus características.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i)</li><li><span class="k">B)</span>Solo (ii)</li><li><span class="k">C)</span>Solo (iii)</li><li><span class="k">D)</span>Solo (ii) y (iii)</li><li><span class="k">E)</span>Solo (i) y (ii)</li>
+</ol><div class="exp"><b>C.</b> Es la pauta de desarrollo del 2023-1. (i) mezcla las ventajas: API Composition es más simple, pero las consultas complejas eficientes son de CQRS.</div></div>
+
+<div class="mc" data-t="cons" data-c="2025-2" data-ok="A"><p class="qt">En un sistema de inscripción de asignaturas con microservicios, hay que obtener un reporte de notas por semestre y el historial de cursos de un alumno. Se afirma: (i) para el reporte hay que usar API Composition y para el historial, CQRS; (ii) si hay un bróker de mensajería, lo más sencillo es CQRS; (iii) API Composition es siempre la mejor opción, por ser lo más sencillo. ¿Qué es correcto?</p><ol class="ops">
+<li><span class="k">A)</span>No se tienen todos los antecedentes para evaluar qué patrón usar.</li>
+<li><span class="k">B)</span>(i) es correcto, siempre que exista el bróker de (ii).</li>
+<li><span class="k">C)</span>(ii) es correcto, pero el patrón no es CQRS sino SAGA.</li>
+<li><span class="k">D)</span>(iii) es correcto, pero la diferencia de complejidad es la que indica (i).</li>
+<li><span class="k">E)</span>Depende de si se usan contenedores o máquinas virtuales.</li>
+</ol><div class="exp"><b>A.</b> No se sabe cómo están repartidos ni almacenados los datos. Un bróker no hace «más sencillo» a CQRS, (iii) es un absoluto, C usa SAGA para consultar y E no tiene relación con el problema.</div></div>
+
+<div class="mc" data-t="cons" data-c="2025-2" data-ok="B"><p class="qt">Sobre CQRS, es correcto afirmar que la «segregación» de responsabilidades se refiere a separar:</p><ol class="ops">
+<li><span class="k">A)</span>Lecturas (reads) y queries.</li>
+<li><span class="k">B)</span>Comandos y queries.</li>
+<li><span class="k">C)</span>Consistencia y queries.</li>
+<li><span class="k">D)</span>SAGAs y queries.</li>
+<li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>B.</b> Command Query Responsibility Segregation: lo que modifica (comandos) por un lado y lo que consulta (queries) por otro. A es una trampa, porque lecturas y queries son lo mismo.</div></div>
+
+<div class="mc" data-t="cons" data-c="2025-2" data-ok="A"><p class="qt">Una aplicación cliente necesita datos de varios microservicios <b>sin tener que hacer múltiples llamadas</b>. ¿Qué patrón conviene y por qué?</p><ol class="ops">
+<li><span class="k">A)</span>API Gateway: da un único punto de acceso y reduce la cantidad de llamadas que hace el cliente.</li>
+<li><span class="k">B)</span>API Composer: el cliente combina directamente las respuestas de cada microservicio, sin agregar complejidad al backend.</li>
+<li><span class="k">C)</span>API Composer: centraliza la autenticación y autorización de todos los microservicios.</li>
+<li><span class="k">D)</span>CQRS: las consultas a varios microservicios se hacen de forma consistente y en tiempo real.</li>
+<li><span class="k">E)</span>API Gateway: garantiza consistencia fuerte y sincronizada entre todos los microservicios.</li>
+</ol><div class="exp"><b>A.</b> B se contradice: si el cliente combina, hace múltiples llamadas. C le da al composer la tarea del Gateway. D es falsa porque CQRS tiene demoras. E es falsa porque el Gateway no da consistencia.</div></div>
+
+<div class="mc" data-t="cons" data-c="2025-2" data-ok="C"><p class="qt">Hay que escalar de forma independiente la carga de consultas, incluso con varios modelos de lectura especializados para distintos tipos de usuarios. ¿Qué patrón conviene y por qué?</p><ol class="ops">
+<li><span class="k">A)</span>API Gateway: centraliza todas las consultas y escala un único punto de acceso para las distintas vistas.</li>
+<li><span class="k">B)</span>API Composition: combina información en tiempo real desde distintos servicios, sin duplicar datos.</li>
+<li><span class="k">C)</span>CQRS: permite definir varias vistas de lectura independientes, que se escalan por separado según la demanda.</li>
+<li><span class="k">D)</span>SAGA: coordina transacciones distribuidas para que todas las lecturas sean consistentes.</li>
+<li><span class="k">E)</span>Virtual Device: da una representación persistente del estado y elimina la necesidad de varias vistas.</li>
+</ol><div class="exp"><b>C.</b> «Modelos de lectura especializados» son las vistas de CQRS. API Composition no tiene modelos de lectura propios.</div></div>
+
+<div class="mc" data-t="cons" data-ok="D"><p class="qt">Según las láminas, ¿qué indica el patrón API Composition sobre quién debe hacer de API Composer?</p><ol class="ops">
+<li><span class="k">A)</span>Debe ser siempre el frontend, porque es quien muestra los datos.</li>
+<li><span class="k">B)</span>Debe ser siempre un servicio independiente creado para eso.</li>
+<li><span class="k">C)</span>Debe ser siempre el servicio con más datos de los consultados.</li>
+<li><span class="k">D)</span>No lo indica. Hay alternativas: el frontend (poco práctico), el API Gateway o un servicio independiente, y la diferencia está en la responsabilidad.</li>
+</ol><div class="exp"><b>D.</b> Lámina textual: «El patrón no nos dice qué elemento de nuestra arquitectura será el encargado».</div></div>
+
+<div class="mc" data-t="cons" data-ok="B"><p class="qt">Un reporte necesita cruzar las 200.000 inscripciones del servicio Inscripciones con las 50.000 fichas del servicio Alumnos. Con API Composition habría que traer todo y cruzarlo en memoria. Según Richardson, ¿qué conviene?</p><ol class="ops">
+<li><span class="k">A)</span>API Composition igual, porque es siempre la opción por defecto.</li>
+<li><span class="k">B)</span>CQRS: una vista con los datos ya cruzados evita el join en memoria de grandes volúmenes.</li>
+<li><span class="k">C)</span>SAGA, para mantener consistentes ambos servicios durante el reporte.</li>
+<li><span class="k">D)</span>Commit de dos fases, para leer los dos servicios a la vez.</li>
+</ol><div class="exp"><b>B.</b> API Composition es la opción por defecto, salvo cuando obliga a joins en memoria de grandes conjuntos de datos: ahí conviene CQRS. C y D son para modificar, no para consultar.</div></div>
+
+<div class="mc" data-t="cons" data-ok="E"><p class="qt">¿Cuál de estas <u>no</u> es una desventaja de API Composition según la lámina de resumen?</p><ol class="ops">
+<li><span class="k">A)</span>Overhead.</li>
+<li><span class="k">B)</span>Riesgos en la disponibilidad.</li>
+<li><span class="k">C)</span>Consistencia.</li>
+<li><span class="k">D)</span>Aumento de complejidad.</li>
+<li><span class="k">E)</span>Demoras de actualización de las vistas.</li>
+</ol><div class="exp"><b>E.</b> Las demoras de actualización son la desventaja de <b>CQRS</b>: API Composition no tiene vistas. La lámina de API Composition lista overhead, disponibilidad, caché, consistencia y complejidad.</div></div>
+
+<!-- ===================== CONSISTENCIA Y SAGA ===================== -->
+
+<div class="mc" data-t="saga" data-c="2023-1" data-ok="D"><p class="qt">Según lo visto en clases sobre sagas, si una falla, hay que:</p><ol class="ops">
+<li><span class="k">A)</span>Eliminar la transacción.</li>
+<li><span class="k">B)</span>Borrar todo lo realizado en las distintas bases de datos.</li>
+<li><span class="k">C)</span>Terminar la transacción de todas formas.</li>
+<li><span class="k">D)</span>Revertir las acciones de la saga en el orden inverso.</li>
+<li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>D.</b> Con transacciones compensatorias, ejecutadas en forma inversa («Notar que se ejecuta de forma inversa», en la lámina del ejemplo). No es borrar ni hacer rollback: las transacciones locales ya hicieron commit.</div></div>
+
+<div class="mc" data-t="saga" data-c="2023-1 y recuperativo 2024-2" data-ok="D"><p class="qt">Sobre las sagas, es correcto afirmar:</p>
+<div class="afi"><div>(i) Una vez finalizada una saga, su resultado se mantiene hasta que otra acción modifique los datos.</div><div>(ii) Todas las transacciones que componen una saga se realizan, o todas las que correspondan se compensan.</div><div>(iii) Una saga no puede usar un dato o recurso mientras otra saga que lo esté usando no termine.</div><div>(iv) Las sagas permiten mantener la consistencia entre servicios.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i)</li><li><span class="k">B)</span>Solo (iii)</li><li><span class="k">C)</span>Solo (i), (ii) y (iii)</li><li><span class="k">D)</span>Solo (i), (ii) y (iv)</li><li><span class="k">E)</span>(i), (ii), (iii) y (iv)</li>
+</ol><div class="exp"><b>D.</b> (i) es durabilidad, (ii) es atomicidad y (iv) es la consistencia eventual. (iii) sería aislamiento, que la saga no asegura. El 2025-2 hizo la misma pregunta al revés («es <u>incorrecto</u>»), y entonces la respuesta era «solo (iii)».</div></div>
+
+<div class="mc" data-t="saga" data-c="2023-1 y recuperativo 2024-2" data-ok="E"><p class="qt">Sobre los patrones de microservicios, es correcto afirmar:</p>
+<div class="afi"><div>(i) La consistencia eventual es consecuencia directa de usar CQRS, porque las SAGAs deben actualizar las vistas especializadas.</div><div>(ii) Las compensaciones «pivote» no tienen importancia: da lo mismo cuántas compensaciones haya, porque las SAGAs son aisladas entre sí, aunque no atómicas.</div><div>(iii) Las SAGAs se organizan de forma coreografiada, porque usan mensajería asíncrona.</div><div>(iv) API Composition no tiene problemas de consistencia y además asegura tolerancia a la partición y alta disponibilidad.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i)</li><li><span class="k">B)</span>Solo (iii)</li><li><span class="k">C)</span>(i), (ii), (iii) y (iv)</li><li><span class="k">D)</span>(i), (ii) y (iv)</li><li><span class="k">E)</span>Ninguna es correcta.</li>
+</ol><div class="exp"><b>E.</b> (i): las vistas de CQRS se actualizan con eventos, no con SAGAs. (ii): la pivote no es una compensación, y las sagas son atómicas y no aisladas, al revés de lo que dice. (iii): una saga también se puede orquestar. (iv): la consistencia es una desventaja de API Composition, y por CAP no hay C, A y P a la vez.</div></div>
+
+<div class="mc" data-t="saga" data-c="2023-2" data-ok="D"><p class="qt">Sobre el patrón SAGA: (i) permite tener una base de datos de solo lectura; (ii) coordina microservicios; (iii) permite orquestar microservicios. Son correctas:</p><ol class="ops">
+<li><span class="k">A)</span>(i) y (iii)</li><li><span class="k">B)</span>Solo (i)</li><li><span class="k">C)</span>(i), (ii) y (iii)</li><li><span class="k">D)</span>(ii) y (iii)</li><li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>D.</b> La base de datos de solo lectura, la vista, es de CQRS. SAGA coordina transacciones locales de varios servicios, y esa coordinación puede ser orquestada.</div></div>
+
+<div class="mc" data-t="saga" data-c="2023-2" data-ok="C"><p class="qt">De estas afirmaciones, ¿cuáles son correctas?</p>
+<div class="afi"><div>(i) Una ventaja de SAGA es asegurar el aislamiento, lo que compensa las desventajas de la mensajería asíncrona.</div><div>(ii) En la práctica la compensación es irrelevante, porque la consistencia eventual está asegurada en microservicios.</div><div>(iii) SAGA asegura que, al terminar la serie de transacciones locales, se alcanza un estado consistente que se mantiene hasta que llegue otro cambio.</div><div>(iv) Implementar SAGA es siempre consecuencia directa de adoptar microservicios.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i)</li><li><span class="k">B)</span>(i) y (ii)</li><li><span class="k">C)</span>Solo (iii)</li><li><span class="k">D)</span>(iii) y (iv)</li><li><span class="k">E)</span>Solo (iv)</li>
+</ol><div class="exp"><b>C.</b> (i): el aislamiento es justo lo que SAGA no asegura. (ii): la compensación es lo que hace posible la consistencia. (iv): solo hace falta si hay datos distribuidos que modificar de forma coherente, lo que depende del escenario (pauta 2024-1).</div></div>
+
+<div class="mc" data-t="saga" data-c="2024-1" data-ok="A"><p class="qt">Sobre las características de SAGA, ¿cuáles son <u>incorrectas</u>?</p>
+<div class="afi"><div>(i) Las sagas son duraderas siempre y cuando se supere la transacción pivote.</div><div>(ii) Las sagas no son atómicas, porque si hay compensaciones se anulan los cambios.</div><div>(iii) Las sagas son aisladas entre sí, porque una compensación solo anula los cambios de la propia saga.</div><div>(iv) Como los microservicios privilegian disponibilidad y tolerancia a la partición, una saga no puede asegurar consistencia.</div></div><ol class="ops">
+<li><span class="k">A)</span>(i), (ii), (iii) y (iv)</li><li><span class="k">B)</span>(i) y (iii)</li><li><span class="k">C)</span>(ii) y (iv)</li><li><span class="k">D)</span>(iii) y (iv)</li><li><span class="k">E)</span>(i) y (ii)</li>
+</ol><div class="exp"><b>A.</b> Las cuatro contradicen la lámina de propiedades. Las sagas son duraderas siempre, son atómicas (la compensación lo hace posible), no son aisladas y aseguran consistencia eventual.</div></div>
+
+<div class="mc" data-t="saga" data-c="2024-2" data-ok="A"><p class="qt">Sobre la consistencia en el patrón SAGA, ¿cuáles son <u>incorrectas</u>?</p>
+<div class="afi"><div>(i) Como no se asegura la atomicidad, una saga puede leer datos mientras otra saga los está modificando.</div><div>(ii) Coordinar por coreografía puede concentrar mucha lógica de negocio en un participante, lo cual es una ventaja.</div><div>(iii) Una saga asegura atomicidad y durabilidad en cada servicio.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i) y (ii)</li><li><span class="k">B)</span>Solo (ii) y (iii)</li><li><span class="k">C)</span>Solo (iii) y (i)</li><li><span class="k">D)</span>(i), (ii) y (iii)</li><li><span class="k">E)</span>Todas son falsas.</li>
+</ol><div class="exp"><b>A.</b> (i) confunde la causa: leer datos que otra saga modifica (dirty read) es falta de <b>aislamiento</b>, no de atomicidad. (ii) tiene dos errores: concentrar lógica es el riesgo de la <b>orquestación</b>, y es una desventaja.</div></div>
+
+<div class="mc" data-t="saga" data-c="2024-2" data-ok="B"><p class="qt">Sobre la consistencia de los datos y el commit de dos fases, es correcto afirmar:</p><ol class="ops">
+<li><span class="k">A)</span>Ejecuta dos veces el mismo comando, para asegurar la consistencia.</li>
+<li><span class="k">B)</span>Tiene dos pasos: primero se consulta a todos los participantes si pueden hacer la transacción y, si todos están de acuerdo, se ejecuta. Si no, se hace rollback.</li>
+<li><span class="k">C)</span>Ejecuta pasos de forma secuencial y, si corresponde, genera transacciones de compensación.</li>
+<li><span class="k">D)</span>Detecta problemas de consistencia con una doble validación.</li>
+<li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>B.</b> Votación y después commit o rollback. C describe SAGA.</div></div>
+
+<div class="mc" data-t="saga" data-c="2024-2" data-ok="C"><p class="qt">Sobre la relación entre el «débil acoplamiento» de los microservicios y el teorema CAP:</p>
+<div class="afi"><div>(i) En una transacción el aislamiento genera problemas de disponibilidad, por eso se aplica CAP para que las transacciones ya no sean aisladas.</div><div>(ii) El débil acoplamiento permite asegurar disponibilidad y consistencia sin aislamiento, y por eso, con aislamiento, falla la consistencia.</div><div>(iii) El débil acoplamiento apunta a la disponibilidad del todo y a tolerar la falla de algún servicio, y en consecuencia no se puede asegurar consistencia.</div></div><ol class="ops">
+<li><span class="k">A)</span>(i) y (ii)</li><li><span class="k">B)</span>Solo (i)</li><li><span class="k">C)</span>Solo (iii)</li><li><span class="k">D)</span>(ii) y (iii)</li><li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>C.</b> Débil acoplamiento = disponibilidad (A) y tolerancia a fallas (P), así que por CAP se sacrifica la consistencia (C). (i) y (ii) mezclan el aislamiento de ACID con CAP.</div></div>
+
+<div class="mc" data-t="saga" data-c="2025-2" data-ok="E"><p class="qt">Sobre el patrón SAGA, ¿cuáles son <u>incorrectas</u>?</p>
+<div class="afi"><div>(i) Al coordinar por orquestación, la lógica de coordinación se centraliza y se envían mensajes comando a los participantes con las operaciones que deben hacer.</div><div>(ii) Al coordinar por coreografía, la toma de decisiones y el orden de los pasos se distribuyen entre los participantes, que se comunican principalmente con eventos.</div><div>(iii) Al iniciarse la saga, se genera un evento para que el primer participante ejecute su transacción local. Al terminar, este genera un evento para el siguiente paso, y así hasta completar todas las transacciones.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i) y (ii)</li><li><span class="k">B)</span>Solo (ii) y (iii)</li><li><span class="k">C)</span>Solo (iii) y (i)</li><li><span class="k">D)</span>(i), (ii) y (iii)</li><li><span class="k">E)</span>Ninguna.</li>
+</ol><div class="exp"><b>E.</b> Las tres son correctas: (i) es la orquestación de la lámina (mensajes comando), (ii) es la coreografía (eventos y suscripciones) y (iii) describe una saga coreografiada paso a paso.</div></div>
+
+<div class="mc" data-t="saga" data-c="2025-2" data-ok="E"><p class="qt">Sobre las sagas, ¿cuáles son correctas?</p>
+<div class="afi"><div>(i) Por recomendación de diseño, la transacción pivote debe ir a la mitad de la saga, para equilibrar las compensaciones.</div><div>(ii) En la práctica, una compensación es un ROLLBACK, solo que asíncrono por el esquema de comunicación.</div><div>(iii) Una saga debe coordinarse de forma coreografiada, porque la comunicación asíncrona impone esa restricción.</div></div><ol class="ops">
+<li><span class="k">A)</span>Solo (i)</li><li><span class="k">B)</span>Solo (ii)</li><li><span class="k">C)</span>(ii) y (iii)</li><li><span class="k">D)</span>Solo (iii)</li><li><span class="k">E)</span>Ninguna.</li>
+</ol><div class="exp"><b>E.</b> (i) no existe esa recomendación. (ii) el rollback ya no es posible porque cada transacción local hizo commit: la compensación es otra transacción, «desde el punto de vista del negocio». (iii) mezcla los ejes: comunicación asíncrona no implica coreografía.</div></div>
+
+<div class="mc" data-t="saga" data-c="2025-2" data-ok="A"><p class="qt">Una operación del negocio requiere varios pasos en distintos microservicios: procesar el pedido, actualizar el inventario y registrar el pago. Alguno de los pasos puede fallar. ¿Qué patrón conviene y por qué?</p><ol class="ops">
+<li><span class="k">A)</span>SAGA: coordina una secuencia de transacciones locales y define compensaciones cuando un paso falla.</li>
+<li><span class="k">B)</span>API Composition: combina los resultados de varios servicios en una sola respuesta.</li>
+<li><span class="k">C)</span>CQRS: mantiene separados los modelos de lectura y escritura para evitar inconsistencias entre pasos.</li>
+<li><span class="k">D)</span>Event Sourcing: garantiza que las operaciones distribuidas se ejecuten sin tener que revertir pasos.</li>
+<li><span class="k">E)</span>API Gateway: centraliza las llamadas para que todos los pasos sean atómicos.</li>
+</ol><div class="exp"><b>A.</b> Es una operación que <b>modifica</b> datos en varios servicios y puede fallar a medio camino: el caso de SAGA.</div></div>
+
+<div class="mc" data-t="saga" data-c="2025-2" data-ok="D"><p class="qt">Una aplicación de préstamos debe actualizar de forma coordinada el servicio de Solicitudes (registrar la aprobación) y el de Pagos (generar el primer cobro). La política dice que <b>ningún otro componente puede leer valores intermedios</b> durante el proceso. ¿Qué patrón cumple el requisito?</p><ol class="ops">
+<li><span class="k">A)</span>API Composition: combina los datos de ambos microservicios en una sola respuesta.</li>
+<li><span class="k">B)</span>CQRS: separa los modelos de lectura y escritura para mejorar el rendimiento de las consultas.</li>
+<li><span class="k">C)</span>SAGA: coordina transacciones locales con eventos y logra consistencia eventual.</li>
+<li><span class="k">D)</span>Commit de dos fases: coordina la transacción distribuida para que todos los pasos se confirmen, o ninguno sea visible.</li>
+<li><span class="k">E)</span>API Composition + SAGA: combina consultas distribuidas con compensaciones.</li>
+</ol><div class="exp"><b>D.</b> El requisito es <b>aislamiento</b>: nadie puede ver estados intermedios. SAGA no lo asegura, porque cada transacción local hace commit y queda visible antes de terminar la saga. La transacción distribuida, con su commit de dos fases, sí lo asegura, pagando el costo de los recursos tomados.</div></div>
+
+<div class="mc" data-t="saga" data-c="2024-2" data-ok="D"><p class="qt">Sobre adoptar una arquitectura de microservicios se afirma: (i) el costo será que la consistencia es eventual, es decir, las actualizaciones son más lentas; (ii) una forma de asegurar el débil acoplamiento es que los servicios se comuniquen por interfaces de aplicación (APIs); (iii) técnicamente, deben implementarse solamente con contenedores. ¿Cuáles son <u>incorrectas</u>?</p><ol class="ops">
+<li><span class="k">A)</span>Solo (i)</li><li><span class="k">B)</span>Solo (ii)</li><li><span class="k">C)</span>Solo (iii)</li><li><span class="k">D)</span>(i) y (iii)</li><li><span class="k">E)</span>(i), (ii) y (iii)</li>
+</ol><div class="exp"><b>D.</b> (iii) es el «solamente», como en el Control 4. (i) tiene dos problemas: la consistencia eventual no es un costo automático, porque depende de si hay datos distribuidos que mantener coherentes (pauta 2024-1), y «eventual» no significa «más lento», sino que se alcanza la coherencia en algún momento.</div></div>
+
+<div class="mc" data-t="saga" data-ok="B"><p class="qt">En el ejemplo de los nodos con colores, un sistema distribuido asegura <b>consistencia</b> y <b>tolerancia a la partición</b>. ¿Qué pasa?</p><ol class="ops">
+<li><span class="k">A)</span>El sistema falla completo si un nodo se desconecta.</li>
+<li><span class="k">B)</span>El dato puede no estar siempre disponible: para entregar el valor consistente pese a la partición, hay que esperar.</li>
+<li><span class="k">C)</span>Preguntar el color en F no es lo mismo que preguntarlo en C.</li>
+<li><span class="k">D)</span>Se aseguran las tres propiedades, porque la partición se tolera.</li>
+</ol><div class="exp"><b>B.</b> Con C + P se sacrifica la disponibilidad (A). A es el caso C + A, sin tolerancia a la partición. C es el caso A + P, sin consistencia. D contradice el teorema.</div></div>
+
+<div class="mc" data-t="saga" data-ok="C"><p class="qt">En una saga, ¿qué caracteriza a una transacción <b>recuperable</b>?</p><ol class="ops">
+<li><span class="k">A)</span>Se puede anular con una compensación.</li>
+<li><span class="k">B)</span>Si es exitosa, la saga seguirá hasta completarse.</li>
+<li><span class="k">C)</span>Tiene garantía de ser exitosa y va después de la pivote.</li>
+<li><span class="k">D)</span>Es la que recupera los datos borrados por un rollback.</li>
+</ol><div class="exp"><b>C.</b> A describe la compensable y B, la pivote. D no existe: en una saga no hay rollback.</div></div>
+
+<div class="mc" data-t="saga" data-ok="A"><p class="qt">Una saga lee el saldo de una cuenta mientras otra saga, todavía en curso, lo está modificando. ¿Cómo se llama la anomalía, y qué contramedida de la clase la enfrenta marcando los datos que pueden cambiar?</p><ol class="ops">
+<li><span class="k">A)</span>Dirty read; semantic lock: las transacciones compensables ponen una marca (flag) en los datos que pueden cambiar.</li>
+<li><span class="k">B)</span>Lost update; commutative updates.</li>
+<li><span class="k">C)</span>Fuzzy read; pessimistic view.</li>
+<li><span class="k">D)</span>Dirty read; no se puede enfrentar, porque las sagas no tienen aislamiento.</li>
+</ol><div class="exp"><b>A.</b> Leer datos que otra saga está modificando es un dirty read. Que la saga no tenga aislamiento no significa que no se pueda hacer nada: enfrentarlo «es parte del diseño e implementación de la saga».</div></div>
+
+<div class="mc" data-t="saga" data-ok="E"><p class="qt">Según la clase, ¿qué propiedades asegura una saga?</p><ol class="ops">
+<li><span class="k">A)</span>Atomicidad, consistencia, aislamiento y durabilidad, igual que una transacción ACID.</li>
+<li><span class="k">B)</span>Solo aislamiento y durabilidad.</li>
+<li><span class="k">C)</span>Consistencia fuerte e inmediata entre servicios.</li>
+<li><span class="k">D)</span>Ninguna: por el teorema CAP no puede asegurar nada.</li>
+<li><span class="k">E)</span>Atomicidad, consistencia (eventual) entre servicios y durabilidad, pero no aislamiento.</li>
+</ol><div class="exp"><b>E.</b> ACD sin I.</div></div>
+
+<div class="mc" data-t="saga" data-ok="C"><p class="qt">¿Por qué la clase descarta las transacciones distribuidas, con commit de dos fases, como solución general en microservicios?</p><ol class="ops">
+<li><span class="k">A)</span>Porque no logran consistencia.</li>
+<li><span class="k">B)</span>Porque solo funcionan con bases de datos no relacionales.</li>
+<li><span class="k">C)</span>Porque no todos los motores (no relacionales) ni los brókers de mensajería las soportan, los recursos quedan tomados esperando la decisión, y es frágil si se cae el administrador o algún participante.</li>
+<li><span class="k">D)</span>Porque son lo mismo que SAGA.</li>
+</ol><div class="exp"><b>C.</b> B está invertida: el problema es que los motores no relacionales <i>no</i> las soportan.</div></div>
+
+<!-- ===================== IoT ===================== -->
+
+<div class="mc" data-t="iot" data-c="2023-2 y recuperativo 2024-2" data-ok="A"><p class="qt">Una de las consecuencias del patrón Shadow (Virtual Device) es:</p><ol class="ops">
+<li><span class="k">A)</span>La información de los sensores, o las acciones que deben hacer los actuadores, pueden estar desactualizadas.</li>
+<li><span class="k">B)</span>El canal de comunicación adicional que requiere aumenta la complejidad de implementación.</li>
+<li><span class="k">C)</span>Si hay que considerar varios protocolos de comunicación, crece la complejidad.</li>
+<li><span class="k">D)</span>La única consecuencia es que se soluciona el problema; si hubiera otras, no sería un patrón.</li>
+<li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>A.</b> Obsolescencia de las acciones y consistencia eventual. B es de Wakeup Trigger (canal adicional), C es de Gateway (protocolos) y D niega la definición de patrón.</div></div>
+
+<div class="mc" data-t="iot" data-c="2025-2" data-ok="E"><p class="qt">Una de las consecuencias del patrón Shadow (Virtual Device) es:</p><ol class="ops">
+<li><span class="k">A)</span>El canal de comunicación adicional que requiere aumenta la complejidad de implementación.</li>
+<li><span class="k">B)</span>La información de los sensores o las acciones de los actuadores están siempre actualizadas.</li>
+<li><span class="k">C)</span>Si hay que considerar varios protocolos de comunicación, crece la complejidad.</li>
+<li><span class="k">D)</span>La única consecuencia es que se soluciona el problema; si hubiera otras, no sería un patrón.</li>
+<li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>E.</b> Es la pregunta anterior con la opción correcta invertida: «siempre actualizadas» es lo contrario de la obsolescencia. Las demás son de otros patrones o niegan la definición.</div></div>
+
+<div class="mc" data-t="iot" data-c="2024-2" data-ok="D"><p class="qt">¿Cuál par característica / patrón IoT es correcto?</p><ol class="ops">
+<li><span class="k">A)</span>Establece un canal de comunicación de bajo consumo de energía / Virtual Device.</li>
+<li><span class="k">B)</span>Se puede producir obsolescencia de las acciones / Gateway.</li>
+<li><span class="k">C)</span>Ideal para dispositivos que pueden perder la conexión ocasionalmente / Wakeup Trigger.</li>
+<li><span class="k">D)</span>Dispositivos que no pueden estar siempre disponibles y otros que necesitan interactuar con ellos / Shadow.</li>
+<li><span class="k">E)</span>Ninguno es correcto.</li>
+</ol><div class="exp"><b>D.</b> Es el problema textual del caso 2. A es de Wakeup Trigger, B es de Shadow y C es de Shadow, porque Wakeup Trigger es para dispositivos que <i>duermen</i>.</div></div>
+
+<div class="mc" data-t="iot" data-c="2024-2" data-ok="A"><p class="qt">Sobre el patrón Shadow o Virtual Device:</p>
+<div class="afi"><div>(i) Guarda datos de representación del dispositivo, por ejemplo en el backend.</div><div>(ii) Actúa como un espejo de los datos.</div><div>(iii) Es una estrategia para mantener la comunicación con dispositivos que pueden dejar de estar en línea.</div><div>(iv) Hay que cuidar la obsolescencia de los datos guardados en la representación virtual.</div></div><ol class="ops">
+<li><span class="k">A)</span>Todas</li><li><span class="k">B)</span>Ninguna</li><li><span class="k">C)</span>(ii), (iii) y (iv)</li><li><span class="k">D)</span>(i), (iii) y (iv)</li><li><span class="k">E)</span>(i), (ii) y (iii)</li>
+</ol><div class="exp"><b>A.</b> Representación virtual tipo «mini backend» (i), sincronizada en ambos sentidos (ii), para que la comunicación siempre sea posible (iii), con el riesgo de la obsolescencia (iv).</div></div>
+
+<div class="mc" data-t="iot" data-c="2024-1" data-ok="C"><p class="qt">Sobre la disponibilidad de los dispositivos tecnológicos, ¿cuáles son hoy los principales problemas?</p><ol class="ops">
+<li><span class="k">A)</span>Los sistemas operativos, porque su estabilidad sigue siendo un desafío.</li>
+<li><span class="k">B)</span>Las redes sociales, porque hacen que los dispositivos obtengan información falsa.</li>
+<li><span class="k">C)</span>La conexión a internet y la energía, que son los insumos esenciales para que los dispositivos funcionen como sensores.</li>
+<li><span class="k">D)</span>(B) y (C)</li>
+<li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>C.</b> Son las limitantes de la lámina: los protocolos o la conectividad, y la alimentación. Shadow ataca la primera y Wakeup Trigger, la segunda.</div></div>
+
+<div class="mc" data-t="iot" data-c="2024-1 y recuperativo 2024-2" data-ok="B"><p class="qt">¿Qué estrategia se usa para enfrentar la desconexión de un dispositivo?</p><ol class="ops">
+<li><span class="k">A)</span>Programas que manejen la excepción de desconexión.</li>
+<li><span class="k">B)</span>Representaciones virtuales de los dispositivos.</li>
+<li><span class="k">C)</span>No tiene solución, porque la desconexión no depende del programa.</li>
+<li><span class="k">D)</span>(A) y (B)</li>
+<li><span class="k">E)</span>Ninguna de las anteriores.</li>
+</ol><div class="exp"><b>B.</b> Shadow / Virtual Device. Manejar la excepción no permite que otros sigan interactuando con el dispositivo.</div></div>
+
+<div class="mc" data-t="iot" data-c="2024-1" data-ok="C"><p class="qt">Para enfrentar el costo de la disponibilidad, ¿qué estrategia se usa?</p><ol class="ops">
+<li><span class="k">A)</span>Publicar horarios de atención, porque los dispositivos no pueden estar siempre conectados.</li>
+<li><span class="k">B)</span>Enviar cookies a los usuarios para mantener la continuidad operativa.</li>
+<li><span class="k">C)</span>Crear canales de comunicación de bajo consumo, para despertar al dispositivo cuando se necesite.</li>
+<li><span class="k">D)</span>Ninguna de las anteriores.</li>
+<li><span class="k">E)</span>(A) y (C)</li>
+</ol><div class="exp"><b>C.</b> Wakeup Trigger: el costo es la energía, y el beneficio del patrón es el ahorro de energía en el dispositivo.</div></div>
+
+<div class="mc" data-t="iot" data-c="2025-2" data-ok="D"><p class="qt">Hay dispositivos que en ciertos momentos pierden la comunicación con los demás. ¿En qué patrón nos apoyamos y por qué?</p><ol class="ops">
+<li><span class="k">A)</span>Wakeup Trigger: genera una «copia» del dispositivo con su última información, y esa copia queda disponible para los demás.</li>
+<li><span class="k">B)</span>Virtual Device: su canal de comunicación adicional sirve para restablecer la comunicación con el dispositivo.</li>
+<li><span class="k">C)</span>Gateway: genera una «copia» del dispositivo con su última información.</li>
+<li><span class="k">D)</span>Virtual Device: genera una «copia» del dispositivo con su última información, y esa copia queda disponible para los demás.</li>
+<li><span class="k">E)</span>Wakeup Trigger: su canal de comunicación adicional sirve para restablecer la comunicación.</li>
+</ol><div class="exp"><b>D.</b> Fíjate en que cada opción combina un patrón con una explicación. La «copia» es de Virtual Device y el «canal adicional», de Wakeup Trigger. Solo D tiene los dos bien emparejados.</div></div>
+
+<div class="mc" data-t="iot" data-c="2025-2" data-ok="C"><p class="qt">En un supermercado, los sensores de las salas de refrigeración usan Bluetooth Low Energy, LoRaWAN o Modbus TCP. El sistema central debe recibir todo en un formato unificado, sin que los dispositivos cambien su tecnología. ¿Qué patrón conviene?</p><ol class="ops">
+<li><span class="k">A)</span>Virtual Device: mantiene una copia del estado de cada dispositivo, para consultarlo aunque se desconecte.</li>
+<li><span class="k">B)</span>Wakeup Trigger: activa los dispositivos en reposo cuando se necesitan sus datos.</li>
+<li><span class="k">C)</span>Gateway: traduce los distintos protocolos y da una interfaz unificada hacia el sistema central.</li>
+<li><span class="k">D)</span>Virtual Device: crea una representación virtual que expone una interfaz común y elimina las diferencias de protocolo.</li>
+<li><span class="k">E)</span>Wakeup Trigger: mantiene todos los dispositivos activos para evitar problemas de compatibilidad.</li>
+</ol><div class="exp"><b>C.</b> «Naturaleza heterogénea, no todos pueden conectarse a la red»: es el caso 1, Gateway. D es el distractor: la copia virtual no traduce protocolos.</div></div>
+
+<div class="mc" data-t="iot" data-ok="B"><p class="qt">Según la clase, ¿cuáles son los inconvenientes del patrón Gateway?</p><ol class="ops">
+<li><span class="k">A)</span>La obsolescencia de las acciones y la consistencia eventual.</li>
+<li><span class="k">B)</span>Ser un punto «débil» en seguridad y la complejidad, que obliga a preguntarse de quién es.</li>
+<li><span class="k">C)</span>Una infraestructura más compleja por el canal de bajo consumo.</li>
+<li><span class="k">D)</span>No tiene inconvenientes: da conectividad e independencia.</li>
+</ol><div class="exp"><b>B.</b> A son los de Shadow y C, el de Wakeup Trigger. D nombra sus beneficios, pero todo patrón tiene inconvenientes.</div></div>
+
+<div class="mc" data-t="iot" data-ok="D"><p class="qt">En el sistema de riego, algunos sensores de humedad se «duermen» para ahorrar batería, y mientras duermen sus canales de comunicación no están disponibles. ¿Qué patrón corresponde, y cuál es su inconveniente?</p><ol class="ops">
+<li><span class="k">A)</span>Shadow; inconveniente: obsolescencia de las acciones.</li>
+<li><span class="k">B)</span>Gateway; inconveniente: punto débil en seguridad.</li>
+<li><span class="k">C)</span>Wakeup Trigger; inconveniente: ninguno, porque ahorra energía.</li>
+<li><span class="k">D)</span>Wakeup Trigger; inconveniente: infraestructura más compleja.</li>
+</ol><div class="exp"><b>D.</b> Es el caso 3: un canal de bajo consumo funciona como despertador. Beneficio: ahorro de energía. Inconveniente: infraestructura más compleja.</div></div>
+
+<div class="mc" data-t="iot" data-ok="A"><p class="qt">Camiones mineros con sensores de temperatura del aceite pierden conectividad al pasar por ciertas zonas de la mina, y el sistema debe poder mandar la orden de «prender la luz de alerta» en cualquier momento. ¿Qué patrón tiene antecedentes, y qué riesgo trae?</p><ol class="ops">
+<li><span class="k">A)</span>Virtual Device: la orden queda en la copia virtual, con el riesgo de obsolescencia de las acciones si llega tarde.</li>
+<li><span class="k">B)</span>Wakeup Trigger: despierta al sensor, con el riesgo de gastar más batería.</li>
+<li><span class="k">C)</span>Gateway: traduce el protocolo del sensor, con el riesgo de consistencia eventual.</li>
+<li><span class="k">D)</span>SAGA: coordina la alerta entre servicios, con el riesgo de las compensaciones.</li>
+</ol><div class="exp"><b>A.</b> Es el caso de la pauta 2024-1. Hay antecedentes de Virtual Device: el dispositivo pierde conectividad y hay que enviarle acciones. Ese mismo caso le daba 0 puntos a Wakeup Trigger, Gateway, SAGA y CQRS por no tener antecedentes.</div></div>
+
+</div>
+</section>
+
+<!-- ============================================================ -->
+<section id="chuleta">
+<h2>Chuleta</h2>
+<div class="tw"><table>
+<tr><th>Tema</th><th>Lo que tienes que poder decir sin mirar</th></tr>
+<tr><td>Microservicios</td><td>Bounded context (DDD): modelos separados sin perder el todo. Cada servicio tiene su BD. Ventajas: simples, despliegue y escalado independientes, agnósticos de la tecnología, aislamiento de fallas. Desventajas: CAP, información distribuida en contextos, consistencia eventual, operación compleja. No son bala de plata.</td></tr>
+<tr><td>Patrón</td><td>Solución reutilizable a un problema que ocurre en un contexto, con sus consecuencias. Estructura: contexto, problema, fuerzas (en conflicto), solución y consecuencias (beneficios, inconvenientes, problemas nuevos).</td></tr>
+<tr><td>Dos ejes</td><td>Comunicación: síncrona o asíncrona. Trabajo en conjunto: orquestado o coreografiado. Son independientes: orquestar no implica síncrono.</td></tr>
+<tr><td>API Composition</td><td>Consultar a cada servicio por su API y combinar. Composer + proveedores. El patrón no dice quién compone: frontend, API Gateway o un servicio. Llamadas paralelas o encadenadas (latencia). + simple. − overhead, disponibilidad, caché, consistencia, complejidad. Síncrono y orquestado.</td></tr>
+<tr><td>CQRS</td><td>Separa comandos y queries. Una vista de solo lectura actualizada con eventos. Dentro de un servicio o como servicio de consultas. Diseño: tipo de BD, concurrencia, idempotencia de los eventos, consistencia eventual. + consultas complejas eficientes, vistas especializadas, separación de responsabilidades. − más complejo, demoras de actualización. Asíncrono.</td></tr>
+<tr><td>¿Cuál de los dos?</td><td>Son alternativos, pero pueden convivir en distintas consultas. Si los datos están en un solo servicio, ninguno. Sin antecedentes, no se elige. Eventos, suscriptores o vistas → CQRS. Joins en memoria grandes → CQRS. Para consultar, nunca SAGA.</td></tr>
+<tr><td>CAP</td><td>Consistencia, disponibilidad y tolerancia a la partición: solo 2 de 3. C+A: falla si se cae un nodo. C+P: hay que esperar. A+P: nodos con distinto valor. Consistencia eventual: coherencia con el negocio que se alcanza en algún momento.</td></tr>
+<tr><td>2 fases</td><td>Votación y después commit o rollback. Problemas: caída del administrador o de un participante, recursos tomados, motores y brókers que no lo soportan. Solo si se exige que no se vean valores intermedios.</td></tr>
+<tr><td>SAGA</td><td>Secuencia de transacciones locales coordinadas con mensajería asíncrona, una por comando. Si falla, compensaciones en orden inverso (no hay rollback). Coreografía: eventos, simple, puede ser difícil de entender. Orquestación: mensajes comando, riesgo de concentrar lógica. Tipos: compensable, pivote (punto de no retorno) y recuperable (éxito garantizado).</td></tr>
+<tr><td>Propiedades SAGA</td><td>ACD sin I. Anomalías: lost updates, dirty reads, fuzzy reads. Contramedidas: semantic lock, commutative updates, pessimistic view, reread value, registro de operaciones.</td></tr>
+<tr><td>IoT</td><td>Sensores (capturan) y actuadores (actúan), con procesamiento, comunicación y energía. Limitantes: protocolos (BLE, Zigbee) y alimentación.</td></tr>
+<tr><td>Gateway</td><td>Dispositivos heterogéneos que no pueden conectarse → un dispositivo que comunica en ambos sentidos. + conectividad, independencia. − punto débil en seguridad, complejidad.</td></tr>
+<tr><td>Shadow / Virtual Device</td><td>No siempre disponibles y otros necesitan interactuar → copia virtual («mini backend») sincronizada en ambos sentidos. + comunicación siempre posible, seguridad. − obsolescencia de las acciones, consistencia eventual.</td></tr>
+<tr><td>Wakeup Trigger</td><td>Se duermen y sus canales no están disponibles → canal de bajo consumo como despertador. + ahorro de energía. − infraestructura más compleja.</td></tr>
+</table></div>
+</section>
+
+<!-- ============================================================ -->
+<section id="sgm">
+<h2>Aplicación al SGM</h2>
+<p class="lead">La parte de aplicación del certamen siempre plantea un cambio hipotético en el proyecto y pide reconocer qué patrones tienen antecedentes. Estos ejercicios usan el SGM. No entran en el control de alternativas, pero sirven para entender los patrones.</p>
+
+<div class="box sgm"><div class="bt">El SGM hoy</div>Dos APIs, <code>API_TRAMITACION</code> y <code>API_VALIDACIONES</code>, cada una en su contenedor y con su propia base de datos (<code>BD17_TRAMITACION</code> y <code>BD17_VALIDACIONES</code>). Hoy todo lo implementado (propuestas, revisiones, memorias, reuniones) vive en API_TRAMITACION, así que ninguna consulta necesita a dos servicios y <b>ningún patrón de esta clase tiene antecedentes todavía</b>.</div>
+
+<div class="q"><b>Escenario 1.</b> Se separa el SGM en dos servicios: <b>Propuestas</b> (fichas, versiones y revisiones) y <b>Seguimiento</b> (memorias y reuniones de avance). El coordinador necesita una consulta que liste a cada memorista con el estado de su propuesta y la fecha de su última reunión (HU-08 ampliada). ¿Qué problema aparece y qué patrones podrían resolverlo?</div>
+<details class="sol"><summary>Ver pauta</summary><div class="body">
+<p>Aparece el problema de las <b>consultas que requieren varios contextos</b>: el estado de la propuesta está en Propuestas y las reuniones, en Seguimiento.</p>
+<ul>
+<li><b>API Composition:</b> un composer, por ejemplo un servicio de reportes o el API Gateway, consulta a los dos servicios y combina los resultados por memorista. Es lo más simple. Las dos llamadas pueden ir en paralelo, porque no dependen una de la otra.</li>
+<li><b>CQRS:</b> una vista «situación del memorista» que se actualiza con eventos como <code>PropuestaRevisada</code> o <code>ReunionRegistrada</code>. Conviene si son muchos memoristas (140 por coordinador) y la consulta se repite mucho, a cambio de demoras de actualización.</li>
+</ul>
+<p>Sin saber el volumen ni si hay un bróker de eventos, lo correcto es nombrar los dos y decir que <b>faltan antecedentes para elegir</b>. <b>SAGA no corresponde</b>: es una consulta.</p>
+</div></details>
+
+<div class="q"><b>Escenario 2.</b> Con la misma separación, cuando el jefe de carrera firma la propuesta (HU-04), Propuestas debe marcarla como «aprobada» y Seguimiento debe crear la memoria con su fecha de inicio y su plazo. Si Seguimiento falla al crear la memoria, ¿qué pasa y qué patrón se usa?</div>
+<details class="sol"><summary>Ver pauta</summary><div class="body">
+<p>Es un <b>comando que modifica datos en dos servicios</b>, así que hay que mantener la consistencia entre ellos: <b>SAGA</b>.</p>
+<ol>
+<li>T1 (Propuestas, compensable): registrar la firma y dejar la propuesta en «aprobándose». Esa marca es un <i>semantic lock</i>.</li>
+<li>T2 (Seguimiento, pivote): crear la memoria con su fecha de inicio y su plazo de término.</li>
+<li>T3 (Propuestas, recuperable): marcar la propuesta como «aprobada».</li>
+</ol>
+<p>Si T2 falla, se ejecuta la compensación de T1: la propuesta vuelve a «esperando firma», con una observación. Se puede <b>orquestar</b> (un orquestador de «aprobación de propuesta» manda mensajes comando) o <b>coreografiar</b> (Propuestas publica <code>PropuestaFirmada</code> y Seguimiento se suscribe). Habrá <b>consistencia eventual</b>: durante un momento la propuesta está firmada y la memoria todavía no existe.</p>
+</div></details>
+
+<div class="q"><b>Escenario 3.</b> El cliente quiere que las carpetas con las memorias impresas lleven un beacon BLE. Una máquina en la secretaría detecta el beacon, registra la recepción del escrito (HU-09) y la informa al SGM por WiFi. A veces la máquina se queda sin red durante horas. ¿Qué patrones IoT tienen antecedentes?</div>
+<details class="sol"><summary>Ver pauta</summary><div class="body">
+<ul>
+<li><b>Gateway: sí hay antecedentes.</b> La máquina conecta el beacon (BLE) con la red (WiFi). Es el mismo razonamiento de la pauta 2025-2.</li>
+<li><b>Shadow / Virtual Device: hay antecedentes, aunque débiles.</b> La máquina pierde la red y el SGM podría consultar su última información. Riesgo: <b>consistencia eventual</b>, porque una entrega registrada en la máquina todavía no aparece en el SGM. Es importante, porque la fecha de entrega se compara con el plazo de un año.</li>
+<li><b>Wakeup Trigger: sin antecedentes.</b> Nada indica que la máquina se duerma para ahorrar energía.</li>
+</ul>
+</div></details>
+
+<div class="q"><b>Escenario 4.</b> Comente: «Como el SGM usa contenedores Docker y una base de datos por API, ya es una arquitectura de microservicios, y por lo tanto tendrá problemas de consistencia eventual.»</div>
+<details class="sol"><summary>Ver pauta</summary><div class="body">
+<p>Hay dos errores. Primero, los contenedores son una forma de desplegar: no hacen a un sistema ser de microservicios. Lo que lo define es dividir por <b>dominios de negocio independientes</b>, cada uno dueño de sus datos. Segundo, la consistencia eventual solo es una preocupación si la coherencia del negocio depende de datos guardados <b>en más de un contexto</b> (pauta 2024-1). Hoy todo lo implementado vive en API_TRAMITACION, así que no hay datos repartidos que mantener coherentes. Aparecería si se separa como en los escenarios 1 y 2.</p>
+</div></details>
+</section>
+
+</main>
+</div>
+
+<script>
+function tema(){
+  var r=document.documentElement;
+  var actual=r.getAttribute("data-theme");
+  if(!actual){
+    var oscuro=window.matchMedia("(prefers-color-scheme: dark)").matches;
+    actual=oscuro?"dark":"light";
+  }
+  r.setAttribute("data-theme", actual==="dark"?"light":"dark");
+}
+function abrir(v){
+  var ds=document.querySelectorAll("details.sol");
+  for(var i=0;i<ds.length;i++){ ds[i].open=v; }
+}
+var NOMBRES={ms:"Microservicios",cons:"Consultas",saga:"Consistencia y SAGA",iot:"IoT"};
+function etiquetar(){
+  var qs=document.querySelectorAll("#banco .mc");
+  for(var i=0;i<qs.length;i++){
+    var caja=document.createElement("span"); caja.className="tags";
+    var t=document.createElement("span"); t.className="tag"; t.textContent=NOMBRES[qs[i].getAttribute("data-t")]||"";
+    caja.appendChild(t);
+    var c=qs[i].getAttribute("data-c");
+    if(c){ var tc=document.createElement("span"); tc.className="tag c"; tc.textContent="certamen "+c; caja.appendChild(tc); }
+    qs[i].insertBefore(caja,qs[i].firstChild);
+  }
+}
+function numerar(){
+  var qs=document.querySelectorAll("#banco .mc");
+  var k=0;
+  for(var i=0;i<qs.length;i++){
+    if(qs[i].style.display==="none") continue;
+    k++;
+    var qt=qs[i].querySelector(".qt");
+    var n=qt.querySelector(".n");
+    if(!n){ n=document.createElement("span"); n.className="n"; qt.insertBefore(n,qt.firstChild); }
+    n.textContent=k+". ";
+  }
+}
+var filtroActual="";
+function marcarFiltro(f){
+  var bs=document.querySelectorAll("#filtros .btn");
+  for(var i=0;i<bs.length;i++){ bs[i].classList.toggle("on",bs[i].getAttribute("data-f")===f); }
+}
+function aplicarFiltro(){
+  var qs=document.querySelectorAll("#banco .mc");
+  for(var i=0;i<qs.length;i++){
+    qs[i].style.display=(!filtroActual||qs[i].getAttribute("data-t")===filtroActual)?"":"none";
+  }
+  numerar();
+}
+function filtrar(btn){
+  if(enModo()) salirModo();
+  filtroActual=btn.getAttribute("data-f");
+  marcarFiltro(filtroActual);
+  aplicarFiltro();
+}
+var modoTimer=null, modoInicio=0, N_MODO=5;
+function enModo(){ return document.getElementById("modo").style.display==="block"; }
+function modoControl(){
+  var b=document.getElementById("banco");
+  var todas=b.querySelectorAll(".mc");
+  filtroActual=""; marcarFiltro("");
+  reiniciar();
+  var qs=Array.prototype.slice.call(todas);
+  for(var i=qs.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=qs[i]; qs[i]=qs[j]; qs[j]=t; }
+  for(var m=0;m<todas.length;m++){ todas[m].style.display="none"; }
+  for(var n=N_MODO-1;n>=0;n--){ qs[n].style.display=""; b.insertBefore(qs[n],b.firstChild); }
+  numerar();
+  document.getElementById("modo").style.display="block";
+  document.getElementById("resmodo").textContent="";
+  document.getElementById("reloj").textContent="0:00";
+  modoInicio=Date.now();
+  clearInterval(modoTimer);
+  modoTimer=setInterval(function(){
+    var s=Math.floor((Date.now()-modoInicio)/1000);
+    document.getElementById("reloj").textContent=Math.floor(s/60)+":"+("0"+(s%60)).slice(-2);
+  },1000);
+  document.getElementById("alt").scrollIntoView();
+}
+function salirModo(){
+  document.getElementById("modo").style.display="none";
+  clearInterval(modoTimer);
+  aplicarFiltro();
+}
+function revisarModo(){
+  if(!enModo()) return;
+  var qs=document.querySelectorAll("#banco .mc");
+  var vis=0, hechas=0, buenas=0;
+  for(var i=0;i<qs.length;i++){
+    if(qs[i].style.display==="none") continue;
+    vis++;
+    if(qs[i].classList.contains("done")){ hechas++; if(qs[i].getAttribute("data-res")==="1") buenas++; }
+  }
+  if(vis>0 && hechas===vis){
+    clearInterval(modoTimer);
+    document.getElementById("resmodo").textContent="Resultado: "+buenas+" de "+vis+".";
+  }
+}
+function contar(){
+  var hechas=document.querySelectorAll("#banco .mc.done:not(.rev)");
+  var buenas=0;
+  for(var i=0;i<hechas.length;i++){ if(hechas[i].getAttribute("data-res")==="1") buenas++; }
+  document.getElementById("pts").textContent=buenas;
+  document.getElementById("tot").textContent=hechas.length;
+}
+function marcar(mc,elegida){
+  var ok=mc.getAttribute("data-ok");
+  var lis=mc.querySelectorAll("ol.ops li");
+  for(var i=0;i<lis.length;i++){
+    var k=lis[i].querySelector(".k").textContent.charAt(0);
+    if(k===ok) lis[i].classList.add("ok");
+    else if(lis[i]===elegida) lis[i].classList.add("bad");
+  }
+  mc.classList.add("done");
+}
+document.addEventListener("click",function(e){
+  var li=e.target.closest("#banco .mc ol.ops li");
+  if(!li) return;
+  var mc=li.closest(".mc");
+  if(mc.classList.contains("done")) return;
+  var k=li.querySelector(".k").textContent.charAt(0);
+  mc.setAttribute("data-res", k===mc.getAttribute("data-ok")?"1":"0");
+  marcar(mc,li);
+  contar();
+  revisarModo();
+});
+function reiniciar(){
+  var qs=document.querySelectorAll("#banco .mc");
+  for(var i=0;i<qs.length;i++){
+    qs[i].classList.remove("done","rev");
+    qs[i].removeAttribute("data-res");
+    var lis=qs[i].querySelectorAll("li");
+    for(var j=0;j<lis.length;j++){ lis[j].classList.remove("ok","bad"); }
+  }
+  contar();
+}
+function revelar(){
+  var qs=document.querySelectorAll("#banco .mc");
+  for(var i=0;i<qs.length;i++){
+    if(qs[i].style.display==="none") continue;
+    if(!qs[i].classList.contains("done")){ qs[i].classList.add("rev"); marcar(qs[i],null); }
+  }
+  contar();
+}
+function barajar(){
+  if(enModo()) salirModo();
+  var b=document.getElementById("banco");
+  var qs=Array.prototype.slice.call(b.querySelectorAll(".mc"));
+  for(var i=qs.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=qs[i]; qs[i]=qs[j]; qs[j]=t; }
+  for(var k=0;k<qs.length;k++){ b.appendChild(qs[k]); }
+  reiniciar();
+  aplicarFiltro();
+}
+etiquetar();
+numerar();
+var navLinks=[].slice.call(document.querySelectorAll("nav a"));
+var secciones=[].slice.call(document.querySelectorAll("main section[id]"));
+var barra=document.querySelector(".sidebar");
+var seccionActual=null;
+function espiar(){
+  if(!secciones.length) return;
+  var y=window.scrollY+140, id=secciones[0].id;
+  for(var i=0;i<secciones.length;i++){ if(secciones[i].offsetTop<=y) id=secciones[i].id; }
+  if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4) id=secciones[secciones.length-1].id;
+  if(id===seccionActual) return;
+  seccionActual=id;
+  var activo=null;
+  navLinks.forEach(function(a){
+    var on=a.getAttribute("href")==="#"+id;
+    a.classList.toggle("active",on);
+    if(on) activo=a;
+  });
+  if(activo && barra){
+    var r=activo.getBoundingClientRect(), s=barra.getBoundingClientRect();
+    if(r.top<s.top+60 || r.bottom>s.bottom-40){ barra.scrollTop+=(r.top-s.top)-barra.clientHeight/3; }
+  }
+}
+window.addEventListener("scroll",espiar,{passive:true});
+window.addEventListener("resize",function(){ seccionActual=null; espiar(); });
+espiar();
+</script>
+</body>
+</html>
