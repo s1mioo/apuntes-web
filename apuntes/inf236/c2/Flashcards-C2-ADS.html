@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flashcards C2 ADS</title>
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+  --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+  --accent:#0e7a5f; --accent-soft:#e3f4ee;
+  --warn:#c2410c; --warn-soft:#fdecdf;
+  --no:#b42318; --no-soft:#fde8e6;
+  --ex:#7c3aed; --ex-soft:#f1eafe;
+  --ana:#b4306e; --ana-soft:#fce8f1;
+  --code:#f0f1f4;
+  --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+  --sidew:300px;
+}
+:root[data-theme="dark"]{
+  --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+  --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+  --accent:#4fd1ab; --accent-soft:#16302a;
+  --warn:#f5a15f; --warn-soft:#3a2413;
+  --no:#ff8f85; --no-soft:#3a1a18;
+  --ex:#c4a6ff; --ex-soft:#271c3d;
+  --ana:#ff9ec4; --ana-soft:#3a1a2a;
+  --code:#232733;
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --no:#ff8f85; --no-soft:#3a1a18;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --code:#232733;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.62;font-size:16.5px;-webkit-font-smoothing:antialiased}
+.layout{display:flex;align-items:flex-start}
+.sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;
+  overflow-y:auto;background:var(--panel);border-right:1px solid var(--line);padding:22px 16px 60px}
+.content{flex:1 1 auto;min-width:0;padding:38px clamp(16px,4vw,64px) 120px;max-width:1000px;margin:0 auto}
+.brand{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.brand .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--ex));
+  display:grid;place-items:center;color:#fff;font-weight:800;font-size:12px;flex:0 0 auto}
+.brand h1{font-size:15px;margin:0;line-height:1.2}
+.brand small{color:var(--muted);font-size:12px;display:block}
+nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+  margin:18px 8px 6px;font-weight:700}
+nav a{display:flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;padding:6px 10px;border-radius:7px;
+  font-size:13.5px;opacity:.85}
+nav a .nt{flex:1 1 auto;min-width:0}
+nav a:hover{background:var(--brand-soft);opacity:1}
+nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+details.menu>summary{display:none}
+.pd{display:inline-flex;gap:3px;align-items:center;color:var(--muted);vertical-align:1px;flex:0 0 auto}
+.pd i{display:inline-block;width:6px;height:6px;border-radius:50%;border:1px solid currentColor;box-sizing:border-box}
+.pd i.on{background:currentColor}
+.pd.p3{color:var(--accent)}
+.pd.p2{color:var(--warn)}
+main a{color:var(--brand);text-underline-offset:2px}
+.toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+  padding:7px 10px;font-size:12.5px;cursor:pointer;font-family:inherit}
+a.btn{text-decoration:none;color:var(--ink)}
+.btn:hover{background:var(--brand-soft)}
+.marcador{margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+  font-size:13px;background:var(--bg)}
+.marcador b{color:var(--accent);font-size:16px}
+h2{font-size:26px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px;line-height:1.25}
+h3{font-size:19px;margin:28px 0 6px;scroll-margin-top:20px;line-height:1.3}
+h4{font-size:15.5px;margin:18px 0 4px;color:var(--brand)}
+p{margin:10px 0}
+.lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+section{border-top:1px solid var(--line);padding-top:34px;margin-top:46px}
+section:first-of-type{border-top:0;margin-top:0}
+ul,ol{margin:10px 0;padding-left:22px}
+li{margin:5px 0}
+code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+  font-family:"SF Mono",Menlo,Consolas,monospace;overflow-wrap:anywhere}
+pre.code{background:var(--code);border-radius:10px;padding:12px 14px;overflow-x:auto;font-size:13.5px;line-height:1.5;
+  font-family:"SF Mono",Menlo,Consolas,monospace;margin:12px 0}
+pre.code code{background:none;padding:0;font-size:inherit;overflow-wrap:normal}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14.5px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--brand-soft);color:var(--brand);font-size:13px}
+.tw{overflow-x:auto}
+table.saga td,table.saga th{padding:4px 8px;text-align:center;font-size:13.5px;font-variant-numeric:tabular-nums}
+table.saga td.rj{color:var(--no);font-weight:700}
+table.saga td.vd{color:var(--accent);font-weight:700}
+table.saga td.ev{text-align:left;font-size:13px}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+  background:var(--brand-soft);color:var(--brand);margin-right:6px}
+.pill.a{background:var(--accent-soft);color:var(--accent)}
+.pill.w{background:var(--warn-soft);color:var(--warn)}
+.pill.e{background:var(--ex-soft);color:var(--ex)}
+.lv{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.03em;padding:1px 8px;border-radius:999px;
+  border:1px solid var(--warn);color:var(--warn);background:var(--warn-soft);margin-right:8px;white-space:nowrap}
+.lv.p3{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.lv.p1{color:var(--muted);border-color:var(--muted);border-style:dashed;background:transparent}
+td .lv{margin-right:0}
+.prio{margin:0 0 18px;font-size:14.5px;color:var(--muted)}
+.prio strong{color:var(--ink)}
+.box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+  margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+.box .bt{font-weight:700;font-size:13px;margin-bottom:2px}
+.box p:first-of-type{margin-top:4px}
+.box p:last-child{margin-bottom:0}
+.box.def{border-left-color:var(--brand);background:var(--brand-soft)}
+.box.def .bt{color:var(--brand)}
+.box.tip{border-left-color:var(--accent);background:var(--accent-soft)}
+.box.tip .bt{color:var(--accent)}
+.box.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+.box.warn .bt{color:var(--warn)}
+.box.ana{border-left-color:var(--ana);background:var(--ana-soft)}
+.box.ana .bt{color:var(--ana)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:16px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+.card .num{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
+.card h4{margin:2px 0 6px;font-size:15.5px}
+.card p{margin:6px 0;font-size:14.3px}
+.q{border-left:3px solid var(--brand);padding:2px 0 2px 14px;margin:22px 0 8px}
+.q b{color:var(--brand)}
+.caso{border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:var(--panel);
+  box-shadow:var(--shadow);margin:18px 0}
+.caso h4{margin-top:0;color:var(--ana)}
+details.sol{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+  margin:14px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+details.sol>summary{cursor:pointer;padding:11px 16px;font-weight:600;list-style:none;
+  background:var(--ex-soft);color:var(--ex);font-size:14px}
+details.sol>summary::-webkit-details-marker{display:none}
+details.sol>summary::before{content:"\25B8";font-size:11px;margin-right:8px;display:inline-block;transition:transform .15s}
+details.sol[open]>summary::before{transform:rotate(90deg)}
+details.sol .body{padding:6px 18px 16px;overflow-x:auto}
+.meta{color:var(--muted);font-size:13.5px}
+.tiempo{display:inline-block;background:var(--warn-soft);color:var(--warn);border-radius:6px;
+  padding:1px 8px;font-size:12.5px;font-weight:600}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+ul.check{list-style:none;padding:0;margin:8px 0}
+ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 10px;border:1px solid var(--line);border-radius:8px;
+  margin:6px 0;background:var(--panel);font-size:15px}
+ul.check li input{margin-top:5px;accent-color:var(--accent);flex:0 0 auto}
+ul.check li.done{opacity:.6}
+ul.check li.done span{text-decoration:line-through}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:6px 0}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+.barlbl{font-size:13px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip{border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:13px;cursor:pointer;background:var(--panel);color:var(--ink);font-family:inherit}
+.chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
+.chip small{color:var(--muted);font-weight:400}
+/* alternativas */
+.mc{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0;
+  background:var(--panel);box-shadow:var(--shadow)}
+.mc .qt{margin:0 0 8px;font-weight:600;font-size:15.5px}
+.mc ol.ops{list-style:none;padding:0;margin:0}
+.mc ol.ops li{border:1px solid var(--line);border-radius:8px;padding:7px 10px;margin:6px 0;
+  cursor:pointer;font-size:15px;display:flex;gap:9px}
+.mc ol.ops li .k{font-weight:700;color:var(--brand);flex:0 0 auto}
+.mc ol.ops li:hover{background:var(--brand-soft)}
+.mc.done ol.ops li{cursor:default}
+.mc.done ol.ops li:hover{background:transparent}
+.mc ol.ops li.ok,.mc.done ol.ops li.ok:hover{background:var(--accent-soft);border-color:var(--accent)}
+.mc ol.ops li.bad,.mc.done ol.ops li.bad:hover{background:var(--warn-soft);border-color:var(--warn)}
+.mc .exp{display:none;margin-top:10px;font-size:14.5px;border-top:1px dashed var(--line);padding-top:8px}
+.mc.done .exp{display:block}
+.mc .exp b.r{color:var(--accent)}
+.mc .tag{float:right;font-size:11px;font-weight:600;padding:1px 8px;border-radius:999px;margin:0 0 6px 10px;
+  background:var(--brand-soft);color:var(--brand)}
+.mc .tag.real{background:var(--ana-soft);color:var(--ana)}
+.afirm{list-style:none;padding:0;margin:6px 0 10px;font-weight:400}
+.afirm li{margin:3px 0}
+#modo{display:none;border:1px solid var(--warn);border-left-width:4px;border-radius:10px;padding:12px 16px;
+  margin:16px 0;background:var(--warn-soft)}
+#modo b{color:var(--warn)}
+#reloj{font-variant-numeric:tabular-nums;font-weight:700}
+/* figuras */
+figure.fig{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;
+  margin:18px 0;box-shadow:var(--shadow);overflow-x:auto}
+figure.fig svg{width:100%;height:auto;display:block;min-width:540px}
+figure.fig figcaption{font-size:13px;color:var(--muted);margin-top:8px}
+.s-t{fill:var(--ink);font-size:13px;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.s-s{fill:var(--muted);font-size:11px;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.s-h{fill:var(--ink);font-size:14.5px;font-weight:700;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.s-m{fill:var(--ink);font-size:11.5px;font-family:"SF Mono",Menlo,Consolas,monospace}
+.s-rt{fill:var(--no);font-size:12.5px;font-weight:700;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.s-gt{fill:var(--accent);font-size:12.5px;font-weight:700;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.s-biz{fill:var(--brand-soft);stroke:var(--brand);stroke-width:1.3}
+.s-sup{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.3}
+.s-inf{fill:var(--ana-soft);stroke:var(--ana);stroke-width:1.3}
+.s-ext{fill:var(--warn-soft);stroke:var(--warn);stroke-width:1.3}
+.s-vio{fill:var(--ex-soft);stroke:var(--ex);stroke-width:1.3}
+.s-red{fill:var(--no-soft);stroke:var(--no);stroke-width:1.5}
+.s-gr{fill:var(--code);stroke:var(--muted);stroke-width:1.3}
+.s-core{fill:var(--bg);stroke:var(--muted);stroke-width:1.2}
+.s-ln{stroke:var(--muted);fill:none;stroke-width:1.4}
+.s-ln.d{stroke-dasharray:5 4}
+.s-ln.rd{stroke:var(--no)}
+.s-ln.gn{stroke:var(--accent)}
+.s-ah{fill:var(--muted)}
+.s-ahr{fill:var(--no)}
+.s-ahg{fill:var(--accent)}
+.tiny{font-size:12.5px;color:var(--muted)}
+.foot{margin-top:60px;font-size:13px;color:var(--muted)}
+@media (max-width:900px){
+  .layout{flex-direction:column;align-items:stretch}
+  .content{width:100%}
+  .sidebar{position:static;width:100%;flex:none;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:14px 16px}
+  details.menu>summary{display:block;cursor:pointer;font-weight:600;padding:8px 0;color:var(--brand)}
+  .grid2{grid-template-columns:1fr}
+}
+@media print{
+  .sidebar,.toolbar,#modo{display:none}
+  details.sol{break-inside:avoid}
+  .content{max-width:none;padding:0}
+}
+
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  .fc-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 14px;margin:14px 0;box-shadow:var(--shadow)}
+  .fc-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .fc-row:last-child{border-bottom:0}
+  .fc-lab{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);min-width:62px}
+  .fc-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 300px}
+  .fc-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;
+    font-size:13.5px;cursor:pointer;background:var(--bg);color:var(--ink);user-select:none}
+  .fc-chip input{accent-color:var(--brand);margin:0}
+  .fc-chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
+  .fc-chip small{color:var(--muted);font-weight:400}
+  .fc-status{font-size:13px;color:var(--muted);margin:10px 2px 6px;min-height:1.3em}
+  .fc-card{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--brand);border-radius:14px;padding:18px 20px;
+    min-height:230px;box-shadow:var(--shadow);cursor:pointer;outline:none;display:flex;flex-direction:column;gap:12px}
+  .fc-card:focus-visible{box-shadow:0 0 0 3px var(--brand-soft),var(--shadow)}
+  .fc-card.flipped{border-left-color:var(--accent);cursor:default}
+  .fc-card.fc-vacio{cursor:default;border-left-color:var(--line)}
+  .fc-meta{display:flex;flex-wrap:wrap;gap:6px}
+  .fc-tag{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .fc-tag.fc-salio{color:var(--no);border-color:var(--no);background:var(--no-soft);font-weight:700}
+  .fc-front{font-size:19px;font-weight:700;line-height:1.45;color:var(--ink)}
+  .fc-hint{font-size:14.5px;color:var(--warn);background:var(--warn-soft);border-radius:8px;padding:8px 12px}
+  .fc-back{border-top:1px dashed var(--line);padding-top:12px;font-size:16px;line-height:1.65}
+  .fc-back b{color:var(--accent)}
+  .fc-src{font-size:12.8px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .fc-src b{color:var(--muted)}
+  .fc-tap{font-size:12.5px;color:var(--muted);margin-top:auto}
+  .fc-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .fc-actions .btn{flex:1 1 150px;padding:11px 12px;font-size:14.5px;font-weight:600;text-align:center}
+  .fc-actions .btn:disabled{opacity:.45;cursor:default}
+  .fc-main{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+  .fc-no{border-color:var(--no);color:var(--no);background:var(--no-soft)}
+  .fc-mid{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+  .fc-yes{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .fc-end{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0;box-shadow:var(--shadow)}
+  .fc-score{font-size:26px;font-weight:800;color:var(--brand)}
+  .fc-end ul{margin:6px 0 10px}
+  table.mini tr.fc-tot td{font-weight:700}
+  details.fc-item .body b{color:var(--accent)}
+  h3 .num{color:var(--muted);font-weight:400;font-size:.8em}
+.fc-card{display:flex;flex-direction:column;gap:12px}
+
+</style>
+</head>
+<body>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand"><div class="dot">C2</div><div><h1>Flashcards · C2 ADS</h1><small>96 tarjetas de conceptos</small></div></div>
+  <div class="toolbar"><button class="btn" type="button" onclick="tema()">Claro / oscuro</button><button class="btn" type="button" onclick="abrir(true)">Abrir todo</button><a class="btn" href="Guia-C2-ADS.html">Volver a la guía</a></div>
+  
+  <details class="menu"><summary>Índice</summary><nav><div class="grp">Flashcards</div><a href="#fc-inicio"><span class="nt">Cómo practicar</span></a><a href="#fc-practica"><span class="nt">Práctica al azar</span></a><a href="#fc-avance"><span class="nt">Tu avance</span></a><div class="grp">Leer las tarjetas</div><a href="#fc-t-ms"><span class="nt">Microservicios y DDD (14)</span></a><a href="#fc-t-datos"><span class="nt">Consistencia y CAP (12)</span></a><a href="#fc-t-docker"><span class="nt">Contenedores y Docker (10)</span></a><a href="#fc-t-api"><span class="nt">APIs y REST (20)</span></a><a href="#fc-t-query"><span class="nt">Patrones y consultas (14)</span></a><a href="#fc-t-saga"><span class="nt">SAGA (11)</span></a><a href="#fc-t-iot"><span class="nt">IoT (7)</span></a><a href="#fc-t-seg"><span class="nt">Charla de seguridad (8)</span></a></nav></details>
+</aside>
+<main class="content">
+<section id="fc-inicio">
+<h2>Flashcards de conceptos</h2>
+<p class="lead">96 tarjetas con las preguntas de concepto de la Parte 2: las que ya salieron en los certámenes anteriores, las que el profe podría preguntar y las que sirven para entender la materia. Se practican al azar, te calificas tú y la página recuerda cuáles te cuestan.</p>
+<div class="kpis">
+  <div class="kpi"><b>96 tarjetas</b><span>en 8 temas</span></div>
+  <div class="kpi"><b>40 ya salieron</b><span>en los tres C2 anteriores o en el C1 2022-1</span></div>
+  <div class="kpi"><b>3 modos</b><span>repaso inteligente, mazo al azar y examen de 10</span></div>
+  <div class="kpi"><b>Tu avance</b><span>queda guardado en este navegador</span></div>
+</div>
+<h3>Cómo practicar</h3>
+<div class="steps">
+<div class="step"><b>Responde antes de voltear.</b> Lee la pregunta y contéstala en voz alta, o en 2 o 3 líneas en un papel. Lo que fija la materia es el esfuerzo de recordar sin mirar; releer la respuesta casi no sirve.</div>
+<div class="step"><b>Si te quedas en blanco, pide la pista</b> (botón o tecla P) antes de rendirte.</div>
+<div class="step"><b>Voltea y compara con lo que está en negrita.</b> Son las ideas que el profe espera leer.</div>
+<div class="step"><b>Califícate con honestidad.</b> «La sabía» solo si dijiste las ideas en negrita; «Más o menos» si te faltó una; «No la sabía» si no salía. Las que no sabes vuelven más seguido.</div>
+<div class="step"><b>Si una tarjeta no te sale dos veces, ve a la guía:</b> cada una trae el enlace a la sección que la explica.</div>
+</div>
+<div class="cols">
+  <div class="card"><h5>Las tres cajas</h5>
+    <p>Todas empiezan como nuevas. «La sabía» sube la tarjeta una caja; «Más o menos» la deja donde está; «No la sabía» la devuelve a la caja 1.</p>
+    <p>En el repaso inteligente, una tarjeta de la caja 1 sale seis veces más seguido que una de la caja 3.</p></div>
+  <div class="card"><h5>Los tres modos</h5>
+    <p><b>Repaso inteligente:</b> sin fin, al azar, con prioridad para las nuevas y las de la caja 1.</p>
+    <p><b>Mazo al azar:</b> todas las del filtro, una vez cada una; al final puedes repetir las que fallaste.</p>
+    <p><b>Examen de 10:</b> diez al azar y una nota al final.</p></div>
+  <div class="card"><h5>Plan hasta el certamen</h5>
+    <p><b>Mar 17:</b> 20 minutos de repaso inteligente, con todos los temas.</p>
+    <p><b>Dom 22:</b> 20 minutos con «Solo las que me cuestan» y dos exámenes de 10.</p>
+    <p><b>Lun 23:</b> 15 minutos con «Solo las que me cuestan». Nada nuevo.</p></div>
+</div>
+<div class="box tip"><div class="bt">Atajos de teclado</div>
+<p><b>Espacio</b> o <b>Enter</b>: voltear · <b>P</b>: pista · <b>1</b>: no la sabía · <b>2</b>: más o menos · <b>3</b>: la sabía · <b>S</b>: saltar. En el celular, toca la tarjeta para voltearla.</p></div>
+</section>
+
+<section id="fc-practica">
+<h2>Práctica al azar</h2>
+<div class="fc-panel">
+  <div class="fc-row"><span class="fc-lab">Temas</span><div class="fc-chips" id="fc-temas"><label class="fc-chip"><input type="checkbox" value="ms" checked> Microservicios y DDD <small>14</small></label><label class="fc-chip"><input type="checkbox" value="datos" checked> Consistencia y CAP <small>12</small></label><label class="fc-chip"><input type="checkbox" value="docker" checked> Contenedores y Docker <small>10</small></label><label class="fc-chip"><input type="checkbox" value="api" checked> APIs y REST <small>20</small></label><label class="fc-chip"><input type="checkbox" value="query" checked> Patrones y consultas <small>14</small></label><label class="fc-chip"><input type="checkbox" value="saga" checked> SAGA <small>11</small></label><label class="fc-chip"><input type="checkbox" value="iot" checked> IoT <small>7</small></label><label class="fc-chip"><input type="checkbox" value="seg" checked> Charla de seguridad <small>8</small></label></div></div>
+  <div class="fc-row"><span class="fc-lab">Cuáles</span><div class="fc-chips" id="fc-cuales"><label class="fc-chip"><input type="radio" name="fc-cuales" value="todas" checked> Todas <small>96</small></label><label class="fc-chip"><input type="radio" name="fc-cuales" value="salio"> Solo las que ya salieron <small>40</small></label><label class="fc-chip"><input type="radio" name="fc-cuales" value="cuestan"> Solo las que me cuestan <small id="fc-n-cuestan">0</small></label></div></div>
+  <div class="fc-row"><span class="fc-lab">Modo</span><div class="fc-chips" id="fc-modos"><label class="fc-chip"><input type="radio" name="fc-modo" value="smart" checked> Repaso inteligente</label><label class="fc-chip"><input type="radio" name="fc-modo" value="deck"> Mazo al azar</label><label class="fc-chip"><input type="radio" name="fc-modo" value="exam"> Examen de 10</label></div></div>
+</div>
+<div class="fc-status" id="fc-status" aria-live="polite"></div>
+<div class="fc-card" id="fc-card" tabindex="0" aria-live="polite">
+  <div class="fc-meta"><span class="fc-tag" id="fc-tema"></span><span class="fc-tag" id="fc-tipo"></span><span class="fc-tag fc-salio" id="fc-salio" hidden>ya salió</span><span class="fc-tag" id="fc-caja"></span></div>
+  <div class="fc-front" id="fc-front">Cargando…</div>
+  <div class="fc-hint" id="fc-hint" hidden></div>
+  <div class="fc-back" id="fc-back" hidden><div id="fc-ans"></div><div class="fc-src" id="fc-src"></div></div>
+  <div class="fc-tap" id="fc-tap"></div>
+</div>
+<div class="fc-actions" id="fc-actions-front">
+  <button class="btn" id="fc-btn-hint" type="button">Pista (P)</button>
+  <button class="btn fc-main" id="fc-btn-flip" type="button">Ver respuesta (espacio)</button>
+  <button class="btn" id="fc-btn-skip" type="button">Saltar (S)</button>
+</div>
+<div class="fc-actions" id="fc-actions-back" hidden>
+  <button class="btn fc-no" data-g="1" type="button">No la sabía (1)</button>
+  <button class="btn fc-mid" data-g="2" type="button">Más o menos (2)</button>
+  <button class="btn fc-yes" data-g="3" type="button">La sabía (3)</button>
+</div>
+<div class="fc-end" id="fc-end" hidden></div>
+<noscript><p>La práctica necesita JavaScript. Las tarjetas también están más abajo, para repasarlas leyendo.</p></noscript>
+</section>
+
+<section id="fc-avance">
+<h2>Tu avance</h2>
+<p class="lead">Cuántas tarjetas tienes en cada caja, por tema. La meta para el lunes 23: que las que ya salieron estén en la caja 3.</p>
+<div id="fc-stats"><p class="tiny">Se calcula al abrir la página.</p></div>
+<h3>Las que más te cuestan</h3>
+<div id="fc-hard"></div>
+<p class="tiny">El avance se guarda en este navegador: si abres la página en otro computador o borras los datos del sitio, parte de cero. <button class="btn" id="fc-reset" type="button">Reiniciar avance</button></p>
+</section>
+
+<section id="fc-todas">
+<h2>Todas las tarjetas</h2>
+<p class="lead">Las mismas 96 tarjetas, por tema, para repasar leyendo: primero las que ya salieron, después las probables y al final las que sirven para entender.</p>
+<h3 id="fc-t-ms">Microservicios y DDD <span class="num">· 14 tarjetas</span></h3>
+<details class="sol fc-item" id="c-ms-02"><summary>¿Basta con usar contenedores para que un sistema tenga microservicios y sus cambios queden acotados? · <small>ya salió</small></summary><div class="body"><p>No. <b>Los contenedores por sí solos no aseguran nada</b>: depende del diseño. Si se divide por los negocios de cada familia de datos y cada microservicio es un contenedor, los cambios no deberían afectar a todo.</p><p class="tiny">C1 2022-1, aplicación 3 · <a href="Guia-C2-ADS.html#como">ver en la guía (Cómo pregunta el profesor)</a></p></div></details>
+<details class="sol fc-item" id="c-ms-07"><summary>¿Por qué no siempre conviene usar microservicios? · <small>ya salió</small></summary><div class="body"><p><b>No son una bala de plata</b>: la arquitectura adecuada depende de muchos factores. El monolito sirve para negocios de <b>tamaño acotado</b>, con desarrollo más rápido y acceso único a los datos.</p><p class="tiny">C2 2023-2 comente 1 · 016, lámina 9 · <a href="Guia-C2-ADS.html#m-ms">ver en la guía (014 · Microservicios)</a></p></div></details>
+<details class="sol fc-item" id="c-ms-12"><summary>¿Qué diferencias hay entre microservicios y monolito, y cómo impactan el desempeño? · <small>ya salió</small></summary><div class="body"><p>La <b>elasticidad</b>, la <b>consistencia eventual</b> y que los microservicios son <b>agnósticos de la tecnología</b>.</p><p class="tiny">C2 2024-1 comente 3 · <a href="Guia-C2-ADS.html#m-ms">ver en la guía (014 · Microservicios)</a></p></div></details>
+<details class="sol fc-item" id="c-ms-13"><summary>¿Qué argumento justifica recomendar microservicios en un cambio hipotético? · <small>ya salió</small></summary><div class="body"><p>Que una parte del negocio sea <b>inestable o crezca sin afectar a las demás</b>. Basarse en antecedentes que el enunciado no da, como escalar, descuenta.</p><p class="tiny">C2 2024-1 aplicación 1 · <a href="Guia-C2-ADS.html#m-ms">ver en la guía (014 · Microservicios)</a></p></div></details>
+<details class="sol fc-item" id="c-ms-14"><summary>¿Qué beneficios tiene llevar a la nube los servicios que atienden una alta demanda? · <small>ya salió</small></summary><div class="body"><p>La <b>elasticidad</b> de la nube y la <b>independencia</b> de las funcionalidades que dan los microservicios.</p><p class="tiny">C2 2023-1 aplicación 2 · <a href="Guia-C2-ADS.html#m-ms">ver en la guía (014 · Microservicios)</a></p></div></details>
+<details class="sol fc-item" id="c-ms-01"><summary>¿Qué son los microservicios, según la definición del profesor? · <small>probable</small></summary><div class="body"><p>Un <b>estilo de arquitectura</b> para desarrollar una aplicación basada en varios servicios <b>«pequeños»</b>, <b>débilmente acoplados</b>, con un <b>alcance bien definido</b>, que usan <b>medios de comunicación livianos</b>.</p><p class="tiny">014, lámina 29 · <a href="Guia-C2-ADS.html#m-ms">ver en la guía (014 · Microservicios)</a></p></div></details>
+<details class="sol fc-item" id="c-ms-03"><summary>¿Qué significa «débilmente acoplado»? · <small>probable</small></summary><div class="body"><p>Que los servicios mantienen una relación mediante <b>interfaces bien definidas</b> que <b>minimiza las dependencias</b>.</p><p class="tiny">014, lámina 30 · <a href="Guia-C2-ADS.html#m-ms">ver en la guía (014 · Microservicios)</a></p></div></details>
+<details class="sol fc-item" id="c-ms-04"><summary>¿Es lo mismo un microservicio que un servicio o una base de datos? · <small>probable</small></summary><div class="body"><p>No. <b>Un MS no es lo mismo que un servicio o una base de datos.</b> Hay que respetar la independencia y <b>cada MS es dueño de sus datos</b>.</p><p class="tiny">014, láminas 37 y 38 · <a href="Guia-C2-ADS.html#m-ms">ver en la guía (014 · Microservicios)</a></p></div></details>
+<details class="sol fc-item" id="c-ms-05"><summary>¿Por qué un microservicio no debe leer la base de datos de otro? · <small>probable</small></summary><div class="body"><p>Porque <b>se acopla a su estructura interna</b>: cualquier cambio del dueño rompe al otro. Se debe pedir el dato por su <b>API o por eventos</b>.</p><p class="tiny">014, lámina 38 · <a href="Guia-C2-ADS.html#m-ms">ver en la guía (014 · Microservicios)</a></p></div></details>
+<details class="sol fc-item" id="c-ms-06"><summary>Nombra tres ventajas y tres desventajas de los microservicios. · <small>probable</small></summary><div class="body"><p><b>Ventajas:</b> despliegue independiente, escalado independiente, independencia tecnológica, mejor aislamiento ante fallas. <b>Desventajas:</b> lo distribuido (CAP), información del negocio repartida, operación más compleja, latencia.</p><p class="tiny">014, lámina 41; 016, lámina 8 · <a href="Guia-C2-ADS.html#m-ms">ver en la guía (014 · Microservicios)</a></p></div></details>
+<details class="sol fc-item" id="c-ms-09"><summary>¿Qué es un contexto acotado y qué permite? · <small>probable</small></summary><div class="body"><p>Delimita dónde vale un modelo. Permite que <b>varios modelos evolucionen por separado</b>, siempre que <b>cumplan con un acuerdo</b> y sin perder de vista el todo.</p><p class="tiny">014, láminas 19 y 20 · <a href="Guia-C2-ADS.html#m-ddd">ver en la guía (014 · DDD y contextos)</a></p></div></details>
+<details class="sol fc-item" id="c-ms-08"><summary>¿Cuáles son las tres preguntas que ponen en problemas a un monolito? · <small>para entender</small></summary><div class="body"><p><b>¿Y si el negocio crece?</b> <b>¿Y la mantención o cambios en un subnegocio?</b> <b>¿Y si aumenta su uso en determinados periodos?</b></p><p class="tiny">014, lámina 24 · <a href="Guia-C2-ADS.html#m-ms">ver en la guía (014 · Microservicios)</a></p></div></details>
+<details class="sol fc-item" id="c-ms-10"><summary>¿Qué es el lenguaje ubicuo? · <small>para entender</small></summary><div class="body"><p>Un <b>lenguaje común</b> entre expertos del negocio y desarrolladores, con el que se describe el modelo.</p><p class="tiny">014, lámina 13 · <a href="Guia-C2-ADS.html#m-ddd">ver en la guía (014 · DDD y contextos)</a></p></div></details>
+<details class="sol fc-item" id="c-ms-11"><summary>¿Qué preguntas hay que responder para migrar de un monolito a microservicios? · <small>para entender</small></summary><div class="body"><p><b>Cómo definir</b> un microservicio, <b>cómo establecer sus límites</b>, <b>cómo conversan</b> y <b>qué elementos del monolito</b> son o no son microservicios.</p><p class="tiny">014, lámina 33 · <a href="Guia-C2-ADS.html#m-ddd">ver en la guía (014 · DDD y contextos)</a></p></div></details>
+<h3 id="fc-t-datos">Consistencia y CAP <span class="num">· 12 tarjetas</span></h3>
+<details class="sol fc-item" id="c-datos-01"><summary>¿Qué es la consistencia eventual? ¿Es una ventaja de los microservicios? · <small>ya salió</small></summary><div class="body"><p>Que los datos replicados pueden no coincidir por un tiempo, pero <b>eventualmente alcanzan el valor consistente</b>. <b>No es una ventaja</b>, ni propia del monolito, ni consecuencia de SAGA: nace de repartir los datos.</p><p class="tiny">C1 2022-1, P5; 016, lámina 62 · <a href="Guia-C2-ADS.html#m-cap">ver en la guía (016 · ACID, CAP y eventual)</a></p></div></details>
+<details class="sol fc-item" id="c-datos-02"><summary>¿Los patrones de consistencia y los contenedores eliminan la preocupación por la consistencia? · <small>ya salió</small></summary><div class="body"><p>No. Existen y sirven cuando es necesario, pero <b>lo primordial es preservar la independencia entre microservicios</b>; usarlos en exceso va contra ese principio.</p><p class="tiny">C1 2022-1, comente 2 · <a href="Guia-C2-ADS.html#b-comente">ver en la guía (Método y 22 frases)</a></p></div></details>
+<details class="sol fc-item" id="c-datos-03"><summary>Enuncia el teorema CAP. · <small>ya salió</small></summary><div class="body"><p>En un sistema distribuido <b>solo se pueden asegurar dos de tres</b>: <b>consistencia</b>, <b>disponibilidad</b> y <b>tolerancia a la partición</b> (Brewer, 2000).</p><p class="tiny">C2 2023-1 comente 1 · 016, lámina 56 · <a href="Guia-C2-ADS.html#m-cap">ver en la guía (016 · ACID, CAP y eventual)</a></p></div></details>
+<details class="sol fc-item" id="c-datos-11"><summary>¿Siempre hay que preocuparse de la consistencia eventual al usar microservicios? · <small>ya salió</small></summary><div class="body"><p>No. Solo cuando la consistencia <b>depende de lo almacenado en más de un contexto y las bases están separadas</b>. Con base compartida o sin datos repartidos no preocupa. <b>Todo depende del escenario.</b></p><p class="tiny">C2 2024-1 comente 1 · <a href="Guia-C2-ADS.html#m-cap">ver en la guía (016 · ACID, CAP y eventual)</a></p></div></details>
+<details class="sol fc-item" id="c-datos-12"><summary>¿De qué es consecuencia la consistencia eventual? · <small>ya salió</small></summary><div class="body"><p>De <b>usar bases de datos independientes por servicio</b>. No de SAGA, CQRS ni los contenedores.</p><p class="tiny">C2 2023-2 P7 · <a href="Guia-C2-ADS.html#m-cap">ver en la guía (016 · ACID, CAP y eventual)</a></p></div></details>
+<details class="sol fc-item" id="c-datos-04"><summary>¿Qué se pierde en cada combinación de CAP? · <small>probable</small></summary><div class="body"><p><b>C+A:</b> el sistema falla si un nodo se desconecta. <b>C+P:</b> puede haber que esperar la respuesta. <b>A+P:</b> preguntar en distintos nodos puede dar valores distintos.</p><p class="tiny">016, láminas 59 a 61 · <a href="Guia-C2-ADS.html#m-cap">ver en la guía (016 · ACID, CAP y eventual)</a></p></div></details>
+<details class="sol fc-item" id="c-datos-05"><summary>¿En qué se diferencia la C de ACID de la C de CAP? · <small>probable</small></summary><div class="body"><p>En <b>ACID</b>, la base <b>transita entre estados consistentes</b>. En <b>CAP</b>, es dar el <b>mismo valor sin importar el nodo</b>. En un negocio distribuido se entiende como <b>coherencia respecto al negocio</b>.</p><p class="tiny">016, láminas 55 a 62 · <a href="Guia-C2-ADS.html#m-cap">ver en la guía (016 · ACID, CAP y eventual)</a></p></div></details>
+<details class="sol fc-item" id="c-datos-06"><summary>¿Por qué en microservicios se dice «¿Rollback? ¡No!»? · <small>probable</small></summary><div class="body"><p>Porque cada servicio ya confirmó su transacción local. Se usa <b>compensación desde un punto de vista de negocio</b>.</p><p class="tiny">014, lámina 54 · <a href="Guia-C2-ADS.html#m-datos">ver en la guía (014 · Datos y consistencia)</a></p></div></details>
+<details class="sol fc-item" id="c-datos-07"><summary>En el ejemplo de la venta sin stock, ¿qué queda después de compensar? · <small>probable</small></summary><div class="body"><p>La venta del producto 1 vuelve a 0, <b>pero el nombre sigue siendo CC y la venta del producto 2 se mantiene</b>. Un rollback habría borrado esos cambios válidos.</p><p class="tiny">014, láminas 55 a 59 · <a href="Guia-C2-ADS.html#m-datos">ver en la guía (014 · Datos y consistencia)</a></p></div></details>
+<details class="sol fc-item" id="c-datos-08"><summary>¿Cómo funciona un commit de dos fases? · <small>probable</small></summary><div class="body"><p><b>Fase 1:</b> los participantes <b>votan</b> si pudieron hacer la transacción. <b>Fase 2:</b> si todos votaron sí, el administrador ordena <b>commit</b>; si no, <b>rollback</b>.</p><p class="tiny">016, lámina 65 · <a href="Guia-C2-ADS.html#m-2pc">ver en la guía (016 · Commit de dos fases)</a></p></div></details>
+<details class="sol fc-item" id="c-datos-09"><summary>¿Qué problemas tiene el commit de dos fases? · <small>probable</small></summary><div class="body"><p>Si cae el <b>administrador</b> o un <b>participante</b> al votar; los <b>recursos quedan tomados</b> a la espera; y <b>no todos los motores o brókers lo soportan</b>.</p><p class="tiny">016, láminas 64 y 66 · <a href="Guia-C2-ADS.html#m-2pc">ver en la guía (016 · Commit de dos fases)</a></p></div></details>
+<details class="sol fc-item" id="c-datos-10"><summary>¿Qué hay que evitar al usar mensajes para mantener la consistencia? · <small>para entender</small></summary><div class="body"><p><b>No saturar de mensajes</b>: aumenta el tiempo para alcanzar un estado consistente.</p><p class="tiny">014, lámina 60 · <a href="Guia-C2-ADS.html#m-datos">ver en la guía (014 · Datos y consistencia)</a></p></div></details>
+<h3 id="fc-t-docker">Contenedores y Docker <span class="num">· 10 tarjetas</span></h3>
+<details class="sol fc-item" id="c-docker-01"><summary>¿Cuál es la relación entre contenedores y máquinas virtuales? · <small>ya salió</small></summary><div class="body"><p>Son <b>soluciones alternativas a un mismo problema, e incluso podrían combinarse</b>.</p><p class="tiny">C1 2022-1, P6 · <a href="Guia-C2-ADS.html#m-cont">ver en la guía (015 · Contenedores vs. VM)</a></p></div></details>
+<details class="sol fc-item" id="c-docker-02"><summary>¿Qué diferencia técnica hay entre una VM y un contenedor? · <small>ya salió</small></summary><div class="body"><p>Cada <b>VM es un SO independiente</b> con recursos virtuales. Los <b>contenedores comparten el kernel</b> del anfitrión, y son más livianos y rápidos de iniciar.</p><p class="tiny">C2 2023-2 comente 3 · 015, láminas 14 a 21 · <a href="Guia-C2-ADS.html#m-cont">ver en la guía (015 · Contenedores vs. VM)</a></p></div></details>
+<details class="sol fc-item" id="c-docker-09"><summary>¿Las máquinas virtuales tienen más poder de procesamiento que los contenedores? · <small>ya salió</small></summary><div class="body"><p>No: los contenedores <b>no tienen poder de cómputo en sí, dependen de la infraestructura</b>. En escalabilidad ganan por ser <b>más livianos de replicar</b>, y son más eficientes en costo.</p><p class="tiny">C2 2023-2 comente 3 · <a href="Guia-C2-ADS.html#m-cont">ver en la guía (015 · Contenedores vs. VM)</a></p></div></details>
+<details class="sol fc-item" id="c-docker-10"><summary>¿Qué aportan los contenedores a los microservicios y a la entrega continua? · <small>ya salió</small></summary><div class="body"><p>Son <b>ideales para arquitecturas de microservicios</b> y <b>facilitan los pipelines de integración y entrega continua</b>.</p><p class="tiny">C2 2024-1 P4 · <a href="Guia-C2-ADS.html#m-cont">ver en la guía (015 · Contenedores vs. VM)</a></p></div></details>
+<details class="sol fc-item" id="c-docker-04"><summary>¿Qué diferencia hay entre una imagen y un contenedor? · <small>probable</small></summary><div class="body"><p>La <b>imagen</b> es una colección de capas y metadatos, <b>estática</b>. El <b>contenedor</b> es una <b>instancia en ejecución</b>. De una imagen salen varios contenedores.</p><p class="tiny">015, lámina 24 · <a href="Guia-C2-ADS.html#m-docker">ver en la guía (015 · Docker)</a></p></div></details>
+<details class="sol fc-item" id="c-docker-05"><summary>¿Qué pasa con la imagen al detener un contenedor iniciado con --rm? · <small>probable</small></summary><div class="body"><p>El <b>contenedor se borra</b>, pero <b>la imagen no desaparece</b>.</p><p class="tiny">015, lámina 43 · <a href="Guia-C2-ADS.html#m-docker">ver en la guía (015 · Docker)</a></p></div></details>
+<details class="sol fc-item" id="c-docker-06"><summary>En -p 8001:8000, ¿qué puerto es de qué? · <small>probable</small></summary><div class="body"><p><b>8001 es del host</b> y <b>8000 del contenedor</b>.</p><p class="tiny">015, lámina 29 · <a href="Guia-C2-ADS.html#m-docker">ver en la guía (015 · Docker)</a></p></div></details>
+<details class="sol fc-item" id="c-docker-07"><summary>¿Qué diferencia hay entre el Dockerfile y docker-compose? · <small>probable</small></summary><div class="body"><p>El <b>Dockerfile describe la imagen</b>. <b>Docker-compose gestiona múltiples contenedores</b> de forma conjunta, una forma de orquestación. Para grandes sistemas: Kubernetes o Docker Swarm.</p><p class="tiny">015, lámina 44 · <a href="Guia-C2-ADS.html#m-docker">ver en la guía (015 · Docker)</a></p></div></details>
+<details class="sol fc-item" id="c-docker-03"><summary>¿Qué problema de desarrollo resuelven los contenedores? · <small>para entender</small></summary><div class="body"><p><b>Mover aplicaciones entre ambientes</b> con sus dependencias: evita conflictos y que dejen de funcionar al cambiar de ambiente. Empaquetar y estandarizar es parte de la solución.</p><p class="tiny">015, láminas 11 a 13 · <a href="Guia-C2-ADS.html#m-cont">ver en la guía (015 · Contenedores vs. VM)</a></p></div></details>
+<details class="sol fc-item" id="c-docker-08"><summary>¿Qué hace cada instrucción: FROM, RUN, WORKDIR, COPY, CMD? · <small>para entender</small></summary><div class="body"><p><b>FROM:</b> imagen base. <b>RUN:</b> pasos previos. <b>WORKDIR:</b> directorio de trabajo. <b>COPY:</b> copia nuestro código. <b>CMD:</b> lo que se ejecuta.</p><p class="tiny">015, láminas 34 a 38 · <a href="Guia-C2-ADS.html#m-docker">ver en la guía (015 · Docker)</a></p></div></details>
+<h3 id="fc-t-api">APIs y REST <span class="num">· 20 tarjetas</span></h3>
+<details class="sol fc-item" id="c-api-06"><summary>¿Cuáles son las restricciones de REST? · <small>ya salió</small></summary><div class="body"><p><b>Cliente/servidor</b>, <b>sin estado</b>, <b>cacheability</b>, <b>sistema en capas</b>, <b>code on demand</b> (opcional) e <b>interfaz uniforme</b> (verbo + recurso).</p><p class="tiny">C2 2024-1 P5 · 015b, lámina 15 · <a href="Guia-C2-ADS.html#m-rest">ver en la guía (015b · REST)</a></p></div></details>
+<details class="sol fc-item" id="c-api-10"><summary>¿La idempotencia viene garantizada por el método HTTP? · <small>ya salió</small></summary><div class="body"><p>No: <b>no son propiedades intrínsecas a los métodos, sino garantías que el proveedor debe dar</b> a los clientes.</p><p class="tiny">C2 2024-1 P6 · 015b, lámina 28 · <a href="Guia-C2-ADS.html#m-http">ver en la guía (015b · URIs, verbos y códigos)</a></p></div></details>
+<details class="sol fc-item" id="c-api-18"><summary>Da 3 argumentos para considerar APIs RESTful en una aplicación. · <small>ya salió</small></summary><div class="body"><p>Permite <b>invocar la aplicación como servicio</b> desde otra plataforma; <b>comunica sistemas distintos gracias a HTTP</b>; y, <b>a pesar de no ser su objetivo</b>, permite reutilizar código.</p><p class="tiny">C2 2024-1 comente 2 · <a href="Guia-C2-ADS.html#b-comente">ver en la guía (Método y 22 frases)</a></p></div></details>
+<details class="sol fc-item" id="c-api-19"><summary>¿Qué significa la restricción «sin estado» de REST? · <small>ya salió</small></summary><div class="body"><p><b>El estado se guarda y mantiene en el cliente</b> y no en el servidor.</p><p class="tiny">C2 2024-1 P5 · <a href="Guia-C2-ADS.html#m-rest">ver en la guía (015b · REST)</a></p></div></details>
+<details class="sol fc-item" id="c-api-20"><summary>¿Por qué están mal POST /AddNewFilm y PUT /aves/7565 para agregar un ave? · <small>ya salió</small></summary><div class="body"><p>La primera tiene <b>una acción en la URI</b>. La segunda usa <b>PUT para crear</b>, que le corresponde a POST.</p><p class="tiny">C2 2024-1 P6 · <a href="Guia-C2-ADS.html#m-http">ver en la guía (015b · URIs, verbos y códigos)</a></p></div></details>
+<details class="sol fc-item" id="c-api-01"><summary>¿Qué es una API y qué es una API web en el curso? · <small>probable</small></summary><div class="body"><p>La <b>interfaz</b> que un programa presenta a otros programas o a humanos, y que <b>encapsula el estado</b>. En el curso, una <b>API remota accedida mediante HTTP</b>.</p><p class="tiny">015b, láminas 3 a 5 · <a href="Guia-C2-ADS.html#m-api">ver en la guía (015b · Qué es una API)</a></p></div></details>
+<details class="sol fc-item" id="c-api-02"><summary>¿El objetivo de una API es el reuso? · <small>probable</small></summary><div class="body"><p>No. <b>Las APIs no aseguran reuso ni lo buscan: desacoplar es más importante que reusar</b>.</p><p class="tiny">015b, lámina 7 · <a href="Guia-C2-ADS.html#m-api">ver en la guía (015b · Qué es una API)</a></p></div></details>
+<details class="sol fc-item" id="c-api-03"><summary>¿En qué se diferencia una API web de una página web? · <small>probable</small></summary><div class="body"><p>El <b>impacto de un rediseño</b> es distinto. Una API es un <b>producto en sí mismo</b>: puede cambiar, pero <b>se debe tratar de mantener la interfaz</b>.</p><p class="tiny">015b, lámina 8 · <a href="Guia-C2-ADS.html#m-api">ver en la guía (015b · Qué es una API)</a></p></div></details>
+<details class="sol fc-item" id="c-api-04"><summary>¿Qué es REST, quién lo propuso y con qué objetivo? · <small>probable</small></summary><div class="body"><p>Un <b>estilo de arquitectura</b> de <b>Roy Fielding (2000)</b> para sistemas distribuidos <b>eficientes, escalables y confiables</b>.</p><p class="tiny">015b, lámina 11 · <a href="Guia-C2-ADS.html#m-rest">ver en la guía (015b · REST)</a></p></div></details>
+<details class="sol fc-item" id="c-api-05"><summary>¿Cuáles son los cuatro principios de REST? · <small>probable</small></summary><div class="body"><p><b>Recursos con URIs</b>, <b>manipulación por representaciones</b>, <b>mensajes auto-descriptivos</b> y <b>HATEOAS</b>.</p><p class="tiny">015b, lámina 14 · <a href="Guia-C2-ADS.html#m-rest">ver en la guía (015b · REST)</a></p></div></details>
+<details class="sol fc-item" id="c-api-07"><summary>¿Toda API web es RESTful? · <small>probable</small></summary><div class="body"><p>No. Son RESTful las que <b>cumplen, o tratan de cumplir, las restricciones</b> del estilo.</p><p class="tiny">015b, lámina 10 · <a href="Guia-C2-ADS.html#m-rest">ver en la guía (015b · REST)</a></p></div></details>
+<details class="sol fc-item" id="c-api-08"><summary>Define método seguro e idempotente. · <small>probable</small></summary><div class="body"><p><b>Seguro:</b> no causa efectos secundarios (read-only). <b>Idempotente:</b> repetir la petición tiene el mismo efecto que enviarla una vez.</p><p class="tiny">015b, láminas 27 a 31 · <a href="Guia-C2-ADS.html#m-http">ver en la guía (015b · URIs, verbos y códigos)</a></p></div></details>
+<details class="sol fc-item" id="c-api-09"><summary>Clasifica GET, HEAD, OPTIONS, PUT, DELETE y POST. · <small>probable</small></summary><div class="body"><p><b>GET, HEAD, OPTIONS:</b> seguros e idempotentes. <b>PUT, DELETE:</b> idempotentes, no seguros. <b>POST:</b> ninguna.</p><p class="tiny">015b, lámina 29 · <a href="Guia-C2-ADS.html#m-http">ver en la guía (015b · URIs, verbos y códigos)</a></p></div></details>
+<details class="sol fc-item" id="c-api-11"><summary>¿Qué debe hacer el servidor para que un DELETE responda siempre 200? · <small>probable</small></summary><div class="body"><p><b>Llevar un registro de los recursos borrados</b>. Si no, la segunda vez responderá 404.</p><p class="tiny">015b, lámina 32 · <a href="Guia-C2-ADS.html#m-http">ver en la guía (015b · URIs, verbos y códigos)</a></p></div></details>
+<details class="sol fc-item" id="c-api-12"><summary>¿Cómo se implementa una operación asíncrona en REST? · <small>probable</small></summary><div class="body"><p>El POST retorna <b>202 Accepted</b> con un recurso que da el estado. Luego el GET retorna <b>200</b> si sigue, <b>303 See Other</b> con Location si terminó, o <b>200</b> con las razones si falló.</p><p class="tiny">015b, láminas 33 y 36 · <a href="Guia-C2-ADS.html#m-http">ver en la guía (015b · URIs, verbos y códigos)</a></p></div></details>
+<details class="sol fc-item" id="c-api-13"><summary>¿Qué diferencia hay entre 401 y 403? · <small>probable</small></summary><div class="body"><p><b>401:</b> no se entregaron credenciales. <b>403:</b> el usuario no está autorizado.</p><p class="tiny">015b, lámina 35 · <a href="Guia-C2-ADS.html#m-http">ver en la guía (015b · URIs, verbos y códigos)</a></p></div></details>
+<details class="sol fc-item" id="c-api-14"><summary>¿Qué tres errores afectan la opacidad de las URIs? · <small>probable</small></summary><div class="body"><p><b>Cabeceras para procesamiento</b>, <b>recursos como gateways</b> y <b>pedirle al cliente que construya la URI</b> (mejor retornar un link).</p><p class="tiny">015b, lámina 26 · <a href="Guia-C2-ADS.html#m-http">ver en la guía (015b · URIs, verbos y códigos)</a></p></div></details>
+<details class="sol fc-item" id="c-api-15"><summary>¿Cómo se identifican los recursos de una API? · <small>probable</small></summary><div class="body"><p>Buscando <b>sustantivos</b> en casos de uso o secuencia que se puedan crear, buscar, actualizar o borrar. Hay que <b>evitar el mapeo directo</b> entre entidades y recursos.</p><p class="tiny">015b, lámina 42 · <a href="Guia-C2-ADS.html#m-diseno">ver en la guía (015b · Diseño y API Layer)</a></p></div></details>
+<details class="sol fc-item" id="c-api-16"><summary>¿Cuál es el orden del proceso de diseño de APIs? · <small>probable</small></summary><div class="body"><p>Actores y tareas → recursos → <b>validar modelos</b> → estructura → ciclo de vida → códigos → <b>validar diseño</b>; documentar en paralelo.</p><p class="tiny">015b, láminas 39 a 48 · <a href="Guia-C2-ADS.html#m-diseno">ver en la guía (015b · Diseño y API Layer)</a></p></div></details>
+<details class="sol fc-item" id="c-api-17"><summary>¿Qué propone el patrón API Layer y cuál es su trade-off? · <small>probable</small></summary><div class="body"><p>Poner <b>una capa de APIs entre los microservicios y la interfaz</b>. Desacopla la interfaz y sirve para autenticación. Su trade-off es la <b>mantenibilidad</b>.</p><p class="tiny">015b, lámina 51 · <a href="Guia-C2-ADS.html#m-diseno">ver en la guía (015b · Diseño y API Layer)</a></p></div></details>
+<h3 id="fc-t-query">Patrones y consultas <span class="num">· 14 tarjetas</span></h3>
+<details class="sol fc-item" id="c-query-04"><summary>¿En qué consiste API Composition? · <small>ya salió</small></summary><div class="body"><p><b>Consultar a cada servicio por su API y combinar los resultados.</b> Hay un API Composer y los servicios dueños de los datos.</p><p class="tiny">C2 2023-2 P8 · 016, láminas 26 y 27 · <a href="Guia-C2-ADS.html#m-comp">ver en la guía (016 · API Composition)</a></p></div></details>
+<details class="sol fc-item" id="c-query-07"><summary>¿En qué consiste CQRS? · <small>ya salió</small></summary><div class="body"><p>Usa <b>eventos</b> para mantener una <b>vista de solo lectura</b> que replica los datos desde cada servicio.</p><p class="tiny">C2 2023-1 P3 · 016, lámina 40 · <a href="Guia-C2-ADS.html#m-cqrs">ver en la guía (016 · CQRS)</a></p></div></details>
+<details class="sol fc-item" id="c-query-09"><summary>¿Cómo eliges entre API Composition y CQRS? · <small>ya salió</small></summary><div class="body"><p>Según las <b>fuerzas</b>. Si la consulta es simple y hay pocos servicios, API Composition. Si es compleja o frecuente y <b>se tolera el atraso</b>, CQRS.</p><p class="tiny">C2 2023-2 P4 · C2 2023-1 comente 2 · <a href="Guia-C2-ADS.html#m-cqrs">ver en la guía (016 · CQRS)</a></p></div></details>
+<details class="sol fc-item" id="c-query-10"><summary>¿Qué diferencia hay entre el esquema de comunicación y la forma de trabajar en conjunto? · <small>ya salió</small></summary><div class="body"><p>Comunicación: <b>síncrona o asíncrona</b>. Trabajo en conjunto: <b>orquestado o coreografiado</b>. <b>No tienen una implicancia entre ellas</b>: SAGA define comunicación asíncrona, pero puede orquestarse o coreografiarse.</p><p class="tiny">C2 2023-2 P5 y comente 2 · <a href="Guia-C2-ADS.html#m-ejes">ver en la guía (016 · Comunicación y trabajo en conjunto)</a></p></div></details>
+<details class="sol fc-item" id="c-query-11"><summary>¿Qué tipo de comunicación usan API Composer y CQRS? · <small>ya salió</small></summary><div class="body"><p><b>API Composer: síncrona. CQRS: asíncrona</b>, con eventos. Son patrones alternativos para el mismo problema.</p><p class="tiny">C2 2023-2 P8 · C2 2024-1 P1 · <a href="Guia-C2-ADS.html#m-ejes">ver en la guía (016 · Comunicación y trabajo en conjunto)</a></p></div></details>
+<details class="sol fc-item" id="c-query-12"><summary>¿Son incompatibles API Composer y CQRS en un mismo sistema? · <small>ya salió</small></summary><div class="body"><p>No. <b>Pueden convivir en un mismo sistema</b>, abordando consultas distintas. Lo que no se puede es <b>mezclarlos en la misma consulta</b>.</p><p class="tiny">C2 2023-1 comente 2 · <a href="Guia-C2-ADS.html#m-cqrs">ver en la guía (016 · CQRS)</a></p></div></details>
+<details class="sol fc-item" id="c-query-13"><summary>¿Qué desventaja tiene API Composition respecto de cómo están almacenados los datos? · <small>ya salió</small></summary><div class="body"><p><b>Depende de cómo estén almacenados</b>: si no se pueden filtrar en cada servicio, hay riesgo de hacer <b>joins en memoria</b>.</p><p class="tiny">C2 2024-1 P1 · C2 2023-1 P4 · <a href="Guia-C2-ADS.html#m-comp">ver en la guía (016 · API Composition)</a></p></div></details>
+<details class="sol fc-item" id="c-query-14"><summary>Si un enunciado no plantea una consulta que cruce contextos, ¿qué patrón de consultas sugieres? · <small>ya salió</small></summary><div class="body"><p><b>Ninguno: no existen antecedentes</b> para sugerirlo. Si la consulta cabe en un solo servicio, basta con consumir su API.</p><p class="tiny">C2 2024-1 aplicación 1 · C2 2023-1 P4 · <a href="Guia-C2-ADS.html#como">ver en la guía (Cómo pregunta el profesor)</a></p></div></details>
+<details class="sol fc-item" id="c-query-01"><summary>¿Qué es un patrón? · <small>probable</small></summary><div class="body"><p>Una <b>solución reutilizable a un problema, que ocurre en un contexto, y sus consecuencias</b>.</p><p class="tiny">016, lámina 12 · <a href="Guia-C2-ADS.html#m-patron">ver en la guía (016 · Patrones y desafíos)</a></p></div></details>
+<details class="sol fc-item" id="c-query-02"><summary>¿Qué son las fuerzas de un patrón? · <small>probable</small></summary><div class="body"><p>Los problemas por abordar en un contexto. <b>Pueden entrar en conflicto</b>, así que se <b>priorizan</b> según el contexto.</p><p class="tiny">016, lámina 14 · <a href="Guia-C2-ADS.html#m-patron">ver en la guía (016 · Patrones y desafíos)</a></p></div></details>
+<details class="sol fc-item" id="c-query-03"><summary>¿Qué incluye el contexto resultante? · <small>probable</small></summary><div class="body"><p><b>Beneficios</b>, <b>inconvenientes</b> y <b>problemas nuevos</b> introducidos al aplicar el patrón.</p><p class="tiny">016, lámina 15 · <a href="Guia-C2-ADS.html#m-patron">ver en la guía (016 · Patrones y desafíos)</a></p></div></details>
+<details class="sol fc-item" id="c-query-05"><summary>¿Dónde se puede ubicar el API Composer? · <small>probable</small></summary><div class="body"><p>En la <b>aplicación cliente</b> (poco práctico), en el <b>API Gateway</b> o como <b>servicio independiente</b>. El patrón no lo define.</p><p class="tiny">016, láminas 31 a 35 · <a href="Guia-C2-ADS.html#m-comp">ver en la guía (016 · API Composition)</a></p></div></details>
+<details class="sol fc-item" id="c-query-06"><summary>¿Qué ventajas y desventajas tiene API Composition? · <small>probable</small></summary><div class="body"><p><b>Ventaja:</b> simple e intuitivo. <b>Desventajas:</b> overhead, riesgos en disponibilidad y consistencia.</p><p class="tiny">016, lámina 39 · <a href="Guia-C2-ADS.html#m-comp">ver en la guía (016 · API Composition)</a></p></div></details>
+<details class="sol fc-item" id="c-query-08"><summary>¿Qué ventajas y desventajas tiene CQRS? · <small>probable</small></summary><div class="body"><p><b>Ventajas:</b> consultas complejas eficientes, vistas especializadas, separación de responsabilidades. <b>Desventajas:</b> más complejo y <b>demoras de actualización</b>.</p><p class="tiny">016, lámina 50 · <a href="Guia-C2-ADS.html#m-cqrs">ver en la guía (016 · CQRS)</a></p></div></details>
+<h3 id="fc-t-saga">SAGA <span class="num">· 11 tarjetas</span></h3>
+<details class="sol fc-item" id="c-saga-01"><summary>¿Qué es una saga? · <small>ya salió</small></summary><div class="body"><p>Una <b>secuencia de transacciones locales coordinadas por mensajería asíncrona</b> para mantener la consistencia entre servicios.</p><p class="tiny">C2 2023-2 P1 · 016, lámina 68 · <a href="Guia-C2-ADS.html#m-saga">ver en la guía (016 · SAGA)</a></p></div></details>
+<details class="sol fc-item" id="c-saga-02"><summary>¿Por qué una saga necesita compensaciones y no un rollback? · <small>ya salió</small></summary><div class="body"><p>Porque cada paso ya está <b>confirmado</b> y es imposible un rollback simple. Se ejecutan <b>transacciones compensatorias en orden inverso</b>.</p><p class="tiny">C2 2023-1 P1 · 016, láminas 72 y 73 · <a href="Guia-C2-ADS.html#m-saga">ver en la guía (016 · SAGA)</a></p></div></details>
+<details class="sol fc-item" id="c-saga-03"><summary>¿Qué propiedades ACID asegura una saga? · <small>ya salió</small></summary><div class="body"><p><b>Atomicidad</b>, <b>consistencia</b> (eventual) y <b>durabilidad</b>. <b>No asegura aislamiento.</b></p><p class="tiny">C2 2024-1 P2 · C2 2023-2 P3 · 016, lámina 81 · <a href="Guia-C2-ADS.html#m-saga">ver en la guía (016 · SAGA)</a></p></div></details>
+<details class="sol fc-item" id="c-saga-04"><summary>¿Qué diferencia hay entre coreografía y orquestación? · <small>ya salió</small></summary><div class="body"><p><b>Coreografía:</b> cada participante publica eventos y se suscribe a los de otros. <b>Orquestación:</b> alguien dice qué le toca a cada uno con <b>mensajes comando</b> y procesa las respuestas.</p><p class="tiny">C2 2023-2 comente 2 · 016, láminas 75 a 79 · <a href="Guia-C2-ADS.html#m-saga">ver en la guía (016 · SAGA)</a></p></div></details>
+<details class="sol fc-item" id="c-saga-09"><summary>¿Se puede usar SAGA para realizar consultas? · <small>ya salió</small></summary><div class="body"><p>No. SAGA <b>mantiene la consistencia cuando un comando actualiza varios servicios</b>. Para consultas están API Composition y CQRS.</p><p class="tiny">C2 2024-1 aplicación 1 · <a href="Guia-C2-ADS.html#m-saga">ver en la guía (016 · SAGA)</a></p></div></details>
+<details class="sol fc-item" id="c-saga-10"><summary>¿Implementar SAGA es consecuencia directa de adoptar microservicios? · <small>ya salió</small></summary><div class="body"><p>No. Solo hace falta si <b>un comando requiere actualizar datos en múltiples servicios</b>.</p><p class="tiny">C2 2023-2 P3 · <a href="Guia-C2-ADS.html#m-saga">ver en la guía (016 · SAGA)</a></p></div></details>
+<details class="sol fc-item" id="c-saga-11"><summary>¿SAGA anula la consistencia eventual? · <small>ya salió</small></summary><div class="body"><p>No. Permite <b>alcanzar</b> el estado consistente, pero no de forma inmediata: <b>seguimos en consistencia eventual</b>. Y la arquitectura sigue obedeciendo a CAP.</p><p class="tiny">C2 2023-1 comente 1 · <a href="Guia-C2-ADS.html#m-cap">ver en la guía (016 · ACID, CAP y eventual)</a></p></div></details>
+<details class="sol fc-item" id="c-saga-05"><summary>Pros y contras de coreografía y orquestación. · <small>probable</small></summary><div class="body"><p><b>Coreografía:</b> buena para sagas sencillas, poco acoplamiento; difícil de entender, dependencias cíclicas. <b>Orquestación:</b> dependencias simples y separación de responsabilidades; puede <b>concentrar demasiada lógica</b>.</p><p class="tiny">016, láminas 76 y 79 · <a href="Guia-C2-ADS.html#m-saga">ver en la guía (016 · SAGA)</a></p></div></details>
+<details class="sol fc-item" id="c-saga-06"><summary>¿Qué son las transacciones compensables, pivote y recuperables? · <small>probable</small></summary><div class="body"><p><b>Compensables:</b> se pueden anular. <b>Pivote:</b> si tiene éxito, la saga llega al final. <b>Recuperables:</b> tienen garantía de éxito y siguen a una pivote.</p><p class="tiny">016, lámina 80 · <a href="Guia-C2-ADS.html#m-saga">ver en la guía (016 · SAGA)</a></p></div></details>
+<details class="sol fc-item" id="c-saga-07"><summary>Explica lost update, dirty read y fuzzy read. · <small>probable</small></summary><div class="body"><p><b>Lost update:</b> actualiza sin leer los cambios de otra. <b>Dirty read:</b> lee datos que otra está modificando. <b>Fuzzy read:</b> lee el mismo dato en dos pasos y obtiene valores distintos.</p><p class="tiny">016, lámina 82 · <a href="Guia-C2-ADS.html#m-saga">ver en la guía (016 · SAGA)</a></p></div></details>
+<details class="sol fc-item" id="c-saga-08"><summary>¿Qué contramedidas hay frente a la falta de aislamiento? · <small>probable</small></summary><div class="body"><p><b>Semantic lock</b>, <b>commutative updates</b>, <b>pessimistic view</b>, releer el valor antes de actualizar y guardar registro de las operaciones.</p><p class="tiny">016, lámina 83 · <a href="Guia-C2-ADS.html#m-saga">ver en la guía (016 · SAGA)</a></p></div></details>
+<h3 id="fc-t-iot">IoT <span class="num">· 7 tarjetas</span></h3>
+<details class="sol fc-item" id="c-iot-01"><summary>¿Qué problema resuelve el patrón Gateway de IoT y qué contras tiene? · <small>ya salió</small></summary><div class="body"><p>No todos los dispositivos pueden conectarse a la red: se conectan con <b>uno que comunica en ambos sentidos</b>. <b>Contras:</b> punto débil de seguridad y complejidad.</p><p class="tiny">C2 2023-2 aplicación 3 · 021, láminas 11 a 15 · <a href="Guia-C2-ADS.html#m-iot">ver en la guía (021 · Patrones IoT)</a></p></div></details>
+<details class="sol fc-item" id="c-iot-02"><summary>¿Qué problema resuelve el patrón Shadow y qué contras tiene? · <small>ya salió</small></summary><div class="body"><p>Dispositivos no siempre disponibles: una <b>representación virtual</b> que se sincroniza en ambos sentidos. <b>Contras:</b> obsolescencia de las acciones y <b>consistencia eventual</b>.</p><p class="tiny">C2 2024-1 P8 · C2 2023-2 P6 · 021, láminas 16 a 20 · <a href="Guia-C2-ADS.html#m-iot">ver en la guía (021 · Patrones IoT)</a></p></div></details>
+<details class="sol fc-item" id="c-iot-03"><summary>¿Qué problema resuelve el patrón Wakeup Trigger y qué costo tiene? · <small>ya salió</small></summary><div class="body"><p>Dispositivos que se duermen: un <b>canal de bajo consumo a modo de despertador</b>. <b>Costo:</b> infraestructura más compleja.</p><p class="tiny">C2 2024-1 P9 · 021, láminas 21 a 27 · <a href="Guia-C2-ADS.html#m-iot">ver en la guía (021 · Patrones IoT)</a></p></div></details>
+<details class="sol fc-item" id="c-iot-05"><summary>Nombra 3 características del patrón Shadow o Virtual Device. · <small>ya salió</small></summary><div class="body"><p>Para dispositivos <b>no siempre disponibles</b>; genera una <b>representación virtual</b>; hay que <b>conocer siempre el punto de comunicación</b>; la comunicación <b>siempre es posible</b>; genera <b>obsolescencia de las acciones y consistencia eventual</b>.</p><p class="tiny">C2 2023-1 comente 3 · <a href="Guia-C2-ADS.html#m-iot">ver en la guía (021 · Patrones IoT)</a></p></div></details>
+<details class="sol fc-item" id="c-iot-06"><summary>En IoT, ¿qué diferencia hay entre consistencia eventual y obsolescencia de las acciones? · <small>ya salió</small></summary><div class="body"><p><b>Consistencia eventual:</b> se pierden valores del sensor por falta de conexión. <b>Obsolescencia:</b> se pierde la conectividad para recibir una acción, que cuando llega puede ya no servir.</p><p class="tiny">C2 2024-1 aplicación 2 · <a href="Guia-C2-ADS.html#m-iot">ver en la guía (021 · Patrones IoT)</a></p></div></details>
+<details class="sol fc-item" id="c-iot-07"><summary>¿Cuáles son los principales problemas de disponibilidad de los dispositivos? · <small>ya salió</small></summary><div class="body"><p><b>La conexión a internet y la energía</b>, los insumos esenciales para que actúen como sensores.</p><p class="tiny">C2 2024-1 P7 · <a href="Guia-C2-ADS.html#m-iot">ver en la guía (021 · Patrones IoT)</a></p></div></details>
+<details class="sol fc-item" id="c-iot-04"><summary>¿Qué diferencia hay entre sensores y actuadores? · <small>para entender</small></summary><div class="body"><p>Los <b>sensores capturan</b> los cambios del ambiente y los <b>actuadores realizan acciones</b> sobre el entorno.</p><p class="tiny">021, láminas 6 y 7 · <a href="Guia-C2-ADS.html#m-iot">ver en la guía (021 · Patrones IoT)</a></p></div></details>
+<h3 id="fc-t-seg">Charla de seguridad <span class="num">· 8 tarjetas</span></h3>
+<details class="sol fc-item" id="c-seg-01"><summary>¿Qué significa shift left? · <small>para entender</small></summary><div class="body"><p>Hacerse cargo de la seguridad <b>desde etapas tempranas del ciclo de desarrollo</b>, partiendo por los requisitos.</p><p class="tiny">Charla 9 nov, minuto 2 · <a href="Guia-C2-ADS.html#m-charla">ver en la guía (Charla 9 nov · Seguridad)</a></p></div></details>
+<details class="sol fc-item" id="c-seg-02"><summary>¿Qué diferencia hay entre requerimiento y requisito? · <small>para entender</small></summary><div class="body"><p><b>Requerimiento:</b> la necesidad que viene del cliente o usuario. <b>Requisito:</b> lo concreto que debe hacer el sistema para cumplirla.</p><p class="tiny">Charla 9 nov, minuto 3 · <a href="Guia-C2-ADS.html#m-charla">ver en la guía (Charla 9 nov · Seguridad)</a></p></div></details>
+<details class="sol fc-item" id="c-seg-03"><summary>¿Por qué los requisitos de seguridad no los puede dar el cliente? · <small>para entender</small></summary><div class="body"><p>Porque son <b>no funcionales</b> y el cliente no sabe especificarlos: «quiero que no me hackeen» no se puede implementar. Deben venir de quienes desarrollan.</p><p class="tiny">Charla 9 nov, minuto 5 · <a href="Guia-C2-ADS.html#m-charla">ver en la guía (Charla 9 nov · Seguridad)</a></p></div></details>
+<details class="sol fc-item" id="c-seg-04"><summary>¿De dónde se pueden derivar requisitos de seguridad? · <small>para entender</small></summary><div class="body"><p>De <b>políticas internas</b>, <b>estándares</b> (ISO 27001, PCI DSS), <b>leyes y regulaciones</b> y <b>OWASP ASVS</b>.</p><p class="tiny">Charla 9 nov, minutos 6 a 15 y 60 · <a href="Guia-C2-ADS.html#m-charla">ver en la guía (Charla 9 nov · Seguridad)</a></p></div></details>
+<details class="sol fc-item" id="c-seg-05"><summary>¿Qué es OWASP ASVS y en qué se diferencia del Top 10? · <small>para entender</small></summary><div class="body"><p>Es una <b>lista de requisitos en 3 niveles</b>, con cómo verificarlos. El Top 10 lista las principales vulnerabilidades y <b>no es un estándar</b>.</p><p class="tiny">Charla 9 nov, minutos 4 y 15 · <a href="Guia-C2-ADS.html#m-charla">ver en la guía (Charla 9 nov · Seguridad)</a></p></div></details>
+<details class="sol fc-item" id="c-seg-06"><summary>¿Qué precauciones recomienda la charla con los contenedores? · <small>para entender</small></summary><div class="body"><p><b>Limitar sus recursos</b>, <b>definir un USER en el Dockerfile</b> para que no corra como root y preferir <b>imágenes y repositorios propios</b>.</p><p class="tiny">Charla 9 nov, minutos 40 a 42 · <a href="Guia-C2-ADS.html#m-charla">ver en la guía (Charla 9 nov · Seguridad)</a></p></div></details>
+<details class="sol fc-item" id="c-seg-07"><summary>¿Qué es el threat modeling? · <small>para entender</small></summary><div class="body"><p><b>Modelar la aplicación para anticipar sus posibles vulnerabilidades</b>, por ejemplo con OWASP Threat Dragon.</p><p class="tiny">Charla 9 nov, minuto 38 · <a href="Guia-C2-ADS.html#m-charla">ver en la guía (Charla 9 nov · Seguridad)</a></p></div></details>
+<details class="sol fc-item" id="c-seg-08"><summary>¿Quién responde por el código generado con IA? · <small>para entender</small></summary><div class="body"><p><b>Quien lo pone en producción.</b> Un computador no puede hacerse responsable. Hay que darle requisitos de seguridad y revisarlo.</p><p class="tiny">Charla 9 nov, minutos 50 a 54 · <a href="Guia-C2-ADS.html#m-charla">ver en la guía (Charla 9 nov · Seguridad)</a></p></div></details>
+</section>
+
+</main>
+</div>
+<script type="application/json" id="fc-data">[{"id": "ms-01", "tema": "ms", "tipo": "definir", "prob": "probable", "f": "¿Qué son los microservicios, según la definición del profesor?", "p": "Estilo… servicios… acoplamiento… alcance… comunicación", "r": "Un <b>estilo de arquitectura<\/b> para desarrollar una aplicación basada en varios servicios <b>«pequeños»<\/b>, <b>débilmente acoplados<\/b>, con un <b>alcance bien definido<\/b>, que usan <b>medios de comunicación livianos<\/b>.", "o": ["014, lámina 29"], "v": "Guia-C2-ADS.html#m-ms", "vt": "014 · Microservicios", "a": "m-ms"}, {"id": "ms-02", "tema": "ms", "tipo": "por-que", "prob": "salio", "f": "¿Basta con usar contenedores para que un sistema tenga microservicios y sus cambios queden acotados?", "p": "¿Qué dijo la pauta 2022-1?", "r": "No. <b>Los contenedores por sí solos no aseguran nada<\/b>: depende del diseño. Si se divide por los negocios de cada familia de datos y cada microservicio es un contenedor, los cambios no deberían afectar a todo.", "o": ["C1 2022-1, aplicación 3"], "v": "Guia-C2-ADS.html#como", "vt": "Cómo pregunta el profesor", "a": "como"}, {"id": "ms-03", "tema": "ms", "tipo": "definir", "prob": "probable", "f": "¿Qué significa «débilmente acoplado»?", "p": "Interfaces…", "r": "Que los servicios mantienen una relación mediante <b>interfaces bien definidas<\/b> que <b>minimiza las dependencias<\/b>.", "o": ["014, lámina 30"], "v": "Guia-C2-ADS.html#m-ms", "vt": "014 · Microservicios", "a": "m-ms"}, {"id": "ms-04", "tema": "ms", "tipo": "comparar", "prob": "probable", "f": "¿Es lo mismo un microservicio que un servicio o una base de datos?", "p": "Lámina «¡Importante!»", "r": "No. <b>Un MS no es lo mismo que un servicio o una base de datos.<\/b> Hay que respetar la independencia y <b>cada MS es dueño de sus datos<\/b>.", "o": ["014, láminas 37 y 38"], "v": "Guia-C2-ADS.html#m-ms", "vt": "014 · Microservicios", "a": "m-ms"}, {"id": "ms-05", "tema": "ms", "tipo": "por-que", "prob": "probable", "f": "¿Por qué un microservicio no debe leer la base de datos de otro?", "p": "¿Qué se rompe si cambia una tabla?", "r": "Porque <b>se acopla a su estructura interna<\/b>: cualquier cambio del dueño rompe al otro. Se debe pedir el dato por su <b>API o por eventos<\/b>.", "o": ["014, lámina 38"], "v": "Guia-C2-ADS.html#m-ms", "vt": "014 · Microservicios", "a": "m-ms"}, {"id": "ms-06", "tema": "ms", "tipo": "dato", "prob": "probable", "f": "Nombra tres ventajas y tres desventajas de los microservicios.", "p": "Despliegue, escalado, tecnología… CAP, datos, administración", "r": "<b>Ventajas:<\/b> despliegue independiente, escalado independiente, independencia tecnológica, mejor aislamiento ante fallas. <b>Desventajas:<\/b> lo distribuido (CAP), información del negocio repartida, operación más compleja, latencia.", "o": ["014, lámina 41; 016, lámina 8"], "v": "Guia-C2-ADS.html#m-ms", "vt": "014 · Microservicios", "a": "m-ms"}, {"id": "ms-07", "tema": "ms", "tipo": "por-que", "prob": "salio", "f": "¿Por qué no siempre conviene usar microservicios?", "p": "Bala de plata", "r": "<b>No son una bala de plata<\/b>: la arquitectura adecuada depende de muchos factores. El monolito sirve para negocios de <b>tamaño acotado<\/b>, con desarrollo más rápido y acceso único a los datos.", "o": ["C2 2023-2 comente 1 · 016, lámina 9"], "v": "Guia-C2-ADS.html#m-ms", "vt": "014 · Microservicios", "a": "m-ms"}, {"id": "ms-08", "tema": "ms", "tipo": "dato", "prob": "entender", "f": "¿Cuáles son las tres preguntas que ponen en problemas a un monolito?", "p": "Crece, cambia, aumenta", "r": "<b>¿Y si el negocio crece?<\/b> <b>¿Y la mantención o cambios en un subnegocio?<\/b> <b>¿Y si aumenta su uso en determinados periodos?<\/b>", "o": ["014, lámina 24"], "v": "Guia-C2-ADS.html#m-ms", "vt": "014 · Microservicios", "a": "m-ms"}, {"id": "ms-09", "tema": "ms", "tipo": "definir", "prob": "probable", "f": "¿Qué es un contexto acotado y qué permite?", "p": "Varios modelos, un acuerdo", "r": "Delimita dónde vale un modelo. Permite que <b>varios modelos evolucionen por separado<\/b>, siempre que <b>cumplan con un acuerdo<\/b> y sin perder de vista el todo.", "o": ["014, láminas 19 y 20"], "v": "Guia-C2-ADS.html#m-ddd", "vt": "014 · DDD y contextos", "a": "m-ddd"}, {"id": "ms-10", "tema": "ms", "tipo": "definir", "prob": "entender", "f": "¿Qué es el lenguaje ubicuo?", "p": "Expertos y desarrolladores", "r": "Un <b>lenguaje común<\/b> entre expertos del negocio y desarrolladores, con el que se describe el modelo.", "o": ["014, lámina 13"], "v": "Guia-C2-ADS.html#m-ddd", "vt": "014 · DDD y contextos", "a": "m-ddd"}, {"id": "ms-11", "tema": "ms", "tipo": "dato", "prob": "entender", "f": "¿Qué preguntas hay que responder para migrar de un monolito a microservicios?", "p": "Son cuatro", "r": "<b>Cómo definir<\/b> un microservicio, <b>cómo establecer sus límites<\/b>, <b>cómo conversan<\/b> y <b>qué elementos del monolito<\/b> son o no son microservicios.", "o": ["014, lámina 33"], "v": "Guia-C2-ADS.html#m-ddd", "vt": "014 · DDD y contextos", "a": "m-ddd"}, {"id": "datos-01", "tema": "datos", "tipo": "definir", "prob": "salio", "f": "¿Qué es la consistencia eventual? ¿Es una ventaja de los microservicios?", "p": "2022-1: la respuesta fue «ninguna»", "r": "Que los datos replicados pueden no coincidir por un tiempo, pero <b>eventualmente alcanzan el valor consistente<\/b>. <b>No es una ventaja<\/b>, ni propia del monolito, ni consecuencia de SAGA: nace de repartir los datos.", "o": ["C1 2022-1, P5; 016, lámina 62"], "v": "Guia-C2-ADS.html#m-cap", "vt": "016 · ACID, CAP y eventual", "a": "m-cap"}, {"id": "datos-02", "tema": "datos", "tipo": "por-que", "prob": "salio", "f": "¿Los patrones de consistencia y los contenedores eliminan la preocupación por la consistencia?", "p": "¿Qué es lo primordial?", "r": "No. Existen y sirven cuando es necesario, pero <b>lo primordial es preservar la independencia entre microservicios<\/b>; usarlos en exceso va contra ese principio.", "o": ["C1 2022-1, comente 2"], "v": "Guia-C2-ADS.html#b-comente", "vt": "Método y 22 frases", "a": "b-comente"}, {"id": "datos-03", "tema": "datos", "tipo": "dato", "prob": "salio", "f": "Enuncia el teorema CAP.", "p": "Dos de tres", "r": "En un sistema distribuido <b>solo se pueden asegurar dos de tres<\/b>: <b>consistencia<\/b>, <b>disponibilidad<\/b> y <b>tolerancia a la partición<\/b> (Brewer, 2000).", "o": ["C2 2023-1 comente 1 · 016, lámina 56"], "v": "Guia-C2-ADS.html#m-cap", "vt": "016 · ACID, CAP y eventual", "a": "m-cap"}, {"id": "datos-04", "tema": "datos", "tipo": "comparar", "prob": "probable", "f": "¿Qué se pierde en cada combinación de CAP?", "p": "C+A, C+P, A+P", "r": "<b>C+A:<\/b> el sistema falla si un nodo se desconecta. <b>C+P:<\/b> puede haber que esperar la respuesta. <b>A+P:<\/b> preguntar en distintos nodos puede dar valores distintos.", "o": ["016, láminas 59 a 61"], "v": "Guia-C2-ADS.html#m-cap", "vt": "016 · ACID, CAP y eventual", "a": "m-cap"}, {"id": "datos-05", "tema": "datos", "tipo": "comparar", "prob": "probable", "f": "¿En qué se diferencia la C de ACID de la C de CAP?", "p": "Estados vs. valor", "r": "En <b>ACID<\/b>, la base <b>transita entre estados consistentes<\/b>. En <b>CAP<\/b>, es dar el <b>mismo valor sin importar el nodo<\/b>. En un negocio distribuido se entiende como <b>coherencia respecto al negocio<\/b>.", "o": ["016, láminas 55 a 62"], "v": "Guia-C2-ADS.html#m-cap", "vt": "016 · ACID, CAP y eventual", "a": "m-cap"}, {"id": "datos-06", "tema": "datos", "tipo": "por-que", "prob": "probable", "f": "¿Por qué en microservicios se dice «¿Rollback? ¡No!»?", "p": "Cada servicio ya confirmó", "r": "Porque cada servicio ya confirmó su transacción local. Se usa <b>compensación desde un punto de vista de negocio<\/b>.", "o": ["014, lámina 54"], "v": "Guia-C2-ADS.html#m-datos", "vt": "014 · Datos y consistencia", "a": "m-datos"}, {"id": "datos-07", "tema": "datos", "tipo": "paso-a-paso", "prob": "probable", "f": "En el ejemplo de la venta sin stock, ¿qué queda después de compensar?", "p": "Producto 1, nombre, producto 2", "r": "La venta del producto 1 vuelve a 0, <b>pero el nombre sigue siendo CC y la venta del producto 2 se mantiene<\/b>. Un rollback habría borrado esos cambios válidos.", "o": ["014, láminas 55 a 59"], "v": "Guia-C2-ADS.html#m-datos", "vt": "014 · Datos y consistencia", "a": "m-datos"}, {"id": "datos-08", "tema": "datos", "tipo": "paso-a-paso", "prob": "probable", "f": "¿Cómo funciona un commit de dos fases?", "p": "Votar y decidir", "r": "<b>Fase 1:<\/b> los participantes <b>votan<\/b> si pudieron hacer la transacción. <b>Fase 2:<\/b> si todos votaron sí, el administrador ordena <b>commit<\/b>; si no, <b>rollback<\/b>.", "o": ["016, lámina 65"], "v": "Guia-C2-ADS.html#m-2pc", "vt": "016 · Commit de dos fases", "a": "m-2pc"}, {"id": "datos-09", "tema": "datos", "tipo": "dato", "prob": "probable", "f": "¿Qué problemas tiene el commit de dos fases?", "p": "Administrador, participantes, recursos, motores", "r": "Si cae el <b>administrador<\/b> o un <b>participante<\/b> al votar; los <b>recursos quedan tomados<\/b> a la espera; y <b>no todos los motores o brókers lo soportan<\/b>.", "o": ["016, láminas 64 y 66"], "v": "Guia-C2-ADS.html#m-2pc", "vt": "016 · Commit de dos fases", "a": "m-2pc"}, {"id": "datos-10", "tema": "datos", "tipo": "definir", "prob": "entender", "f": "¿Qué hay que evitar al usar mensajes para mantener la consistencia?", "p": "Tiempo", "r": "<b>No saturar de mensajes<\/b>: aumenta el tiempo para alcanzar un estado consistente.", "o": ["014, lámina 60"], "v": "Guia-C2-ADS.html#m-datos", "vt": "014 · Datos y consistencia", "a": "m-datos"}, {"id": "docker-01", "tema": "docker", "tipo": "comparar", "prob": "salio", "f": "¿Cuál es la relación entre contenedores y máquinas virtuales?", "p": "2022-1", "r": "Son <b>soluciones alternativas a un mismo problema, e incluso podrían combinarse<\/b>.", "o": ["C1 2022-1, P6"], "v": "Guia-C2-ADS.html#m-cont", "vt": "015 · Contenedores vs. VM", "a": "m-cont"}, {"id": "docker-02", "tema": "docker", "tipo": "comparar", "prob": "salio", "f": "¿Qué diferencia técnica hay entre una VM y un contenedor?", "p": "Sistema operativo y kernel", "r": "Cada <b>VM es un SO independiente<\/b> con recursos virtuales. Los <b>contenedores comparten el kernel<\/b> del anfitrión, y son más livianos y rápidos de iniciar.", "o": ["C2 2023-2 comente 3 · 015, láminas 14 a 21"], "v": "Guia-C2-ADS.html#m-cont", "vt": "015 · Contenedores vs. VM", "a": "m-cont"}, {"id": "docker-03", "tema": "docker", "tipo": "por-que", "prob": "entender", "f": "¿Qué problema de desarrollo resuelven los contenedores?", "p": "Mover entre ambientes", "r": "<b>Mover aplicaciones entre ambientes<\/b> con sus dependencias: evita conflictos y que dejen de funcionar al cambiar de ambiente. Empaquetar y estandarizar es parte de la solución.", "o": ["015, láminas 11 a 13"], "v": "Guia-C2-ADS.html#m-cont", "vt": "015 · Contenedores vs. VM", "a": "m-cont"}, {"id": "docker-04", "tema": "docker", "tipo": "comparar", "prob": "probable", "f": "¿Qué diferencia hay entre una imagen y un contenedor?", "p": "Estática / en ejecución", "r": "La <b>imagen<\/b> es una colección de capas y metadatos, <b>estática<\/b>. El <b>contenedor<\/b> es una <b>instancia en ejecución<\/b>. De una imagen salen varios contenedores.", "o": ["015, lámina 24"], "v": "Guia-C2-ADS.html#m-docker", "vt": "015 · Docker", "a": "m-docker"}, {"id": "docker-05", "tema": "docker", "tipo": "dato", "prob": "probable", "f": "¿Qué pasa con la imagen al detener un contenedor iniciado con --rm?", "p": "Lo que desaparece y lo que no", "r": "El <b>contenedor se borra<\/b>, pero <b>la imagen no desaparece<\/b>.", "o": ["015, lámina 43"], "v": "Guia-C2-ADS.html#m-docker", "vt": "015 · Docker", "a": "m-docker"}, {"id": "docker-06", "tema": "docker", "tipo": "dato", "prob": "probable", "f": "En -p 8001:8000, ¿qué puerto es de qué?", "p": "Host primero", "r": "<b>8001 es del host<\/b> y <b>8000 del contenedor<\/b>.", "o": ["015, lámina 29"], "v": "Guia-C2-ADS.html#m-docker", "vt": "015 · Docker", "a": "m-docker"}, {"id": "docker-07", "tema": "docker", "tipo": "comparar", "prob": "probable", "f": "¿Qué diferencia hay entre el Dockerfile y docker-compose?", "p": "Imagen / varios contenedores", "r": "El <b>Dockerfile describe la imagen<\/b>. <b>Docker-compose gestiona múltiples contenedores<\/b> de forma conjunta, una forma de orquestación. Para grandes sistemas: Kubernetes o Docker Swarm.", "o": ["015, lámina 44"], "v": "Guia-C2-ADS.html#m-docker", "vt": "015 · Docker", "a": "m-docker"}, {"id": "docker-08", "tema": "docker", "tipo": "paso-a-paso", "prob": "entender", "f": "¿Qué hace cada instrucción: FROM, RUN, WORKDIR, COPY, CMD?", "p": "Base, pasos, carpeta, código, ejecutar", "r": "<b>FROM:<\/b> imagen base. <b>RUN:<\/b> pasos previos. <b>WORKDIR:<\/b> directorio de trabajo. <b>COPY:<\/b> copia nuestro código. <b>CMD:<\/b> lo que se ejecuta.", "o": ["015, láminas 34 a 38"], "v": "Guia-C2-ADS.html#m-docker", "vt": "015 · Docker", "a": "m-docker"}, {"id": "api-01", "tema": "api", "tipo": "definir", "prob": "probable", "f": "¿Qué es una API y qué es una API web en el curso?", "p": "Interfaz; remota por HTTP", "r": "La <b>interfaz<\/b> que un programa presenta a otros programas o a humanos, y que <b>encapsula el estado<\/b>. En el curso, una <b>API remota accedida mediante HTTP<\/b>.", "o": ["015b, láminas 3 a 5"], "v": "Guia-C2-ADS.html#m-api", "vt": "015b · Qué es una API", "a": "m-api"}, {"id": "api-02", "tema": "api", "tipo": "por-que", "prob": "probable", "f": "¿El objetivo de una API es el reuso?", "p": "Pensar en microservicios", "r": "No. <b>Las APIs no aseguran reuso ni lo buscan: desacoplar es más importante que reusar<\/b>.", "o": ["015b, lámina 7"], "v": "Guia-C2-ADS.html#m-api", "vt": "015b · Qué es una API", "a": "m-api"}, {"id": "api-03", "tema": "api", "tipo": "comparar", "prob": "probable", "f": "¿En qué se diferencia una API web de una página web?", "p": "Impacto, producto, interfaz", "r": "El <b>impacto de un rediseño<\/b> es distinto. Una API es un <b>producto en sí mismo<\/b>: puede cambiar, pero <b>se debe tratar de mantener la interfaz<\/b>.", "o": ["015b, lámina 8"], "v": "Guia-C2-ADS.html#m-api", "vt": "015b · Qué es una API", "a": "m-api"}, {"id": "api-04", "tema": "api", "tipo": "definir", "prob": "probable", "f": "¿Qué es REST, quién lo propuso y con qué objetivo?", "p": "Estilo, 2000, eficientes…", "r": "Un <b>estilo de arquitectura<\/b> de <b>Roy Fielding (2000)<\/b> para sistemas distribuidos <b>eficientes, escalables y confiables<\/b>.", "o": ["015b, lámina 11"], "v": "Guia-C2-ADS.html#m-rest", "vt": "015b · REST", "a": "m-rest"}, {"id": "api-05", "tema": "api", "tipo": "dato", "prob": "probable", "f": "¿Cuáles son los cuatro principios de REST?", "p": "URIs, representaciones…", "r": "<b>Recursos con URIs<\/b>, <b>manipulación por representaciones<\/b>, <b>mensajes auto-descriptivos<\/b> y <b>HATEOAS<\/b>.", "o": ["015b, lámina 14"], "v": "Guia-C2-ADS.html#m-rest", "vt": "015b · REST", "a": "m-rest"}, {"id": "api-06", "tema": "api", "tipo": "dato", "prob": "salio", "f": "¿Cuáles son las restricciones de REST?", "p": "Son seis", "r": "<b>Cliente/servidor<\/b>, <b>sin estado<\/b>, <b>cacheability<\/b>, <b>sistema en capas<\/b>, <b>code on demand<\/b> (opcional) e <b>interfaz uniforme<\/b> (verbo + recurso).", "o": ["C2 2024-1 P5 · 015b, lámina 15"], "v": "Guia-C2-ADS.html#m-rest", "vt": "015b · REST", "a": "m-rest"}, {"id": "api-07", "tema": "api", "tipo": "comparar", "prob": "probable", "f": "¿Toda API web es RESTful?", "p": "Restricciones", "r": "No. Son RESTful las que <b>cumplen, o tratan de cumplir, las restricciones<\/b> del estilo.", "o": ["015b, lámina 10"], "v": "Guia-C2-ADS.html#m-rest", "vt": "015b · REST", "a": "m-rest"}, {"id": "api-08", "tema": "api", "tipo": "definir", "prob": "probable", "f": "Define método seguro e idempotente.", "p": "Efectos / repetir", "r": "<b>Seguro:<\/b> no causa efectos secundarios (read-only). <b>Idempotente:<\/b> repetir la petición tiene el mismo efecto que enviarla una vez.", "o": ["015b, láminas 27 a 31"], "v": "Guia-C2-ADS.html#m-http", "vt": "015b · URIs, verbos y códigos", "a": "m-http"}, {"id": "api-09", "tema": "api", "tipo": "dato", "prob": "probable", "f": "Clasifica GET, HEAD, OPTIONS, PUT, DELETE y POST.", "p": "Seguros e idempotentes", "r": "<b>GET, HEAD, OPTIONS:<\/b> seguros e idempotentes. <b>PUT, DELETE:<\/b> idempotentes, no seguros. <b>POST:<\/b> ninguna.", "o": ["015b, lámina 29"], "v": "Guia-C2-ADS.html#m-http", "vt": "015b · URIs, verbos y códigos", "a": "m-http"}, {"id": "api-10", "tema": "api", "tipo": "por-que", "prob": "salio", "f": "¿La idempotencia viene garantizada por el método HTTP?", "p": "¿Quién responde?", "r": "No: <b>no son propiedades intrínsecas a los métodos, sino garantías que el proveedor debe dar<\/b> a los clientes.", "o": ["C2 2024-1 P6 · 015b, lámina 28"], "v": "Guia-C2-ADS.html#m-http", "vt": "015b · URIs, verbos y códigos", "a": "m-http"}, {"id": "api-11", "tema": "api", "tipo": "por-que", "prob": "probable", "f": "¿Qué debe hacer el servidor para que un DELETE responda siempre 200?", "p": "Lleva la cuenta", "r": "<b>Llevar un registro de los recursos borrados<\/b>. Si no, la segunda vez responderá 404.", "o": ["015b, lámina 32"], "v": "Guia-C2-ADS.html#m-http", "vt": "015b · URIs, verbos y códigos", "a": "m-http"}, {"id": "api-12", "tema": "api", "tipo": "paso-a-paso", "prob": "probable", "f": "¿Cómo se implementa una operación asíncrona en REST?", "p": "202, recurso, GET", "r": "El POST retorna <b>202 Accepted<\/b> con un recurso que da el estado. Luego el GET retorna <b>200<\/b> si sigue, <b>303 See Other<\/b> con Location si terminó, o <b>200<\/b> con las razones si falló.", "o": ["015b, láminas 33 y 36"], "v": "Guia-C2-ADS.html#m-http", "vt": "015b · URIs, verbos y códigos", "a": "m-http"}, {"id": "api-13", "tema": "api", "tipo": "comparar", "prob": "probable", "f": "¿Qué diferencia hay entre 401 y 403?", "p": "Identificarse / permiso", "r": "<b>401:<\/b> no se entregaron credenciales. <b>403:<\/b> el usuario no está autorizado.", "o": ["015b, lámina 35"], "v": "Guia-C2-ADS.html#m-http", "vt": "015b · URIs, verbos y códigos", "a": "m-http"}, {"id": "api-14", "tema": "api", "tipo": "dato", "prob": "probable", "f": "¿Qué tres errores afectan la opacidad de las URIs?", "p": "Cabeceras, gateways, construir", "r": "<b>Cabeceras para procesamiento<\/b>, <b>recursos como gateways<\/b> y <b>pedirle al cliente que construya la URI<\/b> (mejor retornar un link).", "o": ["015b, lámina 26"], "v": "Guia-C2-ADS.html#m-http", "vt": "015b · URIs, verbos y códigos", "a": "m-http"}, {"id": "api-15", "tema": "api", "tipo": "paso-a-paso", "prob": "probable", "f": "¿Cómo se identifican los recursos de una API?", "p": "Sustantivos", "r": "Buscando <b>sustantivos<\/b> en casos de uso o secuencia que se puedan crear, buscar, actualizar o borrar. Hay que <b>evitar el mapeo directo<\/b> entre entidades y recursos.", "o": ["015b, lámina 42"], "v": "Guia-C2-ADS.html#m-diseno", "vt": "015b · Diseño y API Layer", "a": "m-diseno"}, {"id": "api-16", "tema": "api", "tipo": "paso-a-paso", "prob": "probable", "f": "¿Cuál es el orden del proceso de diseño de APIs?", "p": "Actores, recursos, validar, estructura…", "r": "Actores y tareas → recursos → <b>validar modelos<\/b> → estructura → ciclo de vida → códigos → <b>validar diseño<\/b>; documentar en paralelo.", "o": ["015b, láminas 39 a 48"], "v": "Guia-C2-ADS.html#m-diseno", "vt": "015b · Diseño y API Layer", "a": "m-diseno"}, {"id": "api-17", "tema": "api", "tipo": "definir", "prob": "probable", "f": "¿Qué propone el patrón API Layer y cuál es su trade-off?", "p": "Capa intermedia", "r": "Poner <b>una capa de APIs entre los microservicios y la interfaz<\/b>. Desacopla la interfaz y sirve para autenticación. Su trade-off es la <b>mantenibilidad<\/b>.", "o": ["015b, lámina 51"], "v": "Guia-C2-ADS.html#m-diseno", "vt": "015b · Diseño y API Layer", "a": "m-diseno"}, {"id": "query-01", "tema": "query", "tipo": "definir", "prob": "probable", "f": "¿Qué es un patrón?", "p": "Solución, problema, contexto, consecuencias", "r": "Una <b>solución reutilizable a un problema, que ocurre en un contexto, y sus consecuencias<\/b>.", "o": ["016, lámina 12"], "v": "Guia-C2-ADS.html#m-patron", "vt": "016 · Patrones y desafíos", "a": "m-patron"}, {"id": "query-02", "tema": "query", "tipo": "definir", "prob": "probable", "f": "¿Qué son las fuerzas de un patrón?", "p": "Conflicto", "r": "Los problemas por abordar en un contexto. <b>Pueden entrar en conflicto<\/b>, así que se <b>priorizan<\/b> según el contexto.", "o": ["016, lámina 14"], "v": "Guia-C2-ADS.html#m-patron", "vt": "016 · Patrones y desafíos", "a": "m-patron"}, {"id": "query-03", "tema": "query", "tipo": "definir", "prob": "probable", "f": "¿Qué incluye el contexto resultante?", "p": "Tres cosas", "r": "<b>Beneficios<\/b>, <b>inconvenientes<\/b> y <b>problemas nuevos<\/b> introducidos al aplicar el patrón.", "o": ["016, lámina 15"], "v": "Guia-C2-ADS.html#m-patron", "vt": "016 · Patrones y desafíos", "a": "m-patron"}, {"id": "query-04", "tema": "query", "tipo": "definir", "prob": "salio", "f": "¿En qué consiste API Composition?", "p": "Preguntar y combinar", "r": "<b>Consultar a cada servicio por su API y combinar los resultados.<\/b> Hay un API Composer y los servicios dueños de los datos.", "o": ["C2 2023-2 P8 · 016, láminas 26 y 27"], "v": "Guia-C2-ADS.html#m-comp", "vt": "016 · API Composition", "a": "m-comp"}, {"id": "query-05", "tema": "query", "tipo": "dato", "prob": "probable", "f": "¿Dónde se puede ubicar el API Composer?", "p": "Tres opciones", "r": "En la <b>aplicación cliente<\/b> (poco práctico), en el <b>API Gateway<\/b> o como <b>servicio independiente<\/b>. El patrón no lo define.", "o": ["016, láminas 31 a 35"], "v": "Guia-C2-ADS.html#m-comp", "vt": "016 · API Composition", "a": "m-comp"}, {"id": "query-06", "tema": "query", "tipo": "dato", "prob": "probable", "f": "¿Qué ventajas y desventajas tiene API Composition?", "p": "Simple…", "r": "<b>Ventaja:<\/b> simple e intuitivo. <b>Desventajas:<\/b> overhead, riesgos en disponibilidad y consistencia.", "o": ["016, lámina 39"], "v": "Guia-C2-ADS.html#m-comp", "vt": "016 · API Composition", "a": "m-comp"}, {"id": "query-07", "tema": "query", "tipo": "definir", "prob": "salio", "f": "¿En qué consiste CQRS?", "p": "Vista y eventos", "r": "Usa <b>eventos<\/b> para mantener una <b>vista de solo lectura<\/b> que replica los datos desde cada servicio.", "o": ["C2 2023-1 P3 · 016, lámina 40"], "v": "Guia-C2-ADS.html#m-cqrs", "vt": "016 · CQRS", "a": "m-cqrs"}, {"id": "query-08", "tema": "query", "tipo": "dato", "prob": "probable", "f": "¿Qué ventajas y desventajas tiene CQRS?", "p": "Eficiencia y demoras", "r": "<b>Ventajas:<\/b> consultas complejas eficientes, vistas especializadas, separación de responsabilidades. <b>Desventajas:<\/b> más complejo y <b>demoras de actualización<\/b>.", "o": ["016, lámina 50"], "v": "Guia-C2-ADS.html#m-cqrs", "vt": "016 · CQRS", "a": "m-cqrs"}, {"id": "query-09", "tema": "query", "tipo": "comparar", "prob": "salio", "f": "¿Cómo eliges entre API Composition y CQRS?", "p": "Fuerzas", "r": "Según las <b>fuerzas<\/b>. Si la consulta es simple y hay pocos servicios, API Composition. Si es compleja o frecuente y <b>se tolera el atraso<\/b>, CQRS.", "o": ["C2 2023-2 P4 · C2 2023-1 comente 2"], "v": "Guia-C2-ADS.html#m-cqrs", "vt": "016 · CQRS", "a": "m-cqrs"}, {"id": "saga-01", "tema": "saga", "tipo": "definir", "prob": "salio", "f": "¿Qué es una saga?", "p": "Secuencia", "r": "Una <b>secuencia de transacciones locales coordinadas por mensajería asíncrona<\/b> para mantener la consistencia entre servicios.", "o": ["C2 2023-2 P1 · 016, lámina 68"], "v": "Guia-C2-ADS.html#m-saga", "vt": "016 · SAGA", "a": "m-saga"}, {"id": "saga-02", "tema": "saga", "tipo": "por-que", "prob": "salio", "f": "¿Por qué una saga necesita compensaciones y no un rollback?", "p": "Cada paso confirmado", "r": "Porque cada paso ya está <b>confirmado<\/b> y es imposible un rollback simple. Se ejecutan <b>transacciones compensatorias en orden inverso<\/b>.", "o": ["C2 2023-1 P1 · 016, láminas 72 y 73"], "v": "Guia-C2-ADS.html#m-saga", "vt": "016 · SAGA", "a": "m-saga"}, {"id": "saga-03", "tema": "saga", "tipo": "dato", "prob": "salio", "f": "¿Qué propiedades ACID asegura una saga?", "p": "Falta una", "r": "<b>Atomicidad<\/b>, <b>consistencia<\/b> (eventual) y <b>durabilidad<\/b>. <b>No asegura aislamiento.<\/b>", "o": ["C2 2024-1 P2 · C2 2023-2 P3 · 016, lámina 81"], "v": "Guia-C2-ADS.html#m-saga", "vt": "016 · SAGA", "a": "m-saga"}, {"id": "saga-04", "tema": "saga", "tipo": "comparar", "prob": "salio", "f": "¿Qué diferencia hay entre coreografía y orquestación?", "p": "Eventos / comandos", "r": "<b>Coreografía:<\/b> cada participante publica eventos y se suscribe a los de otros. <b>Orquestación:<\/b> alguien dice qué le toca a cada uno con <b>mensajes comando<\/b> y procesa las respuestas.", "o": ["C2 2023-2 comente 2 · 016, láminas 75 a 79"], "v": "Guia-C2-ADS.html#m-saga", "vt": "016 · SAGA", "a": "m-saga"}, {"id": "saga-05", "tema": "saga", "tipo": "comparar", "prob": "probable", "f": "Pros y contras de coreografía y orquestación.", "p": "Sencilla/difícil; simple/concentra", "r": "<b>Coreografía:<\/b> buena para sagas sencillas, poco acoplamiento; difícil de entender, dependencias cíclicas. <b>Orquestación:<\/b> dependencias simples y separación de responsabilidades; puede <b>concentrar demasiada lógica<\/b>.", "o": ["016, láminas 76 y 79"], "v": "Guia-C2-ADS.html#m-saga", "vt": "016 · SAGA", "a": "m-saga"}, {"id": "saga-06", "tema": "saga", "tipo": "definir", "prob": "probable", "f": "¿Qué son las transacciones compensables, pivote y recuperables?", "p": "Anular, decidir, garantizar", "r": "<b>Compensables:<\/b> se pueden anular. <b>Pivote:<\/b> si tiene éxito, la saga llega al final. <b>Recuperables:<\/b> tienen garantía de éxito y siguen a una pivote.", "o": ["016, lámina 80"], "v": "Guia-C2-ADS.html#m-saga", "vt": "016 · SAGA", "a": "m-saga"}, {"id": "saga-07", "tema": "saga", "tipo": "definir", "prob": "probable", "f": "Explica lost update, dirty read y fuzzy read.", "p": "Consecuencias de no tener aislamiento", "r": "<b>Lost update:<\/b> actualiza sin leer los cambios de otra. <b>Dirty read:<\/b> lee datos que otra está modificando. <b>Fuzzy read:<\/b> lee el mismo dato en dos pasos y obtiene valores distintos.", "o": ["016, lámina 82"], "v": "Guia-C2-ADS.html#m-saga", "vt": "016 · SAGA", "a": "m-saga"}, {"id": "saga-08", "tema": "saga", "tipo": "dato", "prob": "probable", "f": "¿Qué contramedidas hay frente a la falta de aislamiento?", "p": "Flag, orden, riesgo, releer, registro", "r": "<b>Semantic lock<\/b>, <b>commutative updates<\/b>, <b>pessimistic view<\/b>, releer el valor antes de actualizar y guardar registro de las operaciones.", "o": ["016, lámina 83"], "v": "Guia-C2-ADS.html#m-saga", "vt": "016 · SAGA", "a": "m-saga"}, {"id": "iot-01", "tema": "iot", "tipo": "definir", "prob": "salio", "f": "¿Qué problema resuelve el patrón Gateway de IoT y qué contras tiene?", "p": "No todos se conectan", "r": "No todos los dispositivos pueden conectarse a la red: se conectan con <b>uno que comunica en ambos sentidos<\/b>. <b>Contras:<\/b> punto débil de seguridad y complejidad.", "o": ["C2 2023-2 aplicación 3 · 021, láminas 11 a 15"], "v": "Guia-C2-ADS.html#m-iot", "vt": "021 · Patrones IoT", "a": "m-iot"}, {"id": "iot-02", "tema": "iot", "tipo": "definir", "prob": "salio", "f": "¿Qué problema resuelve el patrón Shadow y qué contras tiene?", "p": "No siempre disponibles", "r": "Dispositivos no siempre disponibles: una <b>representación virtual<\/b> que se sincroniza en ambos sentidos. <b>Contras:<\/b> obsolescencia de las acciones y <b>consistencia eventual<\/b>.", "o": ["C2 2024-1 P8 · C2 2023-2 P6 · 021, láminas 16 a 20"], "v": "Guia-C2-ADS.html#m-iot", "vt": "021 · Patrones IoT", "a": "m-iot"}, {"id": "iot-03", "tema": "iot", "tipo": "definir", "prob": "salio", "f": "¿Qué problema resuelve el patrón Wakeup Trigger y qué costo tiene?", "p": "Se duermen", "r": "Dispositivos que se duermen: un <b>canal de bajo consumo a modo de despertador<\/b>. <b>Costo:<\/b> infraestructura más compleja.", "o": ["C2 2024-1 P9 · 021, láminas 21 a 27"], "v": "Guia-C2-ADS.html#m-iot", "vt": "021 · Patrones IoT", "a": "m-iot"}, {"id": "iot-04", "tema": "iot", "tipo": "comparar", "prob": "entender", "f": "¿Qué diferencia hay entre sensores y actuadores?", "p": "Capturan / actúan", "r": "Los <b>sensores capturan<\/b> los cambios del ambiente y los <b>actuadores realizan acciones<\/b> sobre el entorno.", "o": ["021, láminas 6 y 7"], "v": "Guia-C2-ADS.html#m-iot", "vt": "021 · Patrones IoT", "a": "m-iot"}, {"id": "query-10", "tema": "query", "tipo": "comparar", "prob": "salio", "f": "¿Qué diferencia hay entre el esquema de comunicación y la forma de trabajar en conjunto?", "p": "Síncrono o asíncrono; orquestado o coreografiado", "r": "Comunicación: <b>síncrona o asíncrona<\/b>. Trabajo en conjunto: <b>orquestado o coreografiado<\/b>. <b>No tienen una implicancia entre ellas<\/b>: SAGA define comunicación asíncrona, pero puede orquestarse o coreografiarse.", "o": ["C2 2023-2 P5 y comente 2"], "v": "Guia-C2-ADS.html#m-ejes", "vt": "016 · Comunicación y trabajo en conjunto", "a": "m-ejes"}, {"id": "query-11", "tema": "query", "tipo": "dato", "prob": "salio", "f": "¿Qué tipo de comunicación usan API Composer y CQRS?", "p": "Uno espera y el otro no", "r": "<b>API Composer: síncrona. CQRS: asíncrona<\/b>, con eventos. Son patrones alternativos para el mismo problema.", "o": ["C2 2023-2 P8 · C2 2024-1 P1"], "v": "Guia-C2-ADS.html#m-ejes", "vt": "016 · Comunicación y trabajo en conjunto", "a": "m-ejes"}, {"id": "query-12", "tema": "query", "tipo": "por-que", "prob": "salio", "f": "¿Son incompatibles API Composer y CQRS en un mismo sistema?", "p": "Misma consulta o mismo sistema", "r": "No. <b>Pueden convivir en un mismo sistema<\/b>, abordando consultas distintas. Lo que no se puede es <b>mezclarlos en la misma consulta<\/b>.", "o": ["C2 2023-1 comente 2"], "v": "Guia-C2-ADS.html#m-cqrs", "vt": "016 · CQRS", "a": "m-cqrs"}, {"id": "query-13", "tema": "query", "tipo": "por-que", "prob": "salio", "f": "¿Qué desventaja tiene API Composition respecto de cómo están almacenados los datos?", "p": "Joins…", "r": "<b>Depende de cómo estén almacenados<\/b>: si no se pueden filtrar en cada servicio, hay riesgo de hacer <b>joins en memoria<\/b>.", "o": ["C2 2024-1 P1 · C2 2023-1 P4"], "v": "Guia-C2-ADS.html#m-comp", "vt": "016 · API Composition", "a": "m-comp"}, {"id": "query-14", "tema": "query", "tipo": "por-que", "prob": "salio", "f": "Si un enunciado no plantea una consulta que cruce contextos, ¿qué patrón de consultas sugieres?", "p": "¿Qué dice el enunciado?", "r": "<b>Ninguno: no existen antecedentes<\/b> para sugerirlo. Si la consulta cabe en un solo servicio, basta con consumir su API.", "o": ["C2 2024-1 aplicación 1 · C2 2023-1 P4"], "v": "Guia-C2-ADS.html#como", "vt": "Cómo pregunta el profesor", "a": "como"}, {"id": "saga-09", "tema": "saga", "tipo": "por-que", "prob": "salio", "f": "¿Se puede usar SAGA para realizar consultas?", "p": "Costó −50", "r": "No. SAGA <b>mantiene la consistencia cuando un comando actualiza varios servicios<\/b>. Para consultas están API Composition y CQRS.", "o": ["C2 2024-1 aplicación 1"], "v": "Guia-C2-ADS.html#m-saga", "vt": "016 · SAGA", "a": "m-saga"}, {"id": "saga-10", "tema": "saga", "tipo": "por-que", "prob": "salio", "f": "¿Implementar SAGA es consecuencia directa de adoptar microservicios?", "p": "¿Qué hace falta?", "r": "No. Solo hace falta si <b>un comando requiere actualizar datos en múltiples servicios<\/b>.", "o": ["C2 2023-2 P3"], "v": "Guia-C2-ADS.html#m-saga", "vt": "016 · SAGA", "a": "m-saga"}, {"id": "saga-11", "tema": "saga", "tipo": "por-que", "prob": "salio", "f": "¿SAGA anula la consistencia eventual?", "p": "Eventualmente…", "r": "No. Permite <b>alcanzar<\/b> el estado consistente, pero no de forma inmediata: <b>seguimos en consistencia eventual<\/b>. Y la arquitectura sigue obedeciendo a CAP.", "o": ["C2 2023-1 comente 1"], "v": "Guia-C2-ADS.html#m-cap", "vt": "016 · ACID, CAP y eventual", "a": "m-cap"}, {"id": "datos-11", "tema": "datos", "tipo": "por-que", "prob": "salio", "f": "¿Siempre hay que preocuparse de la consistencia eventual al usar microservicios?", "p": "Depende del escenario", "r": "No. Solo cuando la consistencia <b>depende de lo almacenado en más de un contexto y las bases están separadas<\/b>. Con base compartida o sin datos repartidos no preocupa. <b>Todo depende del escenario.<\/b>", "o": ["C2 2024-1 comente 1"], "v": "Guia-C2-ADS.html#m-cap", "vt": "016 · ACID, CAP y eventual", "a": "m-cap"}, {"id": "datos-12", "tema": "datos", "tipo": "dato", "prob": "salio", "f": "¿De qué es consecuencia la consistencia eventual?", "p": "¿Qué se separó?", "r": "De <b>usar bases de datos independientes por servicio<\/b>. No de SAGA, CQRS ni los contenedores.", "o": ["C2 2023-2 P7"], "v": "Guia-C2-ADS.html#m-cap", "vt": "016 · ACID, CAP y eventual", "a": "m-cap"}, {"id": "ms-12", "tema": "ms", "tipo": "comparar", "prob": "salio", "f": "¿Qué diferencias hay entre microservicios y monolito, y cómo impactan el desempeño?", "p": "Tres ideas de la pauta", "r": "La <b>elasticidad<\/b>, la <b>consistencia eventual<\/b> y que los microservicios son <b>agnósticos de la tecnología<\/b>.", "o": ["C2 2024-1 comente 3"], "v": "Guia-C2-ADS.html#m-ms", "vt": "014 · Microservicios", "a": "m-ms"}, {"id": "ms-13", "tema": "ms", "tipo": "por-que", "prob": "salio", "f": "¿Qué argumento justifica recomendar microservicios en un cambio hipotético?", "p": "Una parte cambia y otra no", "r": "Que una parte del negocio sea <b>inestable o crezca sin afectar a las demás<\/b>. Basarse en antecedentes que el enunciado no da, como escalar, descuenta.", "o": ["C2 2024-1 aplicación 1"], "v": "Guia-C2-ADS.html#m-ms", "vt": "014 · Microservicios", "a": "m-ms"}, {"id": "ms-14", "tema": "ms", "tipo": "dato", "prob": "salio", "f": "¿Qué beneficios tiene llevar a la nube los servicios que atienden una alta demanda?", "p": "Dos, de 25 puntos cada uno", "r": "La <b>elasticidad<\/b> de la nube y la <b>independencia<\/b> de las funcionalidades que dan los microservicios.", "o": ["C2 2023-1 aplicación 2"], "v": "Guia-C2-ADS.html#m-ms", "vt": "014 · Microservicios", "a": "m-ms"}, {"id": "docker-09", "tema": "docker", "tipo": "por-que", "prob": "salio", "f": "¿Las máquinas virtuales tienen más poder de procesamiento que los contenedores?", "p": "¿De qué depende?", "r": "No: los contenedores <b>no tienen poder de cómputo en sí, dependen de la infraestructura<\/b>. En escalabilidad ganan por ser <b>más livianos de replicar<\/b>, y son más eficientes en costo.", "o": ["C2 2023-2 comente 3"], "v": "Guia-C2-ADS.html#m-cont", "vt": "015 · Contenedores vs. VM", "a": "m-cont"}, {"id": "docker-10", "tema": "docker", "tipo": "dato", "prob": "salio", "f": "¿Qué aportan los contenedores a los microservicios y a la entrega continua?", "p": "Dos afirmaciones correctas del 2024-1", "r": "Son <b>ideales para arquitecturas de microservicios<\/b> y <b>facilitan los pipelines de integración y entrega continua<\/b>.", "o": ["C2 2024-1 P4"], "v": "Guia-C2-ADS.html#m-cont", "vt": "015 · Contenedores vs. VM", "a": "m-cont"}, {"id": "api-18", "tema": "api", "tipo": "por-que", "prob": "salio", "f": "Da 3 argumentos para considerar APIs RESTful en una aplicación.", "p": "Invocar, comunicar, reutilizar", "r": "Permite <b>invocar la aplicación como servicio<\/b> desde otra plataforma; <b>comunica sistemas distintos gracias a HTTP<\/b>; y, <b>a pesar de no ser su objetivo<\/b>, permite reutilizar código.", "o": ["C2 2024-1 comente 2"], "v": "Guia-C2-ADS.html#b-comente", "vt": "Método y 22 frases", "a": "b-comente"}, {"id": "api-19", "tema": "api", "tipo": "definir", "prob": "salio", "f": "¿Qué significa la restricción «sin estado» de REST?", "p": "¿Dónde se guarda?", "r": "<b>El estado se guarda y mantiene en el cliente<\/b> y no en el servidor.", "o": ["C2 2024-1 P5"], "v": "Guia-C2-ADS.html#m-rest", "vt": "015b · REST", "a": "m-rest"}, {"id": "api-20", "tema": "api", "tipo": "comparar", "prob": "salio", "f": "¿Por qué están mal POST /AddNewFilm y PUT /aves/7565 para agregar un ave?", "p": "URI y verbo", "r": "La primera tiene <b>una acción en la URI<\/b>. La segunda usa <b>PUT para crear<\/b>, que le corresponde a POST.", "o": ["C2 2024-1 P6"], "v": "Guia-C2-ADS.html#m-http", "vt": "015b · URIs, verbos y códigos", "a": "m-http"}, {"id": "iot-05", "tema": "iot", "tipo": "dato", "prob": "salio", "f": "Nombra 3 características del patrón Shadow o Virtual Device.", "p": "Cada una vale un tercio", "r": "Para dispositivos <b>no siempre disponibles<\/b>; genera una <b>representación virtual<\/b>; hay que <b>conocer siempre el punto de comunicación<\/b>; la comunicación <b>siempre es posible<\/b>; genera <b>obsolescencia de las acciones y consistencia eventual<\/b>.", "o": ["C2 2023-1 comente 3"], "v": "Guia-C2-ADS.html#m-iot", "vt": "021 · Patrones IoT", "a": "m-iot"}, {"id": "iot-06", "tema": "iot", "tipo": "comparar", "prob": "salio", "f": "En IoT, ¿qué diferencia hay entre consistencia eventual y obsolescencia de las acciones?", "p": "Valores o acciones", "r": "<b>Consistencia eventual:<\/b> se pierden valores del sensor por falta de conexión. <b>Obsolescencia:<\/b> se pierde la conectividad para recibir una acción, que cuando llega puede ya no servir.", "o": ["C2 2024-1 aplicación 2"], "v": "Guia-C2-ADS.html#m-iot", "vt": "021 · Patrones IoT", "a": "m-iot"}, {"id": "iot-07", "tema": "iot", "tipo": "dato", "prob": "salio", "f": "¿Cuáles son los principales problemas de disponibilidad de los dispositivos?", "p": "Dos insumos", "r": "<b>La conexión a internet y la energía<\/b>, los insumos esenciales para que actúen como sensores.", "o": ["C2 2024-1 P7"], "v": "Guia-C2-ADS.html#m-iot", "vt": "021 · Patrones IoT", "a": "m-iot"}, {"id": "seg-01", "tema": "seg", "tipo": "definir", "prob": "entender", "f": "¿Qué significa shift left?", "p": "Más hacia los requisitos", "r": "Hacerse cargo de la seguridad <b>desde etapas tempranas del ciclo de desarrollo<\/b>, partiendo por los requisitos.", "o": ["Charla 9 nov, minuto 2"], "v": "Guia-C2-ADS.html#m-charla", "vt": "Charla 9 nov · Seguridad", "a": "m-charla"}, {"id": "seg-02", "tema": "seg", "tipo": "comparar", "prob": "entender", "f": "¿Qué diferencia hay entre requerimiento y requisito?", "p": "Humano y técnico", "r": "<b>Requerimiento:<\/b> la necesidad que viene del cliente o usuario. <b>Requisito:<\/b> lo concreto que debe hacer el sistema para cumplirla.", "o": ["Charla 9 nov, minuto 3"], "v": "Guia-C2-ADS.html#m-charla", "vt": "Charla 9 nov · Seguridad", "a": "m-charla"}, {"id": "seg-03", "tema": "seg", "tipo": "por-que", "prob": "entender", "f": "¿Por qué los requisitos de seguridad no los puede dar el cliente?", "p": "«Que no me hackeen»", "r": "Porque son <b>no funcionales<\/b> y el cliente no sabe especificarlos: «quiero que no me hackeen» no se puede implementar. Deben venir de quienes desarrollan.", "o": ["Charla 9 nov, minuto 5"], "v": "Guia-C2-ADS.html#m-charla", "vt": "Charla 9 nov · Seguridad", "a": "m-charla"}, {"id": "seg-04", "tema": "seg", "tipo": "dato", "prob": "entender", "f": "¿De dónde se pueden derivar requisitos de seguridad?", "p": "Cuatro fuentes", "r": "De <b>políticas internas<\/b>, <b>estándares<\/b> (ISO 27001, PCI DSS), <b>leyes y regulaciones<\/b> y <b>OWASP ASVS<\/b>.", "o": ["Charla 9 nov, minutos 6 a 15 y 60"], "v": "Guia-C2-ADS.html#m-charla", "vt": "Charla 9 nov · Seguridad", "a": "m-charla"}, {"id": "seg-05", "tema": "seg", "tipo": "definir", "prob": "entender", "f": "¿Qué es OWASP ASVS y en qué se diferencia del Top 10?", "p": "Tres niveles", "r": "Es una <b>lista de requisitos en 3 niveles<\/b>, con cómo verificarlos. El Top 10 lista las principales vulnerabilidades y <b>no es un estándar<\/b>.", "o": ["Charla 9 nov, minutos 4 y 15"], "v": "Guia-C2-ADS.html#m-charla", "vt": "Charla 9 nov · Seguridad", "a": "m-charla"}, {"id": "seg-06", "tema": "seg", "tipo": "dato", "prob": "entender", "f": "¿Qué precauciones recomienda la charla con los contenedores?", "p": "Recursos, usuario, imágenes", "r": "<b>Limitar sus recursos<\/b>, <b>definir un USER en el Dockerfile<\/b> para que no corra como root y preferir <b>imágenes y repositorios propios<\/b>.", "o": ["Charla 9 nov, minutos 40 a 42"], "v": "Guia-C2-ADS.html#m-charla", "vt": "Charla 9 nov · Seguridad", "a": "m-charla"}, {"id": "seg-07", "tema": "seg", "tipo": "definir", "prob": "entender", "f": "¿Qué es el threat modeling?", "p": "Modelo para anticipar", "r": "<b>Modelar la aplicación para anticipar sus posibles vulnerabilidades<\/b>, por ejemplo con OWASP Threat Dragon.", "o": ["Charla 9 nov, minuto 38"], "v": "Guia-C2-ADS.html#m-charla", "vt": "Charla 9 nov · Seguridad", "a": "m-charla"}, {"id": "seg-08", "tema": "seg", "tipo": "por-que", "prob": "entender", "f": "¿Quién responde por el código generado con IA?", "p": "IBM, 1979", "r": "<b>Quien lo pone en producción.<\/b> Un computador no puede hacerse responsable. Hay que darle requisitos de seguridad y revisarlo.", "o": ["Charla 9 nov, minutos 50 a 54"], "v": "Guia-C2-ADS.html#m-charla", "vt": "Charla 9 nov · Seguridad", "a": "m-charla"}]</script>
+<script>
+(function(){
+  var el = function(id){ return document.getElementById(id); };
+  var dataEl = el('fc-data');
+  if(!dataEl) return;
+  var CARDS = JSON.parse(dataEl.textContent);
+  var TEMAS = [["ms", "Microservicios y DDD"], ["datos", "Consistencia y CAP"], ["docker", "Contenedores y Docker"], ["api", "APIs y REST"], ["query", "Patrones y consultas"], ["saga", "SAGA"], ["iot", "IoT"], ["seg", "Charla de seguridad"]];
+  var TEMA_TXT = {}; TEMAS.forEach(function(t){ TEMA_TXT[t[0]] = t[1]; });
+  var TIPO_TXT = {'definir':'Definir','por-que':'Por qué','comparar':'Comparar','paso-a-paso':'Paso a paso','dato':'Dato o fórmula'};
+  var CAJA_TXT = ['Nueva','Caja 1','Caja 2','Caja 3'];
+  var MODO_TXT = {smart:'Repaso inteligente', deck:'Mazo al azar', exam:'Examen de 10'};
+  var W = [4, 6, 3, 1];
+  var KEY = 'ads-c2-fc-v1', UIKEY = 'ads-c2-fc-ui-v1';
+  var byId = {}; CARDS.forEach(function(c){ byId[c.id] = c; });
+
+  function load(k){ try{ var s = localStorage.getItem(k); return s ? JSON.parse(s) : null; }catch(e){ return null; } }
+  function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  var st = load(KEY) || {};
+  var ui = load(UIKEY) || {};
+  if(!ui.temas || !ui.temas.length) ui.temas = TEMAS.map(function(t){ return t[0]; });
+  if(['todas','salio','cuestan'].indexOf(ui.cuales) < 0) ui.cuales = 'todas';
+  if(!MODO_TXT[ui.modo]) ui.modo = 'smart';
+
+  function caja(id){ var s = st[id]; return s ? s.b : 0; }
+  function shuffle(a){ for(var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function pool(){
+    return CARDS.filter(function(c){
+      if(ui.temas.indexOf(c.tema) < 0) return false;
+      if(ui.cuales === 'salio') return c.prob === 'salio';
+      if(ui.cuales === 'cuestan') return caja(c.id) === 1;
+      return true;
+    });
+  }
+
+  var S = null;
+  function nuevaSesion(cola){
+    S = {modo: ui.modo, cola: [], i: 0, cur: null, flipped: false, cuenta: {1:0, 2:0, 3:0}, vistas: 0, fallidas: [], ultimas: [], total: 0, fin: false};
+    el('fc-end').hidden = true;
+    var p = pool();
+    if(!cola && !p.length){ vacio(); return; }
+    if(cola){ S.modo = 'deck'; S.cola = shuffle(cola.slice()); }
+    else if(ui.modo === 'deck'){ S.cola = shuffle(p.map(function(c){ return c.id; })); }
+    else if(ui.modo === 'exam'){ S.cola = shuffle(p.map(function(c){ return c.id; })).slice(0, 10); }
+    S.total = S.cola.length;
+    siguiente();
+  }
+  function elegir(){
+    var p = pool(); if(!p.length) return null;
+    var evitar = S.ultimas.slice(-Math.min(5, p.length - 1));
+    var cand = p.filter(function(c){ return evitar.indexOf(c.id) < 0; });
+    var tot = 0; cand.forEach(function(c){ tot += W[caja(c.id)]; });
+    var r = Math.random() * tot;
+    for(var k = 0; k < cand.length; k++){ r -= W[caja(cand[k].id)]; if(r <= 0) return cand[k].id; }
+    return cand[cand.length - 1].id;
+  }
+  function siguiente(){
+    var id;
+    if(S.modo === 'smart'){ id = elegir(); }
+    else { if(S.i >= S.cola.length){ fin(); return; } id = S.cola[S.i]; }
+    if(!id){ vacio(); return; }
+    S.cur = id; S.flipped = false;
+    S.ultimas.push(id); if(S.ultimas.length > 8) S.ultimas.shift();
+    pintar();
+  }
+  function fuente(c){
+    var o = c.o.map(esc).join(' · ');
+    return (c.prob === 'salio' ? '<b>Salió en:</b> ' : 'Fuente: ') + o +
+      ' · <a class="inl" href="' + esc(c.v) + '">ver en la guía (' + esc(c.vt) + ')</a>';
+  }
+  function mostrar(ids, on){ ids.forEach(function(i){ el(i).hidden = !on; }); }
+  function pintar(){
+    var c = byId[S.cur];
+    el('fc-card').classList.toggle('flipped', S.flipped);
+    el('fc-card').classList.remove('fc-vacio');
+    el('fc-tema').textContent = TEMA_TXT[c.tema];
+    el('fc-tipo').textContent = TIPO_TXT[c.tipo] || c.tipo;
+    el('fc-salio').hidden = c.prob !== 'salio';
+    el('fc-caja').textContent = CAJA_TXT[caja(c.id)];
+    mostrar(['fc-tema', 'fc-tipo', 'fc-caja'], true);
+    el('fc-front').textContent = c.f;
+    el('fc-hint').textContent = c.p ? 'Pista: ' + c.p : '';
+    el('fc-hint').hidden = true;
+    el('fc-btn-hint').disabled = !c.p;
+    el('fc-ans').innerHTML = c.r;
+    el('fc-src').innerHTML = fuente(c);
+    el('fc-back').hidden = !S.flipped;
+    el('fc-tap').hidden = S.flipped;
+    el('fc-tap').textContent = 'Responde en voz alta y después toca la tarjeta o pulsa espacio';
+    el('fc-actions-front').hidden = S.flipped;
+    el('fc-actions-back').hidden = !S.flipped;
+    estado();
+  }
+  function estado(){
+    var t = MODO_TXT[S.modo];
+    if(S.modo === 'smart') t += ' · ' + S.vistas + ' vistas en esta sesión';
+    else t += ' · tarjeta ' + Math.min(S.i + 1, S.total) + ' de ' + S.total;
+    if(S.vistas) t += ' · ' + S.cuenta[3] + ' la sabía, ' + S.cuenta[2] + ' más o menos, ' + S.cuenta[1] + ' no la sabía';
+    el('fc-status').textContent = t;
+  }
+  function vacio(){
+    S.cur = null;
+    el('fc-card').classList.remove('flipped');
+    el('fc-card').classList.add('fc-vacio');
+    mostrar(['fc-tema', 'fc-tipo', 'fc-salio', 'fc-caja', 'fc-hint', 'fc-back', 'fc-actions-front', 'fc-actions-back'], false);
+    el('fc-front').textContent = 'No hay tarjetas con este filtro.';
+    el('fc-tap').hidden = false;
+    el('fc-tap').textContent = ui.cuales === 'cuestan'
+      ? 'Aquí aparecen las tarjetas de la caja 1: las que no sabías o sabías a medias. Practica primero con “Todas”.'
+      : 'Marca al menos un tema o cambia “Cuáles”.';
+    el('fc-status').textContent = '';
+  }
+  function voltear(){ if(!S || !S.cur || S.flipped) return; S.flipped = true; pintar(); }
+  function pista(){ if(!S || !S.cur || S.flipped || !byId[S.cur].p) return; el('fc-hint').hidden = false; }
+  function calificar(g){
+    if(!S || !S.cur || !S.flipped) return;
+    var id = S.cur, s = st[id] || {b: 0, n: 0, f: 0};
+    if(g === 3) s.b = Math.min(3, Math.max(1, s.b) + 1);
+    else if(g === 2) s.b = Math.max(1, s.b);
+    else { s.b = 1; s.f += 1; S.fallidas.push(id); }
+    s.n += 1; s.t = Date.now();
+    st[id] = s; save(KEY, st);
+    S.cuenta[g] += 1; S.vistas += 1;
+    if(S.modo !== 'smart') S.i += 1;
+    stats(); siguiente();
+  }
+  function saltar(){
+    if(!S || !S.cur) return;
+    if(S.modo !== 'smart' && S.i < S.cola.length - 1){ S.cola.push(S.cola.splice(S.i, 1)[0]); }
+    siguiente();
+  }
+  function fin(){
+    S.cur = null; S.fin = true;
+    var c1 = S.cuenta[1], c2 = S.cuenta[2], c3 = S.cuenta[3], n = c1 + c2 + c3;
+    var h = '';
+    if(S.modo === 'exam'){
+      var nota = n ? (c3 + 0.5 * c2) / n * 10 : 0;
+      h += '<div class="fc-score">' + nota.toFixed(1).replace('.', ',') + ' de 10</div>';
+      h += '<p>' + c3 + ' la sabía, ' + c2 + ' más o menos (cuentan la mitad) y ' + c1 + ' no la sabía.</p>';
+    } else {
+      h += '<div class="fc-score">Mazo terminado</div><p>' + c3 + ' la sabía, ' + c2 + ' más o menos y ' + c1 + ' no la sabía.</p>';
+    }
+    if(S.fallidas.length){
+      h += '<p><b>Las que fallaste</b> (cada una lleva a su tarjeta en la lista; desde ahí, a la guía):</p><ul>';
+      S.fallidas.forEach(function(id){ h += '<li><a class="inl" href="#c-' + esc(id) + '">' + esc(byId[id].f) + '</a></li>'; });
+      h += '</ul>';
+    }
+    h += '<div class="fc-actions">';
+    if(S.fallidas.length) h += '<button class="btn fc-main" id="fc-rep">Repetir solo las que fallé</button>';
+    h += '<button class="btn" id="fc-otra">' + (S.modo === 'exam' ? 'Otro examen' : 'Barajar de nuevo') + '</button></div>';
+    var end = el('fc-end'); end.innerHTML = h; end.hidden = false;
+    var fallidas = S.fallidas.slice();
+    var rep = el('fc-rep'); if(rep) rep.onclick = function(){ nuevaSesion(fallidas); };
+    el('fc-otra').onclick = function(){ nuevaSesion(); };
+    el('fc-card').classList.add('fc-vacio');
+    mostrar(['fc-tema', 'fc-tipo', 'fc-salio', 'fc-caja', 'fc-hint', 'fc-back', 'fc-actions-front', 'fc-actions-back'], false);
+    el('fc-front').textContent = S.modo === 'exam' ? 'Examen terminado.' : 'Terminaste el mazo.';
+    el('fc-tap').hidden = false;
+    el('fc-tap').textContent = 'El resumen está aquí abajo.';
+    el('fc-status').textContent = '';
+  }
+  function stats(){
+    var filas = TEMAS.concat([['*', 'Todas']]).map(function(t){
+      var cs = CARDS.filter(function(c){ return t[0] === '*' || c.tema === t[0]; });
+      var k = [0, 0, 0, 0]; cs.forEach(function(c){ k[caja(c.id)] += 1; });
+      var cls = t[0] === '*' ? ' class="fc-tot"' : '';
+      return '<tr' + cls + '><td>' + t[1] + '</td><td>' + cs.length + '</td><td>' + k[0] + '</td><td>' + k[1] + '</td><td>' + k[2] + '</td><td>' + k[3] + '</td></tr>';
+    }).join('');
+    var sal = CARDS.filter(function(c){ return c.prob === 'salio'; });
+    var sal3 = sal.filter(function(c){ return caja(c.id) === 3; }).length;
+    el('fc-stats').innerHTML = '<div class="tw"><table class="mini"><thead><tr><th>Tema</th><th>Total</th><th>Nuevas</th><th>Caja 1</th><th>Caja 2</th><th>Caja 3</th></tr></thead><tbody>' + filas + '</tbody></table></div>' +
+      '<p>De las <b>' + sal.length + '</b> que ya salieron en un certamen, tienes <b>' + sal3 + '</b> en la caja 3.</p>';
+    var duras = CARDS.filter(function(c){ return st[c.id] && st[c.id].f > 0; })
+      .sort(function(a, b){ return st[b.id].f - st[a.id].f || caja(a.id) - caja(b.id); }).slice(0, 10);
+    el('fc-hard').innerHTML = duras.length
+      ? '<ul>' + duras.map(function(c){ return '<li><a class="inl" href="#c-' + esc(c.id) + '">' + esc(c.f) + '</a> <span class="tiny">· la fallaste ' + st[c.id].f + (st[c.id].f === 1 ? ' vez' : ' veces') + ' · ' + CAJA_TXT[caja(c.id)] + '</span></li>'; }).join('') + '</ul>'
+      : '<p class="tiny">Todavía no hay: aparecen cuando calificas una tarjeta con “No la sabía”.</p>';
+    var nc = el('fc-n-cuestan'); if(nc) nc.textContent = CARDS.filter(function(c){ return caja(c.id) === 1; }).length;
+  }
+  function controles(){
+    var temas = document.querySelectorAll('#fc-temas input');
+    [].forEach.call(temas, function(inp){
+      inp.checked = ui.temas.indexOf(inp.value) >= 0;
+      inp.parentNode.classList.toggle('on', inp.checked);
+      inp.addEventListener('change', function(){
+        var sel = [].filter.call(temas, function(x){ return x.checked; }).map(function(x){ return x.value; });
+        if(!sel.length){ inp.checked = true; sel = [inp.value]; }
+        ui.temas = sel; save(UIKEY, ui);
+        [].forEach.call(temas, function(x){ x.parentNode.classList.toggle('on', x.checked); });
+        nuevaSesion();
+      });
+    });
+    [['fc-cuales', 'cuales'], ['fc-modos', 'modo']].forEach(function(par){
+      var radios = document.querySelectorAll('#' + par[0] + ' input');
+      [].forEach.call(radios, function(inp){
+        inp.checked = ui[par[1]] === inp.value;
+        inp.parentNode.classList.toggle('on', inp.checked);
+        inp.addEventListener('change', function(){
+          ui[par[1]] = inp.value; save(UIKEY, ui);
+          [].forEach.call(radios, function(x){ x.parentNode.classList.toggle('on', x.checked); });
+          nuevaSesion();
+        });
+      });
+    });
+    el('fc-btn-flip').addEventListener('click', voltear);
+    el('fc-btn-hint').addEventListener('click', pista);
+    el('fc-btn-skip').addEventListener('click', saltar);
+    [].forEach.call(document.querySelectorAll('#fc-actions-back button'), function(b){
+      b.addEventListener('click', function(){ calificar(+b.getAttribute('data-g')); });
+    });
+    el('fc-card').addEventListener('click', function(e){ if(e.target.closest('a')) return; voltear(); });
+    el('fc-reset').addEventListener('click', function(){
+      if(window.confirm('¿Borrar tu avance de las flashcards? Todas vuelven a ser nuevas.')){ st = {}; save(KEY, st); stats(); nuevaSesion(); }
+    });
+    document.addEventListener('click', function(e){
+      var a = e.target.closest && e.target.closest('a[href^="#c-"]');
+      if(a){ var d = el(a.getAttribute('href').slice(1)); if(d) d.open = true; }
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.ctrlKey || e.metaKey || e.altKey || !S) return;
+      var tag = e.target && e.target.tagName;
+      if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      var r = el('fc-card').getBoundingClientRect();
+      if(r.bottom < 0 || r.top > window.innerHeight) return;
+      var k = e.key;
+      if(k === ' ' || k === 'Enter'){
+        if(tag === 'BUTTON' || tag === 'A') return;
+        if(S.cur && !S.flipped){ e.preventDefault(); voltear(); }
+        else if(k === ' ' && S.cur){ e.preventDefault(); }
+      }
+      else if(k === '1' || k === '2' || k === '3'){ if(S.cur && S.flipped){ e.preventDefault(); calificar(+k); } }
+      else if(k === 'p' || k === 'P'){ if(S.cur){ e.preventDefault(); pista(); } }
+      else if(k === 's' || k === 'S'){ if(S.cur){ e.preventDefault(); saltar(); } }
+    });
+  }
+  controles();
+  stats();
+  nuevaSesion();
+})();
+
+</script>
+<script>
+(function(){
+  var root=document.documentElement;
+  var CLAVE_TEMA='ads-c2-tema', CLAVE_FALLOS='ads-c2-falladas-v1';
+
+  /* Inputs: clave. Return: valor guardado o null. Qué hace: lee localStorage sin fallar. */
+  function leer(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+  /* Inputs: clave y valor. Return: nada. Qué hace: escribe en localStorage sin fallar. */
+  function guardar(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+
+  var temaGuardado=leer(CLAVE_TEMA);
+  if(temaGuardado){ root.setAttribute('data-theme',temaGuardado); }
+  /* Inputs: ninguno. Return: nada. Qué hace: alterna claro y oscuro y lo recuerda. */
+  window.tema=function(){
+    var actual=root.getAttribute('data-theme');
+    if(!actual){ actual=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'; }
+    var nuevo=actual==='dark'?'light':'dark';
+    root.setAttribute('data-theme',nuevo);
+    guardar(CLAVE_TEMA,nuevo);
+  };
+  /* Inputs: true o false. Return: nada. Qué hace: abre o cierra todas las pautas. */
+  window.abrir=function(v){
+    document.querySelectorAll('details.sol').forEach(function(d){ d.open=v; });
+  };
+
+  var menu=document.querySelector('details.menu');
+  /* Inputs: ninguno. Return: nada. Qué hace: deja el índice abierto en pantallas anchas. */
+  function ajustarMenu(){ if(menu){ menu.open = window.innerWidth>900 ? true : menu.open; } }
+  ajustarMenu();
+  window.addEventListener('resize',ajustarMenu);
+
+  var banco=document.getElementById('banco');
+  var fallos={};
+  try{ fallos=JSON.parse(leer(CLAVE_FALLOS)||'{}'); }catch(e){ fallos={}; }
+  var temaBanco='*', soloFalladas=false;
+  var modoTimer=null, modoInicio=0;
+
+  /* Inputs: ninguno. Return: arreglo con las preguntas del banco. */
+  function preguntas(){ return banco?[].slice.call(banco.querySelectorAll('.mc')):[]; }
+  /* Inputs: ninguno. Return: nada. Qué hace: numera las preguntas visibles. */
+  function numerar(){
+    var k=0;
+    preguntas().forEach(function(mc){
+      if(mc.style.display==='none') return;
+      k++;
+      var qt=mc.querySelector('.qt'), n=qt.querySelector('.n');
+      if(!n){ n=document.createElement('span'); n.className='n'; qt.insertBefore(n,qt.firstChild); }
+      n.textContent=k+'. ';
+    });
+    var cuenta=document.getElementById('b-visibles');
+    if(cuenta) cuenta.textContent=k;
+  }
+  /* Inputs: ninguno. Return: nada. Qué hace: actualiza el marcador de la barra lateral. */
+  function contar(){
+    var hechas=preguntas().filter(function(mc){ return mc.classList.contains('done')&&!mc.classList.contains('rev'); });
+    var buenas=hechas.filter(function(mc){ return mc.getAttribute('data-res')==='1'; }).length;
+    var p=document.getElementById('pts'), t=document.getElementById('tot');
+    if(p) p.textContent=buenas;
+    if(t) t.textContent=hechas.length;
+  }
+  /* Inputs: ninguno. Return: nada. Qué hace: muestra cuántas preguntas se han fallado. */
+  function contarFalladas(){
+    var n=Object.keys(fallos).length, s=document.getElementById('n-falladas');
+    if(s) s.textContent=n;
+  }
+  /* Inputs: pregunta y opción elegida. Return: nada. Qué hace: pinta la correcta y la equivocada. */
+  function marcar(mc,elegida){
+    var ok=mc.getAttribute('data-ok');
+    mc.querySelectorAll('ol.ops li').forEach(function(li){
+      var k=li.querySelector('.k').textContent.charAt(0);
+      if(k===ok) li.classList.add('ok');
+      else if(li===elegida) li.classList.add('bad');
+    });
+    mc.classList.add('done');
+  }
+  /* Inputs: ninguno. Return: true si el modo certamen está activo. */
+  function enModo(){ var m=document.getElementById('modo'); return m&&m.style.display==='block'; }
+  /* Inputs: ninguno. Return: nada. Qué hace: detiene el reloj y da el resultado al responder todo. */
+  function revisarModo(){
+    if(!enModo()) return;
+    var vis=preguntas().filter(function(mc){ return mc.style.display!=='none'; });
+    var hechas=vis.filter(function(mc){ return mc.classList.contains('done'); });
+    if(vis.length&&hechas.length===vis.length){
+      clearInterval(modoTimer);
+      var buenas=hechas.filter(function(mc){ return mc.getAttribute('data-res')==='1'; }).length;
+      document.getElementById('resmodo').textContent='Resultado: '+buenas+' de '+vis.length+'.';
+    }
+  }
+  /* Inputs: ninguno. Return: nada. Qué hace: borra las respuestas marcadas. */
+  function limpiar(){
+    preguntas().forEach(function(mc){
+      mc.classList.remove('done','rev');
+      mc.removeAttribute('data-res');
+      mc.querySelectorAll('li').forEach(function(li){ li.classList.remove('ok','bad'); });
+    });
+    contar();
+  }
+  /* Inputs: ninguno. Return: nada. Qué hace: aplica el filtro de tema y de falladas. */
+  function filtrar(){
+    preguntas().forEach(function(mc){
+      var porTema=temaBanco==='*'||(temaBanco==='real'?mc.hasAttribute('data-real'):mc.getAttribute('data-t')===temaBanco);
+      var pasa=porTema&&(!soloFalladas||fallos[mc.id]);
+      mc.style.display=pasa?'':'none';
+    });
+    numerar();
+  }
+  /* Inputs: ninguno. Return: nada. Qué hace: reinicia el banco. */
+  window.reiniciar=function(){ limpiar(); };
+  /* Inputs: ninguno. Return: nada. Qué hace: muestra todas las respuestas sin contarlas. */
+  window.revelar=function(){
+    preguntas().forEach(function(mc){
+      if(!mc.classList.contains('done')){ mc.classList.add('rev'); marcar(mc,null); }
+    });
+    contar();
+  };
+  /* Inputs: arreglo. Return: el mismo arreglo en orden aleatorio. */
+  function mezclar(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+  /* Inputs: ninguno. Return: nada. Qué hace: cambia el orden de las preguntas. */
+  window.barajar=function(){
+    if(enModo()) window.salirModo();
+    mezclar(preguntas()).forEach(function(mc){ banco.appendChild(mc); });
+    limpiar();
+    numerar();
+  };
+  /* Inputs: cantidad de preguntas. Return: nada. Qué hace: deja n preguntas al azar y parte el reloj. */
+  window.modoCertamen=function(n,soloReales){
+    n=n||8;
+    limpiar();
+    temaBanco='*'; soloFalladas=false; pintarChips();
+    var todas=preguntas();
+    todas.forEach(function(mc){ mc.style.display='none'; });
+    var base=soloReales?todas.filter(function(mc){ return mc.hasAttribute('data-real'); }):todas.slice();
+    var elegidas=mezclar(base).slice(0,n);
+    elegidas.reverse().forEach(function(mc){ mc.style.display=''; banco.insertBefore(mc,banco.firstChild); });
+    numerar();
+    var m=document.getElementById('modo');
+    m.style.display='block';
+    document.getElementById('resmodo').textContent='';
+    document.getElementById('reloj').textContent='0:00';
+    modoInicio=Date.now();
+    clearInterval(modoTimer);
+    modoTimer=setInterval(function(){
+      var s=Math.floor((Date.now()-modoInicio)/1000);
+      document.getElementById('reloj').textContent=Math.floor(s/60)+':'+('0'+(s%60)).slice(-2);
+    },1000);
+    document.getElementById('a-banco').scrollIntoView();
+  };
+  /* Inputs: ninguno. Return: nada. Qué hace: vuelve al banco completo. */
+  window.salirModo=function(){
+    document.getElementById('modo').style.display='none';
+    clearInterval(modoTimer);
+    filtrar();
+  };
+  /* Inputs: ninguno. Return: nada. Qué hace: marca los filtros activos. */
+  function pintarChips(){
+    document.querySelectorAll('#b-temas .chip').forEach(function(c){
+      c.classList.toggle('on',c.getAttribute('data-t')===temaBanco);
+    });
+    var b=document.getElementById('b-falladas');
+    if(b) b.classList.toggle('on',soloFalladas);
+  }
+  if(banco){
+    document.addEventListener('click',function(e){
+      var chip=e.target.closest&&e.target.closest('#b-temas .chip');
+      if(chip){
+        if(enModo()) window.salirModo();
+        temaBanco=chip.getAttribute('data-t');
+        pintarChips(); filtrar();
+        return;
+      }
+      if(e.target.closest&&e.target.closest('#b-falladas')){
+        if(enModo()) window.salirModo();
+        soloFalladas=!soloFalladas;
+        pintarChips(); filtrar();
+        return;
+      }
+      var li=e.target.closest&&e.target.closest('#banco .mc ol.ops li');
+      if(!li) return;
+      var mc=li.closest('.mc');
+      if(mc.classList.contains('done')) return;
+      var k=li.querySelector('.k').textContent.charAt(0);
+      var bien=k===mc.getAttribute('data-ok');
+      mc.setAttribute('data-res',bien?'1':'0');
+      if(bien){ delete fallos[mc.id]; } else { fallos[mc.id]=1; }
+      guardar(CLAVE_FALLOS,JSON.stringify(fallos));
+      contarFalladas();
+      marcar(mc,li);
+      contar();
+      revisarModo();
+    });
+    filtrar();
+    pintarChips();
+    contarFalladas();
+    contar();
+  }
+
+  var cajas=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  /* Inputs: ninguno. Return: nada. Qué hace: actualiza la barra de la lista de estudio. */
+  function avance(){
+    var listos=cajas.filter(function(b){ return b.checked; }).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(cajas.length?100*listos/cajas.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=listos+' de '+cajas.length+' listos'; });
+  }
+  cajas.forEach(function(b){
+    var k='ads-c2-chk-'+b.getAttribute('data-k');
+    if(leer(k)==='1'){ b.checked=true; b.closest('li').classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.closest('li').classList.toggle('done',b.checked);
+      guardar(k,b.checked?'1':'0');
+      avance();
+    });
+  });
+  avance();
+
+  var enlaces=[].slice.call(document.querySelectorAll('nav a'));
+  var secciones=enlaces.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  var barra=document.querySelector('.sidebar');
+  var ultimo=-1;
+  /* Inputs: ninguno. Return: nada. Qué hace: resalta en el índice la sección que se está leyendo. */
+  function espiar(){
+    var y=window.scrollY+70, mejor=0;
+    for(var i=0;i<secciones.length;i++){ if(secciones[i]&&secciones[i].offsetTop<=y) mejor=i; }
+    if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4) mejor=secciones.length-1;
+    if(mejor===ultimo) return;
+    enlaces.forEach(function(a,i){ a.classList.toggle('active',i===mejor); });
+    var act=enlaces[mejor];
+    if(barra&&act&&window.innerWidth>900){
+      var r=act.getBoundingClientRect(), s=barra.getBoundingClientRect();
+      if(r.top<s.top+40||r.bottom>s.bottom-40){ barra.scrollTop+=r.top-s.top-barra.clientHeight/2; }
+    }
+    ultimo=mejor;
+  }
+  window.addEventListener('scroll',espiar,{passive:true});
+  window.addEventListener('load',espiar);
+  espiar();
+})();
+
+</script>
+</body>
+</html>
