@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resumen IMAFI · Información y Matemática Financiera (ICN-270)</title>
+
+<!-- MathJax: renderiza las fórmulas en LaTeX. Necesita internet la 1ª vez.
+     Ojo: aquí las fórmulas EN LÍNEA van con \( ... \) (no con $...$), para poder
+     escribir montos en pesos con el signo $ sin que se rompa el render. -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      tags: 'none'
+    },
+    svg: { fontCache: 'global' },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#0e7a5f; --brand-soft:#e3f4ee;
+    --accent:#3a5bd9; --accent-soft:#eaefff;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --code:#f0f1f4;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:288px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#4fd1ab; --brand-soft:#16302a;
+    --accent:#8aa2ff; --accent-soft:#20263a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --code:#232733;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#4fd1ab; --brand-soft:#16302a;
+      --accent:#8aa2ff; --accent-soft:#20263a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --code:#232733;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- Layout ---------- */
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{
+    width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;
+  }
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 120px; max-width:1000px; margin:0 auto}
+
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px;flex:0 0 auto}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:20px 8px 6px;font-weight:700}
+  nav .grp.a{color:var(--brand)}
+  nav .grp.b{color:var(--accent)}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:6px 10px;border-radius:7px;
+    font-size:14px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  nav a.sub{padding-left:22px;font-size:13px;opacity:.72}
+
+  .toolbar{display:flex;gap:8px;margin-top:14px}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+
+  /* ---------- Typography ---------- */
+  h2{font-size:26px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20px;margin:30px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:20px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:46px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  strong{font-weight:700}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+
+  /* Chips / pills */
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+
+  /* Callout boxes */
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.formula{border-left-color:var(--brand);background:var(--brand-soft)}
+  .box.formula .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)}
+  .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+  .box.warn .bt{color:var(--warn)}
+
+  /* Formula key list */
+  .keys{display:grid;gap:2px;margin:6px 0}
+  .keys .k{display:flex;justify-content:space-between;gap:14px;padding:9px 4px;border-bottom:1px dashed var(--line);
+    flex-wrap:wrap;align-items:baseline}
+  .keys .k:last-child{border-bottom:0}
+  .keys .k .d{color:var(--muted);font-size:13.5px;flex:1 1 240px;min-width:190px}
+  .keys .k .f{flex:0 0 auto}
+
+  /* Worked example (collapsible) */
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex>summary::before{content:"▸";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex .body{padding:6px 18px 16px}
+  .step{margin:12px 0}
+  .step .n{display:inline-block;background:var(--ex);color:#fff;border-radius:6px;font-size:11px;
+    font-weight:700;padding:1px 7px;margin-right:6px}
+
+  /* Tables */
+  .tablewrap{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:10px}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:520px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-size:12.5px;text-transform:uppercase;letter-spacing:.03em}
+  tr:last-child td{border-bottom:0}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  td .yes{color:var(--brand);font-weight:700}
+  td .no{color:var(--muted)}
+
+  /* Cards grid (map) */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0}
+  .card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--panel);box-shadow:var(--shadow)}
+  .card .num{font-size:12px;font-weight:700;color:var(--brand)}
+  .card.b .num{color:var(--accent)}
+  .card h4{margin:2px 0 4px;color:var(--ink)}
+  .card p{margin:0;font-size:13.5px;color:var(--muted)}
+
+  /* Mobile */
+  .menuToggle{display:none}
+  @media (max-width:900px){
+    .sidebar{position:fixed;z-index:40;left:0;top:0;transform:translateX(-102%);transition:transform .22s;
+      box-shadow:var(--shadow)}
+    .sidebar.open{transform:none}
+    .menuToggle{display:inline-flex;position:fixed;z-index:50;top:12px;left:12px}
+    .content{padding-top:64px}
+    .scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:35}
+    .scrim.on{display:block}
+  }
+  .backtop{position:fixed;right:18px;bottom:18px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+  .backtop.on{opacity:1;pointer-events:auto}
+</style>
+</head>
+<body>
+
+<button class="btn menuToggle" id="menuToggle">☰ Índice</button>
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="dot">$</div>
+      <div>
+        <h1>Resumen IMAFI</h1>
+        <small>Información y Mat. Financiera · ICN-270 · USM</small>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="themeBtn">🌓 Tema</button>
+      <button class="btn" id="printBtn">🖨️ Imprimir</button>
+    </div>
+
+    <nav id="nav">
+      <div class="grp">Empezar aquí</div>
+      <a href="#intro">Cómo usar esta guía</a>
+      <a href="#mapa">Mapa del ramo</a>
+
+      <div class="grp a">Mitad A · Contabilidad</div>
+      <a href="#a1" class="sub">A1 · Qué es la contabilidad</a>
+      <a href="#a2" class="sub">A2 · Ciclo y partida doble</a>
+      <a href="#a3" class="sub">A3 · IVA, sociedades, existencias</a>
+      <a href="#a4" class="sub">A4 · Estados financieros</a>
+      <a href="#a5" class="sub">A5 · Análisis y ratios</a>
+      <a href="#a-form" class="sub">Formulario contable</a>
+      <a href="#a-ej" class="sub">Ejercicios resueltos</a>
+
+      <div class="grp b">Mitad B · Mat. Financiera</div>
+      <a href="#b1" class="sub">B1 · Valor del dinero</a>
+      <a href="#b2" class="sub">B2 · Tasas e inflación</a>
+      <a href="#b3" class="sub">B3 · Cuotas y amortización</a>
+      <a href="#b4" class="sub">B4 · Financiamiento y bonos</a>
+      <a href="#b5" class="sub">B5 · Evaluación de proyectos</a>
+      <a href="#b-form" class="sub">Formulario financiero</a>
+      <a href="#b-ej" class="sub">Ejercicios resueltos</a>
+
+      <div class="grp">Extras</div>
+      <a href="#master">Formulario maestro</a>
+      <a href="#tips">Estrategia de examen</a>
+    </nav>
+  </aside>
+
+  <!-- ================= CONTENT ================= -->
+  <main class="content">
+
+  <!-- ===== INTRO ===== -->
+  <section id="intro">
+    <h2>Resumen del ramo · Información y Matemática Financiera</h2>
+    <p class="lead">Todo lo de las presentaciones del ramo, explicado desde cero y ordenado en dos mitades: <strong>contabilidad</strong> (leer la realidad de una empresa) y <strong>matemática financiera</strong> (decidir si un proyecto o inversión conviene). Con formularios y ejercicios resueltos paso a paso.</p>
+
+    <div class="box tip">
+      <div class="bt">Cómo estudiar con esto</div>
+      <ol style="margin:6px 0 0">
+        <li><strong>Lee la teoría de cada bloque una vez.</strong> No es para memorizar, es para entender <em>qué</em> pide cada tipo de problema y con qué chip resolverlo.</li>
+        <li><strong>Aprende el formulario de cada mitad</strong> con la columna de "cuándo se usa". En finanzas el error típico no es no tener la fórmula, es mezclar tasa y periodo o elegir el indicador equivocado.</li>
+        <li><strong>Haz los ejercicios plegables tapando la solución.</strong> Ábrelos solo para verificar. Ese es el 80% del estudio que sirve para el certamen.</li>
+        <li>Al final tienes un <a class="inl" href="#master">formulario maestro</a> y una <a class="inl" href="#tips">estrategia de examen</a>.</li>
+      </ol>
+    </div>
+
+    <p>El ramo lo dicta el <strong>Departamento de Industrias</strong> (es el ramo de gestión de la malla). Evaluación típica: <strong>dos certámenes (70%)</strong> + una bolsa de tareas, controles de lectura y casos (30%), sin examen. Los libros guía son <strong>Warren</strong> (contabilidad) y <strong>Blank &amp; Tarquin</strong> (ingeniería económica). Para ti, futuro ingeniero informático, la mitad financiera es casi toda <em>programable</em>: VAN, TIR y tablas de amortización son algoritmos de pocas líneas.</p>
+  </section>
+
+  <!-- ===== MAPA ===== -->
+  <section id="mapa">
+    <h2>Mapa del ramo <span class="pill">dos sub-ramos que casi no se tocan</span></h2>
+    <p>Conviene estudiarlo como si fueran dos asignaturas con mentalidades distintas: contabilidad es <em>registrar el pasado con orden</em>; matemática financiera es <em>proyectar el futuro para decidir</em>. El puente entre ambas es la empresa: la contabilidad produce los estados financieros y la matemática financiera los usa para evaluar.</p>
+
+    <div class="cards">
+      <div class="card"><div class="num">MITAD A · Warren</div><h4>Contabilidad financiera</h4><p>Ecuación contable, partida doble, ciclo contable, IVA, estados financieros y análisis por ratios.</p></div>
+      <div class="card b"><div class="num">MITAD B · Blank</div><h4>Matemática financiera</h4><p>Valor del dinero en el tiempo, tasas, cuotas y amortización, financiamiento, bonos y evaluación de proyectos (VAN, TIR, CAUE).</p></div>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Concepto que confunde y cae seguro</th><th>Dónde está</th><th>La idea en una línea</th></tr></thead>
+        <tbody>
+          <tr><td>Utilidad ≠ efectivo</td><td>A4</td><td>Se puede ganar en el papel (venta a crédito) y quedar sin caja.</td></tr>
+          <tr><td>Débito/crédito no es bueno/malo</td><td>A2</td><td>Aumentan o disminuyen según el <em>tipo</em> de cuenta.</td></tr>
+          <tr><td>IVA débito vs. crédito fiscal</td><td>A3</td><td>El IVA de compras se descuenta del IVA de ventas.</td></tr>
+          <tr><td>Tasa nominal ≠ efectiva</td><td>B2</td><td>"12% anual cap. mensual" en realidad es 12,68% efectivo anual.</td></tr>
+          <tr><td>Tasa y periodo deben coincidir</td><td>B2–B3</td><td>Tasa mensual con periodos mensuales. Es el error nº1 del ramo.</td></tr>
+          <tr><td>VAN manda sobre TIR</td><td>B5</td><td>Al comparar proyectos excluyentes, decide el VAN, no la TIR.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box warn">
+      <div class="bt">Lo que esto te dice</div>
+      Si dominas <strong>la ecuación contable + el ciclo (asientos → mayor → balance), el IVA, los ratios</strong> en la mitad A, y <strong>tasa efectiva/nominal, cuota de un crédito, VAN y TIR</strong> en la mitad B, cubres el grueso de los dos certámenes. Todo lo demás son variantes de eso.
+    </div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- MITAD A -->
+  <!-- ============================================================= -->
+  <section id="a1">
+    <h2>A1 — Qué es la contabilidad <span class="pill">base de todo</span></h2>
+
+    <h3>La contabilidad como sistema de información</h3>
+    <p>La contabilidad es un <strong>sistema que registra, clasifica y resume en dinero</strong> todo lo que le pasa a una empresa, para producir información útil a quien decide (dueños, bancos, el Estado). No es "sacar cuentas": es un lenguaje con reglas que tiene que <em>cuadrar</em>.</p>
+    <p>¿De dónde salen los recursos de una empresa? De tres fuentes: <strong>aporte de socios/accionistas</strong>, <strong>préstamos</strong> (bancos, proveedores) y <strong>utilidades del negocio</strong>. Esa idea es la semilla de la ecuación contable.</p>
+
+    <h4>IFRS / NIIF</h4>
+    <p>Son estándares contables de aplicación mundial que uniforman las prácticas entre países (antes cada país tenía sus normas y era imposible comparar). Chile las usa. Definen cómo <em>reconocer, medir y presentar</em> los hechos económicos en los estados financieros.</p>
+
+    <h3>La ecuación contable (la que nunca se rompe)</h3>
+    <div class="box formula">
+      <div class="bt">Ecuación fundamental</div>
+      $$\text{ACTIVO} = \text{PASIVO} + \text{PATRIMONIO (Capital)}$$
+      <strong>Activo</strong> = lo que la empresa <em>tiene</em> o le deben (caja, máquinas, cuentas por cobrar). <strong>Pasivo</strong> = lo que <em>debe a terceros</em> (préstamos, proveedores). <strong>Patrimonio/Capital</strong> = lo que le debe a los <em>dueños</em> (aporte + utilidades retenidas).
+    </div>
+    <p>Los dos lados son <strong>dos miradas de los mismos recursos</strong>: <em>lo que tengo</em> = <em>quién lo financió</em>. Todo movimiento mantiene la igualdad: si pides un préstamo, sube el activo (caja) y sube el pasivo (deuda) en el mismo monto. Por eso el patrimonio también se puede ver como una "deuda con los dueños", y de ahí que el balance se escriba <strong>Activo = Pasivo + Patrimonio</strong>.</p>
+
+    <h3>Principios y convenciones</h3>
+    <ul>
+      <li><strong>Entidad contable:</strong> la empresa es distinta de su dueño (sus platas no se mezclan).</li>
+      <li><strong>Bienes económicos:</strong> se registra lo que puede valorizarse en dinero.</li>
+      <li><strong>Periodo:</strong> la vida de la empresa se corta en periodos (normalmente el año) para poder medir resultados.</li>
+      <li><strong>Devengado (clave):</strong> el hecho se registra <em>cuando ocurre</em>, no cuando se paga el efectivo. Si compras algo hoy y lo pagas en 30 días, se contabiliza hoy.</li>
+      <li><strong>Costo histórico, empresa en marcha, equidad</strong>, entre otros.</li>
+    </ul>
+    <div class="box tip">
+      <div class="bt">Tipos de contabilidad</div>
+      <strong>Financiera</strong> (informe real y estandarizado para afuera) · <strong>Administrativa o de gestión</strong> (interna, real y proyectada, para decidir) · <strong>Tributaria</strong> (la que usa el SII para la carga de impuestos).
+    </div>
+  </section>
+
+  <section id="a2">
+    <h2>A2 — El ciclo contable y la partida doble <span class="pill">lo más mecánico</span></h2>
+
+    <h3>El proceso contable, paso a paso</h3>
+    <p>Es la cadena de producción de la información. Hay que practicarla hasta que salga sola:</p>
+    <ol>
+      <li><strong>Transacción / hecho económico</strong> (se compra, se vende, se paga).</li>
+      <li><strong>Asiento en el Libro Diario</strong> → se anota en orden cronológico, con <em>partida doble</em>.</li>
+      <li><strong>Libro Mayor</strong> → se agrupan los asientos por cuenta (la "cuenta T").</li>
+      <li><strong>Balance de comprobación</strong> → se listan los saldos para verificar que débitos = créditos.</li>
+      <li><strong>Ajustes</strong> → al cierre se corrigen los devengados (depreciación, gastos anticipados, intereses).</li>
+      <li><strong>Estados financieros</strong> → el producto final.</li>
+      <li><strong>Cierre</strong> → se dejan en cero las cuentas de resultado para empezar el periodo siguiente.</li>
+    </ol>
+
+    <h3>Partida doble: LA regla</h3>
+    <p>Cada transacción afecta <strong>al menos dos cuentas</strong>, y siempre se cumple <strong>débitos = créditos</strong>. Débito (Debe, izquierda) y crédito (Haber, derecha) <em>no</em> significan "bueno/malo": aumentan o disminuyen según el tipo de cuenta.</p>
+    <div class="box formula">
+      <div class="bt">Regla nemotécnica — qué aumenta con débito y qué con crédito</div>
+      Aumentan con <strong>DÉBITO</strong>: <strong>A</strong>ctivos · <strong>D</strong>ividendos/retiros · <strong>E</strong>gresos/gastos &nbsp;→&nbsp; <em>"ADE"</em><br>
+      Aumentan con <strong>CRÉDITO</strong>: <strong>P</strong>asivos · <strong>P</strong>atrimonio · <strong>R</strong>esultados/ingresos &nbsp;→&nbsp; <em>"PPR"</em><br>
+      <span style="color:var(--muted)">Con esto resuelves el 80% de los asientos. Un débito aumenta un activo, pero <em>disminuye</em> un pasivo (hace lo contrario en el otro grupo).</span>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tipo de cuenta</th><th>Aumenta con</th><th>Disminuye con</th><th>Saldo normal</th></tr></thead>
+        <tbody>
+          <tr><td>Activo</td><td>Débito</td><td>Crédito</td><td>Deudor</td></tr>
+          <tr><td>Pasivo</td><td>Crédito</td><td>Débito</td><td>Acreedor</td></tr>
+          <tr><td>Patrimonio/Capital</td><td>Crédito</td><td>Débito</td><td>Acreedor</td></tr>
+          <tr><td>Ingreso</td><td>Crédito</td><td>Débito</td><td>Acreedor</td></tr>
+          <tr><td>Gasto / Costo</td><td>Débito</td><td>Crédito</td><td>Deudor</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Libro Mayor y saldos</h3>
+    <p>El Mayor toma los mismos hechos del Diario pero los ordena <strong>por cuenta</strong> (todo lo que pasó en "Caja"), en forma de <strong>cuenta T</strong> (débitos a la izquierda, créditos a la derecha). Al final se saca el saldo:</p>
+    <ul>
+      <li>Total Débitos &gt; Total Créditos → <strong>Saldo Deudor</strong>.</li>
+      <li>Total Débitos &lt; Total Créditos → <strong>Saldo Acreedor</strong>.</li>
+      <li>Total Débitos = Total Créditos → <strong>Cuenta saldada</strong> (balanceada).</li>
+    </ul>
+    <div class="box warn">
+      <div class="bt">Error clásico</div>
+      Un asiento que no cuadra (Σ débitos ≠ Σ créditos) está mal <em>seguro</em>. Antes de pasar al siguiente, verifica que ambos lados sumen igual. Un error de tipeo descuadra todo el balance.
+    </div>
+  </section>
+
+  <section id="a3">
+    <h2>A3 — IVA, sociedades y existencias <span class="pill">registros del día a día</span></h2>
+
+    <h3>IVA — Impuesto al Valor Agregado</h3>
+    <p>Grava con una <strong>tasa única de 19%</strong> el valor que se agrega en cada etapa de la cadena, hasta el consumidor final (decreto ley 825). La empresa es solo un <em>recaudador</em>: no es un gasto ni un ingreso suyo.</p>
+    <div class="box formula">
+      <div class="bt">Los dos IVA de la empresa</div>
+      <strong>IVA Crédito Fiscal</strong> = IVA de tus <em>compras</em> (lo pagaste al proveedor; el fisco te lo debe).<br>
+      <strong>IVA Débito Fiscal</strong> = IVA de tus <em>ventas</em> (lo recaudaste del cliente; se lo debes al fisco).<br>
+      $$\text{IVA a pagar} = \text{IVA Débito Fiscal} - \text{IVA Crédito Fiscal}$$
+    </div>
+    <ul>
+      <li>Si <strong>Débito &gt; Crédito</strong> → se declara y <strong>paga</strong> la diferencia.</li>
+      <li>Si <strong>Crédito &gt; Débito</strong> → queda un <strong>remanente</strong> a favor (se arrastra al mes siguiente, en UTM).</li>
+      <li>Solo las compras <strong>con factura</strong> dan derecho a crédito fiscal.</li>
+    </ul>
+    <div class="box tip">
+      <div class="bt">Documentos tributarios</div>
+      <strong>Factura</strong> (da crédito fiscal) · <strong>Boleta</strong> (venta a consumidor final) · <strong>Nota de débito</strong> (aumenta el valor de una factura: cobros u olvidos, intereses) · <strong>Nota de crédito</strong> (disminuye: devoluciones, errores).
+    </div>
+
+    <h3>Tipos de sociedad (cómo entra el capital)</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Forma</th><th>Idea</th><th>Cuenta de patrimonio típica</th></tr></thead>
+        <tbody>
+          <tr><td>E.I.R.L.</td><td>Un solo dueño, patrimonio separado del suyo.</td><td>"Cuenta obligada" (aporte comprometido).</td></tr>
+          <tr><td>Sociedad de personas</td><td>Dos o más socios.</td><td>Capital / cuentas de cada socio.</td></tr>
+          <tr><td>Sociedad anónima (S.A.)</td><td>Sociedad "de capital": se divide en acciones.</td><td>"Acciones por suscribir", "Accionistas" → Capital pagado.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Existencias (inventario)</h3>
+    <p>Son uno de los activos más importantes: es la mercadería con la que la empresa genera ingresos. Tipos: <strong>materia prima (MP)</strong>, <strong>producto en proceso (PP)</strong> y <strong>producto terminado (PT)</strong>. El problema es a qué precio valorar lo que sale cuando compraste a distintos precios:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Método</th><th>Qué sale primero</th><th>Efecto (con precios subiendo)</th></tr></thead>
+        <tbody>
+          <tr><td><strong>FIFO</strong> (First In, First Out)</td><td>Lo primero que entró es lo primero que sale.</td><td>Deja el inventario valorado al precio más nuevo (alto).</td></tr>
+          <tr><td><strong>LIFO</strong> (Last In, First Out)</td><td>Lo último que entró sale primero.</td><td>Costo de venta más alto (menos utilidad). <em>No permitido por IFRS.</em></td></tr>
+          <tr><td><strong>PPP</strong> (Precio Promedio Ponderado)</td><td>Todo sale al precio promedio de compra.</td><td>Suaviza las variaciones de precio.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="a4">
+    <h2>A4 — Estados financieros <span class="pill">el producto final</span></h2>
+    <p>La empresa produce cuatro estados. Hay que saber <strong>armarlos e interpretarlos</strong>:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Estado</th><th>¿Qué responde?</th><th>Analogía</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Balance General</strong></td><td>¿Qué tiene y qué debe en un instante? (Activo = Pasivo + Patrimonio)</td><td>La "foto" a una fecha.</td></tr>
+          <tr><td><strong>Estado de Resultados</strong></td><td>¿Ganó o perdió en el periodo? (Ingresos − Gastos = Resultado)</td><td>La "película" del año.</td></tr>
+          <tr><td><strong>Flujo de Efectivo</strong></td><td>¿De dónde salió y a dónde fue el efectivo?</td><td>El "extracto bancario" explicado.</td></tr>
+          <tr><td><strong>Cambios en el Patrimonio</strong></td><td>¿Cómo varió lo de los dueños?</td><td>El "detrás de escena".</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Balance General — la estructura</h3>
+    <p>Es un documento a una fecha, con dos columnas que siempre suman igual. Los activos van de <strong>mayor a menor liquidez</strong>; pasivos y patrimonio, según cuándo se pagan.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>ACTIVOS</th><th>PASIVOS + PATRIMONIO</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Activo Corriente / Circulante</strong> (&lt; 1 año): disponible (caja, banco), depósitos a plazo, deudores por venta / clientes / CxC, documentos por cobrar, <em>existencias</em>.</td><td><strong>Pasivo Corriente</strong> (&lt; 1 año): obligaciones con bancos CP, cuentas por pagar (proveedores), documentos por pagar, provisiones.</td></tr>
+          <tr><td><strong>Activo No Corriente / Fijo</strong> (&gt; 1 año): terrenos (<span class="no">no se deprecian</span>), edificios, máquinas y equipos, menos <em>depreciación acumulada</em>. Intangibles: marcas, patentes, derechos de llave.</td><td><strong>Pasivo No Corriente</strong> (&gt; 1 año): obligaciones bancarias LP, obligaciones con el público (bonos).</td></tr>
+          <tr><td></td><td><strong>Patrimonio:</strong> capital (aportes), utilidades acumuladas (+/−), resultado del ejercicio, menos dividendos.</td></tr>
+          <tr><td class="num"><strong>TOTAL ACTIVOS</strong></td><td class="num"><strong>= TOTAL PASIVOS + PATRIMONIO</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Patrimonio</strong> = "parte residual de los activos una vez deducidos todos los pasivos". La <em>depreciación acumulada</em> es un activo con signo negativo (rebaja el valor del activo fijo en libros).</p>
+
+    <h3>Estado de Resultados</h3>
+    <p>Se arma con cuentas <strong>nominales/transitorias</strong> (ingresos, costos, gastos). En cascada, va restando hasta el resultado:</p>
+    <div class="box formula">
+      <div class="bt">Cascada del resultado</div>
+      Ventas − Costo de ventas = <strong>Utilidad Bruta</strong><br>
+      − Gastos de operación = <strong>Utilidad Operacional</strong><br>
+      − Intereses − Depreciación ± otros = <strong>Utilidad antes de Impuesto</strong><br>
+      − Impuesto = <strong>Utilidad Neta (del ejercicio)</strong>
+    </div>
+    <div class="box warn">
+      <div class="bt">Concepto que cae: utilidad ≠ efectivo</div>
+      Una empresa puede tener utilidad en el papel (vendió a crédito, aún no le pagan) y quedarse <em>sin caja</em>. Por eso existe el estado de flujo de efectivo: separa lo devengado de lo que de verdad entró y salió.
+    </div>
+  </section>
+
+  <section id="a5">
+    <h2>A5 — Análisis financiero y ratios <span class="pill">calcular e interpretar</span></h2>
+    <p>No basta con armar los estados: hay que <em>leerlos</em>. En certamen se pregunta como <strong>"calcule e interprete"</strong> — el cálculo es una división; el punto está en <em>qué significa</em> el número.</p>
+
+    <h3>Análisis vertical y horizontal</h3>
+    <ul>
+      <li><strong>Vertical:</strong> cada partida como % de un total (cada gasto como % de las ventas; cada activo como % del activo total). Sirve para comparar empresas de <em>distinto tamaño</em> y ver la estructura de inversión, financiamiento y resultados.</li>
+      <li><strong>Horizontal:</strong> variación de cada partida <em>entre periodos</em> (¿las ventas subieron 12% respecto al año pasado?) o contra otra empresa / el sector.</li>
+    </ul>
+
+    <h3>Razones financieras (ratios)</h3>
+    <p>Son cocientes entre cuentas del Balance o del Estado de Resultados. Cuatro familias:</p>
+
+    <h4>a) Liquidez — ¿puede pagar sus deudas de corto plazo?</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">Capital de trabajo</span><span class="f">\(CT = AC - PC\)</span></div>
+      <div class="k"><span class="d">Razón circulante (en veces)</span><span class="f">\(RC = \dfrac{AC}{PC}\)</span></div>
+      <div class="k"><span class="d">Prueba ácida (sin existencias)</span><span class="f">\(\dfrac{AC - \text{Existencias}}{PC}\)</span></div>
+      <div class="k"><span class="d">Prueba acidísima (tesorería)</span><span class="f">\(\dfrac{\text{Disponible} + \text{D.Plazo}}{PC}\)</span></div>
+    </div></div>
+    <p>Lectura: \(RC > 1\) → alcanza a cubrir el corto plazo; \(RC < 1\) → no. Ejemplo: una razón circulante de \(0{,}7\) dice que la empresa no cubre sus deudas de corto plazo con lo que tiene disponible.</p>
+
+    <h4>b) Endeudamiento — ¿cuánto depende de deuda?</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">Razón de deuda (sobre activos)</span><span class="f">\(\dfrac{\text{Deuda Total}}{\text{Activos Totales}}\)</span></div>
+      <div class="k"><span class="d">Razón deuda / patrimonio (leverage)</span><span class="f">\(\dfrac{\text{Deuda Total}}{\text{Patrimonio}}\)</span></div>
+    </div></div>
+    <p>El endeudamiento (<strong>apalancamiento / leverage</strong>) amplifica: si la rentabilidad de los activos supera la tasa de la deuda, el retorno de los accionistas <em>crece</em>... pero también el riesgo.</p>
+
+    <h4>c) Actividad / rotación — ¿qué tan eficiente es?</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">Rotación de activos</span><span class="f">\(\dfrac{\text{Ventas}}{\text{Activos Totales}}\)</span></div>
+      <div class="k"><span class="d">Rotación de cuentas por cobrar</span><span class="f">\(\dfrac{\text{Ventas a crédito}}{\text{Cuentas por Cobrar}}\)</span></div>
+      <div class="k"><span class="d">Periodo medio de cobro (días)</span><span class="f">\(\dfrac{\text{CxC} \times 365}{\text{Ventas a crédito}}\)</span></div>
+      <div class="k"><span class="d">Rotación de existencias</span><span class="f">\(\dfrac{\text{Costo de bienes vendidos}}{\text{Inventario promedio}}\)</span></div>
+    </div></div>
+
+    <h4>d) Rentabilidad — ¿genera ganancias?</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">Margen de utilidad bruta</span><span class="f">\(\dfrac{\text{Utilidad Bruta}}{\text{Ventas Netas}}\)</span></div>
+      <div class="k"><span class="d">Margen de utilidad neta</span><span class="f">\(\dfrac{\text{Utilidad Neta}}{\text{Ventas Netas}}\)</span></div>
+      <div class="k"><span class="d">ROA (rentabilidad sobre activos)</span><span class="f">\(\dfrac{\text{Utilidad Neta}}{\text{Activos Totales}}\)</span></div>
+      <div class="k"><span class="d">ROE (rentabilidad sobre patrimonio)</span><span class="f">\(\dfrac{\text{Utilidad Neta}}{\text{Patrimonio}}\)</span></div>
+    </div></div>
+    <p><strong>ROE</strong> es "la razón contable más importante": cuánto rindió el aporte de cada accionista. <strong>ROA</strong> mide cuánto rinde cada peso de activo, independiente de cómo se financió.</p>
+  </section>
+
+  <!-- ===== FORMULARIO A ===== -->
+  <section id="a-form">
+    <h3>Formulario — Contabilidad</h3>
+    <div class="box formula">
+      <div class="bt">Conceptos y fórmulas clave · cuándo se usan</div>
+      <div class="keys">
+        <div class="k"><span class="d">Ecuación contable</span><span class="f">\(\text{Activo} = \text{Pasivo} + \text{Patrimonio}\)</span></div>
+        <div class="k"><span class="d">Aumentan con débito</span><span class="f">Activos · Dividendos · Egresos ("ADE")</span></div>
+        <div class="k"><span class="d">Aumentan con crédito</span><span class="f">Pasivos · Patrimonio · Resultados ("PPR")</span></div>
+        <div class="k"><span class="d">Cuadre del asiento</span><span class="f">\(\sum \text{Débitos} = \sum \text{Créditos}\)</span></div>
+        <div class="k"><span class="d">IVA (tasa)</span><span class="f">\(19\%\) sobre el neto</span></div>
+        <div class="k"><span class="d">IVA a pagar</span><span class="f">\(\text{IVA Débito} - \text{IVA Crédito}\)</span></div>
+        <div class="k"><span class="d">Utilidad bruta / neta</span><span class="f">Ventas − Costo / … − gastos, int., imp.</span></div>
+        <div class="k"><span class="d">Liquidez</span><span class="f">\(RC=\tfrac{AC}{PC}\); ácida \(=\tfrac{AC-\text{Exist.}}{PC}\)</span></div>
+        <div class="k"><span class="d">Endeudamiento</span><span class="f">\(\tfrac{\text{Deuda}}{\text{Activos}}\); \(\tfrac{\text{Deuda}}{\text{Patrimonio}}\)</span></div>
+        <div class="k"><span class="d">Rentabilidad</span><span class="f">\(ROA=\tfrac{UN}{AT}\); \(ROE=\tfrac{UN}{\text{Patrim.}}\); margen \(=\tfrac{UN}{\text{Ventas}}\)</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EJERCICIOS A ===== -->
+  <section id="a-ej">
+    <h3>Ejercicios resueltos — Contabilidad</h3>
+
+    <details class="ex">
+      <summary>Ej. 1 · Ecuación contable: armar un mini-balance <span class="tag">Contab. I</span></summary>
+      <div class="body">
+        <p>Compras un auto que cuesta $5.000.000 y pides un crédito por el 40% del valor. Arma el balance: ¿cuánto es activo, pasivo y capital?</p>
+        <div class="step"><span class="n">1</span><strong>Activo:</strong> el auto que ahora tienes → $5.000.000.</div>
+        <div class="step"><span class="n">2</span><strong>Pasivo:</strong> el crédito = 40% de 5.000.000 = $2.000.000 (deuda con el banco).</div>
+        <div class="step"><span class="n">3</span><strong>Capital:</strong> lo pones tú, por diferencia → \(5.000.000 - 2.000.000 = \$3.000.000\).</div>
+        <div class="step"><span class="n">✓</span>Verificación: \(\text{Activo }5.000.000 = \text{Pasivo }2.000.000 + \text{Capital }3.000.000\). Cuadra.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 2 · Asiento de una venta con IVA <span class="tag">Contab. I</span></summary>
+      <div class="body">
+        <p>La empresa vende mercadería por $180.000 + IVA, con un costo de $130.000, pago al contado.</p>
+        <div class="step"><span class="n">1</span><strong>IVA:</strong> \(19\% \times 180.000 = 34.200\). El cliente paga \(180.000 + 34.200 = \$214.200\).</div>
+        <div class="step"><span class="n">2</span><strong>Asiento de la venta (partida doble):</strong></div>
+        <div class="tablewrap"><table><thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Caja</td><td class="num">214.200</td><td class="num"></td></tr>
+            <tr><td>Ventas (ingreso)</td><td class="num"></td><td class="num">180.000</td></tr>
+            <tr><td>IVA Débito Fiscal (pasivo)</td><td class="num"></td><td class="num">34.200</td></tr>
+          </tbody></table></div>
+        <div class="step"><span class="n">3</span><strong>Asiento del costo</strong> (baja la mercadería del inventario):</div>
+        <div class="tablewrap"><table><thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Costo de venta (gasto)</td><td class="num">130.000</td><td class="num"></td></tr>
+            <tr><td>Existencias / Mercaderías</td><td class="num"></td><td class="num">130.000</td></tr>
+          </tbody></table></div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Idea</div>La utilidad bruta de esta venta es \(180.000 - 130.000 = \$50.000\). El IVA no es ingreso: es un pasivo (se lo debes al fisco).</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 3 · IVA a declarar y pagar <span class="tag">Contab. I · ISIS Ltda.</span></summary>
+      <div class="body">
+        <p>Durante abril, ISIS Ltda. hizo una única compra de mercadería por $250.000 neto y una única venta afecta por $450.000 neto. ¿Cuánto IVA declara y paga?</p>
+        <div class="step"><span class="n">1</span><strong>IVA Crédito Fiscal</strong> (compra): \(19\% \times 250.000 = \$47.500\).</div>
+        <div class="step"><span class="n">2</span><strong>IVA Débito Fiscal</strong> (venta): \(19\% \times 450.000 = \$85.500\).</div>
+        <div class="step"><span class="n">3</span><strong>IVA a pagar:</strong> \(85.500 - 47.500 = \$38.000\). Como el débito &gt; crédito, se declara y paga esa diferencia.</div>
+        <div class="box warn" style="margin-top:8px"><div class="bt">Ojo</div>Si hubiera comprado más de lo que vendió (crédito &gt; débito), no pagaría nada: quedaría un <em>remanente</em> a favor para el mes siguiente.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 4 · Ratios: calcular e interpretar <span class="tag">Análisis financiero</span></summary>
+      <div class="body">
+        <p>De una empresa (cifras en miles): Activo circulante $6.000 (de los cuales existencias $3.000), Activo fijo $9.000; Pasivo circulante $4.000, Pasivo largo plazo $3.000, Patrimonio $8.000; Ventas netas $20.000, Utilidad neta $1.600. Calcula e interpreta los principales ratios.</p>
+        <div class="step"><span class="n">1</span><strong>Razón circulante:</strong> \(\tfrac{6.000}{4.000}=1{,}5\). Tiene $1,5 de activo circulante por cada $1 de deuda corto plazo → <span class="yes">alcanza a cubrirla</span>.</div>
+        <div class="step"><span class="n">2</span><strong>Prueba ácida:</strong> \(\tfrac{6.000-3.000}{4.000}=0{,}75\). Sin vender inventario, solo cubre el 75% → depende de sus existencias para pagar.</div>
+        <div class="step"><span class="n">3</span><strong>Razón de deuda:</strong> \(\tfrac{4.000+3.000}{15.000}=0{,}47\). El 47% de los activos se financia con deuda (el resto, patrimonio).</div>
+        <div class="step"><span class="n">4</span><strong>ROA:</strong> \(\tfrac{1.600}{15.000}=10{,}7\%\). Cada peso de activo generó 10,7 centavos de utilidad.</div>
+        <div class="step"><span class="n">5</span><strong>ROE:</strong> \(\tfrac{1.600}{8.000}=20\%\). El aporte de los dueños rindió 20%. <strong>Margen neto:</strong> \(\tfrac{1.600}{20.000}=8\%\).</div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Lección</div>ROE &gt; ROA (20% vs 10,7%) porque la empresa está apalancada: usa deuda para amplificar el retorno de los dueños. El cálculo es trivial; los puntos están en la <em>interpretación</em>.</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- MITAD B -->
+  <!-- ============================================================= -->
+  <section id="b1">
+    <h2>B1 — Valor del dinero en el tiempo <span class="pill a">el concepto madre</span></h2>
+    <p><strong>$1.000 hoy valen más que $1.000 en un año</strong>, por dos razones: puedes invertirlos y generar interés, y la inflación desgasta el poder adquisitivo. Todo el resto de esta mitad son consecuencias de esta idea. Por eso <em>no se pueden sumar montos de fechas distintas</em> sin antes "moverlos" en el tiempo con una tasa.</p>
+
+    <div class="box tip">
+      <div class="bt">Regla de oro: siempre dibuja el diagrama de flujo</div>
+      Una línea de tiempo con flechas: <strong>arriba = ingresos</strong>, <strong>abajo = egresos</strong>. Evita el 90% de los errores porque te obliga a ubicar cada monto en su periodo antes de calcular.
+    </div>
+
+    <h3>Interés: el precio del dinero en el tiempo</h3>
+    <p>El interés es el <strong>premio por postergar el consumo</strong> (para quien presta) o el <strong>castigo por adelantarlo</strong> (para quien pide). La <strong>tasa de interés</strong> es ese premio como porcentaje del capital en un periodo. También aparece como <strong>costo de oportunidad</strong>: lo que dejas de ganar en tu mejor alternativa.</p>
+
+    <h3>Interés simple vs. compuesto</h3>
+    <div class="box formula">
+      <div class="bt">Las dos formas de crecer</div>
+      <strong>Simple</strong> (interés siempre sobre el capital inicial): &nbsp; \(I = P\cdot i\cdot n\), &nbsp; \(F = P(1 + i\,n)\)<br>
+      <strong>Compuesto</strong> (el interés genera interés): &nbsp; $$F = P\,(1+i)^{n}$$
+    </div>
+    <p>El compuesto es el que rige todo. La diferencia (que el interés se "capitaliza") crece con el número de periodos. Esa fórmula \(F = P(1+i)^n\) —llevar un valor presente P a un valor futuro F— es la base de <strong>absolutamente todo lo demás</strong>.</p>
+
+    <h3>Valor futuro y valor presente</h3>
+    <p>Son la misma fórmula despejada al derecho y al revés:</p>
+    <div class="box formula">
+      <div class="bt">Traer y llevar un monto único</div>
+      $$F = P(1+i)^{n} \qquad\Longleftrightarrow\qquad P = \frac{F}{(1+i)^{n}}$$
+      El término \(\dfrac{1}{(1+i)^n}\) es el <strong>factor de valor presente de pago único</strong>: "descuenta" un monto futuro a hoy. Para despejar \(n\) se usa logaritmo: \(n = \dfrac{\ln(F/P)}{\ln(1+i)}\).
+    </div>
+    <div class="box tip">
+      <div class="bt">Capital propio vs. prestado</div>
+      Capital <strong>propio</strong>: mayor riesgo, mayor utilidad esperada. Capital <strong>prestado</strong>: menor riesgo para ti, menor rentabilidad (pagas interés). Elegir la mezcla es una decisión de financiamiento (ver <a class="inl" href="#b4">B4</a>).
+    </div>
+  </section>
+
+  <section id="b2">
+    <h2>B2 — Tasas de interés e inflación <span class="pill a">donde caen los errores</span></h2>
+
+    <h3>Capitalización</h3>
+    <p>Es <strong>cada cuánto se aplica la tasa</strong> sobre el capital acumulado. Si no dice nada, se asume que el periodo de capitalización coincide con el de la tasa.</p>
+
+    <h3>Tasa nominal vs. efectiva <span class="pill w">cae seguro</span></h3>
+    <div class="box formula">
+      <div class="bt">La conversión más útil del ramo</div>
+      $$i = \left(1 + \frac{r}{m}\right)^{m} - 1$$
+      \(i\) = tasa <strong>efectiva</strong> (la que realmente pagas/ganas) · \(r\) = tasa <strong>nominal</strong> (aparente) · \(m\) = número de capitalizaciones en el periodo de la tasa nominal.
+    </div>
+    <p>"Nominal" significa <em>aparente o pretendido</em>: no es real hasta convertirla. Una tasa de <strong>"12% anual capitalizable mensualmente"</strong> <u>no</u> es 12% efectivo anual, sino \(\left(1+\tfrac{0{,}12}{12}\right)^{12}-1 = 12{,}68\%\).</p>
+    <div class="box warn">
+      <div class="bt">Reglas que salvan puntos</div>
+      1) Si el enunciado <strong>no da periodo de capitalización</strong>, la tasa <em>ya es efectiva</em>. &nbsp; 2) En las fórmulas (VP, VF, cuotas) <strong>tasa y periodo deben coincidir</strong>: si los periodos son mensuales, usa la tasa mensual (para "24% anual cap. mensual", la tasa por periodo es \(24\%/12 = 2\%\) mensual).
+    </div>
+    <h4>Conversión entre periodos (tasas efectivas)</h4>
+    <p>Dos tasas efectivas de distinto periodo se relacionan igualando el factor de un año:</p>
+    $$(1+i_A) = (1+i_S)^2 = (1+i_T)^4 = (1+i_M)^{12} = (1+i_D)^{365}$$
+    <p>(anual, semestral, trimestral, mensual, diaria). <strong>Capitalización continua</strong> (\(m\to\infty\)): \(\;i = e^{\,r} - 1\).</p>
+
+    <h3>Inflación, IPC y UF</h3>
+    <ul>
+      <li><strong>Inflación (\(f\)):</strong> % promedio que suben los precios en un periodo. Mide la pérdida de poder adquisitivo del dinero. Si los precios caen, es <em>deflación</em>.</li>
+      <li><strong>IPC:</strong> índice que pondera una canasta de bienes/servicios de una familia típica; su variación mide la inflación en Chile (lo calcula el INE).</li>
+      <li><strong>UF:</strong> unidad reajustable según la variación del IPC (se reajusta a diario). Sirve para pactar montos que no pierdan valor con la inflación.</li>
+    </ul>
+    <div class="box formula">
+      <div class="bt">Tasa real vs. tasa inflada (nominal)</div>
+      La tasa <strong>inflada</strong> \(i_f\) (la que ves) incluye la inflación; la tasa <strong>real</strong> \(i\) es la ganancia de poder adquisitivo. Se relacionan por:
+      $$(1 + i_f) = (1 + i)(1 + f)$$
+      Un depósito que da \(0{,}5\%\) mensual y además te "protege de la inflación" del \(3{,}2\%\) crece a la tasa inflada, no solo a la real.
+    </div>
+  </section>
+
+  <section id="b3">
+    <h2>B3 — Cuotas, amortización y créditos <span class="pill a">el crédito de todos los días</span></h2>
+
+    <h3>Pagos periódicos (Payment / serie uniforme)</h3>
+    <p>Una <strong>anualidad</strong> es un flujo constante que se repite cada periodo (la cuota de un crédito, el arriendo). Se pacta un principal \(P\) (valor presente) en \(n\) cuotas iguales a la tasa \(i\).</p>
+    <div class="box formula">
+      <div class="bt">Cuota de un crédito (cuotas vencidas)</div>
+      $$PMT = P\cdot \underbrace{\frac{(1+i)^{n}\, i}{(1+i)^{n}-1}}_{\text{Factor de Recuperación de Capital (FRC)}}$$
+      El <strong>FRC</strong> es LA fórmula de la cuota. Para <strong>cuotas anticipadas</strong> (se paga al inicio del periodo), la cuota es la vencida dividida por \((1+i)\): \(\;PMT_{ant} = \dfrac{PMT_{venc}}{1+i}\) (es menor, porque cada pago llega antes).
+    </div>
+    <div class="box tip">
+      <div class="bt">Periodos de gracia</div>
+      Si no pagas durante \(m\) periodos pero <em>sí</em> se acumulan intereses, el principal que usas para calcular las cuotas crece: en vez de \(P\), usas \(P(1+i)^{m}\).
+    </div>
+
+    <h3>Amortización: la cuota se parte en dos</h3>
+    <div class="box formula">
+      <div class="bt">Anatomía de cada cuota</div>
+      $$\text{Cuota} = \text{Interés (sobre el saldo insoluto)} + \text{Amortización (abono al capital)}$$
+      La suma de todas las amortizaciones = el principal. El interés de cada periodo se calcula sobre el <strong>saldo que aún debes</strong>.
+    </div>
+    <p>Dos tipos clásicos:</p>
+    <ul>
+      <li><strong>Cuota constante (gradual / francesa):</strong> pagas siempre lo mismo (el \(PMT\) del FRC). Al principio casi todo es interés; con el tiempo, casi todo es abono al capital.</li>
+      <li><strong>Amortización constante (cuota decreciente):</strong> abonas el mismo capital cada vez (\(P/n\)), así el interés baja y la cuota va disminuyendo.</li>
+    </ul>
+
+    <h3>Tabla de amortización</h3>
+    <p>Muestra, cuota por cuota: saldo insoluto, interés, amortización y valor de la cuota. Es 100% "programable" y el certamen suele pedir armar las primeras filas.</p>
+
+    <h3>CAE — Carga Anual Equivalente</h3>
+    <div class="box tip">
+      <div class="bt">Qué es y por qué importa</div>
+      Un crédito no cuesta solo el interés: hay <strong>notario, impuestos, seguros (desgravamen, cesantía)</strong>. El <strong>CAE</strong> es la tasa que incorpora <em>todos</em> esos costos, así comparas créditos de distintos bancos con un solo número. Es "el interés que dicen" vs. "el que de verdad pagas".
+    </div>
+
+    <h3>Gradientes (flujos que crecen)</h3>
+    <p>Cuando los flujos <em>no</em> son constantes:</p>
+    <ul>
+      <li><strong>Gradiente uniforme (aritmético):</strong> crece un monto fijo \(G\) cada periodo (100, 120, 140...).</li>
+      <li><strong>Gradiente escalonado (geométrico):</strong> crece un <em>porcentaje</em> fijo \(E\) cada periodo (100, +10%, +10%...). \(E\) puede ser negativo si decrece.</li>
+    </ul>
+  </section>
+
+  <section id="b4">
+    <h2>B4 — Fuentes de financiamiento y bonos <span class="pill a">de dónde sale la plata</span></h2>
+
+    <h3>Las dos grandes vías</h3>
+    <div class="cards">
+      <div class="card b"><div class="num">VÍA PATRIMONIO</div><h4>Recursos propios</h4><p>Emisión de acciones (ordinarias / preferentes), retención de utilidades (autofinanciamiento), capital de riesgo.</p></div>
+      <div class="card b"><div class="num">VÍA DEUDA</div><h4>Recursos de terceros</h4><p>Deuda bancaria (crédito comercial / hipotecario), leasing, factoring, bonos.</p></div>
+    </div>
+    <div class="box tip">
+      <div class="bt">Apalancamiento financiero</div>
+      Es simplemente <strong>usar deuda para financiar una operación</strong>. Ventajas: abre la puerta a inversiones que no podrías solo, y puede <em>aumentar la TIR</em> de la operación. Costo: aumenta el riesgo (los pagos fijos van primero que los dueños).
+    </div>
+
+    <h3>Instrumentos de deuda</h3>
+    <ul>
+      <li><strong>Deuda bancaria:</strong> crédito <em>comercial</em> (0,5–5 años, activo fijo/capital de trabajo) o <em>hipotecario</em> (5–20 años, inmuebles).</li>
+      <li><strong>Leasing:</strong> arriendo con opción de compra; usas el activo sin ser dueño. Más caro que un crédito, pero <em>toda</em> la cuota es gasto tributario (en la deuda, solo el interés). Financiero (largo plazo, con opción de compra) u operativo (bienes/servicios).</li>
+      <li><strong>Factoring:</strong> cedes tus facturas por cobrar a una empresa que te las adelanta menos una comisión. Cubre necesidades de <em>liquidez</em>.</li>
+    </ul>
+
+    <h3>Bonos</h3>
+    <p>Títulos de deuda de oferta pública (&gt; 1 año). El emisor paga <strong>cupones</strong> periódicos (normalmente semestrales) al inversionista. Según cómo pagan:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tipo</th><th>Cómo paga</th><th>Cupón</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Bullet</strong></td><td>Solo intereses cada periodo; el capital (valor nominal) se paga entero al final.</td><td>\(\text{Cupón} = VN\cdot i\); último = cupón + \(VN\).</td></tr>
+          <tr><td><strong>Francés</strong></td><td>Cuotas iguales; cada una amortiza parte del capital (como un crédito).</td><td>\(\text{Cupón} = VN\cdot\dfrac{(1+i)^n i}{(1+i)^n-1}\)</td></tr>
+          <tr><td><strong>Cupón cero</strong></td><td>Un único pago al final: capital + todos los intereses acumulados.</td><td>\(VN(1+i)^n\)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Costo de capital (tasa de descuento)</h3>
+    <div class="box formula">
+      <div class="bt">Costo de capital ponderado</div>
+      $$K_o = K_b\cdot\frac{\text{Deuda}}{\text{Deuda}+\text{Patrim.}} + K_p\cdot\frac{\text{Patrim.}}{\text{Deuda}+\text{Patrim.}}$$
+      \(K_o\) = costo de capital (mezcla) · \(K_b\) = costo de la deuda · \(K_p\) = costo del patrimonio (p. ej. el ROE exigido). Según <strong>Modigliani &amp; Miller</strong>, se ajusta además por los impuestos (el interés de la deuda es gasto y "escudo fiscal").
+    </div>
+    <p>Este \(K_o\) suele ser la <strong>tasa de descuento / TMAR</strong> que alimenta el VAN y con la que se compara la TIR.</p>
+  </section>
+
+  <section id="b5">
+    <h2>B5 — Evaluación de proyectos <span class="pill a">el objetivo final</span></h2>
+    <p>La pregunta práctica: dado un proyecto con una inversión inicial y flujos futuros, <strong>¿conviene o no?</strong> Antes de los indicadores hay que construir el <strong>flujo de caja</strong> del proyecto.</p>
+
+    <h3>Tasa de descuento / TMAR</h3>
+    <p>Es el <strong>retorno mínimo que exige el inversionista</strong> (Tasa Mínima Atractiva de Retorno), por renunciar a su mejor alternativa (costo de oportunidad). Varía con el <em>riesgo</em> del proyecto: a más riesgo, más exiges.</p>
+
+    <h3>Flujo de caja y depreciación</h3>
+    <p>El flujo de caja distribuye ingresos y egresos en el tiempo. Cuidado con partidas que <em>no</em> son caja pero afectan impuestos:</p>
+    <div class="box formula">
+      <div class="bt">Depreciación como escudo fiscal</div>
+      Los activos pierden valor con el tiempo. La depreciación <em>no es salida de efectivo</em>, pero <strong>rebaja la base imponible</strong> (pagas menos impuesto). Terrenos e intangibles <u>no</u> se deprecian.
+      <div class="keys" style="margin-top:8px">
+        <div class="k"><span class="d">Lineal</span><span class="f">\(D_t = \dfrac{VA - VS}{n}\)</span></div>
+        <div class="k"><span class="d">Acelerada (si \(n\ge 3\))</span><span class="f">\(D_t = \dfrac{VA - VS}{T},\; T=\tfrac{n}{3}\)</span></div>
+        <div class="k"><span class="d">Saldos decrecientes</span><span class="f">\(D_t = d\cdot VA(1-d)^{t-1},\; d=\tfrac{1{,}5}{n}\)</span></div>
+        <div class="k"><span class="d">Doblemente decrecientes</span><span class="f">\(d=\tfrac{2}{n}\) (no usan \(VS\); se ajusta el último periodo)</span></div>
+      </div>
+    </div>
+    <p>\(VA\) = valor del activo · \(VS\) = valor de salvamento (residual) · \(V_t\) = valor libro en \(t\).</p>
+    <div class="box tip">
+      <div class="bt">Venta de un activo</div>
+      El costo del activo al venderlo es su <strong>valor libro</strong> \(V_t = VA - \sum D\). Si lo vendes por más que el valor libro, esa <em>diferencia positiva paga impuesto</em>; si es menor, sirve de beneficio tributario. \(\;\text{Diferencia} + \text{Valor Libro} = \text{Valor de Venta}\).
+    </div>
+
+    <h3>Los indicadores</h3>
+    <div class="box formula">
+      <div class="bt">VAN — Valor Actual Neto (el criterio rey)</div>
+      $$VAN = -I_0 + \sum_{t=1}^{n} \frac{FN_t}{(1+\text{TMAR})^{t}}$$
+      Trae todos los flujos netos a hoy y les resta la inversión. <strong>Regla:</strong> \(VAN>0\) → conviene (crea riqueza); \(VAN=0\) → indiferente; \(VAN<0\) → no conviene. Es un <em>indicador de riqueza</em>: mientras más alto, mejor.
+    </div>
+    <ul>
+      <li><strong>Ventajas del VAN:</strong> confiable, da un valor en pesos, considera el costo alternativo. <strong>Desventajas:</strong> no refleja la duración ni el tamaño de la inversión, y necesita conocer la tasa de descuento.</li>
+    </ul>
+    <div class="box formula">
+      <div class="bt">TIR — Tasa Interna de Retorno</div>
+      Es la tasa de descuento \(r\) que hace \(VAN = 0\): la "rentabilidad propia" del proyecto. <strong>Regla:</strong> si \(\text{TIR} > \text{TMAR}\) → conviene.
+    </div>
+    <div class="box warn">
+      <div class="bt">Trampas de la TIR</div>
+      1) Si los flujos <strong>cambian de signo varias veces</strong>, puede haber <em>múltiples TIR</em>. 2) <strong>No sirve para elegir entre proyectos mutuamente excluyentes</strong>: la TIR de uno puede ser mayor y aun así el VAN indicar lo contrario. Cuando VAN y TIR se contradicen, <strong>manda el VAN</strong>.
+    </div>
+    <div class="box formula">
+      <div class="bt">Otros indicadores</div>
+      <div class="keys">
+        <div class="k"><span class="d">VAUE / CAUE (valor anual equivalente)</span><span class="f">\(VAUE = VAN\cdot\dfrac{(1+i)^n i}{(1+i)^n-1}\)</span></div>
+        <div class="k"><span class="d">Payback (flujos constantes)</span><span class="f">\(\dfrac{\text{Inversión}}{\text{Flujo anual}}\)</span></div>
+        <div class="k"><span class="d">Payback (flujos variables)</span><span class="f">cuando el flujo actualizado acumulado \(=0\)</span></div>
+        <div class="k"><span class="d">Razón Beneficio/Costo</span><span class="f">\(\dfrac{\text{VP beneficios}}{\text{VP costos}}\); rentable si \(>1\)</span></div>
+      </div>
+    </div>
+    <ul>
+      <li><strong>VAUE / CAUE:</strong> convierte el VAN en una cuota anual equivalente. Ideal para <em>comparar alternativas de distinta duración</em> (una máquina que dura 3 años vs. otra de 5), porque se independiza de la vida del proyecto.</li>
+      <li><strong>Payback:</strong> en cuánto tiempo recuperas la inversión. Muy usado por simple, pero ignora lo que pasa después y (en su versión simple) el valor del dinero.</li>
+      <li>Para comparar proyectos con VAN deben usar la <strong>misma TMAR</strong>; si tienen distinta duración, se prolongan al <strong>Mínimo Común Múltiplo</strong> de sus vidas (o se usa VAUE).</li>
+    </ul>
+  </section>
+
+  <!-- ===== FORMULARIO B ===== -->
+  <section id="b-form">
+    <h3>Formulario — Matemática financiera</h3>
+    <div class="box formula">
+      <div class="bt">Ecuaciones clave · cuándo se usan</div>
+      <div class="keys">
+        <div class="k"><span class="d">Interés simple / compuesto</span><span class="f">\(F=P(1+in)\) &nbsp;/&nbsp; \(F=P(1+i)^n\)</span></div>
+        <div class="k"><span class="d">Valor presente de un monto</span><span class="f">\(P=\dfrac{F}{(1+i)^n}\)</span></div>
+        <div class="k"><span class="d">Despejar el nº de periodos</span><span class="f">\(n=\dfrac{\ln(F/P)}{\ln(1+i)}\)</span></div>
+        <div class="k"><span class="d">Nominal → efectiva</span><span class="f">\(i=\left(1+\tfrac{r}{m}\right)^{m}-1\) &nbsp;(continua: \(e^r-1\))</span></div>
+        <div class="k"><span class="d">Tasa real vs. inflada</span><span class="f">\((1+i_f)=(1+i)(1+f)\)</span></div>
+        <div class="k"><span class="d">Cuota / FRC (vencida)</span><span class="f">\(PMT=P\dfrac{(1+i)^n i}{(1+i)^n-1}\)</span></div>
+        <div class="k"><span class="d">Cuota anticipada</span><span class="f">\(PMT_{ant}=\dfrac{PMT_{venc}}{1+i}\)</span></div>
+        <div class="k"><span class="d">Cuota = interés + amortización</span><span class="f">interés sobre saldo insoluto</span></div>
+        <div class="k"><span class="d">VAN</span><span class="f">\(-I_0+\sum \dfrac{FN_t}{(1+i)^t}\); conviene si \(>0\)</span></div>
+        <div class="k"><span class="d">TIR</span><span class="f">tasa con \(VAN=0\); conviene si TIR \(>\) TMAR</span></div>
+        <div class="k"><span class="d">VAUE / CAUE</span><span class="f">\(VAN\cdot\)FRC\((i,n)\)</span></div>
+        <div class="k"><span class="d">Depreciación lineal</span><span class="f">\(D_t=\dfrac{VA-VS}{n}\)</span></div>
+        <div class="k"><span class="d">Costo de capital</span><span class="f">\(K_o=K_b w_b + K_p w_p\)</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EJERCICIOS B ===== -->
+  <section id="b-ej">
+    <h3>Ejercicios resueltos — Matemática financiera</h3>
+
+    <details class="ex">
+      <summary>Ej. 1 · Interés simple vs. compuesto <span class="tag">Valor del dinero</span></summary>
+      <div class="body">
+        <p>Obtienes un préstamo de $8.000.000 a una tasa del 5% anual. ¿Cuánto pagas en 2 años con interés simple? ¿Y con compuesto? Compara.</p>
+        <div class="step"><span class="n">1</span><strong>Simple:</strong> \(F=P(1+in)=8.000.000(1+0{,}05\cdot 2)=8.000.000\cdot 1{,}10 = \$8.800.000\). Interés = $800.000.</div>
+        <div class="step"><span class="n">2</span><strong>Compuesto:</strong> \(F=P(1+i)^n=8.000.000\cdot 1{,}05^{2}=8.000.000\cdot 1{,}1025=\$8.820.000\). Interés = $820.000.</div>
+        <div class="step"><span class="n">3</span><strong>Comparación:</strong> el compuesto cobra $20.000 más. Esa diferencia es el "interés sobre el interés" del primer año (\(0{,}05\times 400.000\)).</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 2 · Valor presente: ¿cuánto deposito hoy? <span class="tag">Valor del dinero</span></summary>
+      <div class="body">
+        <p>Para el pie de un crédito hipotecario quieres tener $10.000.000 en 5 años. La tasa de ahorro proyectada es 7,5%. ¿Cuánto depositas hoy?</p>
+        <div class="step"><span class="n">1</span><strong>Fórmula:</strong> es un valor presente: \(P=\dfrac{F}{(1+i)^n}=\dfrac{10.000.000}{(1{,}075)^{5}}\).</div>
+        <div class="step"><span class="n">2</span><strong>Factor:</strong> \((1{,}075)^5 = 1{,}4356\).</div>
+        <div class="step"><span class="n">3</span><strong>Resultado:</strong> \(P=\dfrac{10.000.000}{1{,}4356}\approx \$6.965.600\). Depositando eso hoy, en 5 años tienes los $10 millones.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 3 · Tasa efectiva vs. nominal <span class="tag">Tasas</span></summary>
+      <div class="body">
+        <p>(a) ¿Cuál es la tasa efectiva anual de un "12% anual capitalizable mensualmente"? (b) Compara $10.000 al 10% anual efectivo vs. 10% anual con capitalización semestral.</p>
+        <div class="step"><span class="n">a</span>\(i=\left(1+\tfrac{0{,}12}{12}\right)^{12}-1=(1{,}01)^{12}-1=12{,}68\%\). Más que el 12% aparente, por la capitalización mensual.</div>
+        <div class="step"><span class="n">b1</span><strong>10% efectivo:</strong> \(F=10.000\cdot 1{,}10=\$11.000\).</div>
+        <div class="step"><span class="n">b2</span><strong>10% cap. semestral</strong> (nominal): \(i_{sem}=5\%\), \(F=10.000\cdot(1{,}05)^{2}=10.000\cdot 1{,}1025=\$11.025\). Efectiva anual = 10,25%.</div>
+        <div class="box warn" style="margin-top:8px"><div class="bt">Moraleja</div>La misma tasa "10%" da distinto resultado según cómo capitalice. Si el enunciado no menciona capitalización, la tasa ya es efectiva.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 4 · Cuota de un crédito (vencida y anticipada) + tabla <span class="tag">Cuotas · CAE</span></summary>
+      <div class="body">
+        <p>Préstamo de $1.000.000 en 12 cuotas mensuales, tasa 24% anual capitalizable mensualmente. Calcula la cuota vencida y la anticipada, y la primera fila de la tabla de amortización.</p>
+        <div class="step"><span class="n">1</span><strong>Tasa por periodo:</strong> \(i=24\%/12 = 2\%\) mensual; \(n=12\).</div>
+        <div class="step"><span class="n">2</span><strong>FRC:</strong> \((1{,}02)^{12}=1{,}2682\Rightarrow FRC=\dfrac{1{,}2682\cdot 0{,}02}{1{,}2682-1}=\dfrac{0{,}025365}{0{,}268242}=0{,}09456\).</div>
+        <div class="step"><span class="n">3</span><strong>Cuota vencida:</strong> \(PMT=1.000.000\cdot 0{,}09456=\$94.560\).</div>
+        <div class="step"><span class="n">4</span><strong>Cuota anticipada:</strong> \(PMT_{ant}=\dfrac{94.560}{1{,}02}=\$92.706\) (menor: cada pago llega un periodo antes).</div>
+        <div class="step"><span class="n">5</span><strong>Primera fila de la tabla:</strong> interés del mes 1 \(= 2\%\times 1.000.000=20.000\); amortización \(= 94.560-20.000=74.560\); nuevo saldo \(=1.000.000-74.560=925.440\).</div>
+        <div class="tablewrap"><table><thead><tr><th>Mes</th><th class="num">Saldo inicial</th><th class="num">Interés</th><th class="num">Amortización</th><th class="num">Cuota</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td class="num">1.000.000</td><td class="num">20.000</td><td class="num">74.560</td><td class="num">94.560</td></tr>
+            <tr><td>2</td><td class="num">925.440</td><td class="num">18.509</td><td class="num">76.051</td><td class="num">94.560</td></tr>
+          </tbody></table></div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Sobre el CAE</div>Si además hubiera notario, impuestos y seguros, la cuota sube (o recibes menos líquido) y el <strong>CAE</strong> sería la tasa que iguala lo que <em>recibes</em> con el valor presente de lo que <em>pagas</em>, incluyendo esos costos.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 5 · VAN, TIR, VAUE, payback y B/C de un proyecto <span class="tag">Evaluación</span></summary>
+      <div class="body">
+        <p>Flujos netos: \(t_0=-4500\), \(t_1=300\), \(t_2=550\), \(t_3=2200\), \(t_4=3500\), \(t_5=5000\). Tasa de descuento 10%. Evalúa.</p>
+        <div class="step"><span class="n">1</span><strong>Valor presente de cada flujo</strong> (dividir por \(1{,}1^{t}\)): \(272{,}7 + 454{,}5 + 1.652{,}9 + 2.390{,}6 + 3.104{,}6 = 7.875{,}3\).</div>
+        <div class="step"><span class="n">2</span><strong>VAN:</strong> \(7.875{,}3 - 4.500 = +3.375\). Como \(VAN>0\) → <span class="yes">conviene</span>.</div>
+        <div class="step"><span class="n">3</span><strong>TIR:</strong> la tasa que hace \(VAN=0\). Probando, a \(\approx 27\%\) el VAN se anula → \(\text{TIR}\approx 27\%\). Como \(27\% > 10\%\), confirma que conviene.</div>
+        <div class="step"><span class="n">4</span><strong>VAUE:</strong> \(VAN\cdot FRC(10\%,5) = 3.375\cdot 0{,}2638 \approx 890\) por año.</div>
+        <div class="step"><span class="n">5</span><strong>Payback descontado:</strong> acumulando los VP, la inversión se recupera durante el año 4 (≈ 3,9 años).</div>
+        <div class="step"><span class="n">6</span><strong>Beneficio/Costo:</strong> \(\dfrac{7.875{,}3}{4.500}=1{,}75 > 1\) → rentable.</div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Todos coinciden</div>VAN&gt;0, TIR&gt;TMAR y B/C&gt;1 apuntan a lo mismo: el proyecto crea valor. Cuando dos indicadores se contradicen (proyectos excluyentes), decide el VAN.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 6 · Depreciación y venta de un activo <span class="tag">Flujo de caja</span></summary>
+      <div class="body">
+        <p>Compras una camioneta por $8.000.000, vida útil 7 años, valor de salvamento $1.000.000. (a) Depreciación lineal anual. (b) Si la vendes a los 5 años en $5.000.000, ¿valor libro, diferencia e impuesto (24%)?</p>
+        <div class="step"><span class="n">a</span><strong>Lineal:</strong> \(D_t=\dfrac{8.000.000-1.000.000}{7}=\$1.000.000\) por año.</div>
+        <div class="step"><span class="n">b1</span><strong>Valor libro a los 5 años:</strong> \(V_5 = 8.000.000 - 5\cdot 1.000.000 = \$3.000.000\).</div>
+        <div class="step"><span class="n">b2</span><strong>Diferencia:</strong> \(\text{Venta} - \text{Valor Libro} = 5.000.000 - 3.000.000 = \$2.000.000\) (utilidad).</div>
+        <div class="step"><span class="n">b3</span><strong>Impuesto:</strong> \(24\%\times 2.000.000 = \$480.000\). Solo la diferencia positiva paga impuesto; el valor libro entra al flujo después de impuesto.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 7 · Bonos: cupón bullet, francés y cupón cero <span class="tag">Financiamiento</span></summary>
+      <div class="body">
+        <p>Un bono de valor nominal $10.000.000, interés anual 16% capitalizable semestralmente. Tasa por periodo: \(i=16\%/2=8\%\) semestral.</p>
+        <div class="step"><span class="n">1</span><strong>Bullet:</strong> cada semestre paga solo interés: \(\text{Cupón}=VN\cdot i = 10.000.000\cdot 0{,}08 = \$800.000\). En el último periodo paga \(800.000 + 10.000.000 = \$10.800.000\).</div>
+        <div class="step"><span class="n">2</span><strong>Francés:</strong> cuotas iguales que amortizan capital, usando el FRC con \(i=8\%\) y \(n\) semestres: \(\text{Cupón}=VN\cdot\dfrac{(1{,}08)^n\,0{,}08}{(1{,}08)^n-1}\).</div>
+        <div class="step"><span class="n">3</span><strong>Cupón cero:</strong> un solo pago al final = capital + intereses acumulados = \(10.000.000\cdot(1{,}08)^{n}\).</div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Cómo distinguirlos</div>Bullet = "solo intereses y el capital al final". Francés = "cuota constante como un crédito". Cupón cero = "no paga nada hasta el final".</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- FORMULARIO MAESTRO -->
+  <!-- ============================================================= -->
+  <section id="master">
+    <h2>Formulario maestro (todo junto)</h2>
+    <p class="lead">Para repasar la noche antes. Si algo aquí no te suena, vuelve a la sección correspondiente.</p>
+
+    <h4>Contabilidad</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">Ecuación / cuadre</span><span class="f">\(A=P+K\); \(\sum\text{Débitos}=\sum\text{Créditos}\)</span></div>
+      <div class="k"><span class="d">Débito ↑ / Crédito ↑</span><span class="f">"ADE" (Activo, Dividendo, Egreso) / "PPR" (Pasivo, Patrim., Resultado)</span></div>
+      <div class="k"><span class="d">IVA</span><span class="f">\(19\%\); a pagar \(=\text{Débito}-\text{Crédito}\)</span></div>
+      <div class="k"><span class="d">Liquidez</span><span class="f">\(RC=\tfrac{AC}{PC}\); ácida \(=\tfrac{AC-\text{Exist.}}{PC}\)</span></div>
+      <div class="k"><span class="d">Endeudamiento</span><span class="f">\(\tfrac{\text{Deuda}}{\text{Activos}}\); \(\tfrac{\text{Deuda}}{\text{Patrim.}}\)</span></div>
+      <div class="k"><span class="d">Rentabilidad</span><span class="f">\(ROA=\tfrac{UN}{AT}\); \(ROE=\tfrac{UN}{K}\)</span></div>
+    </div></div>
+
+    <h4>Valor del dinero y tasas</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">VF / VP</span><span class="f">\(F=P(1+i)^n\); \(P=\tfrac{F}{(1+i)^n}\)</span></div>
+      <div class="k"><span class="d">Simple</span><span class="f">\(F=P(1+in)\)</span></div>
+      <div class="k"><span class="d">Nominal → efectiva</span><span class="f">\(i=(1+\tfrac{r}{m})^m-1\); continua \(e^r-1\)</span></div>
+      <div class="k"><span class="d">Real vs. inflada</span><span class="f">\((1+i_f)=(1+i)(1+f)\)</span></div>
+    </div></div>
+
+    <h4>Cuotas y créditos</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">Cuota (FRC)</span><span class="f">\(PMT=P\tfrac{(1+i)^n i}{(1+i)^n-1}\)</span></div>
+      <div class="k"><span class="d">Anticipada</span><span class="f">\(PMT_{ant}=\tfrac{PMT_{venc}}{1+i}\)</span></div>
+      <div class="k"><span class="d">Gracia</span><span class="f">principal \(\to P(1+i)^m\)</span></div>
+      <div class="k"><span class="d">Cuota</span><span class="f">\(=\) interés (sobre saldo) \(+\) amortización</span></div>
+    </div></div>
+
+    <h4>Evaluación de proyectos</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">VAN</span><span class="f">\(-I_0+\sum\tfrac{FN_t}{(1+i)^t}\); conviene si \(>0\)</span></div>
+      <div class="k"><span class="d">TIR</span><span class="f">\(VAN=0\); conviene si TIR \(>\) TMAR</span></div>
+      <div class="k"><span class="d">VAUE / CAUE</span><span class="f">\(VAN\cdot\)FRC\((i,n)\)</span></div>
+      <div class="k"><span class="d">Payback / B-C</span><span class="f">\(\tfrac{I_0}{\text{flujo}}\) · \(\tfrac{\text{VP benef.}}{\text{VP costos}}>1\)</span></div>
+      <div class="k"><span class="d">Depreciación lineal</span><span class="f">\(D_t=\tfrac{VA-VS}{n}\)</span></div>
+      <div class="k"><span class="d">Venta de activo</span><span class="f">Dif. \(=\) Venta \(-\) Valor Libro (paga imp. si \(>0\))</span></div>
+      <div class="k"><span class="d">Costo de capital</span><span class="f">\(K_o=K_b w_b + K_p w_p\)</span></div>
+    </div></div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- TIPS -->
+  <!-- ============================================================= -->
+  <section id="tips">
+    <h2>Estrategia de examen</h2>
+    <div class="box tip">
+      <div class="bt">Método (mitad financiera)</div>
+      <ol style="margin:6px 0 0">
+        <li><strong>Dibuja el diagrama de flujo</strong> (línea de tiempo, ingresos arriba, egresos abajo).</li>
+        <li><strong>Verifica que tasa y periodo coincidan.</strong> Convierte nominal→efectiva o cambia el periodo <em>antes</em> de reemplazar.</li>
+        <li><strong>Identifica qué te piden</strong> (¿VP? ¿cuota? ¿VAN? ¿TIR?) y elige el factor/indicador.</li>
+        <li><strong>Plantea, luego calcula</strong>, y al final <strong>interpreta la decisión</strong> (¿conviene o no?).</li>
+      </ol>
+    </div>
+    <div class="box tip">
+      <div class="bt">Método (mitad contable)</div>
+      <ol style="margin:6px 0 0">
+        <li>Para cada hecho: ¿qué cuentas se mueven y de qué <em>tipo</em> son? Aplica "ADE / PPR".</li>
+        <li>Registra con partida doble y <strong>verifica que cuadre</strong> antes de seguir.</li>
+        <li>En ratios: primero la fórmula, luego el número, y <strong>siempre una frase de interpretación</strong>.</li>
+      </ol>
+    </div>
+    <ul>
+      <li><strong>El error nº1 del ramo</strong> es mezclar tasa anual con periodos mensuales. Si dudas, conviértelo todo a la unidad de los periodos.</li>
+      <li><strong>Utilidad ≠ efectivo</strong> (contabilidad) y <strong>VAN manda sobre TIR</strong> (finanzas): son las dos "trampas conceptuales" que más caen.</li>
+      <li><strong>Reparte el tiempo</strong> por problema; cada inciso suma por separado, así que no te atasques en uno.</li>
+      <li><strong>Justifica.</strong> Un número sin planteamiento vale poco; el planteamiento correcto con un error aritmético vale casi todo.</li>
+    </ul>
+
+    <div class="box warn">
+      <div class="bt">Prioridad de estudio (si te queda poco tiempo)</div>
+      <strong>Contabilidad:</strong> 1) ecuación + partida doble (asientos) · 2) IVA · 3) armar balance y estado de resultados · 4) ratios. &nbsp;
+      <strong>Financiera:</strong> 1) VP/VF y tasa efectiva/nominal · 2) cuota de un crédito + tabla de amortización · 3) VAN y TIR · 4) depreciación y flujo de caja.
+    </div>
+
+    <hr>
+    <p style="color:var(--muted);font-size:13.5px">Guía generada a partir de las presentaciones del ramo IMAFI (Introducción a las finanzas; Contabilidad I y II; Análisis financiero vertical y ratios; Valor del dinero en el tiempo; Pagos periódicos; Estudio económico y financiero) y los libros guía (Warren, <em>Contabilidad Financiera</em>; Blank &amp; Tarquin, <em>Ingeniería Económica</em>). Úsala junto a las presentaciones originales y las guías del ramo.</p>
+  </section>
+
+  </main>
+</div>
+
+<button class="btn backtop" id="backtop" title="Volver arriba">↑</button>
+
+<script>
+  // ---- Tema claro/oscuro ----
+  const root=document.documentElement, themeBtn=document.getElementById('themeBtn');
+  function setTheme(t){root.setAttribute('data-theme',t);try{localStorage.setItem('imafitheme',t)}catch(e){}}
+  (function(){try{const s=localStorage.getItem('imafitheme');if(s)root.setAttribute('data-theme',s)}catch(e){}})();
+  themeBtn.addEventListener('click',()=>{
+    const cur=root.getAttribute('data-theme');
+    const isDark=cur? cur==='dark' : matchMedia('(prefers-color-scheme:dark)').matches;
+    setTheme(isDark?'light':'dark');
+  });
+
+  // ---- Imprimir ----
+  document.getElementById('printBtn').addEventListener('click',()=>window.print());
+
+  // ---- Menú móvil ----
+  const sb=document.getElementById('sidebar'), sc=document.getElementById('scrim'),
+        mt=document.getElementById('menuToggle');
+  function closeMenu(){sb.classList.remove('open');sc.classList.remove('on')}
+  mt.addEventListener('click',()=>{sb.classList.toggle('open');sc.classList.toggle('on')});
+  sc.addEventListener('click',closeMenu);
+  document.querySelectorAll('#nav a').forEach(a=>a.addEventListener('click',closeMenu));
+
+  // ---- Scrollspy: resalta la sección activa ----
+  const links=[...document.querySelectorAll('#nav a')];
+  const map=new Map(links.map(a=>[a.getAttribute('href').slice(1),a]));
+  const obs=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        links.forEach(l=>l.classList.remove('active'));
+        const a=map.get(e.target.id); if(a)a.classList.add('active');
+      }
+    });
+  },{rootMargin:'-20% 0px -70% 0px',threshold:0});
+  document.querySelectorAll('section[id]').forEach(s=>obs.observe(s));
+
+  // ---- Botón volver arriba ----
+  const bt=document.getElementById('backtop');
+  addEventListener('scroll',()=>{bt.classList.toggle('on',scrollY>600)});
+  bt.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
+</script>
+</body>
+</html>

@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Resumen C3 FIS140</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], tags: 'none' },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+<style>
+  /* Diseño: índice lateral fijo + una columna de lectura de unos 70 caracteres.
+     Una sola tinta de acento (azul índigo, cercano a la línea H-gamma de 434 nm) y neutros.
+     El único color fuerte es la tira con las cuatro líneas de Balmer del hidrógeno. */
+  :root{
+    --bg:#f6f7f9; --surface:#ffffff; --ink:#1b2130; --muted:#586174; --line:#e1e4ea;
+    --accent:#3445b4; --accent-soft:#eceefa; --warn:#94550f; --warn-soft:#fbf3e7; --code:#eef0f4;
+    --strip:#0f1117; --h-delta:#8a4fd6; --h-gamma:#5b5cf0; --h-beta:#1fa8d4; --h-alpha:#e2463f;
+    --f-display:"IBM Plex Serif", Georgia, "Times New Roman", serif;
+    --f-body:"IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    --f-mono:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --sidew:276px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#12151c; --surface:#181c25; --ink:#e5e8ef; --muted:#9aa2b4; --line:#2a2f3b;
+      --accent:#a3afff; --accent-soft:#1f2541; --warn:#e6ad66; --warn-soft:#2a2116; --code:#222734;
+      --strip:#0b0d12; color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#12151c; --surface:#181c25; --ink:#e5e8ef; --muted:#9aa2b4; --line:#2a2f3b;
+    --accent:#a3afff; --accent-soft:#1f2541; --warn:#e6ad66; --warn-soft:#2a2116; --code:#222734;
+    --strip:#0b0d12; color-scheme:dark;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.66;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:var(--accent)}
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+  .layout{display:flex;align-items:flex-start}
+  .sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;overflow-y:auto;
+    background:var(--surface);border-right:1px solid var(--line);padding:22px 14px 60px}
+  .content{flex:1 1 auto;min-width:0;padding:40px clamp(16px,4.5vw,64px) 140px}
+  .col{max-width:760px;margin:0 auto}
+
+  .brand .kicker{font-family:var(--f-mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+  .brand h1{font-family:var(--f-display);font-weight:600;font-size:20px;line-height:1.25;margin:4px 0 2px;text-wrap:balance}
+  .brand p{margin:0;color:var(--muted);font-size:13px}
+  .spectrum{margin:14px 0 4px}
+  .spectrum .bar{position:relative;height:12px;border-radius:3px;background:var(--strip)}
+  .spectrum .bar i{position:absolute;top:0;bottom:0;width:2px}
+  .spectrum .lbl{position:relative;height:14px;font-family:var(--f-mono);font-size:9.5px;color:var(--muted)}
+  .spectrum .lbl span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+  .spectrum small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 6px}
+  .btn{font:500 12.5px/1 var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);
+    border-radius:6px;padding:7px 10px;cursor:pointer}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+
+  nav .grp{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:18px 8px 4px}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:6px;font-size:13.5px;line-height:1.35;opacity:.86}
+  nav a:hover{background:var(--accent-soft);opacity:1}
+  nav a.sub{padding-left:20px;font-size:13px;opacity:.74}
+  nav a.active{background:var(--accent-soft);color:var(--accent);font-weight:600;opacity:1}
+  nav .xlink{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+
+  h2{font-family:var(--f-display);font-weight:600;font-size:29px;line-height:1.2;margin:0 0 8px;letter-spacing:-.005em;text-wrap:balance;scroll-margin-top:24px}
+  h3{font-family:var(--f-display);font-weight:600;font-size:21px;line-height:1.3;margin:38px 0 6px;text-wrap:balance;scroll-margin-top:24px}
+  h4{font-size:16px;font-weight:600;margin:24px 0 4px;scroll-margin-top:24px}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  strong{font-weight:600}
+  .eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+  .lead{font-size:18px;color:var(--muted);margin:4px 0 14px}
+  .muted{color:var(--muted)}
+  section{border-top:1px solid var(--line);padding-top:38px;margin-top:52px}
+  section.first{border-top:0;margin-top:0;padding-top:0}
+  code,.mono{font-family:var(--f-mono);font-size:.88em}
+  code{background:var(--code);border-radius:4px;padding:1px 5px}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* Lista de fórmulas: la fórmula a la izquierda y cuándo se usa a la derecha */
+  .fl{margin:14px 0;border-top:1px solid var(--line)}
+  .fl .r{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;align-items:center;padding:10px 2px;border-bottom:1px solid var(--line)}
+  .fl .r .f{min-width:0;overflow-x:auto;overflow-y:hidden}
+  .fl .r .w{color:var(--muted);font-size:14.5px;min-width:0}
+
+  .note{border-left:3px solid var(--line);padding:2px 0 2px 14px;margin:16px 0}
+  .note .t,.warn .t{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+  .warn{border-left:3px solid var(--warn);background:var(--warn-soft);padding:10px 14px;margin:18px 0;border-radius:0 6px 6px 0}
+  .warn .t{color:var(--warn)}
+  .warn ul{margin:4px 0}
+
+  .tablewrap{overflow-x:auto;margin:16px 0}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+  th,td{padding:9px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+  th{font-family:var(--f-mono);font-weight:500;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:1.5px solid var(--ink)}
+  tr.hl td{background:var(--accent-soft)}
+  table.small{min-width:0;font-size:14px}
+
+  .tag{display:inline-block;font-family:var(--f-mono);font-size:11px;line-height:1.5;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 6px;vertical-align:2px;white-space:nowrap}
+  .tag.ac{color:var(--accent);border-color:var(--accent)}
+
+  .videos{list-style:none;padding:0;margin:8px 0}
+  .videos li{padding:6px 0;border-bottom:1px dashed var(--line);margin:0}
+  .videos li:last-child{border-bottom:0}
+  .videos a{text-decoration:none;font-weight:500}
+  .videos a:hover{text-decoration:underline}
+  .videos .meta{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);white-space:nowrap}
+  .videos .why{display:block;font-size:13.5px;color:var(--muted)}
+  .vbox{margin:24px 0 4px}
+  .vbox > .t{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+  .ans{color:var(--accent);font-weight:600}
+  mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;max-width:100%;padding:2px 0}
+
+  /* Ejercicios */
+  .ex{border-top:1px solid var(--line);padding:20px 0 6px;scroll-margin-top:20px}
+  .ex .hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+  .ex .id{font-family:var(--f-mono);font-weight:500;font-size:13px;color:var(--accent);min-width:2.6em}
+  .ex .hd h4{margin:0;font-size:17px;flex:1 1 240px;min-width:0}
+  .ex .enun{margin:8px 0 4px}
+  .ex .enun ol{margin:6px 0}
+  details.sol{margin:8px 0 6px}
+  details.sol > summary{display:inline-block;cursor:pointer;list-style:none;font:500 13px/1 var(--f-body);color:var(--accent);
+    border:1px solid var(--accent);border-radius:6px;padding:7px 11px;user-select:none}
+  details.sol > summary::-webkit-details-marker{display:none}
+  details.sol[open] > summary{background:var(--accent-soft)}
+  details.sol .body{margin-top:10px;padding:0 12px 0 14px;border-left:2px solid var(--accent-soft)}
+  .step{margin:12px 0;padding:2px 14px 2px 0}
+  .step > b:first-child{font-family:var(--f-mono);font-weight:500;font-size:12px;color:var(--muted);margin-right:6px}
+
+  .recall{padding-left:28px}
+  .recall li{margin:12px 0}
+  .recall li > p{margin:0 0 4px}
+  .plan td:first-child{white-space:nowrap;font-family:var(--f-mono);font-size:13px}
+
+  /* Etiquetas de prioridad */
+  .prio{margin:0 0 18px;font-size:14.5px;color:var(--muted)}
+  .prio strong{color:var(--ink)}
+  .lv{display:inline-block;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+    padding:1px 7px;border-radius:4px;border:1px solid var(--line);color:var(--ink);margin-right:8px;vertical-align:1px;white-space:nowrap}
+  .lv.p3{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lv.p1{color:var(--muted);border-style:dashed}
+  td .lv{margin-right:0}
+  nav a.sub{display:flex;align-items:baseline;gap:6px}
+  nav a .nt{flex:1 1 auto;min-width:0}
+  .pd{display:inline-flex;gap:3px;align-items:center;color:var(--muted);vertical-align:1px}
+  .pd i{display:inline-block;width:6px;height:6px;border-radius:50%;border:1px solid currentColor;box-sizing:border-box}
+  .pd i.on{background:currentColor}
+  .pd.p3{color:var(--accent)}
+  nav a .pd{flex:0 0 auto}
+
+  /* Móvil */
+  .menuToggle{display:none}
+  .scrim{display:none}
+  @media (max-width:920px){
+    .sidebar{position:fixed;z-index:40;left:0;top:0;transform:translateX(-102%);transition:transform .2s ease;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .sidebar.open{transform:none}
+    .menuToggle{display:inline-block;position:fixed;z-index:50;top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+    .scrim.on{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:35}
+    .content{padding-top:62px}
+    .fl .r{grid-template-columns:1fr;gap:2px}
+    .step{overflow-x:auto}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sidebar{transition:none}}
+  @media print{
+    .sidebar,.menuToggle,.scrim,.toolbar{display:none!important}
+    .content{padding:0}
+    body{font-size:12.5px;background:#fff;color:#000}
+    details.sol > summary{display:none}
+    details.sol .body{border-left:0;padding-left:0}
+    .ex{break-inside:avoid}
+  }
+
+  /* Los encabezados van en mayúsculas, pero las fórmulas no: una lambda no puede volverse Λ */
+  th mjx-container{text-transform:none}
+
+  /* Figuras del C3: usan las variables del tema para funcionar en claro y oscuro */
+  .fig{margin:22px 0}
+  .fig svg{display:block;width:100%;height:auto;max-width:640px;margin:0 auto}
+  .fig svg[aria-label^="Movimiento"]{max-width:400px}
+  .fig figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+  .diag text{font-family:var(--f-mono);font-size:12px;fill:var(--ink)}
+  .diag text.mt{fill:var(--muted)}
+  .diag text.ac{fill:var(--accent);font-weight:500}
+  .diag .l{stroke:var(--ink);stroke-width:1.6;fill:none}
+  .diag .lm{stroke:var(--muted);stroke-width:1;fill:none}
+  .diag .lm2{stroke:var(--muted);stroke-width:1.4;stroke-dasharray:6 4;fill:none}
+  .diag .lg{stroke:var(--line);stroke-width:1;fill:none}
+  .diag .la{stroke:var(--accent);stroke-width:2;fill:none}
+  .diag .da{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:5 4;fill:none}
+  .diag .fa{fill:var(--accent)}
+  .diag .fs{fill:var(--accent-soft)}
+  .diag .fb{fill:var(--line)}
+
+  /* Página de ejercicios clave */
+  .ex .why{margin:6px 0 2px;font-size:14px;color:var(--muted)}
+  .ex .chk{display:inline-flex;align-items:center;gap:4px;font:500 12px/1 var(--f-body);color:var(--muted);cursor:pointer;margin-left:2px;white-space:nowrap}
+  .ex .chk input{margin:0;accent-color:var(--accent)}
+  .ex.done .hd h4{opacity:.55}
+  .ex.done .id::after{content:" ✓";color:var(--accent)}
+  .prog{font-family:var(--f-mono);font-size:13px;color:var(--muted);margin:6px 0}
+  @media print{.ex .chk,.prog{display:none!important}}
+</style>
+</head>
+<body>
+<button class="btn menuToggle" id="menuToggle" type="button">Índice</button>
+<div class="scrim" id="scrim"></div>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="kicker">FIS140 · Física General IV · USM</div>
+    <h1>Resumen del Certamen 3</h1>
+    <p>Átomos, moléculas, sólidos y núcleos. Miércoles 25 de noviembre, 16:05.</p>
+  </div>
+  <div class="spectrum" title="Líneas de Balmer del hidrógeno, las mismas de la lámpara de descarga de la Clase 13">
+    <div class="bar"><i style="left:9.4%;background:var(--h-delta)"></i><i style="left:16.9%;background:var(--h-gamma)"></i><i style="left:33.2%;background:var(--h-beta)"></i><i style="left:86.3%;background:var(--h-alpha)"></i></div>
+    <div class="lbl"><span style="left:7.5%">410</span><span style="left:17.5%">434</span><span style="left:33.2%">486</span><span style="left:86.3%">656 nm</span></div>
+    <small>Hidrógeno, serie de Balmer: $n\to 2$</small>
+  </div>
+  <div class="toolbar">
+    <button class="btn" id="themeBtn" type="button">Cambiar tema</button>
+    <button class="btn" id="printBtn" type="button">Imprimir</button>
+  </div>
+  <nav id="nav">
+    <div class="grp">Empezar</div>
+    <a href="#intro">Cómo usar esta guía</a>
+    <a href="#temario">Qué entra en el C3</a>
+    <a href="#prioridades">Qué leer y qué saltar</a>
+    <a href="#mapa">Certámenes anteriores y apuesta</a>
+    <a href="#arman">Cómo arman los certámenes</a>
+
+    <div class="grp">A · Átomos · Problema 1</div>
+    <a class="sub" href="#a-base"><span class="nt">Pozos y lo que arrastras del C2</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#a-caja"><span class="nt">Caja cúbica y degeneración</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a>
+    <a class="sub" href="#a-esfera"><span class="nt">Electrón en una esfera</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a>
+    <a class="sub" href="#a-h"><span class="nt">Átomo de hidrógeno</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#a-radial"><span class="nt">Probabilidad radial</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a>
+    <a class="sub" href="#a-mom"><span class="nt">Momento angular y espín</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a>
+    <a class="sub" href="#a-sel"><span class="nt">Reglas de selección</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#a-zeeman"><span class="nt">Efecto Zeeman</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a>
+    <a class="sub" href="#a-config"><span class="nt">Pauli y configuración</span><span class="pd p3" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#a-zef"><span class="nt">Apantallamiento y Z efectivo</span><span class="pd p3" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#a-rx"><span class="nt">Rayos X y Moseley</span><span class="pd p3" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#a-rx2"><span class="nt">Kβ, Kγ, Lα y el conteo</span><span class="pd p3" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+
+    <div class="grp">B · Moléculas y sólidos · Problema 2</div>
+    <a class="sub" href="#b-ionico"><span class="nt">Enlace iónico</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a>
+    <a class="sub" href="#b-rotvib"><span class="nt">Rotación y vibración</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#b-bandas"><span class="nt">Bandas de energía</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#b-fd"><span class="nt">Fermi-Dirac</span><span class="pd p3" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#b-metal"><span class="nt">Metales y energía de Fermi</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a>
+    <a class="sub" href="#b-semi"><span class="nt">Semiconductor puro</span><span class="pd p3" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#b-dopaje"><span class="nt">Dopaje n y p</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#b-foton"><span class="nt">Fotones y brecha</span><span class="pd p3" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+
+    <div class="grp">C · Núcleo · Problema 3</div>
+    <a class="sub" href="#c-nuclido"><span class="nt">Núclidos y estabilidad</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#c-enlace"><span class="nt">Energía de enlace</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a>
+    <a class="sub" href="#c-masas"><span class="nt">Valor Q y masas</span><span class="pd p3" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#c-alfa"><span class="nt">Decaimiento alfa</span><span class="pd p3" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#c-beta"><span class="nt">Beta y captura</span><span class="pd p3" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#c-gamma"><span class="nt">Decaimiento gamma</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a>
+    <a class="sub" href="#c-ley"><span class="nt">Ley de decaimiento y actividad</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+    <a class="sub" href="#c-reac"><span class="nt">Reacciones, fisión y fusión</span><span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span></a>
+
+    <div class="grp">Cierre</div>
+    <a href="#formulario">Formulario: qué te dan y qué no</a>
+    <a href="#errores">Errores que cuestan puntos</a>
+    <a href="#videos">Todos los videos</a>
+    <div class="xlink"><a href="Ejercicios-C3-FIS140.html">Ir a los ejercicios resueltos →</a><br><a href="Clave-C3-FIS140.html">Los más probables, en orden →</a></div>
+  </nav>
+</aside>
+
+<main class="content">
+<div class="col">
+
+<section id="intro" class="first">
+  <p class="eyebrow">Empezar aquí</p>
+  <p class="prio"><strong>Pasar por encima.</strong> Explica cómo usar la guía y qué falta todavía.</p>
+  <h2>Resumen para el Certamen 3</h2>
+  <p class="lead">La materia del C3 explicada desde cero y ordenada por el problema del certamen al que sirve: A átomos, B moléculas y sólidos, C núcleo. Cada tema dice qué tan probable es, trae un ejemplo mínimo y te manda a los ejercicios que lo practican.</p>
+
+  <h3>Cómo estudiar con esto</h3>
+  <p>Son las mismas cuatro técnicas de la guía del C2, porque son las que mejor salen paradas en la evidencia:</p>
+  <ol>
+    <li><strong>Recuperar en vez de releer.</strong> En el archivo de ejercicios el enunciado está a la vista y la solución plegada: primero en papel, después abres.</li>
+    <li><strong>Un ejemplo resuelto antes de resolver solo.</strong> Cuando el tema es nuevo, lee el ejemplo mínimo de esta guía y explícate por qué se hace cada paso. Cuando ya te sale, deja los ejemplos.</li>
+    <li><strong>Mezclar tipos de problema.</strong> Se siente más difícil y por eso funciona. Los simulacros y las sesiones de repaso del plan mezclan los tres bloques.</li>
+    <li><strong>Espaciar.</strong> El plan vuelve a cada bloque varios días después de verlo por primera vez.</li>
+  </ol>
+  <div class="note"><span class="t">Archivo compañero</span>Los ejercicios están en <a href="Ejercicios-C3-FIS140.html">Ejercicios-C3-FIS140.html</a>, en esta misma carpeta: el <strong>plan día a día hasta el 25</strong>, la Ayudantía 9 completa, los problemas de doce certámenes, ejercicios nuevos donde el material era poco, preguntas conceptuales y dos simulacros. Todo resuelto y con los números recalculados.</div>
+
+  <h3>Cómo es el certamen</h3>
+  <ul>
+    <li><strong>Miércoles 25 de noviembre, 16:05</strong> (inclusión 14:40). La fecha viene de la Clase 1; confirma la sala cuando la publiquen.</li>
+    <li><strong>Tres problemas de 34, 33 y 33 puntos en 90 minutos.</strong> Así fue el C3 de 2026-1, y tu C1 de este semestre tuvo el mismo formato. El de 2024-2 fue la excepción: cuatro problemas en 110 minutos.</li>
+    <li><strong>Calculadora científica no programable</strong> y sin apuntes. En la primera hoja viene un formulario largo; <a href="#formulario">al final de esta guía</a> está qué trae y qué tienes que saber tú.</li>
+    <li><strong>Cada inciso se corrige de 0 a 3.</strong> Según las rúbricas de 2023-2 y 2024-2, un planteamiento correcto con un error numérico o sin unidades vale 2 de 3. Escribir la ecuación de partida y las unidades siempre suma.</li>
+    <li>Si un enunciado es ambiguo, anota qué supones y sigue. Eso lo dice literalmente la portada.</li>
+  </ul>
+
+  <div class="warn"><span class="t">Lo que todavía no sé</span>
+    <ul>
+      <li>En la carpeta <strong>no hay diapositivas desde la Clase 17</strong>, y de esta parte del curso solo están las Ayudantías 9 y 10. Lo que dice esta guía sobre qué entra sale de esas ayudantías, de los formularios de certámenes anteriores (sobre todo el de 2026-1) y del Sears.</li>
+      <li>La materia se cierra cerca del <strong>miércoles 18</strong>. Hasta entonces pueden seguir sumándose temas, y una probabilidad «baja» de hoy puede subir.</li>
+      <li>En el C2 las ayudantías de la última semana fueron la mejor señal y Solar terminó confirmando el formato en clases. Tu C2 lo confirmó: sus nueve incisos tenían un gemelo en las Ayudantías 5 a 8 (ver <a href="#arman">cómo arman los certámenes</a>). Cuando me pases las ayudantías que vengan, o lo que diga en clases, actualizo las prioridades, los ejercicios y el plan.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="temario">
+  <p class="eyebrow">Empezar aquí</p>
+  <p class="prio"><strong>Pasar por encima.</strong> Sirve para saber de dónde sale cada cosa.</p>
+  <h2>Qué entra en el C3</h2>
+  <p>Según lo que hay al 9 de noviembre, la materia es la cuántica aplicada: átomos, moléculas, sólidos y núcleos (capítulos 41 a 43 del Sears, más la parte en tres dimensiones del 40). Esta es la evidencia:</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Fuente</th><th>Qué aporta</th><th>Bloque</th></tr></thead>
+      <tbody>
+        <tr><td>Ayudantía 9 (semana 2 de noviembre)</td><td>Caja cúbica, átomo de hidrógeno de Schrödinger, electrón en una esfera, efecto Zeeman</td><td>A</td></tr>
+        <tr class="hl"><td>Ayudantía 10 (semana del 9 de noviembre)</td><td>Pozo finito con varios electrones y Pauli (nuevo), helio con carga efectiva (= C3 2022-1), $K\beta$ del molibdeno (= C3 2024-2 P3) y espectro del HCl (= C3 2024-2 P4)</td><td>A y B</td></tr>
+        <tr class="hl"><td>Formulario del C3 2026-1</td><td>La mejor lista de temas disponible: hidrógeno, magnetón de Bohr y Zeeman, reglas de selección atómicas, apantallamiento, Moseley, moléculas diatómicas con sus reglas, Fermi-Dirac, energía de Fermi de metales, valor $Q$, actividad, semivida, decaimientos $\alpha$, $\beta^\pm$ y captura</td><td>A, B y C</td></tr>
+        <tr><td>Cinco C3 de Casa Central (2023-2 a 2026-1)</td><td>Dieciséis problemas con pauta. Son el molde del tuyo</td><td>A, B y C</td></tr>
+        <tr><td>Dos C3 de San Joaquín (2025-1 y 2025-2)</td><td>Otro estilo, con más cuántica pura. Sirven porque la Ayudantía 9 va en esa línea</td><td>A y B</td></tr>
+        <tr><td>Pautas antiguas (2020-2 a 2022-2)</td><td>Problemas cortos de pozo, He, ionización, decaimientos y energía de Fermi</td><td>A, B y C</td></tr>
+        <tr><td>Sears, capítulos 41, 42 y 43</td><td>La teoría de todo lo que no está en las clases que tengo</td><td>A, B y C</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Dos temas que aparecen en certámenes viejos o en el programa y aquí quedan fuera: el <strong>cuerpo negro</strong> salió en los C3 de 2021 y 2022, pero este semestre ya se evaluó en el C2 (Clase 11); y <strong>partículas y astrofísica</strong> están en el programa del ramo, aunque ningún C3 de la carpeta las pregunta. Si Solar los menciona, se agregan.</p>
+</section>
+
+<section id="prioridades">
+  <p class="eyebrow">Empezar aquí</p>
+  <h2>Qué leer y qué saltar</h2>
+  <p class="lead">La probabilidad de cada parte, según los cinco C3 de Casa Central, las Ayudantías 9 y 10 y el formulario de 2026-1. La misma etiqueta aparece al comienzo de cada sección.</p>
+  <p><strong>Leer completo</strong> es leerla entera y hacer sus ejercicios. <strong>Pasar por encima</strong> es quedarte con la fórmula y la idea principal. <strong>No es necesario</strong> es dejarla para el final, solo si sobra tiempo. En el índice, <span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span> marca probabilidad alta o muy alta, <span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span> media y <span class="pd p1" title="Probabilidad baja"><i class="on"></i><i></i><i></i></span> baja.</p>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Parte</th><th>Probabilidad</th><th>Cómo leerla</th></tr></thead>
+      <tbody>
+        <tr><td colspan="3"><strong>A · Átomos · Problema 1</strong></td></tr>
+        <tr><td><a href="#a-base">Pozos y lo que arrastras del C2</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo y hacer los ejercicios.</td></tr>
+        <tr><td><a href="#a-caja">Caja cúbica y degeneración</a></td><td><span class="lv">Media</span></td><td>Leer completo.</td></tr>
+        <tr><td><a href="#a-esfera">Electrón en una esfera</a></td><td><span class="lv p1">Baja</span></td><td>Pasar por encima.</td></tr>
+        <tr><td><a href="#a-h">Átomo de hidrógeno</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo y hacer los ejercicios.</td></tr>
+        <tr><td><a href="#a-radial">Probabilidad radial</a></td><td><span class="lv">Media</span></td><td>Leer completo.</td></tr>
+        <tr><td><a href="#a-mom">Momento angular y espín</a></td><td><span class="lv">Media</span></td><td>Leer completo.</td></tr>
+        <tr><td><a href="#a-sel">Reglas de selección</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo y hacer los ejercicios.</td></tr>
+        <tr><td><a href="#a-zeeman">Efecto Zeeman</a></td><td><span class="lv">Media</span></td><td>Leer completo.</td></tr>
+        <tr><td><a href="#a-config">Pauli y configuración</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo y hacer los ejercicios.</td></tr>
+        <tr><td><a href="#a-zef">Apantallamiento y Z efectivo</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo y hacer los ejercicios.</td></tr>
+        <tr><td><a href="#a-rx">Rayos X y Moseley</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo y hacer los ejercicios.</td></tr>
+        <tr><td><a href="#a-rx2">Kβ, Kγ, Lα y el conteo</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo y hacer los ejercicios.</td></tr>
+        <tr><td colspan="3"><strong>B · Moléculas y sólidos · Problema 2</strong></td></tr>
+        <tr><td><a href="#b-ionico">Enlace iónico</a></td><td><span class="lv p1">Baja</span></td><td>Pasar por encima.</td></tr>
+        <tr><td><a href="#b-rotvib">Rotación y vibración</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo y hacer los ejercicios.</td></tr>
+        <tr><td><a href="#b-bandas">Bandas de energía</a></td><td><span class="lv p3">Alta</span></td><td>Pasar por encima.</td></tr>
+        <tr><td><a href="#b-fd">Fermi-Dirac</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo y hacer los ejercicios.</td></tr>
+        <tr><td><a href="#b-metal">Metales y energía de Fermi</a></td><td><span class="lv">Media</span></td><td>Leer completo.</td></tr>
+        <tr><td><a href="#b-semi">Semiconductor puro</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo y hacer los ejercicios.</td></tr>
+        <tr><td><a href="#b-dopaje">Dopaje n y p</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo.</td></tr>
+        <tr><td><a href="#b-foton">Fotones y brecha</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo y hacer los ejercicios.</td></tr>
+        <tr><td colspan="3"><strong>C · Núcleo · Problema 3</strong></td></tr>
+        <tr><td><a href="#c-nuclido">Núclidos y estabilidad</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo.</td></tr>
+        <tr><td><a href="#c-enlace">Energía de enlace</a></td><td><span class="lv">Media</span></td><td>Leer completo.</td></tr>
+        <tr><td><a href="#c-masas">Valor Q y masas</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo y memorizar la tabla.</td></tr>
+        <tr><td><a href="#c-alfa">Decaimiento alfa</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo y hacer los ejercicios.</td></tr>
+        <tr><td><a href="#c-beta">Beta y captura</a></td><td><span class="lv p3">Muy alta</span></td><td>Leer completo y hacer los ejercicios.</td></tr>
+        <tr><td><a href="#c-gamma">Decaimiento gamma</a></td><td><span class="lv p1">Baja</span></td><td>Pasar por encima.</td></tr>
+        <tr><td><a href="#c-ley">Ley de decaimiento y actividad</a></td><td><span class="lv p3">Alta</span></td><td>Leer completo y hacer los ejercicios.</td></tr>
+        <tr><td><a href="#c-reac">Reacciones, fisión y fusión</a></td><td><span class="lv p1">Baja</span></td><td>No es necesario.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted">Actualizadas el 10 de noviembre con la Ayudantía 10: subieron los pozos con electrones y las moléculas. Pueden cambiar con las ayudantías que vengan.</p>
+</section>
+
+<section id="mapa">
+  <p class="eyebrow">Empezar aquí</p>
+  <p class="prio"><strong>Leer completo.</strong> Es la razón de que el resto de la guía esté ordenada así.</p>
+  <h2>Certámenes anteriores y apuesta</h2>
+  <p>Revisé los doce certámenes de la carpeta. Los de Casa Central son los que más se parecen al tuyo; el encabezado y el formulario de 2026-1 son los mismos de tu C1 de este semestre.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Certamen</th><th>Problema 1</th><th>Problema 2</th><th>Problema 3</th><th>Problema 4</th></tr></thead>
+      <tbody>
+        <tr class="hl"><td><strong>2026-1 CC</strong><br><span class="muted">el más parecido</span></td><td>Fluorescencia de rayos X de la plata: configuración, $K\gamma$ con apantallamiento, $Z_{ef}$ dado</td><td>Semiconductor a 300 K: $\lambda$ de la brecha, $P_c$ con $E_F$ al medio, dopaje desde $P_c$</td><td>Serie del torio: $\beta^-$ con antineutrino del 40 %, $\alpha$ con retroceso, masa a 10⁹ años</td><td>—</td></tr>
+        <tr><td>2025-2 CC</td><td>$\beta^+$ del C-11: $Q$ con masas atómicas, $K$ del positrón</td><td>Metal: $E_F$ y Fermi-Dirac; gap y fotón</td><td>XRF del cobre: Moseley al revés, configuración, $Z_{ef}$</td><td>—</td></tr>
+        <tr><td>2025-1 CC</td><td>Semiconductor a 420 K: gap, $E_F-E_v$, nueva $T$</td><td>$L\alpha$ del zinc: configuración, $(Z-9)^2$, $Z_{ef}$ experimental</td><td>Be-8: enlace, ecuación, $K_\alpha$</td><td>—</td></tr>
+        <tr><td>2024-2 CC<br><span class="muted">110 min</span></td><td>Be-8: ecuación, $Q$, $K_\alpha$</td><td>Semiconductor puro: gap desde $P$, $T=600$ K, fotón</td><td>$K\beta$ del molibdeno</td><td>HCl: rotación-vibración y línea ausente</td></tr>
+        <tr><td>2023-2 CC</td><td>Na y Cl: configuración, $Z_{ef}$, energía del NaCl</td><td>Semiconductor: $f(E_c)+f(E_v)=1$</td><td>$\beta^-$ del Tc-98 con masas nucleares</td><td>—</td></tr>
+        <tr><td>2025-1 SJ</td><td>$\psi=Ae^{-r/a}$: normalizar y radio más probable</td><td>Estado 3d: $L$, selección, Ar</td><td>Molécula diatómica</td><td>—</td></tr>
+        <tr><td>2025-2 SJ</td><td>Pozo finito: ecuación trascendental</td><td>Ion hidrogenoide, Bohr, Heisenberg</td><td>Li²⁺: estados y reglas de selección</td><td>—</td></tr>
+        <tr><td>2022-2</td><td>Pozo: máximos de $\psi_2$</td><td>He⁺ y espectro de absorción</td><td>Potasio: $Z_{ef}$</td><td>Tc-98 y captura del Tc-97</td></tr>
+        <tr><td>2022-1</td><td>Cuerpo negro con hidrógeno</td><td>Pozos finito e infinito</td><td>Helio: $Z_{ef}$ y He excitado</td><td>—</td></tr>
+        <tr><td>2021-2</td><td>Pozo de 1,42 Å</td><td>Th-232: $\alpha$ y $Q$</td><td>Cuerpo negro</td><td>Hidrógeno $\psi_{321\uparrow}$</td></tr>
+        <tr><td>2021-1</td><td colspan="4">Seis preguntas cortas: gap y $\lambda$, pozo con $N$ electrones, helio, energía de Fermi, radiación térmica, gas de fotones</td></tr>
+        <tr><td>2020-2</td><td colspan="4">Seis temas con datos que cambiaban por alumno: pozo con electrones y protones, transiciones de H, tipos de decaimiento, Wien, Stefan-Boltzmann, radiactividad</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Lo que se repite</h3>
+  <ul>
+    <li><strong>La Ayudantía 10 recicló tres problemas de certámenes:</strong> el helio de 2022-1, el $K\beta$ del molibdeno y el HCl de 2024-2. Es la misma señal del C1 y del C2, donde los problemas que las últimas ayudantías sacaron de certámenes anteriores fueron el molde del certamen.</li>
+    <li><strong>Semiconductores y Fermi-Dirac: 5 de 5 en Casa Central.</strong> Siempre con la probabilidad de ocupación en el fondo de la banda de conducción. Lo que más se repite es despejar un número desde $f(E_c)$.</li>
+    <li><strong>Núcleo: 5 de 5.</strong> Un valor $Q$ con masas, y casi siempre un reparto de energía. El Be-8 salió dos veces seguidas.</li>
+    <li><strong>Rayos X y apantallamiento: 5 de 5,</strong> contando el de 2023-2, que pedía la configuración y el $Z$ efectivo sin la parte de rayos X. Los últimos cuatro fueron $K\beta$, $L\alpha$, Moseley al revés y $K\gamma$: cada vez una transición distinta, pero la misma idea.</li>
+    <li><strong>Configuración electrónica: 5 de 5,</strong> siempre como primer inciso de ese problema. Son tres puntos que no se pueden perder.</li>
+    <li><strong>Moléculas: 1 de 5</strong> (2024-2, el certamen de cuatro problemas), pero están en el formulario de 2026-1 y la Ayudantía 10 repitió el HCl: subieron a probabilidad alta. <strong>Enlace iónico: 1 de 5.</strong></li>
+    <li><strong>Hidrógeno de Schrödinger y caja 3D: 0 de 5 en Casa Central.</strong> Y sin embargo son la Ayudantía 9 completa. La Ayudantía 10 volvió a lo de siempre, así que la 9 parece haber sido materia de base más que un cambio de foco. Igual quedan en prioridad media a alta en vez de saltarlos.</li>
+  </ul>
+
+  <h3>La apuesta para el miércoles 25</h3>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Problema</th><th>Lo más probable</th><th>Por qué</th></tr></thead>
+      <tbody>
+        <tr><td>1 · Átomos</td><td>Configuración, luego una transición de rayos X con $Z$ efectivo, y despejar un $Z_{ef}$ desde un dato experimental. Alternativa: un problema de hidrógeno con números cuánticos, selección y Zeeman</td><td>4 de los últimos 4 C3 de Casa Central, y la Ayudantía 10 repitió el $K\beta$ del molibdeno y el helio. La Ayudantía 9 queda como alternativa</td></tr>
+        <tr><td>2 · Sólidos</td><td>Semiconductor: gap desde $\lambda$, ocupación con Fermi-Dirac, posición de $E_F$ y tipo de dopaje. Alternativa fuerte: el espectro del HCl. Otra: energía de Fermi de un metal</td><td>5 de 5; el HCl lo repitió la Ayudantía 10</td></tr>
+        <tr><td>3 · Núcleo</td><td>Dos decaimientos encadenados: uno $\alpha$ con retroceso y uno $\beta$ con la energía repartida, más la ley exponencial</td><td>5 de 5; es exactamente el P3 de 2026-1</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>El orden de los tres cambia de un año a otro: en 2025-1 el semiconductor fue primero y en 2025-2 el núcleo. Lo que se mantiene es que los tres están. La Ayudantía 10 dejó fuera núcleo y semiconductores, pero los dos tienen 5 de 5 en certámenes: no bajan. Si la Ayudantía 11 trae problemas de esos bloques, conviene mirar cuáles repite. Por qué la apuesta mezcla el esqueleto de 2026-1 con los pasos de las ayudantías está en la sección siguiente.</p>
+</section>
+
+<section id="arman">
+  <p class="eyebrow">Empezar aquí · actualizado el 10 de noviembre</p>
+  <p class="prio"><strong>Leer completo.</strong> Sale de tus propios C1 y C2 de este semestre, así que es la evidencia más directa sobre cómo va a ser el C3.</p>
+  <h2>Cómo arman los certámenes</h2>
+  <p class="lead">Comparé tu C2 inciso por inciso con las Ayudantías 5 a 8 y con el C2 de 2026-1, e hice lo mismo con tu C1 y las Ayudantías 2 a 4. Las dos veces el certamen se armó igual.</p>
+
+  <h3>El C2, inciso por inciso</h3>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Inciso</th><th>Qué pedía</th><th>De dónde venía</th><th>En tu guía del C2</th></tr></thead>
+      <tbody>
+        <tr><td>P1 a)</td><td>Tiempo propio de un protón que cruza un tubo de 7 km a $0{,}90c$</td><td>Ay.5 P1 (muón) y P2 (Sirio)</td><td><a href="../c2/Ejercicios-C2-FIS140.html#A1">A1</a>, <a href="../c2/Ejercicios-C2-FIS140.html#A2">A2</a></td></tr>
+        <tr><td>P1 b)</td><td>Velocidad relativa de dos protones a $\pm0{,}90c$</td><td>Ay.5 P3 (galaxias a $\pm0{,}7c$) y Ay.8 P1</td><td><a href="../c2/Ejercicios-C2-FIS140.html#A3">A3</a></td></tr>
+        <tr><td>P1 c)</td><td>Compton a 90°: $\lambda'$ y energía del electrón</td><td>Ay.5 P5, también a 90°, y Ay.8 P2</td><td><a href="../c2/Ejercicios-C2-FIS140.html#B15">B15</a></td></tr>
+        <tr><td>P2 a)</td><td>Filamento como cuerpo negro: $T$ desde $P=\sigma T^4A$, después Wien</td><td>Ay.6 P4 (el Sol y la Tierra)</td><td><a href="../c2/Ejercicios-C2-FIS140.html#B5">B5</a>, <a href="../c2/Ejercicios-C2-FIS140.html#B1">B1</a></td></tr>
+        <tr><td>P2 b)</td><td>Fotoeléctrico: $K_{\max}$ y si el electrón es relativista</td><td>Ay.6 P3 g) y Ay.5 P4 c) (comparar con $mc^2$)</td><td><a href="../c2/Ejercicios-C2-FIS140.html#B8">B8</a>, <a href="../c2/Ejercicios-C2-FIS140.html#A10">A10</a></td></tr>
+        <tr><td>P2 c)</td><td>Fotocorriente con cátodo de 1 cm² y eficiencia del 50 %</td><td>Ay.6 P3 a) a c), con el mismo cátodo de 1 cm², y la pizarra de Solar</td><td><a href="../c2/Ejercicios-C2-FIS140.html#B8">B8</a></td></tr>
+        <tr><td>P3 a)</td><td>Pozo: desde la energía liberada, el nivel inicial y la $\lambda$ del fotón</td><td>Ay.7 P3 d) y Ay.8 P3 b)</td><td><a href="../c2/Ejercicios-C2-FIS140.html#C2">C2</a>, <a href="../c2/Ejercicios-C2-FIS140.html#C3">C3</a>, <a href="../c2/Ejercicios-C2-FIS140.html#C5">C5</a></td></tr>
+        <tr><td>P3 b)</td><td>Probabilidad entre $L/3$ y $2L/3$, con la identidad de $\sin^2$ como ayuda</td><td>Ay.8 P3 c), con la misma ayuda</td><td><a href="../c2/Ejercicios-C2-FIS140.html#C3">C3</a></td></tr>
+        <tr><td>P3 c)</td><td>Escalón con $E>V_0$: $\psi$ por regiones y $|\psi|^2$</td><td>Ay.8 P4 d) y e), y el P3 c) del C2 de 2026-1</td><td><a href="../c2/Ejercicios-C2-FIS140.html#C8">C8</a>, <a href="../c2/Ejercicios-C2-FIS140.html#C1">C1</a>, <a href="../c2/Ejercicios-C2-FIS140.html#C11">C11</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Los nueve incisos tenían un gemelo en las ayudantías y en la guía del C2, y siete de esos gemelos estaban marcados como apuesta. La pauta no tiene errores: recalculé los tres problemas.</p>
+
+  <h3>Las reglas que se repiten</h3>
+  <ol>
+    <li><strong>Ningún problema es copia.</strong> Ni de una ayudantía ni de un certamen anterior. Pero cada inciso repite los pasos de un problema de ayudantía, a veces con el mismo detalle: el Compton a 90°, el cátodo de 1 cm², la ayuda de $\sin^2$.</li>
+    <li><strong>La última ayudantía recicla certámenes, y el certamen no los repite.</strong> La Ayudantía 8 traía textuales el Rocky y Grace de 2026-1 y el pozo de los nodos de 2025-1; el C2 usó sus pasos con otros números. En el C1 pasó lo mismo con la Ayudantía 3.</li>
+    <li><strong>El esqueleto viene del certamen del semestre anterior.</strong> El P3 de tu C2 es el P3 de 2026-1 con otro potencial (la pared finita pasó a ser un escalón), y el P1 repite la combinación de 2026-1: una medida propia (allá una longitud, acá un tiempo) más suma de velocidades.</li>
+    <li><strong>Un problema por bloque, y cada problema junta dos temas del bloque.</strong> El inciso c) suele traer el segundo tema o un «justifique»: si el electrón es relativista, si el fotón se emite o se absorbe, graficar $|\psi|^2$.</li>
+    <li><strong>No todo lo de las ayudantías entra.</strong> En el C2 quedaron fuera Bohr con He⁺, el láser, los rayos X de frenado y la difracción de electrones, que no estaban en la lista de temas que dio Solar. Tampoco salió la creación de pares.</li>
+    <li><strong>Los números están hechos para dar limpios</strong> ($n_i=6{,}01$; en el C3 de 2025-2, $Z=33{,}03$). Si te da algo raro, revisa antes de seguir.</li>
+  </ol>
+  <p>Tu C1 se armó con la misma receta. El P1 (bombilla de 75 W: intensidad, $\vec E$ y $\vec B$ con la polarización dada, presión de radiación) junta los pasos de la Ayudantía 4 P1 y de la Ayudantía 2. El P2 (Snell vidrio-agua con dispersión y ángulo crítico) sale de la Ayudantía 3 P2, y el P3 (dos fuentes: $\lambda$ desde los mínimos, cambiar $d$, agregar una fase) de la Ayudantía 3 P3. El P1 y el P3 conservan el esqueleto del C1 de 2026-1.</p>
+
+  <h3>Qué significa para el C3</h3>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Problema</th><th>Esqueleto probable (C3 2026-1)</th><th>Pasos ya practicados en ayudantías</th><th>Qué falta saber</th></tr></thead>
+      <tbody>
+        <tr><td>1 · Átomos</td><td>Configuración; una línea de rayos X con el conteo del apantallamiento; $Z_{ef}$ desde un dato medido o dado</td><td>Ay.10 P3 ($K\beta$ del Mo y $Z_{ef}$ experimental), Ay.10 P2 (ionización y $Z_{ef}$ del helio), Ay.10 P1 (llenar niveles con Pauli), Ay.9 (caja 3D, hidrógeno, Zeeman)</td><td>Nada esencial: es el bloque más cubierto</td></tr>
+        <tr><td>2 · Moléculas y sólidos</td><td>Semiconductor: $\lambda$ de la brecha, ocupación con $E_F$ al medio, dopaje desde la ocupación</td><td>Ay.10 P4 (HCl). Los semiconductores todavía no aparecen en ninguna ayudantía</td><td>La Ayudantía 11. Si trae semiconductores, el P2 sería eso con algún inciso de moléculas; si no, el espectro molecular podría ser el P2 entero</td></tr>
+        <tr><td>3 · Núcleo</td><td>Un $\beta$ con la energía repartida, un $\alpha$ con retroceso y la ley exponencial</td><td>Ninguna ayudantía todavía</td><td>Las Ayudantías 11 y 12</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>Cómo estudiar con esto</h4>
+  <ul>
+    <li><strong>Estudia pasos, no problemas.</strong> Saberte de memoria el $K\beta$ del molibdeno no sirve; saber contar el apantallamiento para cualquier línea, sí. Después de cada problema de ayudantía, haz su variante con otros números: la tabla está en <a href="Ejercicios-C3-FIS140.html#apuesta">la apuesta de los ejercicios</a>.</li>
+    <li><strong>Practica el inciso c).</strong> Es el que pide justificar, comparar o graficar: ¿el $Z_{ef}$ medido tiene sentido?, ¿es tipo n o p?, ¿por qué falta la línea central?, ¿el electrón es relativista?</li>
+    <li><strong>Cuando llegue la Ayudantía 11, mira sus tipos de problema</strong>, no sus números. Por la regla 1, lo que traiga de semiconductores y núcleo es lo más probable del P2 y el P3.</li>
+  </ul>
+</section>
+
+
+<section id="a-base">
+  <p class="eyebrow">Bloque A · Átomos · Problema 1</p>
+  <p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer los ejercicios.</strong> La Ayudantía 10 partió con un pozo finito lleno de electrones (P1), y el pozo infinito venía en los formularios de 2024-2 y 2025-2. El resto son herramientas que se usan en todos los problemas.</p>
+  <h2>Pozos y lo que arrastras del C2</h2>
+  <p>El C3 no vuelve a preguntar estas cosas como problema completo, pero las usa todo el tiempo. Si alguna no te suena, está explicada en el <a href="../c2/Resumen-C2-FIS140.html">resumen del C2</a>.</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$E_\gamma=hf=\frac{hc}{\lambda}=\frac{1240\ \text{eV·nm}}{\lambda}$$</div><div class="w">Todo salto de nivel: $E_\gamma=|\Delta E|$.</div></div>
+    <div class="r"><div class="f">$$E_n=-\frac{13{,}6\ \text{eV}\cdot Z^2}{n^2}$$</div><div class="w">Átomo de hidrógeno e iones con un solo electrón. <a href="../c2/Resumen-C2-FIS140.html#b-bohr">Repaso</a>.</div></div>
+    <div class="r"><div class="f">$$E_n=\frac{n^2h^2}{8mL^2}=n^2\,\frac{0{,}376\ \text{eV}}{L^2[\text{nm}]}$$</div><div class="w">Pozo infinito, para un electrón. <a href="../c2/Resumen-C2-FIS140.html#c-pozo">Repaso</a>.</div></div>
+    <div class="r"><div class="f">$$E^2=(pc)^2+(mc^2)^2,\quad K=E-mc^2$$</div><div class="w">Hace falta en el positrón de 2025-2.</div></div>
+    <div class="r"><div class="f">$$\Delta E\,\Delta t\ge\frac\hbar2$$</div><div class="w">El ancho de un nivel que vive poco (2021-2).</div></div>
+  </div>
+  <h4>Pozo con varios electrones (Ayudantía 10)</h4>
+  <p>Si te dan los niveles de un pozo y varios electrones que no interactúan, se llenan de abajo hacia arriba, <strong>dos por nivel</strong> por el principio de exclusión, y la energía total es la suma. Un electrón que llega libre (con energía positiva) solo queda atrapado si pierde energía: cae al nivel libre más bajo y suelta la diferencia, normalmente como un fotón, $E_\gamma=E_{\text{inicial}}-E_{\text{nivel}}$. Si no pierde energía, pasa por encima del pozo: adentro va más rápido ($K=E-V_0$), su longitud de onda se acorta y puede reflejarse en parte en los bordes, pero no se queda.</p>
+  <p>Ejemplo (Ayudantía 10, P1): niveles $-7{,}08$, $-4{,}43$ y $-0{,}71$ eV. Con tres electrones, dos van al primero y uno al segundo: $E_{\text{total}}=2(-7{,}08)-4{,}43=-18{,}59$ eV. Un cuarto electrón casi en reposo completa el segundo nivel y suelta 4,43 eV.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#A30">A30 (Ayudantía 10)</a>, y <a href="Ejercicios-C3-FIS140.html#A15">A15</a>, <a href="Ejercicios-C3-FIS140.html#A16">A16</a>, <a href="Ejercicios-C3-FIS140.html#A17">A17</a> y <a href="Ejercicios-C3-FIS140.html#A18">A18</a> si quieres repasar pozos.</p>
+</section>
+
+<section id="a-caja">
+  <p class="eyebrow">Bloque A · Átomos · Ayudantía 9</p>
+  <p class="prio"><span class="lv">Probabilidad media</span><strong>Leer completo.</strong> Es el P1 de la Ayudantía 9. Nunca salió en un C3 de Casa Central, pero es corto y es la base del gas de electrones del bloque B.</p>
+  <h2>Caja cúbica y degeneración</h2>
+  <p>Es el pozo infinito en tres dimensiones. Adentro de un cubo de lado $L$ el potencial es cero y afuera infinito, así que $\psi$ se anula en las seis caras. La ecuación de Schrödinger se separa en tres pozos independientes, uno por eje, y cada eje aporta su propio número cuántico:</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$\psi=\sqrt{\frac{8}{L^3}}\,\sin\frac{n_x\pi x}{L}\,\sin\frac{n_y\pi y}{L}\,\sin\frac{n_z\pi z}{L}$$</div><div class="w">Función de onda ya normalizada. Cada $n$ parte en 1: si alguno fuera 0, $\psi$ sería cero en todas partes.</div></div>
+    <div class="r"><div class="f">$$E=E_0\,(n_x^2+n_y^2+n_z^2),\quad E_0=\frac{\hbar^2\pi^2}{2mL^2}=\frac{0{,}376\ \text{eV}}{L^2[\text{nm}]}$$</div><div class="w">Energías. La constante $0{,}376$ eV·nm² es para el electrón y sale de $(\hbar c)^2\pi^2/2mc^2$.</div></div>
+  </div>
+  <p><strong>Degeneración</strong> significa que varios estados distintos tienen la misma energía. Pasa porque el cubo es simétrico: da lo mismo qué eje tenga el $n$ grande.</p>
+  <div class="tablewrap">
+    <table class="small num">
+      <thead><tr><th>$n_x^2+n_y^2+n_z^2$</th><th>Estados</th><th>Degeneración</th></tr></thead>
+      <tbody>
+        <tr><td>3</td><td>$(1,1,1)$</td><td>1</td></tr>
+        <tr><td>6</td><td>$(2,1,1)$, $(1,2,1)$, $(1,1,2)$</td><td>3</td></tr>
+        <tr><td>9</td><td>$(2,2,1)$ y permutaciones</td><td>3</td></tr>
+        <tr><td>11</td><td>$(3,1,1)$ y permutaciones</td><td>3</td></tr>
+        <tr><td>12</td><td>$(2,2,2)$</td><td>1</td></tr>
+        <tr><td>14</td><td>$(3,2,1)$ y permutaciones</td><td>6</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Con espín, cada estado admite dos electrones. Si los lados no son iguales, la simetría se rompe y la degeneración desaparece o cambia.</p>
+  <h4>Ejemplo mínimo (Ayudantía 9, P1)</h4>
+  <p>Con $L=5{,}0$ nm: $E_0=0{,}376/25=15{,}0$ meV. Los tres primeros niveles son $3E_0=45{,}1$ meV, $6E_0=90{,}2$ meV y $9E_0=135$ meV. El fotón de $(1,1,1)$ a $(2,1,1)$ tiene $3E_0=45{,}1$ meV, es decir $\lambda=1240/0{,}0451=27{,}5$ µm: infrarrojo lejano.</p>
+  <div class="warn"><span class="t">Trampas</span>
+    <ul>
+      <li>La degeneración cuenta <strong>estados</strong>, no valores distintos de los $n$. $(3,2,1)$ tiene seis.</li>
+      <li>$(2,1,1)$ tiene un plano nodal interior, en $x=L/2$. Las paredes también son nodos, pero no se cuentan como interiores.</li>
+      <li>La pauta de la ayudantía dice «0,900 eV» en un paso y «dos nodos en $x$»; ninguna de las dos calza. Está en la <a href="Ejercicios-C3-FIS140.html#erratas">lista de erratas</a>.</li>
+    </ul>
+  </div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#A1">A1 (Ayudantía 9)</a>, <a href="Ejercicios-C3-FIS140.html#A13">A13</a>, <a href="Ejercicios-C3-FIS140.html#A14">A14</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=hViliZVSMjA" target="_blank" rel="noopener">Partícula en una caja en 3 dimensiones</a> <span class="meta">MathArg · 10 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=9n1E3C5eVO0" target="_blank" rel="noopener">Partícula en caja cúbica: grado de degeneración</a> <span class="meta">Germán Fernández · 7 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="a-esfera">
+  <p class="eyebrow">Bloque A · Átomos · Ayudantía 9</p>
+  <p class="prio"><span class="lv p1">Probabilidad baja</span><strong>Pasar por encima.</strong> Es el P3 de la Ayudantía 9 y no aparece en ningún certamen. Quédate con el truco $u=rR$ y con la diferencia entre $|\psi|^2$ y $P(r)$.</p>
+  <h2>Electrón en una esfera</h2>
+  <p>Un electrón encerrado en una cavidad esférica de radio $R$, con $\ell=0$. El truco es el cambio de variable $u(r)=rR(r)$, que convierte la ecuación radial en la de un pozo unidimensional:</p>
+  $$\frac{d^2u}{dr^2}+k^2u=0,\qquad k^2=\frac{2m_eE}{\hbar^2}.$$
+  <p>La solución general es $u=A\sin kr+B\cos kr$. Como $R=u/r$ tiene que ser finita en el origen, $B=0$. La condición $u(R)=0$ da $kR=n\pi$, así que la energía es la misma de un pozo de ancho $R$:</p>
+  $$E_n=\frac{n^2\hbar^2\pi^2}{2m_eR^2}=n^2\,\frac{0{,}376\ \text{eV}}{R^2[\text{nm}]}.$$
+  <p>La densidad radial es $P(r)=A^2\sin^2(\pi r/R)$: vale cero en $r=0$ y en $r=R$, y su máximo está en $r=R/2$. Ese máximo está <strong>a mitad de camino, no en el centro</strong>. En el centro lo que es máximo es $|\psi|^2$; $P(r)$ se anula ahí porque la cáscara esférica de radio cero no tiene volumen.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#A3">A3 (Ayudantía 9)</a>.</p>
+</section>
+
+<section id="a-h">
+  <p class="eyebrow">Bloque A · Átomos · Ayudantía 9</p>
+  <p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer los ejercicios.</strong> Es el P2 de la Ayudantía 9, viene en todos los formularios y San Joaquín le dedica problemas enteros.</p>
+  <h2>Átomo de hidrógeno</h2>
+  <p>Con el potencial de Coulomb y en tres dimensiones, la ecuación de Schrödinger se resuelve en coordenadas esféricas. Da exactamente las mismas energías que Bohr, pero las soluciones ya no son órbitas: son nubes de probabilidad, y cada una queda identificada por tres números cuánticos.</p>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Número</th><th>Valores</th><th>Qué fija</th></tr></thead>
+      <tbody>
+        <tr><td>Principal $n$</td><td>$1,2,3,\dots$</td><td>La energía. Capas K, L, M, N, O para $n=1,\dots,5$</td></tr>
+        <tr><td>Orbital $\ell$</td><td>$0,1,\dots,n-1$</td><td>El momento angular y la forma. Letras s, p, d, f para $\ell=0,1,2,3$</td></tr>
+        <tr><td>Magnético $m_\ell$</td><td>$-\ell,\dots,0,\dots,+\ell$</td><td>La orientación: la componente $L_z$</td></tr>
+        <tr><td>Espín $m_s$</td><td>$\pm\tfrac12$</td><td>El momento angular intrínseco del electrón</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="fl">
+    <div class="r"><div class="f">$$E_n=-\frac{Z^2\,13{,}6\ \text{eV}}{n^2}$$</div><div class="w">Solo depende de $n$. Por eso los estados con el mismo $n$ y distinto $\ell$ o $m$ tienen la misma energía.</div></div>
+    <div class="r"><div class="f">$$g_n=\sum_{\ell=0}^{n-1}(2\ell+1)=n^2$$</div><div class="w">Degeneración sin contar espín. Con espín, $2n^2$ estados: de ahí que las capas tengan 2, 8, 18 y 32 lugares.</div></div>
+  </div>
+  <p>Una etiqueta como $3d$ quiere decir $n=3$, $\ell=2$. En $\psi_{321\uparrow}$ los índices van en el orden $n,\ell,m_\ell$ y la flecha es el espín: $n=3$, $\ell=2$, $m_\ell=1$.</p>
+  <p><strong>Series espectrales.</strong> Se nombran por el nivel de llegada: Lyman ($\to n=1$, ultravioleta), Balmer ($\to n=2$, visible) y Paschen ($\to n=3$, infrarrojo).</p>
+  <h4>Ejemplo mínimo (Ayudantía 9, P2)</h4>
+  <p>El nivel $n=2$ tiene $E_2=-3{,}4$ eV y cuatro estados: $\ell=0$ con $m=0$, y $\ell=1$ con $m=-1,0,+1$. La transición de $n=3$ a $n=1$ emite un fotón de $13{,}6\,(1-\tfrac19)=12{,}09$ eV, con $\lambda=102{,}6$ nm: serie de Lyman, ultravioleta.</p>
+  <div class="warn"><span class="t">Trampas</span>
+    <ul>
+      <li>Decir que $E$ depende de $\ell$ en el hidrógeno. No depende; en átomos con muchos electrones sí.</li>
+      <li>$\ell$ llega hasta $n-1$, no hasta $n$. El estado $(n,\ell)=(2,2)$ no existe.</li>
+      <li>Olvidar el signo: la energía del nivel es negativa y la del fotón es positiva.</li>
+    </ul>
+  </div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#A2">A2 (Ayudantía 9)</a>, <a href="Ejercicios-C3-FIS140.html#A8">A8</a>, <a href="Ejercicios-C3-FIS140.html#A9">A9</a>, <a href="Ejercicios-C3-FIS140.html#A10">A10</a>, <a href="Ejercicios-C3-FIS140.html#A11">A11</a>, <a href="Ejercicios-C3-FIS140.html#A12">A12</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=KB6_K9YG6tU" target="_blank" rel="noopener">Números cuánticos n, l, m, s</a> <span class="meta">Es Ciencia · 7 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=-QAjWF-BQC4" target="_blank" rel="noopener">FM35 Mecánica cuántica: átomo de hidrógeno 1</a> <span class="meta">Ramón Carrillo Bastos · 43 min</span><span class="why">Primera clase de la serie, a nivel universitario. Sigue con FM36 a FM40.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="a-radial">
+  <p class="eyebrow">Bloque A · Átomos · Ayudantía 9</p>
+  <p class="prio"><span class="lv">Probabilidad media</span><strong>Leer completo.</strong> Sale en la Ayudantía 9 (P2 y P3) y en el P1 de 2025-1 SJ. Es un cálculo corto que si te lo preguntan no se puede improvisar.</p>
+  <h2>Probabilidad radial</h2>
+  <p>La pregunta típica es «¿a qué distancia del núcleo es más probable encontrar al electrón?». Para contestarla hay que sumar la probabilidad de todos los puntos que están a distancia $r$, o sea la de una cáscara esférica de área $4\pi r^2$ y grosor $dr$:</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$P(r)=4\pi r^2\,|\psi(r)|^2$$</div><div class="w">Estados con simetría esférica ($\ell=0$).</div></div>
+    <div class="r"><div class="f">$$P(r)=r^2\,|R_{n\ell}(r)|^2$$</div><div class="w">Con la parte radial $R_{n\ell}$ normalizada aparte de la angular.</div></div>
+    <div class="r"><div class="f">$$\int_{r_1}^{r_2}P(r)\,dr$$</div><div class="w">Probabilidad entre dos radios. Es el área bajo la curva.</div></div>
+    <div class="r"><div class="f">$$\frac{dP}{dr}=0$$</div><div class="w">Radio más probable.</div></div>
+  </div>
+  <figure class="fig"><svg class="diag" viewBox="0 0 600 270" role="img" aria-label="Densidad de probabilidad radial de los estados 1s, 2s y 2p del hidrógeno"><line class="lm" x1="46" y1="230.0" x2="584" y2="230.0"/><line class="lm" x1="46" y1="230.0" x2="46" y2="14"/><line class="lm" x1="46.0" y1="230.0" x2="46.0" y2="234.0"/><text class="mt" text-anchor="middle" x="46.0" y="247.0">0</text><line class="lm" x1="113.2" y1="230.0" x2="113.2" y2="234.0"/><text class="mt" text-anchor="middle" x="113.2" y="247.0">2</text><line class="lm" x1="180.5" y1="230.0" x2="180.5" y2="234.0"/><text class="mt" text-anchor="middle" x="180.5" y="247.0">4</text><line class="lm" x1="247.8" y1="230.0" x2="247.8" y2="234.0"/><text class="mt" text-anchor="middle" x="247.8" y="247.0">6</text><line class="lm" x1="315.0" y1="230.0" x2="315.0" y2="234.0"/><text class="mt" text-anchor="middle" x="315.0" y="247.0">8</text><line class="lm" x1="382.2" y1="230.0" x2="382.2" y2="234.0"/><text class="mt" text-anchor="middle" x="382.2" y="247.0">10</text><line class="lm" x1="449.5" y1="230.0" x2="449.5" y2="234.0"/><text class="mt" text-anchor="middle" x="449.5" y="247.0">12</text><line class="lm" x1="516.8" y1="230.0" x2="516.8" y2="234.0"/><text class="mt" text-anchor="middle" x="516.8" y="247.0">14</text><line class="lm" x1="584.0" y1="230.0" x2="584.0" y2="234.0"/><text class="mt" text-anchor="middle" x="584.0" y="247.0">16</text><text class="mt" text-anchor="middle" x="315.0" y="264">r / a₀</text><text class="mt" x="52" y="20">P(r)</text><path class="l" d="M46.0 230.0 L47.7 226.7 L49.4 218.2 L51.0 206.0 L52.7 191.4 L54.4 175.4 L56.1 158.9 L57.8 142.4 L59.5 126.5 L61.1 111.4 L62.8 97.6 L64.5 85.0 L66.2 73.9 L67.9 64.2 L69.5 56.0 L71.2 49.3 L72.9 43.9 L74.6 39.9 L76.3 37.2 L77.9 35.6 L79.6 35.1 L81.3 35.6 L83.0 36.9 L84.7 39.1 L86.3 41.9 L88.0 45.3 L89.7 49.2 L91.4 53.6 L93.1 58.4 L94.8 63.4 L96.4 68.7 L98.1 74.1 L99.8 79.7 L101.5 85.4 L103.2 91.1 L104.8 96.8 L106.5 102.5 L108.2 108.2 L109.9 113.7 L111.6 119.2 L113.2 124.5 L114.9 129.7 L116.6 134.8 L118.3 139.7 L120.0 144.4 L121.7 149.0 L123.3 153.4 L125.0 157.7 L126.7 161.7 L128.4 165.6 L130.1 169.4 L131.7 172.9 L133.4 176.3 L135.1 179.5 L136.8 182.6 L138.5 185.5 L140.1 188.3 L141.8 190.9 L143.5 193.3 L145.2 195.7 L146.9 197.9 L148.6 200.0 L150.2 201.9 L151.9 203.8 L153.6 205.5 L155.3 207.1 L157.0 208.7 L158.6 210.1 L160.3 211.5 L162.0 212.7 L163.7 213.9 L165.4 215.0 L167.1 216.1 L168.7 217.0 L170.4 218.0 L172.1 218.8 L173.8 219.6 L175.5 220.3 L177.1 221.0 L178.8 221.7 L180.5 222.3 L182.2 222.8 L183.9 223.4 L185.5 223.8 L187.2 224.3 L188.9 224.7 L190.6 225.1 L192.3 225.5 L194.0 225.8 L195.6 226.1 L197.3 226.4 L199.0 226.7 L200.7 226.9 L202.4 227.2 L204.0 227.4 L205.7 227.6 L207.4 227.8 L209.1 227.9 L210.8 228.1 L212.4 228.2 L214.1 228.4 L215.8 228.5 L217.5 228.6 L219.2 228.7 L220.8 228.8 L222.5 228.9 L224.2 229.0 L225.9 229.1 L227.6 229.1 L229.3 229.2 L230.9 229.3 L232.6 229.3 L234.3 229.4 L236.0 229.4 L237.7 229.5 L239.3 229.5 L241.0 229.6 L242.7 229.6 L244.4 229.6 L246.1 229.7 L247.8 229.7 L249.4 229.7 L251.1 229.7 L252.8 229.8 L254.5 229.8 L256.2 229.8 L257.8 229.8 L259.5 229.8 L261.2 229.8 L262.9 229.9 L264.6 229.9 L266.2 229.9 L267.9 229.9 L269.6 229.9 L271.3 229.9 L273.0 229.9 L274.6 229.9 L276.3 229.9 L278.0 229.9 L279.7 229.9 L281.4 229.9 L283.1 229.9 L284.7 230.0 L286.4 230.0 L288.1 230.0 L289.8 230.0 L291.5 230.0 L293.1 230.0 L294.8 230.0 L296.5 230.0 L298.2 230.0 L299.9 230.0 L301.5 230.0 L303.2 230.0 L304.9 230.0 L306.6 230.0 L308.3 230.0 L310.0 230.0 L311.6 230.0 L313.3 230.0 L315.0 230.0 L316.7 230.0 L318.4 230.0 L320.0 230.0 L321.7 230.0 L323.4 230.0 L325.1 230.0 L326.8 230.0 L328.4 230.0 L330.1 230.0 L331.8 230.0 L333.5 230.0 L335.2 230.0 L336.9 230.0 L338.5 230.0 L340.2 230.0 L341.9 230.0 L343.6 230.0 L345.3 230.0 L346.9 230.0 L348.6 230.0 L350.3 230.0 L352.0 230.0 L353.7 230.0 L355.3 230.0 L357.0 230.0 L358.7 230.0 L360.4 230.0 L362.1 230.0 L363.8 230.0 L365.4 230.0 L367.1 230.0 L368.8 230.0 L370.5 230.0 L372.2 230.0 L373.8 230.0 L375.5 230.0 L377.2 230.0 L378.9 230.0 L380.6 230.0 L382.2 230.0 L383.9 230.0 L385.6 230.0 L387.3 230.0 L389.0 230.0 L390.7 230.0 L392.3 230.0 L394.0 230.0 L395.7 230.0 L397.4 230.0 L399.1 230.0 L400.7 230.0 L402.4 230.0 L404.1 230.0 L405.8 230.0 L407.5 230.0 L409.2 230.0 L410.8 230.0 L412.5 230.0 L414.2 230.0 L415.9 230.0 L417.6 230.0 L419.2 230.0 L420.9 230.0 L422.6 230.0 L424.3 230.0 L426.0 230.0 L427.6 230.0 L429.3 230.0 L431.0 230.0 L432.7 230.0 L434.4 230.0 L436.1 230.0 L437.7 230.0 L439.4 230.0 L441.1 230.0 L442.8 230.0 L444.5 230.0 L446.1 230.0 L447.8 230.0 L449.5 230.0 L451.2 230.0 L452.9 230.0 L454.5 230.0 L456.2 230.0 L457.9 230.0 L459.6 230.0 L461.3 230.0 L462.9 230.0 L464.6 230.0 L466.3 230.0 L468.0 230.0 L469.7 230.0 L471.4 230.0 L473.0 230.0 L474.7 230.0 L476.4 230.0 L478.1 230.0 L479.8 230.0 L481.4 230.0 L483.1 230.0 L484.8 230.0 L486.5 230.0 L488.2 230.0 L489.8 230.0 L491.5 230.0 L493.2 230.0 L494.9 230.0 L496.6 230.0 L498.3 230.0 L499.9 230.0 L501.6 230.0 L503.3 230.0 L505.0 230.0 L506.7 230.0 L508.3 230.0 L510.0 230.0 L511.7 230.0 L513.4 230.0 L515.1 230.0 L516.8 230.0 L518.4 230.0 L520.1 230.0 L521.8 230.0 L523.5 230.0 L525.2 230.0 L526.8 230.0 L528.5 230.0 L530.2 230.0 L531.9 230.0 L533.6 230.0 L535.2 230.0 L536.9 230.0 L538.6 230.0 L540.3 230.0 L542.0 230.0 L543.7 230.0 L545.3 230.0 L547.0 230.0 L548.7 230.0 L550.4 230.0 L552.1 230.0 L553.7 230.0 L555.4 230.0 L557.1 230.0 L558.8 230.0 L560.5 230.0 L562.1 230.0 L563.8 230.0 L565.5 230.0 L567.2 230.0 L568.9 230.0 L570.5 230.0 L572.2 230.0 L573.9 230.0 L575.6 230.0 L577.3 230.0 L579.0 230.0 L580.6 230.0 L582.3 230.0 L584.0 230.0"/><path class="lm2" d="M46.0 230.0 L47.7 229.6 L49.4 228.5 L51.0 227.0 L52.7 225.2 L54.4 223.3 L56.1 221.3 L57.8 219.4 L59.5 217.6 L61.1 216.0 L62.8 214.6 L64.5 213.5 L66.2 212.6 L67.9 211.9 L69.5 211.5 L71.2 211.3 L72.9 211.4 L74.6 211.6 L76.3 212.1 L77.9 212.7 L79.6 213.4 L81.3 214.3 L83.0 215.3 L84.7 216.4 L86.3 217.5 L88.0 218.7 L89.7 219.8 L91.4 221.0 L93.1 222.2 L94.8 223.3 L96.4 224.4 L98.1 225.4 L99.8 226.3 L101.5 227.1 L103.2 227.9 L104.8 228.5 L106.5 229.0 L108.2 229.5 L109.9 229.8 L111.6 229.9 L113.2 230.0 L114.9 229.9 L116.6 229.8 L118.3 229.5 L120.0 229.0 L121.7 228.5 L123.3 227.9 L125.0 227.1 L126.7 226.2 L128.4 225.3 L130.1 224.2 L131.7 223.1 L133.4 221.9 L135.1 220.6 L136.8 219.2 L138.5 217.8 L140.1 216.3 L141.8 214.7 L143.5 213.1 L145.2 211.5 L146.9 209.8 L148.6 208.1 L150.2 206.4 L151.9 204.7 L153.6 203.0 L155.3 201.2 L157.0 199.5 L158.6 197.7 L160.3 196.0 L162.0 194.3 L163.7 192.5 L165.4 190.9 L167.1 189.2 L168.7 187.6 L170.4 186.0 L172.1 184.4 L173.8 182.9 L175.5 181.4 L177.1 180.0 L178.8 178.6 L180.5 177.3 L182.2 176.0 L183.9 174.7 L185.5 173.5 L187.2 172.4 L188.9 171.3 L190.6 170.3 L192.3 169.3 L194.0 168.4 L195.6 167.5 L197.3 166.7 L199.0 166.0 L200.7 165.3 L202.4 164.7 L204.0 164.1 L205.7 163.6 L207.4 163.1 L209.1 162.7 L210.8 162.3 L212.4 162.0 L214.1 161.8 L215.8 161.6 L217.5 161.4 L219.2 161.3 L220.8 161.3 L222.5 161.3 L224.2 161.3 L225.9 161.4 L227.6 161.5 L229.3 161.6 L230.9 161.9 L232.6 162.1 L234.3 162.4 L236.0 162.7 L237.7 163.0 L239.3 163.4 L241.0 163.8 L242.7 164.3 L244.4 164.7 L246.1 165.2 L247.8 165.8 L249.4 166.3 L251.1 166.9 L252.8 167.5 L254.5 168.1 L256.2 168.7 L257.8 169.4 L259.5 170.0 L261.2 170.7 L262.9 171.4 L264.6 172.1 L266.2 172.8 L267.9 173.6 L269.6 174.3 L271.3 175.1 L273.0 175.8 L274.6 176.6 L276.3 177.4 L278.0 178.2 L279.7 178.9 L281.4 179.7 L283.1 180.5 L284.7 181.3 L286.4 182.1 L288.1 182.9 L289.8 183.7 L291.5 184.5 L293.1 185.3 L294.8 186.1 L296.5 186.9 L298.2 187.7 L299.9 188.4 L301.5 189.2 L303.2 190.0 L304.9 190.7 L306.6 191.5 L308.3 192.3 L310.0 193.0 L311.6 193.8 L313.3 194.5 L315.0 195.2 L316.7 195.9 L318.4 196.7 L320.0 197.4 L321.7 198.1 L323.4 198.7 L325.1 199.4 L326.8 200.1 L328.4 200.8 L330.1 201.4 L331.8 202.1 L333.5 202.7 L335.2 203.3 L336.9 203.9 L338.5 204.5 L340.2 205.1 L341.9 205.7 L343.6 206.3 L345.3 206.9 L346.9 207.4 L348.6 208.0 L350.3 208.5 L352.0 209.0 L353.7 209.5 L355.3 210.0 L357.0 210.5 L358.7 211.0 L360.4 211.5 L362.1 212.0 L363.8 212.4 L365.4 212.9 L367.1 213.3 L368.8 213.8 L370.5 214.2 L372.2 214.6 L373.8 215.0 L375.5 215.4 L377.2 215.8 L378.9 216.2 L380.6 216.6 L382.2 216.9 L383.9 217.3 L385.6 217.6 L387.3 218.0 L389.0 218.3 L390.7 218.6 L392.3 218.9 L394.0 219.2 L395.7 219.5 L397.4 219.8 L399.1 220.1 L400.7 220.4 L402.4 220.7 L404.1 220.9 L405.8 221.2 L407.5 221.5 L409.2 221.7 L410.8 221.9 L412.5 222.2 L414.2 222.4 L415.9 222.6 L417.6 222.9 L419.2 223.1 L420.9 223.3 L422.6 223.5 L424.3 223.7 L426.0 223.9 L427.6 224.0 L429.3 224.2 L431.0 224.4 L432.7 224.6 L434.4 224.7 L436.1 224.9 L437.7 225.0 L439.4 225.2 L441.1 225.3 L442.8 225.5 L444.5 225.6 L446.1 225.8 L447.8 225.9 L449.5 226.0 L451.2 226.1 L452.9 226.3 L454.5 226.4 L456.2 226.5 L457.9 226.6 L459.6 226.7 L461.3 226.8 L462.9 226.9 L464.6 227.0 L466.3 227.1 L468.0 227.2 L469.7 227.3 L471.4 227.4 L473.0 227.5 L474.7 227.5 L476.4 227.6 L478.1 227.7 L479.8 227.8 L481.4 227.8 L483.1 227.9 L484.8 228.0 L486.5 228.1 L488.2 228.1 L489.8 228.2 L491.5 228.2 L493.2 228.3 L494.9 228.4 L496.6 228.4 L498.3 228.5 L499.9 228.5 L501.6 228.6 L503.3 228.6 L505.0 228.7 L506.7 228.7 L508.3 228.7 L510.0 228.8 L511.7 228.8 L513.4 228.9 L515.1 228.9 L516.8 228.9 L518.4 229.0 L520.1 229.0 L521.8 229.0 L523.5 229.1 L525.2 229.1 L526.8 229.1 L528.5 229.2 L530.2 229.2 L531.9 229.2 L533.6 229.3 L535.2 229.3 L536.9 229.3 L538.6 229.3 L540.3 229.4 L542.0 229.4 L543.7 229.4 L545.3 229.4 L547.0 229.4 L548.7 229.5 L550.4 229.5 L552.1 229.5 L553.7 229.5 L555.4 229.5 L557.1 229.5 L558.8 229.6 L560.5 229.6 L562.1 229.6 L563.8 229.6 L565.5 229.6 L567.2 229.6 L568.9 229.6 L570.5 229.7 L572.2 229.7 L573.9 229.7 L575.6 229.7 L577.3 229.7 L579.0 229.7 L580.6 229.7 L582.3 229.7 L584.0 229.7"/><path class="la" d="M46.0 230.0 L47.7 230.0 L49.4 230.0 L51.0 230.0 L52.7 230.0 L54.4 230.0 L56.1 229.9 L57.8 229.8 L59.5 229.7 L61.1 229.6 L62.8 229.4 L64.5 229.2 L66.2 228.9 L67.9 228.6 L69.5 228.2 L71.2 227.8 L72.9 227.2 L74.6 226.7 L76.3 226.0 L77.9 225.3 L79.6 224.5 L81.3 223.6 L83.0 222.7 L84.7 221.7 L86.3 220.6 L88.0 219.5 L89.7 218.3 L91.4 217.1 L93.1 215.8 L94.8 214.4 L96.4 213.1 L98.1 211.6 L99.8 210.2 L101.5 208.6 L103.2 207.1 L104.8 205.6 L106.5 204.0 L108.2 202.4 L109.9 200.8 L111.6 199.1 L113.2 197.5 L114.9 195.9 L116.6 194.3 L118.3 192.7 L120.0 191.1 L121.7 189.5 L123.3 187.9 L125.0 186.4 L126.7 184.9 L128.4 183.4 L130.1 181.9 L131.7 180.5 L133.4 179.1 L135.1 177.7 L136.8 176.4 L138.5 175.2 L140.1 173.9 L141.8 172.8 L143.5 171.6 L145.2 170.5 L146.9 169.5 L148.6 168.5 L150.2 167.6 L151.9 166.7 L153.6 165.9 L155.3 165.1 L157.0 164.4 L158.6 163.7 L160.3 163.1 L162.0 162.5 L163.7 162.0 L165.4 161.6 L167.1 161.2 L168.7 160.8 L170.4 160.5 L172.1 160.2 L173.8 160.0 L175.5 159.9 L177.1 159.8 L178.8 159.7 L180.5 159.7 L182.2 159.7 L183.9 159.8 L185.5 159.9 L187.2 160.0 L188.9 160.2 L190.6 160.4 L192.3 160.7 L194.0 161.0 L195.6 161.3 L197.3 161.7 L199.0 162.1 L200.7 162.5 L202.4 162.9 L204.0 163.4 L205.7 163.9 L207.4 164.5 L209.1 165.0 L210.8 165.6 L212.4 166.2 L214.1 166.8 L215.8 167.5 L217.5 168.1 L219.2 168.8 L220.8 169.5 L222.5 170.2 L224.2 170.9 L225.9 171.7 L227.6 172.4 L229.3 173.1 L230.9 173.9 L232.6 174.7 L234.3 175.5 L236.0 176.2 L237.7 177.0 L239.3 177.8 L241.0 178.6 L242.7 179.4 L244.4 180.2 L246.1 181.0 L247.8 181.8 L249.4 182.6 L251.1 183.4 L252.8 184.2 L254.5 185.0 L256.2 185.8 L257.8 186.6 L259.5 187.4 L261.2 188.2 L262.9 189.0 L264.6 189.7 L266.2 190.5 L267.9 191.3 L269.6 192.0 L271.3 192.8 L273.0 193.5 L274.6 194.3 L276.3 195.0 L278.0 195.7 L279.7 196.5 L281.4 197.2 L283.1 197.9 L284.7 198.5 L286.4 199.2 L288.1 199.9 L289.8 200.6 L291.5 201.2 L293.1 201.9 L294.8 202.5 L296.5 203.1 L298.2 203.8 L299.9 204.4 L301.5 205.0 L303.2 205.5 L304.9 206.1 L306.6 206.7 L308.3 207.3 L310.0 207.8 L311.6 208.3 L313.3 208.9 L315.0 209.4 L316.7 209.9 L318.4 210.4 L320.0 210.9 L321.7 211.4 L323.4 211.8 L325.1 212.3 L326.8 212.8 L328.4 213.2 L330.1 213.6 L331.8 214.1 L333.5 214.5 L335.2 214.9 L336.9 215.3 L338.5 215.7 L340.2 216.1 L341.9 216.4 L343.6 216.8 L345.3 217.2 L346.9 217.5 L348.6 217.9 L350.3 218.2 L352.0 218.5 L353.7 218.8 L355.3 219.1 L357.0 219.4 L358.7 219.7 L360.4 220.0 L362.1 220.3 L363.8 220.6 L365.4 220.9 L367.1 221.1 L368.8 221.4 L370.5 221.6 L372.2 221.9 L373.8 222.1 L375.5 222.3 L377.2 222.6 L378.9 222.8 L380.6 223.0 L382.2 223.2 L383.9 223.4 L385.6 223.6 L387.3 223.8 L389.0 224.0 L390.7 224.1 L392.3 224.3 L394.0 224.5 L395.7 224.7 L397.4 224.8 L399.1 225.0 L400.7 225.1 L402.4 225.3 L404.1 225.4 L405.8 225.6 L407.5 225.7 L409.2 225.8 L410.8 226.0 L412.5 226.1 L414.2 226.2 L415.9 226.3 L417.6 226.4 L419.2 226.6 L420.9 226.7 L422.6 226.8 L424.3 226.9 L426.0 227.0 L427.6 227.1 L429.3 227.2 L431.0 227.3 L432.7 227.3 L434.4 227.4 L436.1 227.5 L437.7 227.6 L439.4 227.7 L441.1 227.7 L442.8 227.8 L444.5 227.9 L446.1 228.0 L447.8 228.0 L449.5 228.1 L451.2 228.2 L452.9 228.2 L454.5 228.3 L456.2 228.3 L457.9 228.4 L459.6 228.4 L461.3 228.5 L462.9 228.5 L464.6 228.6 L466.3 228.6 L468.0 228.7 L469.7 228.7 L471.4 228.8 L473.0 228.8 L474.7 228.8 L476.4 228.9 L478.1 228.9 L479.8 229.0 L481.4 229.0 L483.1 229.0 L484.8 229.1 L486.5 229.1 L488.2 229.1 L489.8 229.2 L491.5 229.2 L493.2 229.2 L494.9 229.2 L496.6 229.3 L498.3 229.3 L499.9 229.3 L501.6 229.3 L503.3 229.4 L505.0 229.4 L506.7 229.4 L508.3 229.4 L510.0 229.4 L511.7 229.5 L513.4 229.5 L515.1 229.5 L516.8 229.5 L518.4 229.5 L520.1 229.6 L521.8 229.6 L523.5 229.6 L525.2 229.6 L526.8 229.6 L528.5 229.6 L530.2 229.6 L531.9 229.7 L533.6 229.7 L535.2 229.7 L536.9 229.7 L538.6 229.7 L540.3 229.7 L542.0 229.7 L543.7 229.7 L545.3 229.7 L547.0 229.8 L548.7 229.8 L550.4 229.8 L552.1 229.8 L553.7 229.8 L555.4 229.8 L557.1 229.8 L558.8 229.8 L560.5 229.8 L562.1 229.8 L563.8 229.8 L565.5 229.8 L567.2 229.8 L568.9 229.8 L570.5 229.9 L572.2 229.9 L573.9 229.9 L575.6 229.9 L577.3 229.9 L579.0 229.9 L580.6 229.9 L582.3 229.9 L584.0 229.9"/><text x="89.6" y="39.2">1s · máximo en a₀</text><text class="ac" x="160.5" y="149.8">2p · máximo en 4a₀</text><text class="mt" x="304.9" y="172.4">2s · un nodo en r = 2a₀</text></svg><figcaption>Densidad radial $P(r)$ del hidrógeno: 1s con máximo en $a_0$; 2p con máximo en $4a_0$, sin nodos; 2s con un nodo en $2a_0$. Curvas calculadas con las $R_{n\ell}$ reales.</figcaption></figure>
+  <p>Resultados que conviene tener a mano, con $a_0=0{,}0529$ nm:</p>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Estado</th><th>Función</th><th>Nodos radiales ($n-\ell-1$)</th><th>Radio más probable</th></tr></thead>
+      <tbody>
+        <tr><td>1s</td><td>$\psi=\dfrac{1}{\sqrt{\pi a_0^3}}\,e^{-r/a_0}$</td><td>0</td><td>$a_0$</td></tr>
+        <tr><td>2s</td><td>$R_{20}=\dfrac{1}{2\sqrt2\,a_0^{3/2}}\Big(2-\dfrac{r}{a_0}\Big)e^{-r/2a_0}$</td><td>1, en $2a_0$</td><td>$\approx5{,}2\,a_0$</td></tr>
+        <tr><td>2p</td><td>$R_{21}=\dfrac{1}{\sqrt{24}\,a_0^{3/2}}\,\dfrac{r}{a_0}\,e^{-r/2a_0}$</td><td>0</td><td>$4a_0$</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Cuando $\ell=n-1$ (la forma «circular») no hay nodos y el radio más probable es $n^2a_0$: el mismo radio que daba Bohr.</p>
+  <h4>Ejemplo mínimo (Ayudantía 9, P2c)</h4>
+  <p>Con $R_{21}$: $P(r)\propto r^2\cdot r^2e^{-r/a_0}=r^4e^{-r/a_0}$. Derivando, $\dfrac{dP}{dr}\propto r^3e^{-r/a_0}\big(4-\dfrac{r}{a_0}\big)=0$, así que $r=4a_0=0{,}212$ nm. No es una órbita ni el promedio: es el punto donde la curva $P(r)$ tiene su máximo.</p>
+  <div class="note"><span class="t">Si te piden normalizar</span>El certamen de San Joaquín dio esta integral como ayuda: $\displaystyle\int_0^\infty r^2e^{-\rho r}dr=\frac{2}{\rho^3}$. Con $\psi=Ae^{-r/a}$ y $\rho=2/a$ sale $A=1/\sqrt{\pi a^3}$.</div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#A2">A2</a>, <a href="Ejercicios-C3-FIS140.html#A3">A3</a>, <a href="Ejercicios-C3-FIS140.html#A6">A6</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=YsysAyCOy64" target="_blank" rel="noopener">Densidad de probabilidad del átomo de hidrógeno</a> <span class="meta">Pedro Cadena · 8 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=Ox-NB3ER3CY" target="_blank" rel="noopener">Función de distribución de probabilidad radial del átomo de hidrógeno</a> <span class="meta">Faustinianos · 36 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="a-mom">
+  <p class="eyebrow">Bloque A · Átomos</p>
+  <p class="prio"><span class="lv">Probabilidad media</span><strong>Leer completo.</strong> San Joaquín lo pregunta directo (2025-1 P2 y 2021-2). En Casa Central no aparece hace varios años, pero son dos fórmulas.</p>
+  <h2>Momento angular y espín</h2>
+  <div class="fl">
+    <div class="r"><div class="f">$$L=\sqrt{\ell(\ell+1)}\,\hbar$$</div><div class="w">Magnitud. No es $\ell\hbar$. En $\ell=0$, $L=0$, cosa que Bohr no podía tener.</div></div>
+    <div class="r"><div class="f">$$L_z=m_\ell\,\hbar$$</div><div class="w">Componente sobre el eje $z$. Hay $2\ell+1$ valores posibles.</div></div>
+    <div class="r"><div class="f">$$\cos\theta=\frac{L_z}{L}=\frac{m_\ell}{\sqrt{\ell(\ell+1)}}$$</div><div class="w">Ángulo con $z$. Como $|L_z|\lt L$, el vector nunca apunta justo sobre el eje.</div></div>
+    <div class="r"><div class="f">$$S=\sqrt{\tfrac34}\,\hbar,\qquad S_z=\pm\tfrac12\hbar$$</div><div class="w">Espín del electrón. Es intrínseco: no hay nada girando. El experimento de Stern-Gerlach lo mostró al separar un haz en dos.</div></div>
+  </div>
+  <p>Ejemplo: en un estado $3d$ con $m_\ell=0$, $L=\sqrt6\,\hbar=2{,}45\hbar$, $L_z=0$ y el ángulo con el eje $z$ es $90°$.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#A7">A7</a>, <a href="Ejercicios-C3-FIS140.html#A10">A10</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=Hq4Q36YSm8o" target="_blank" rel="noopener">Todo lo que siempre quisiste saber sobre el espín</a> <span class="meta">Date un Voltio · 5 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="a-sel">
+  <p class="eyebrow">Bloque A · Átomos</p>
+  <p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer los ejercicios.</strong> Están en el formulario de 2026-1, en la Ayudantía 9 y en los dos certámenes de San Joaquín.</p>
+  <h2>Reglas de selección</h2>
+  <p>Cuando un átomo emite o absorbe un fotón, el fotón se lleva o trae momento angular. Eso limita qué transiciones son posibles:</p>
+  $$\Delta\ell=\pm1,\qquad\Delta m_\ell=0,\pm1.$$
+  <p>$n$ puede cambiar en cualquier cantidad. La regla de $\Delta\ell$ manda en las respuestas típicas: desde $3d$ no se puede caer directo a $1s$, porque $\Delta\ell$ sería $-2$. Tiene que pasar por $2p$.</p>
+  <h4>Cómo listar los estados finales</h4>
+  <ol>
+    <li>Los valores posibles de $\ell_f$ son $\ell_i\pm1$, descartando los que no existan ($\ell_f\lt0$ o $\ell_f\ge n_f$).</li>
+    <li>Los valores posibles de $m_f$ son $m_i-1$, $m_i$ y $m_i+1$.</li>
+    <li>Quédate solo con los que cumplen $|m_f|\le\ell_f$.</li>
+  </ol>
+  <p>Ejemplo: desde $(3,2,0)$ hacia $n=2$. Con $\ell_f=3$ no se puede, porque $\ell_f\le1$; queda $\ell_f=1$, y $m_f=-1,0,+1$. Son tres estados finales, todos con la misma energía de fotón si no hay campo magnético.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#A7">A7</a>, <a href="Ejercicios-C3-FIS140.html#A8">A8</a>, <a href="Ejercicios-C3-FIS140.html#A4">A4</a>.</p>
+</section>
+
+<section id="a-zeeman">
+  <p class="eyebrow">Bloque A · Átomos · Ayudantía 9</p>
+  <p class="prio"><span class="lv">Probabilidad media</span><strong>Leer completo.</strong> El formulario de 2026-1 trae el magnetón de Bohr y $\Delta E=m\mu_BB_z$, y la Ayudantía 9 le dedica el P4. En certámenes anteriores no salió.</p>
+  <h2>Efecto Zeeman</h2>
+  <p>Un campo magnético separa los niveles que antes tenían la misma energía, porque el electrón orbitando se comporta como un pequeño imán. La energía del nivel cambia según su $m_\ell$:</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$E=E_n+m_\ell\,\mu_B\,B$$</div><div class="w">Un nivel con número $\ell$ se abre en $2\ell+1$ niveles equiespaciados.</div></div>
+    <div class="r"><div class="f">$$\mu_B=\frac{e\hbar}{2m_e}=5{,}79\times10^{-5}\ \text{eV/T}$$</div><div class="w">El magnetón de Bohr.</div></div>
+    <div class="r"><div class="f">$$E_\gamma=E_{\text{sin campo}}+\Delta m_\ell\,\mu_B\,B$$</div><div class="w">Como $\Delta m_\ell$ solo toma $-1,0,+1$, una línea se divide en <strong>tres</strong>.</div></div>
+  </div>
+  <p>La línea central no se mueve y las otras dos quedan simétricas. Son siempre tres aunque haya muchas transiciones: de $2p$ a $3d$ hay nueve transiciones permitidas, pero solo tres energías distintas.</p>
+  <h4>Ejemplo mínimo (Ayudantía 9, P4)</h4>
+  <p>Absorción desde $n=1$, $\ell=0$ hacia $n=3$, $\ell=1$. El estado inicial tiene $m=0$ y los finales $m=-1,0,+1$, todos permitidos. Las tres líneas tienen energía $\tfrac89E_0+m\,\mu_BB$.</p>
+  <p class="muted">El efecto Zeeman anómalo, que incluye el espín, no aparece ni en la ayudantía ni en el formulario.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#A4">A4 (Ayudantía 9)</a>, <a href="Ejercicios-C3-FIS140.html#A5">A5</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=s_Q9htL8VXY" target="_blank" rel="noopener">Efecto Zeeman normal</a> <span class="meta">Francisco Puente · 14 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=0mzxEGR2hcc" target="_blank" rel="noopener">Efecto Zeeman normal y anómalo</a> <span class="meta">Pamela Llerena · 18 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="a-config">
+  <p class="eyebrow">Bloque A · Átomos · Problema 1</p>
+  <p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y hacer los ejercicios.</strong> Los cinco C3 de Casa Central pidieron una configuración electrónica o las capas de un elemento.</p>
+  <h2>Pauli y configuración electrónica</h2>
+  <p><strong>Principio de exclusión:</strong> dos electrones de un átomo no pueden tener los cuatro números cuánticos iguales. Por eso los electrones no se amontonan todos en $1s$ y existe la tabla periódica. Cada subcapa admite $2(2\ell+1)$ electrones: s 2, p 6, d 10, f 14.</p>
+  <p><strong>Orden de llenado</strong> (por $n+\ell$ creciente y, a igualdad, $n$ menor):</p>
+  <p class="mono">1s · 2s · 2p · 3s · 3p · 4s · 3d · 4p · 5s · 4d · 5p · 6s · 4f · 5d · 6p</p>
+  <div class="tablewrap">
+    <table class="small num">
+      <thead><tr><th>Capa</th><th>$n$</th><th>Subcapas</th><th>Capacidad</th></tr></thead>
+      <tbody>
+        <tr><td>K</td><td>1</td><td>1s</td><td>2</td></tr>
+        <tr><td>L</td><td>2</td><td>2s, 2p</td><td>8</td></tr>
+        <tr><td>M</td><td>3</td><td>3s, 3p, 3d</td><td>18</td></tr>
+        <tr><td>N</td><td>4</td><td>4s, 4p, 4d, 4f</td><td>32</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>Ejemplo mínimo (C3 2025-2, P3)</h4>
+  <p>Arsénico, $Z=33$: $1s^22s^22p^63s^23p^63d^{10}4s^24p^3$. Suma $2+2+6+2+6+10+2+3=33$. Por capas: K 2, L 8, M 18, N 5.</p>
+  <div class="warn"><span class="t">Trampas</span>
+    <ul>
+      <li>La capa la fija $n$, no el orden de llenado. El $3d$ pertenece a M aunque se llene después del $4s$.</li>
+      <li>Excepciones que conviene saber: <strong>Cu</strong> $3d^{10}4s^1$, <strong>Ag</strong> $4d^{10}5s^1$, Cr $3d^54s^1$, Au $5d^{10}6s^1$. La pauta de 2026-1 aceptó tanto $4d^95s^2$ como $4d^{10}5s^1$ para la plata, pero la real es la segunda.</li>
+      <li>Revisa que la suma de superíndices dé $Z$. La pauta de 2023-2 le puso $3p^6$ al cloro, que tiene 17 electrones: lo correcto es $3p^5$.</li>
+    </ul>
+  </div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#A28">A28</a> y el inciso a) de <a href="Ejercicios-C3-FIS140.html#A19">A19</a>, <a href="Ejercicios-C3-FIS140.html#A20">A20</a>, <a href="Ejercicios-C3-FIS140.html#A21">A21</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=sXfquCSZH0s" target="_blank" rel="noopener">Principio de exclusión de Pauli</a> <span class="meta">Rubén Sebastián · 6 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=aIvZ_pCkKNI" target="_blank" rel="noopener">Configuración electrónica: ejercicios resueltos</a> <span class="meta">Jorge Cogollo · 6 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=R3YVIjnKbgM" target="_blank" rel="noopener">Configuración electrónica</a> <span class="meta">Breaking Vlad · 12 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="a-zef">
+  <p class="eyebrow">Bloque A · Átomos · Problema 1</p>
+  <p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y hacer los ejercicios.</strong> Salió en los cinco C3 de Casa Central, y con ionización en 2023-2, 2022-2 y 2022-1. La Ayudantía 10 repitió el helio de 2022-1 (P2).</p>
+  <h2>Apantallamiento y $Z$ efectivo</h2>
+  <p>En un átomo con varios electrones, cada electrón siente al núcleo atenuado por los demás, que están más cerca y tapan parte de la carga. Se modela igual que el hidrógeno, pero con una carga efectiva:</p>
+  $$E_n=-\frac{Z_{ef}^2\;13{,}6\ \text{eV}}{n^2}.$$
+  <p>$Z_{ef}$ siempre está entre 1 y $Z$. Ahora la energía sí depende de $\ell$: un electrón $s$ penetra más cerca del núcleo que uno $d$ y siente más carga, y por eso $4s$ se llena antes que $3d$.</p>
+  <p><strong>Desde la energía de ionización.</strong> Sacar el electrón de la última capa cuesta $E_{ion}=|E_n|$, así que:</p>
+  $$Z_{ef}=n\sqrt{\frac{E_{ion}}{13{,}6\ \text{eV}}}.$$
+  <div class="tablewrap">
+    <table class="small num">
+      <thead><tr><th>Átomo</th><th>Último electrón</th><th>$E_{ion}$</th><th>$Z_{ef}$</th><th>Certamen</th></tr></thead>
+      <tbody>
+        <tr><td>He</td><td>1s, $n=1$</td><td>24,7 eV</td><td>1,35</td><td>2022-1</td></tr>
+        <tr><td>Na</td><td>3s, $n=3$</td><td>5,14 eV</td><td>1,84</td><td>2023-2</td></tr>
+        <tr><td>K</td><td>4s, $n=4$</td><td>4,34 eV</td><td>2,26</td><td>2022-2</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Fíjate en que da mayor que 1: si los electrones internos taparan perfecto, $Z_{ef}$ sería exactamente 1. Da más porque el electrón externo pasa parte del tiempo por dentro de las capas internas.</p>
+  <p><strong>Helio.</strong> Sin interacción entre electrones, cada uno tendría $-Z^2\cdot13{,}6=-54{,}4$ eV. La ionización medida es 24,7 eV, y la diferencia, unos 30 eV, es la repulsión con el otro electrón. En el estado excitado $1s2s$, el electrón $2s$ queda casi fuera del $1s$: $Z_{ef}\approx1$ y su ionización es $13{,}6/4=3{,}40$ eV.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#A23">A23</a>, <a href="Ejercicios-C3-FIS140.html#A24">A24</a>, <a href="Ejercicios-C3-FIS140.html#A25">A25</a>, <a href="Ejercicios-C3-FIS140.html#A26">A26</a>, <a href="Ejercicios-C3-FIS140.html#A27">A27</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=-XKh8BIKquM" target="_blank" rel="noopener">Carga nuclear efectiva</a> <span class="meta">Es Ciencia · 5 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=rUsAmFfrVr0" target="_blank" rel="noopener">Apantallamiento y carga nuclear efectiva</a> <span class="meta">Amigos de la Química · 11 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="a-rx">
+  <p class="eyebrow">Bloque A · Átomos · Problema 1</p>
+  <p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y hacer los ejercicios.</strong> Cuatro de los últimos cuatro C3 de Casa Central traen rayos X, y Moseley viene en el formulario.</p>
+  <h2>Rayos X característicos y ley de Moseley</h2>
+  <p>Un electrón muy energético (o un rayo gamma, en la fluorescencia) arranca un electrón de una capa interna y deja un <strong>hueco</strong>. Un electrón de una capa superior cae al hueco y emite un fotón de rayos X. Como la energía de ese salto depende del elemento, las líneas son una huella digital: en eso se basa la fluorescencia de rayos X (XRF), con la que un laboratorio identifica de qué está hecha una muestra.</p>
+  <p>Cuando el hueco está en la capa K y cae un electrón de L, ese electrón ve el núcleo apantallado por el único electrón que queda en K: carga efectiva $Z-1$. Con eso:</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$E_{K\alpha}=13{,}6\,(Z-1)^2\Big(1-\frac14\Big)=10{,}2\,(Z-1)^2\ \text{eV}$$</div><div class="w">Ley de Moseley. Viene en el formulario.</div></div>
+    <div class="r"><div class="f">$$Z=1+\sqrt{\frac{E_{K\alpha}}{10{,}2\ \text{eV}}}$$</div><div class="w">La misma ley al revés: desde la línea medida se saca el elemento. Si te dan $f$, $E=hf$; si te dan $\lambda$, $E=1240/\lambda$.</div></div>
+  </div>
+  <div class="tablewrap">
+    <table class="small num">
+      <thead><tr><th>Elemento</th><th>$Z$</th><th>$E_{K\alpha}$ (Moseley)</th><th>$\lambda$</th></tr></thead>
+      <tbody>
+        <tr><td>Fe</td><td>26</td><td>6,38 keV</td><td>0,194 nm</td></tr>
+        <tr><td>Cu</td><td>29</td><td>8,00 keV</td><td>0,155 nm</td></tr>
+        <tr><td>Mo</td><td>42</td><td>17,1 keV</td><td>0,072 nm</td></tr>
+        <tr><td>W</td><td>74</td><td>54,4 keV</td><td>0,023 nm</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>Ejemplo mínimo (C3 2025-2, P3)</h4>
+  <p>Una línea $K\alpha$ de $f=2{,}53\times10^{18}$ Hz: $E=hf=4{,}135\times10^{-15}\cdot2{,}53\times10^{18}=10{,}46$ keV y $Z=1+\sqrt{10\,462/10{,}2}=33{,}0$. Es arsénico.</p>
+  <div class="note"><span class="t">Si un Z no da entero</span>Los datos de certamen están construidos para que dé casi exacto (33,03 y 51,01 en 2025-2). Con líneas reales, Moseley se desvía algo a $Z$ grande: la $K\alpha$ de la plata medida (22,16 keV) da 47,6. Si te queda 47,6, no redondees a ciegas: revisa con la tabla de elementos del enunciado.</div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#A20">A20</a>, <a href="Ejercicios-C3-FIS140.html#A29">A29</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=yc48L4u1_cs" target="_blank" rel="noopener">Espectro de rayos X</a> <span class="meta">Lab. Física Cuántica, U. de València · 9 min</span><span class="why">El experimento real, con las líneas características sobre el fondo continuo.</span></li>
+      <li><a href="https://www.youtube.com/watch?v=x9krWXb-yGo" target="_blank" rel="noopener">Rayos X característicos</a> <span class="meta">Aula Virtual 503 · 4 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=qM_5lc11pHo" target="_blank" rel="noopener">Ley de Moseley</a> <span class="meta">Rumbo a ingeniería · 7 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=GcypkjQ6zy4" target="_blank" rel="noopener">Fluorescencia de rayos X</a> <span class="meta">F. Bautista · 5 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="a-rx2">
+  <p class="eyebrow">Bloque A · Átomos · Problema 1</p>
+  <p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y hacer los ejercicios.</strong> Es lo que separa a los que tienen la fórmula de Moseley de los que entienden el problema: $K\beta$ salió en 2024-2, $L\alpha$ en 2025-1 y $K\gamma$ en 2026-1. La Ayudantía 10 repitió textual el $K\beta$ del molibdeno (P3).</p>
+  <h2>$K\beta$, $K\gamma$, $L\alpha$ y el conteo de electrones</h2>
+  <figure class="fig"><svg class="diag" viewBox="0 0 600 296" role="img" aria-label="Diagrama de capas K, L, M y N con las transiciones K alfa, K beta, K gamma y L alfa"><defs><marker id="ahrx" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" class="fa"/></marker></defs><line class="l" x1="104" y1="42" x2="580" y2="42"/><text x="12" y="46">N · n=4</text><line class="l" x1="104" y1="88" x2="580" y2="88"/><text x="12" y="92">M · n=3</text><line class="l" x1="104" y1="154" x2="580" y2="154"/><text x="12" y="158">L · n=2</text><line class="l" x1="104" y1="262" x2="580" y2="262"/><text x="12" y="266">K · n=1</text><line class="la" x1="190" y1="156" x2="190" y2="259" marker-end="url(#ahrx)"/><text class="ac" x="197" y="214">Kα</text><line class="la" x1="280" y1="90" x2="280" y2="259" marker-end="url(#ahrx)"/><text class="ac" x="287" y="214">Kβ</text><line class="la" x1="370" y1="44" x2="370" y2="259" marker-end="url(#ahrx)"/><text class="ac" x="377" y="214">Kγ</text><line class="la" x1="480" y1="90" x2="480" y2="151" marker-end="url(#ahrx)"/><text class="ac" x="487" y="125">Lα</text><text class="mt" x="104" y="286">Energía no a escala: la capa K está mucho más abajo que las otras.</text></svg><figcaption>El hueco siempre está en la capa de llegada. La letra dice a qué capa se llega; alfa, beta y gamma, desde cuántas capas más arriba.</figcaption></figure>
+  <p>Todas se calculan igual. El fotón se lleva la diferencia entre dos niveles, cada uno con su propia carga efectiva:</p>
+  $$E_\gamma=13{,}6\ \text{eV}\left[\frac{Z_f^2}{n_f^2}-\frac{Z_i^2}{n_i^2}\right].$$
+  <p>Lo único difícil es contar. La regla que reproduce todas las pautas, ya con el hueco abierto, es esta:</p>
+  <ul>
+    <li><strong>Nivel inicial:</strong> resta todos los electrones de las capas <em>más internas</em> que ese nivel.</li>
+    <li><strong>Nivel final:</strong> resta los electrones de <em>su propia capa</em> (la que tiene el hueco) y los de las capas más internas.</li>
+  </ul>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Línea</th><th>Transición</th><th>$Z_i$ (cuenta)</th><th>$Z_f$ (cuenta)</th><th>Certamen</th></tr></thead>
+      <tbody>
+        <tr><td>$K\alpha$</td><td>L → K</td><td>$Z-1$ (K: 1)</td><td>$Z-1$ (K: 1)</td><td>2025-2</td></tr>
+        <tr><td>$K\beta$</td><td>M → K</td><td>$Z-9$ (K: 1, L: 8)</td><td>$Z-1$</td><td>2024-2</td></tr>
+        <tr><td>$K\gamma$</td><td>N → K</td><td>$Z-27$ (K: 1, L: 8, M: 18)</td><td>$Z-1$</td><td>2026-1</td></tr>
+        <tr><td>$L\alpha$</td><td>M → L</td><td>$Z-9$ (K: 2, L: 7)</td><td>$Z-9$ (K: 2, L: 7)</td><td>2025-1</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>Ejemplo mínimo (C3 2024-2, P3)</h4>
+  <p>$K\beta$ del molibdeno, $Z=42$: $Z_i=33$ y $Z_f=41$. Entonces $E=13{,}6\,(41^2-33^2/9)=21{,}2$ keV.</p>
+  <h4>El $Z_{ef}$ experimental</h4>
+  <p>Es el último inciso típico. Te dan la energía medida de la línea, dejas fijo lo que el enunciado pide dejar fijo (casi siempre $Z_f=Z-1$) y despejas el otro:</p>
+  $$Z_i=n_i\sqrt{\frac{Z_f^2}{n_f^2}-\frac{E_{\text{exp}}}{13{,}6}}.$$
+  <p>En $L\alpha$ el enunciado de 2025-1 usa un solo $Z_{ef}$ para los dos niveles, y queda $E=1{,}889\,Z_{ef}^2$ eV. En $K\beta$, $L\alpha$ y $K\gamma$ el $Z_{ef}$ medido salió <strong>mayor</strong> que el modelo (38 contra 33; 23 contra 21; 23 contra 20). Es lo que hay que comentar: el conteo perfecto sobrestima el apantallamiento, porque los electrones internos no tapan el núcleo por completo. En la $K\alpha$ del cobre, en cambio, salió casi igual: 27,7 contra 28, y por eso Moseley funciona tan bien.</p>
+  <p class="muted">Con 2026-1 se ve además que la capa de partida casi no pesa: en la $K\gamma$ de la plata, el término de N es 25 sobre 2116. Por eso cambiar $Z_{ef,N}$ de 20 a 23 mueve el resultado de 28,4 a 28,3 keV.</p>
+  <div class="warn"><span class="t">Trampas</span>
+    <ul>
+      <li>No usar $Z-1$ para todos: el electrón que parte de N ve $Z-27$.</li>
+      <li>Olvidar dividir por $n^2$ en el término de la capa de partida.</li>
+      <li>Convertir mal: $\lambda=0{,}60$ Å son $0{,}060$ nm, así que $E=1240/0{,}060=20{,}7$ keV.</li>
+    </ul>
+  </div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#A19">A19</a>, <a href="Ejercicios-C3-FIS140.html#A21">A21</a>, <a href="Ejercicios-C3-FIS140.html#A22">A22</a>, <a href="Ejercicios-C3-FIS140.html#A20">A20</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=HUIcquKI-mo" target="_blank" rel="noopener">Clase: fluorescencia de rayos X y ley de Moseley</a> <span class="meta">José Martín Ramallo López · 53 min</span><span class="why">Clase universitaria completa, con el coeficiente de apantallamiento.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-ionico">
+  <p class="eyebrow">Bloque B · Moléculas y sólidos</p>
+  <p class="prio"><span class="lv p1">Probabilidad baja</span><strong>Pasar por encima.</strong> Salió una vez en cinco años (2023-2 P1c). Es una suma de tres números, así que basta con saber cuáles son.</p>
+  <h2>Enlace iónico</h2>
+  <p>Para formar NaCl desde átomos neutros hay tres aportes de energía: cuesta sacarle un electrón al sodio, se recupera algo cuando el cloro lo captura, y los dos iones se atraen.</p>
+  $$\Delta E=E_{ion}-E_{afinidad}-\frac{1{,}44\ \text{eV·nm}}{R}.$$
+  <p>Si $\Delta E\lt0$ la molécula es estable y esa energía se libera. Ejemplo (2023-2): $5{,}14-3{,}61-1{,}44/0{,}25=-4{,}23$ eV, así que se liberan 4,23 eV.</p>
+  <p class="muted">Los otros enlaces (covalente, van der Waals, puente de hidrógeno) solo aparecen como concepto en el Sears. Ningún certamen de la carpeta los pregunta.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#A23">A23</a>, <a href="Ejercicios-C3-FIS140.html#B1">B1</a>.</p>
+</section>
+
+<section id="b-rotvib">
+  <p class="eyebrow">Bloque B · Moléculas y sólidos</p>
+  <p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer los ejercicios.</strong> La Ayudantía 10 repitió textual el HCl de 2024-2 (P4). Además salió en 2025-1 SJ y está en el formulario de 2026-1. En el C1 y el C2, los problemas que la última ayudantía sacó de certámenes fueron la mejor señal.</p>
+  <h2>Rotación y vibración de moléculas</h2>
+  <p>Una molécula diatómica se modela como dos masas unidas por un resorte que además gira. Vibra como un oscilador armónico y rota como un rotor rígido, y las dos energías se suman:</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$E_{n,\ell}=\hbar\omega\Big(n+\frac12\Big)+\frac{\hbar^2\,\ell(\ell+1)}{2I}$$</div><div class="w">$n$ vibracional y $\ell$ rotacional. Viene en el formulario.</div></div>
+    <div class="r"><div class="f">$$I=m_r\,r_0^2,\qquad m_r=\frac{m_1m_2}{m_1+m_2}$$</div><div class="w">Momento de inercia y masa reducida. Con dos átomos iguales, $m_r=m/2$.</div></div>
+    <div class="r"><div class="f">$$\omega=\sqrt{\frac{k'}{m_r}}$$</div><div class="w">$k'$ es la constante del resorte. Un isótopo más pesado vibra más lento.</div></div>
+    <div class="r"><div class="f">$$\Delta n=\pm1,\qquad\Delta\ell=\pm1$$</div><div class="w">Reglas de selección de 2024-2 y de San Joaquín.</div></div>
+  </div>
+  <p>Las escalas son muy distintas: la vibración anda en décimas de eV (infrarrojo) y la rotación en milésimas de eV (microondas). Por eso cada línea de vibración viene acompañada de un peine de líneas muy juntas.</p>
+  <h4>El espectro con la línea ausente</h4>
+  <p>Partiendo de $n=0$ y subiendo a $n=1$, $\ell$ tiene que cambiar en uno:</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$\ell\to\ell+1:\quad E=\hbar\omega+(\ell+1)\frac{\hbar^2}{I}$$</div><div class="w">Líneas a la derecha del centro.</div></div>
+    <div class="r"><div class="f">$$\ell\to\ell-1:\quad E=\hbar\omega-\ell\,\frac{\hbar^2}{I}$$</div><div class="w">Líneas a la izquierda del centro.</div></div>
+  </div>
+  <figure class="fig"><svg class="diag" viewBox="0 0 620 268" role="img" aria-label="Niveles de rotación y vibración con las transiciones A y B y el espectro con la línea central ausente"><defs><marker id="ahrv" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" class="fa"/></marker></defs><line class="l" x1="64" y1="236" x2="290" y2="236"/><text x="298" y="240">ℓ=0</text><line class="l" x1="64" y1="222" x2="290" y2="222"/><text x="298" y="226">ℓ=1</text><line class="l" x1="64" y1="194" x2="290" y2="194"/><text x="298" y="198">ℓ=2</text><line class="l" x1="64" y1="92" x2="290" y2="92"/><text x="298" y="96">ℓ=0</text><line class="l" x1="64" y1="78" x2="290" y2="78"/><text x="298" y="82">ℓ=1</text><line class="l" x1="64" y1="50" x2="290" y2="50"/><text x="298" y="54">ℓ=2</text><text class="mt" x="8" y="82">n=1</text><text class="mt" x="8" y="226">n=0</text><line class="la" x1="100" y1="221" x2="100" y2="95" marker-end="url(#ahrv)"/><text class="ac" x="84" y="150">A</text><line class="la" x1="270" y1="235" x2="270" y2="81" marker-end="url(#ahrv)"/><text class="ac" x="277" y="150">B</text><line class="da" x1="185" y1="235" x2="185" y2="95"/><text class="mt" x="192" y="172">prohibida</text><line class="lm" x1="395" y1="236" x2="395" y2="160.0"/><line class="lm" x1="410" y1="236" x2="410" y2="152.0"/><line class="lm" x1="425" y1="236" x2="425" y2="144.0"/><line class="lm" x1="440" y1="236" x2="440" y2="136.0"/><line class="la" x1="455" y1="236" x2="455" y2="128.0"/><line class="la" x1="485" y1="236" x2="485" y2="120.0"/><line class="lm" x1="500" y1="236" x2="500" y2="128.0"/><line class="lm" x1="515" y1="236" x2="515" y2="136.0"/><line class="lm" x1="530" y1="236" x2="530" y2="144.0"/><line class="lm" x1="545" y1="236" x2="545" y2="152.0"/><line class="lm" x1="560" y1="236" x2="560" y2="160.0"/><line class="da" x1="470" y1="236" x2="470" y2="110"/><text class="mt" text-anchor="middle" x="470" y="102">ħω (no hay línea)</text><text class="ac" text-anchor="middle" x="455" y="256">A</text><text class="ac" text-anchor="middle" x="485" y="256">B</text><line class="lm" x1="380" y1="236" x2="575" y2="236"/><text class="mt" text-anchor="end" x="575" y="256">frecuencia</text></svg><figcaption>$A$: $(n,\ell)=(0,1)\to(1,0)$, energía $\hbar\omega-\hbar^2/I$. $B$: $(0,0)\to(1,1)$, energía $\hbar\omega+\hbar^2/I$. La transición con $\Delta\ell=0$ no existe, y por eso falta la línea del centro.</figcaption></figure>
+  <p>Justo al centro iría la transición con $\Delta\ell=0$, que está prohibida. Las dos líneas vecinas al hueco sirven para sacar todo:</p>
+  $$\hbar\omega=\frac{E_A+E_B}{2},\qquad\frac{\hbar^2}{I}=\frac{E_B-E_A}{2}.$$
+  <h4>Ejemplo mínimo (C3 2024-2, P4)</h4>
+  <p>Leyendo el espectro del HCl, $f_A=8{,}60\times10^{13}$ Hz y $f_B=8{,}72\times10^{13}$ Hz, o sea $E_A=0{,}3556$ eV y $E_B=0{,}3606$ eV. Entonces $\hbar\omega=0{,}358$ eV y $\omega=\hbar\omega/\hbar=5{,}44\times10^{14}$ rad/s.</p>
+  <div class="warn"><span class="t">Trampas</span>
+    <ul>
+      <li>El formulario de 2026-1 escribe $\Delta\ell=0,\pm1$, pero la línea ausente de 2024-2 solo se explica con $\Delta\ell=\pm1$. Usa lo que diga el enunciado de tu certamen, y si no dice nada, $\pm1$.</li>
+      <li>Las reglas moleculares no son las atómicas: acá $n$ solo cambia en uno.</li>
+      <li>El factor 2 de $\hbar^2/2I$: la separación entre líneas vecinas es $\hbar^2/I$, y el hueco central mide el doble.</li>
+    </ul>
+  </div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#B2">B2 (2024-2)</a>, <a href="Ejercicios-C3-FIS140.html#B3">B3</a>, <a href="Ejercicios-C3-FIS140.html#B4">B4</a>, <a href="Ejercicios-C3-FIS140.html#B5">B5</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=-p9ISpso77o" target="_blank" rel="noopener">Los estados de energía de una molécula: rotación, vibración y espectros</a> <span class="meta">U V · 16 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=3hY-6F2B7uk" target="_blank" rel="noopener">Niveles de energía rotacionales de una molécula</a> <span class="meta">Física sin trucos · 5 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=YMIpZCU4hGw" target="_blank" rel="noopener">Energía vibracional de una molécula</a> <span class="meta">Física sin trucos · 5 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-bandas">
+  <p class="eyebrow">Bloque B · Moléculas y sólidos · Problema 2</p>
+  <p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Pasar por encima.</strong> Rara vez se pregunta sola, pero todo el problema de semiconductores parte de este dibujo.</p>
+  <h2>Bandas de energía</h2>
+  <p>Al juntar muchos átomos, cada nivel atómico se abre en un grupo de niveles tan cercanos que forman una <strong>banda</strong>. Entre bandas puede quedar un rango sin estados: la <strong>brecha</strong> o gap, $E_g=E_c-E_v$, donde $E_c$ es el fondo de la banda de conducción y $E_v$ la cima de la de valencia.</p>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Material</th><th>Bandas</th><th>Conducción</th></tr></thead>
+      <tbody>
+        <tr><td>Conductor</td><td>Una banda parcialmente llena</td><td>Los electrones se mueven con energía mínima. Al calentarlo conduce algo peor</td></tr>
+        <tr><td>Semiconductor</td><td>Brecha cercana a 1 eV: Ge 0,67; Si 1,12; GaAs 1,42</td><td>Un poco, gracias a los electrones que la temperatura sube. Al calentarlo conduce mucho mejor</td></tr>
+        <tr><td>Aislante</td><td>Brecha de varios eV</td><td>Prácticamente nada a temperatura ambiente</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Cuando un electrón sube a la banda de conducción deja un <strong>hueco</strong> en la de valencia, que se comporta como una carga positiva móvil. Al recombinarse, un electrón cae al hueco y puede emitir un fotón: así funciona un LED.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=V_B9iNrzFJM" target="_blank" rel="noopener">Teoría de bandas: conductores, semiconductores y aislantes</a> <span class="meta">Es Ciencia · 6 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=lul4YX5Hpb4" target="_blank" rel="noopener">¿WTF es un semiconductor? Teoría de bandas</a> <span class="meta">SizeMatters · 11 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-fd">
+  <p class="eyebrow">Bloque B · Moléculas y sólidos · Problema 2</p>
+  <p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y hacer los ejercicios.</strong> Salió en los cinco C3 de Casa Central. La fórmula viene en el formulario; despejarla la tienes que traer lista.</p>
+  <h2>Distribución de Fermi-Dirac</h2>
+  <p>Es la probabilidad de que un estado de energía $E$ esté ocupado por un electrón en equilibrio a temperatura $T$:</p>
+  $$f(E)=\frac{1}{e^{(E-E_F)/k_BT}+1}.$$
+  <figure class="fig"><svg class="diag" viewBox="0 0 600 250" role="img" aria-label="Curva de la distribución de Fermi-Dirac comparada con el escalón a temperatura cero"><line class="lm" x1="46" y1="210" x2="584" y2="210"/><line class="lm" x1="46" y1="210" x2="46" y2="14"/><line class="lm" x1="46.0" y1="210" x2="46.0" y2="214"/><text class="mt" text-anchor="middle" x="46.0" y="227">-8</text><line class="lm" x1="113.2" y1="210" x2="113.2" y2="214"/><text class="mt" text-anchor="middle" x="113.2" y="227">-6</text><line class="lm" x1="180.5" y1="210" x2="180.5" y2="214"/><text class="mt" text-anchor="middle" x="180.5" y="227">-4</text><line class="lm" x1="247.8" y1="210" x2="247.8" y2="214"/><text class="mt" text-anchor="middle" x="247.8" y="227">-2</text><line class="lm" x1="315.0" y1="210" x2="315.0" y2="214"/><text class="mt" text-anchor="middle" x="315.0" y="227">0</text><line class="lm" x1="382.2" y1="210" x2="382.2" y2="214"/><text class="mt" text-anchor="middle" x="382.2" y="227">2</text><line class="lm" x1="449.5" y1="210" x2="449.5" y2="214"/><text class="mt" text-anchor="middle" x="449.5" y="227">4</text><line class="lm" x1="516.8" y1="210" x2="516.8" y2="214"/><text class="mt" text-anchor="middle" x="516.8" y="227">6</text><line class="lm" x1="584.0" y1="210" x2="584.0" y2="214"/><text class="mt" text-anchor="middle" x="584.0" y="227">8</text><line class="lm" x1="42" y1="210" x2="46" y2="210"/><text class="mt" text-anchor="end" x="39" y="214">0</text><line class="lm" x1="42" y1="112.0" x2="46" y2="112.0"/><text class="mt" text-anchor="end" x="39" y="116.0">0,5</text><line class="lm" x1="42" y1="14" x2="46" y2="14"/><text class="mt" text-anchor="end" x="39" y="18">1</text><text class="mt" text-anchor="middle" x="315.0" y="244">(E − E_F) / kT</text><path class="lm2" d="M46.0 14.0 L315.0 14.0 L315.0 210.0 L584.0 210.0"/><path class="la" d="M46.0 14.1 L47.7 14.1 L49.4 14.1 L51.0 14.1 L52.7 14.1 L54.4 14.1 L56.1 14.1 L57.8 14.1 L59.5 14.1 L61.1 14.1 L62.8 14.1 L64.5 14.1 L66.2 14.1 L67.9 14.1 L69.5 14.1 L71.2 14.1 L72.9 14.1 L74.6 14.2 L76.3 14.2 L77.9 14.2 L79.6 14.2 L81.3 14.2 L83.0 14.2 L84.7 14.2 L86.4 14.2 L88.0 14.2 L89.7 14.2 L91.4 14.3 L93.1 14.3 L94.8 14.3 L96.4 14.3 L98.1 14.3 L99.8 14.3 L101.5 14.3 L103.2 14.4 L104.8 14.4 L106.5 14.4 L108.2 14.4 L109.9 14.4 L111.6 14.5 L113.2 14.5 L114.9 14.5 L116.6 14.5 L118.3 14.6 L120.0 14.6 L121.7 14.6 L123.3 14.7 L125.0 14.7 L126.7 14.7 L128.4 14.8 L130.1 14.8 L131.7 14.8 L133.4 14.9 L135.1 14.9 L136.8 15.0 L138.5 15.0 L140.1 15.1 L141.8 15.1 L143.5 15.2 L145.2 15.2 L146.9 15.3 L148.6 15.4 L150.2 15.4 L151.9 15.5 L153.6 15.6 L155.3 15.7 L157.0 15.8 L158.6 15.9 L160.3 16.0 L162.0 16.0 L163.7 16.2 L165.4 16.3 L167.0 16.4 L168.7 16.5 L170.4 16.6 L172.1 16.8 L173.8 16.9 L175.5 17.0 L177.1 17.2 L178.8 17.4 L180.5 17.5 L182.2 17.7 L183.9 17.9 L185.5 18.1 L187.2 18.3 L188.9 18.5 L190.6 18.7 L192.3 19.0 L194.0 19.2 L195.6 19.5 L197.3 19.7 L199.0 20.0 L200.7 20.3 L202.4 20.6 L204.0 21.0 L205.7 21.3 L207.4 21.7 L209.1 22.1 L210.8 22.4 L212.4 22.9 L214.1 23.3 L215.8 23.7 L217.5 24.2 L219.2 24.7 L220.8 25.2 L222.5 25.8 L224.2 26.3 L225.9 26.9 L227.6 27.6 L229.3 28.2 L230.9 28.9 L232.6 29.6 L234.3 30.3 L236.0 31.1 L237.7 31.9 L239.3 32.7 L241.0 33.6 L242.7 34.4 L244.4 35.4 L246.1 36.4 L247.8 37.4 L249.4 38.4 L251.1 39.5 L252.8 40.6 L254.5 41.8 L256.2 43.0 L257.8 44.3 L259.5 45.6 L261.2 46.9 L262.9 48.3 L264.6 49.8 L266.2 51.2 L267.9 52.8 L269.6 54.4 L271.3 56.0 L273.0 57.6 L274.6 59.4 L276.3 61.1 L278.0 62.9 L279.7 64.8 L281.4 66.7 L283.1 68.7 L284.7 70.7 L286.4 72.7 L288.1 74.8 L289.8 76.9 L291.5 79.0 L293.1 81.2 L294.8 83.5 L296.5 85.7 L298.2 88.0 L299.9 90.3 L301.5 92.7 L303.2 95.0 L304.9 97.4 L306.6 99.8 L308.3 102.2 L310.0 104.7 L311.6 107.1 L313.3 109.6 L315.0 112.0 L316.7 114.4 L318.4 116.9 L320.0 119.3 L321.7 121.8 L323.4 124.2 L325.1 126.6 L326.8 129.0 L328.4 131.3 L330.1 133.7 L331.8 136.0 L333.5 138.3 L335.2 140.5 L336.9 142.8 L338.5 145.0 L340.2 147.1 L341.9 149.2 L343.6 151.3 L345.3 153.3 L346.9 155.3 L348.6 157.3 L350.3 159.2 L352.0 161.1 L353.7 162.9 L355.3 164.6 L357.0 166.4 L358.7 168.0 L360.4 169.6 L362.1 171.2 L363.8 172.8 L365.4 174.2 L367.1 175.7 L368.8 177.1 L370.5 178.4 L372.2 179.7 L373.8 181.0 L375.5 182.2 L377.2 183.4 L378.9 184.5 L380.6 185.6 L382.2 186.6 L383.9 187.6 L385.6 188.6 L387.3 189.6 L389.0 190.4 L390.7 191.3 L392.3 192.1 L394.0 192.9 L395.7 193.7 L397.4 194.4 L399.1 195.1 L400.7 195.8 L402.4 196.4 L404.1 197.1 L405.8 197.7 L407.5 198.2 L409.2 198.8 L410.8 199.3 L412.5 199.8 L414.2 200.3 L415.9 200.7 L417.6 201.1 L419.2 201.6 L420.9 201.9 L422.6 202.3 L424.3 202.7 L426.0 203.0 L427.6 203.4 L429.3 203.7 L431.0 204.0 L432.7 204.3 L434.4 204.5 L436.1 204.8 L437.7 205.0 L439.4 205.3 L441.1 205.5 L442.8 205.7 L444.5 205.9 L446.1 206.1 L447.8 206.3 L449.5 206.5 L451.2 206.6 L452.9 206.8 L454.5 207.0 L456.2 207.1 L457.9 207.2 L459.6 207.4 L461.3 207.5 L462.9 207.6 L464.6 207.7 L466.3 207.8 L468.0 208.0 L469.7 208.0 L471.4 208.1 L473.0 208.2 L474.7 208.3 L476.4 208.4 L478.1 208.5 L479.8 208.6 L481.4 208.6 L483.1 208.7 L484.8 208.8 L486.5 208.8 L488.2 208.9 L489.8 208.9 L491.5 209.0 L493.2 209.0 L494.9 209.1 L496.6 209.1 L498.3 209.2 L499.9 209.2 L501.6 209.2 L503.3 209.3 L505.0 209.3 L506.7 209.3 L508.3 209.4 L510.0 209.4 L511.7 209.4 L513.4 209.5 L515.1 209.5 L516.8 209.5 L518.4 209.5 L520.1 209.6 L521.8 209.6 L523.5 209.6 L525.2 209.6 L526.8 209.6 L528.5 209.7 L530.2 209.7 L531.9 209.7 L533.6 209.7 L535.2 209.7 L536.9 209.7 L538.6 209.7 L540.3 209.8 L542.0 209.8 L543.7 209.8 L545.3 209.8 L547.0 209.8 L548.7 209.8 L550.4 209.8 L552.1 209.8 L553.7 209.8 L555.4 209.8 L557.1 209.9 L558.8 209.9 L560.5 209.9 L562.1 209.9 L563.8 209.9 L565.5 209.9 L567.2 209.9 L568.9 209.9 L570.5 209.9 L572.2 209.9 L573.9 209.9 L575.6 209.9 L577.3 209.9 L579.0 209.9 L580.6 209.9 L582.3 209.9 L584.0 209.9"/><circle class="fa" cx="315.0" cy="112.0" r="4"/><text class="ac" x="325.0" y="106.0">f(E_F) = 1/2, a cualquier T</text><text class="mt" x="59.5" y="30.0">T = 0: escalón</text></svg><figcaption>Fermi-Dirac en función de $(E-E_F)/kT$. A los lados de $E_F$ la curva es simétrica: lo que le falta a un lado para llegar a 1 es lo que tiene el otro.</figcaption></figure>
+  <p>Cuatro propiedades que resuelven la mayoría de los incisos:</p>
+  <ul>
+    <li><strong>En $E=E_F$, $f=\tfrac12$</strong>, a cualquier temperatura.</li>
+    <li><strong>Simetría:</strong> $f(E_F+x)+f(E_F-x)=1$. Es exactamente lo que pide demostrar 2023-2.</li>
+    <li><strong>Lejos de $E_F$ por arriba</strong> ($E-E_F\gg kT$), el $+1$ se desprecia: $f\approx e^{-(E-E_F)/kT}$.</li>
+    <li><strong>A $T=0$ es un escalón:</strong> 1 hasta $E_F$ y 0 de ahí en adelante.</li>
+  </ul>
+  <p><strong>El despeje que más se usa:</strong></p>
+  $$E-E_F=k_BT\,\ln\!\Big(\frac1f-1\Big).$$
+  <p>Y el número que hay que tener en la cabeza: <strong>a 300 K, $k_BT=\tfrac{1}{40}=0{,}025$ eV</strong>.</p>
+  <div class="tablewrap">
+    <table class="small num">
+      <thead><tr><th>$E-E_F$</th><th>$+1\,kT$</th><th>$+2\,kT$</th><th>$+3\,kT$</th><th>$+5\,kT$</th><th>$+10\,kT$</th></tr></thead>
+      <tbody>
+        <tr><td>$f$</td><td>0,269</td><td>0,119</td><td>0,047</td><td>0,0067</td><td>$4{,}5\times10^{-5}$</td></tr>
+        <tr><td>$1-f$</td><td>0,731</td><td>0,881</td><td>0,953</td><td>0,9933</td><td>0,99995</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note"><span class="t">Qué constante usar</span>El formulario de casi todos los años da $k_B\approx1/12\,000$ eV/K, pero varias pautas calculan con $8{,}617\times10^{-5}$ eV/K, y como está en un exponente la diferencia se nota: en 2026-1, $P_c$ da $2{,}1\times10^{-9}$ o $4{,}0\times10^{-9}$. Usa la que venga en tu formulario y escríbela en la hoja; el planteamiento correcto vale lo mismo.</div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#B9">B9</a>, <a href="Ejercicios-C3-FIS140.html#B10">B10</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=-RDRXiPLDmk" target="_blank" rel="noopener">Distribución de Fermi-Dirac y gas de electrones libres</a> <span class="meta">MathArg · 9 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-metal">
+  <p class="eyebrow">Bloque B · Moléculas y sólidos · Problema 2</p>
+  <p class="prio"><span class="lv">Probabilidad media</span><strong>Leer completo.</strong> Salió en 2025-2 P2 y 2021-1, y la fórmula está en el formulario de 2023-2, 2025-1, 2025-2 y 2026-1.</p>
+  <h2>Metales y energía de Fermi</h2>
+  <p>Los electrones de conducción se comportan como un gas de partículas libres dentro de una caja, y por Pauli van llenando los niveles de a dos. A $T=0$ quedan ocupados hasta una energía máxima, la <strong>energía de Fermi</strong>:</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$E_F=\frac{\hbar^2}{2m_e}\big(3\pi^2n\big)^{2/3}$$</div><div class="w">$n=N/V$ es la densidad de electrones. Viene en el formulario.</div></div>
+    <div class="r"><div class="f">$$E_F\approx0{,}365\ n^{2/3}\ \text{eV},\quad n\text{ en nm}^{-3}$$</div><div class="w">La misma fórmula, lista para la calculadora.</div></div>
+    <div class="r"><div class="f">$$n=\frac{\nu\,\rho\,N_A}{M}$$</div><div class="w">Desde la densidad: $\nu$ electrones libres por átomo, $\rho$ densidad, $M$ masa molar.</div></div>
+  </div>
+  <p>El formulario de 2025-1 la trae escrita como $n_e=\tfrac{8\pi}{3h^3}(2mE_F)^{3/2}$; es la misma relación. Las energías típicas son de 2 a 12 eV, unas cien veces $kT$ a temperatura ambiente: por eso la distribución de un metal es casi un escalón y solo los electrones cercanos a $E_F$ participan.</p>
+  <h4>Ejemplo mínimo (C3 2025-2, P2)</h4>
+  <p>Con $n=8{,}5\times10^{28}$ m⁻³ $=85$ nm⁻³: $E_F=0{,}365\cdot85^{2/3}=7{,}05$ eV. Un nivel $0{,}10$ eV sobre $E_F$, a 300 K, está en $4\,kT$: $f=1/(e^4+1)=0{,}018$.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#B10">B10</a>, <a href="Ejercicios-C3-FIS140.html#B12">B12</a>, <a href="Ejercicios-C3-FIS140.html#B13">B13</a>, <a href="Ejercicios-C3-FIS140.html#B14">B14</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=zwsBsyI9dus" target="_blank" rel="noopener">Energía y momento de Fermi</a> <span class="meta">David A. Miranda Mercado · 3 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=b7K7B2oLK5g" target="_blank" rel="noopener">Energía de Fermi</a> <span class="meta">Udearroba · 23 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-semi">
+  <p class="eyebrow">Bloque B · Moléculas y sólidos · Problema 2</p>
+  <p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y hacer los ejercicios.</strong> Cuatro de cinco certámenes giran en torno a la ocupación del fondo de la banda de conducción.</p>
+  <h2>Semiconductor puro</h2>
+  <p>En un semiconductor puro (intrínseco), el nivel de Fermi queda <strong>justo al medio de la brecha</strong>: $E_c-E_F=E_g/2$ y $E_v-E_F=-E_g/2$. De ahí sale todo:</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$f(E_c)=\frac{1}{e^{E_g/2kT}+1}\approx e^{-E_g/2kT}$$</div><div class="w">Ocupación del fondo de la banda de conducción. Es un número muy chico.</div></div>
+    <div class="r"><div class="f">$$f(E_v)=1-f(E_c)$$</div><div class="w">La ocupación de la cima de valencia, por simetría.</div></div>
+    <div class="r"><div class="f">$$E_g=2kT\,\ln\!\Big(\frac1P-1\Big)$$</div><div class="w">Brecha desde la probabilidad, solo si es puro.</div></div>
+    <div class="r"><div class="f">$$\frac{T_2}{T_1}=\frac{\ln(1/P_1-1)}{\ln(1/P_2-1)}$$</div><div class="w">Nueva temperatura con $E_c-E_F$ fijo. Evita arrastrar redondeos.</div></div>
+  </div>
+  <h4>Ejemplo mínimo (C3 2024-2, P2)</h4>
+  <p>Puro a 300 K con $P=2{,}8\times10^{-10}$: $E_g=2\cdot0{,}025\cdot\ln(3{,}57\times10^9)=1{,}10$ eV. A 600 K, $kT=0{,}05$ y $P=e^{-1{,}10/0{,}10}=e^{-11}=1{,}7\times10^{-5}$. Doblar la temperatura multiplica la ocupación por unas 60 000 veces.</p>
+  <div class="warn"><span class="t">Trampas</span>
+    <ul>
+      <li>Suponer $E_F$ al medio cuando no lo dicen. El enunciado de 2025-1 lo advierte con todas sus letras.</li>
+      <li>Olvidar el factor 2 en $E_g/2kT$.</li>
+      <li>Redondear $E_c-E_F$ y arrastrarlo: por eso la pauta de 2025-1 da 438,8 K, y lo exacto son 436 K.</li>
+    </ul>
+  </div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#B6">B6</a>, <a href="Ejercicios-C3-FIS140.html#B7">B7</a>, <a href="Ejercicios-C3-FIS140.html#B8">B8</a>, <a href="Ejercicios-C3-FIS140.html#B9">B9</a>, <a href="Ejercicios-C3-FIS140.html#B16">B16</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=p727_9bflkY" target="_blank" rel="noopener">Estudio de semiconductores I</a> <span class="meta">Universitat Politècnica de València · 7 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-dopaje">
+  <p class="eyebrow">Bloque B · Moléculas y sólidos · Problema 2</p>
+  <p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Fue el último inciso del P2 de 2026-1, con justificación física.</p>
+  <h2>Dopaje tipo n y tipo p</h2>
+  <p>Agregar unas pocas impurezas cambia drásticamente cuántos portadores hay, y el nivel de Fermi se corre:</p>
+  <figure class="fig"><svg class="diag" viewBox="0 0 624 222" role="img" aria-label="Bandas de energía con el nivel de Fermi en un semiconductor puro, tipo n y tipo p"><text x="104.0" text-anchor="middle" y="18">Puro (intrínseco)</text><rect class="fb" x="14" y="30" width="180" height="32"/><rect class="fs" x="14" y="174" width="180" height="40"/><text class="mt" x="22" y="50">E<tspan dy="3" font-size="9">c</tspan><tspan dy="-3"> </tspan></text><text class="mt" x="22" y="198">E<tspan dy="3" font-size="9">v</tspan><tspan dy="-3"> </tspan></text><line class="da" x1="14" y1="118.0" x2="194" y2="118.0"/><text class="ac" x="160" y="114.0">E<tspan dy="3" font-size="9">F</tspan><tspan dy="-3"> </tspan></text><text x="312.0" text-anchor="middle" y="18">Tipo n</text><rect class="fb" x="222" y="30" width="180" height="32"/><rect class="fs" x="222" y="174" width="180" height="40"/><text class="mt" x="230" y="50">E<tspan dy="3" font-size="9">c</tspan><tspan dy="-3"> </tspan></text><text class="mt" x="230" y="198">E<tspan dy="3" font-size="9">v</tspan><tspan dy="-3"> </tspan></text><line class="da" x1="222" y1="82.2" x2="402" y2="82.2"/><text class="ac" x="368" y="78.2">E<tspan dy="3" font-size="9">F</tspan><tspan dy="-3"> </tspan></text><text x="520.0" text-anchor="middle" y="18">Tipo p</text><rect class="fb" x="430" y="30" width="180" height="32"/><rect class="fs" x="430" y="174" width="180" height="40"/><text class="mt" x="438" y="50">E<tspan dy="3" font-size="9">c</tspan><tspan dy="-3"> </tspan></text><text class="mt" x="438" y="198">E<tspan dy="3" font-size="9">v</tspan><tspan dy="-3"> </tspan></text><line class="da" x1="430" y1="153.8" x2="610" y2="153.8"/><text class="ac" x="576" y="149.8">E<tspan dy="3" font-size="9">F</tspan><tspan dy="-3"> </tspan></text></svg><figcaption>En un semiconductor puro $E_F$ queda al medio de la brecha. Con dopaje tipo n sube hacia $E_c$ y con tipo p baja hacia $E_v$.</figcaption></figure>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th></th><th>Tipo n</th><th>Tipo p</th></tr></thead>
+      <tbody>
+        <tr><td>Impureza en Si</td><td>Donadora, con 5 electrones de valencia (P, As)</td><td>Aceptora, con 3 electrones de valencia (B, Ga)</td></tr>
+        <tr><td>Portadores que sobran</td><td>Electrones en conducción</td><td>Huecos en valencia</td></tr>
+        <tr><td>Posición de $E_F$</td><td>Sube hacia $E_c$</td><td>Baja hacia $E_v$</td></tr>
+        <tr><td>Criterio</td><td>$E_c-E_F\lt E_g/2$</td><td>$E_c-E_F>E_g/2$</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h4>Ejemplo mínimo (C3 2026-1, P2c)</h4>
+  <p>$E_g=1$ eV y $P_c=2{,}513\times10^{-6}$ a 300 K. Con $E_c-E_F=kT\ln(1/P_c-1)$ da $0{,}32$ eV, o $0{,}33$ eV con el $k_B$ de la pauta. Es menor que $E_g/2=0{,}5$ eV: $E_F$ está más cerca de conducción, así que es <strong>tipo n</strong>. La justificación física: si $E_F$ sube, los estados de conducción están más ocupados que en el caso puro, y eso solo se logra aportando electrones.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#B6">B6</a>, <a href="Ejercicios-C3-FIS140.html#B7">B7</a>, <a href="Ejercicios-C3-FIS140.html#B15">B15</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=o6i8uBvMAcU" target="_blank" rel="noopener">Semiconductores intrínsecos y extrínsecos</a> <span class="meta">Es Ciencia · 5 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=NrN7H5pqwNU" target="_blank" rel="noopener">Nivel de Fermi y dopaje: tipo N y tipo P</a> <span class="meta">Miguel Muñoz · 5 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=7KwGkluhPCQ" target="_blank" rel="noopener">Semiconductores intrínsecos y extrínsecos</a> <span class="meta">EnriQuantum · 14 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="b-foton">
+  <p class="eyebrow">Bloque B · Moléculas y sólidos · Problema 2</p>
+  <p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y hacer los ejercicios.</strong> Salió en 2026-1, 2025-2, 2025-1 y 2024-2. Suele ser el inciso a), y son puntos fáciles.</p>
+  <h2>Fotones y brecha</h2>
+  <div class="fl">
+    <div class="r"><div class="f">$$E_g=\frac{hc}{\lambda}$$</div><div class="w">Fotón emitido al caer de $E_c$ a $E_v$ (LED, fotoluminiscencia).</div></div>
+    <div class="r"><div class="f">$$\lambda_{\max}=\frac{hc}{E_g}$$</div><div class="w">Longitud de onda máxima que puede excitar un electrón a través de la brecha.</div></div>
+    <div class="r"><div class="f">$$K=E_\gamma-E_g$$</div><div class="w">Si el fotón trae de más, lo que sobra queda como energía cinética (2025-2).</div></div>
+    <div class="r"><div class="f">$$E_{\gamma,\min}=E_g+d$$</div><div class="w">Si el electrón parte a una profundidad $d$ bajo la cima de valencia (2024-2).</div></div>
+  </div>
+  <div class="tablewrap">
+    <table class="small num">
+      <thead><tr><th>Región</th><th>$\lambda$</th><th>$E_\gamma$</th></tr></thead>
+      <tbody>
+        <tr><td>Infrarrojo</td><td>más de 700 nm</td><td>menos de 1,77 eV</td></tr>
+        <tr><td>Visible</td><td>400 a 700 nm</td><td>1,77 a 3,10 eV</td></tr>
+        <tr><td>Ultravioleta</td><td>menos de 400 nm</td><td>más de 3,10 eV</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Un fotón con $E_\gamma\lt E_g$ no se puede absorber, y por eso un material con brecha grande es transparente a la luz visible. El silicio (1,12 eV) absorbe todo el visible y se ve opaco; el GaN (3,4 eV) lo deja pasar.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#B11">B11</a>, <a href="Ejercicios-C3-FIS140.html#B17">B17</a> y los incisos correspondientes de <a href="Ejercicios-C3-FIS140.html#B6">B6</a>, <a href="Ejercicios-C3-FIS140.html#B8">B8</a>, <a href="Ejercicios-C3-FIS140.html#B10">B10</a>.</p>
+</section>
+
+<section id="c-nuclido">
+  <p class="eyebrow">Bloque C · Núcleo · Problema 3</p>
+  <p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Escribir la ecuación y decir si sobran o faltan neutrones salió en 2023-2, 2022-2, 2024-2 y 2025-2. Son puntos seguros.</p>
+  <h2>Núclidos y estabilidad</h2>
+  <p>Un núcleo se escribe $^A_ZX$: $Z$ protones, $N=A-Z$ neutrones, $A$ nucleones en total. Los <strong>isótopos</strong> tienen el mismo $Z$ y distinto $N$. Su radio crece poco con el tamaño, $R=1{,}2\,A^{1/3}$ fm, lo que significa que todos los núcleos tienen casi la misma densidad, unos $2{,}3\times10^{17}$ kg/m³.</p>
+  <p>La fuerza nuclear los mantiene unidos a corta distancia, contra la repulsión eléctrica de los protones. Por eso los núcleos livianos estables tienen $N\approx Z$ y los pesados necesitan más neutrones que protones. Un núcleo inestable decae en la dirección que lo acerca a la estabilidad:</p>
+  <figure class="fig"><svg class="diag" viewBox="0 0 400 338" role="img" aria-label="Movimiento de un núcleo en el plano de neutrones y protones según el tipo de decaimiento"><defs><marker id="ahnz" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L8 4L0 8z" class="fa"/></marker></defs><line class="lg" x1="68" y1="19.2" x2="68" y2="300.8"/><line class="lg" x1="50.4" y1="28" x2="349.6" y2="28"/><line class="lg" x1="112" y1="19.2" x2="112" y2="300.8"/><line class="lg" x1="50.4" y1="72" x2="349.6" y2="72"/><line class="lg" x1="156" y1="19.2" x2="156" y2="300.8"/><line class="lg" x1="50.4" y1="116" x2="349.6" y2="116"/><line class="lg" x1="200" y1="19.2" x2="200" y2="300.8"/><line class="lg" x1="50.4" y1="160" x2="349.6" y2="160"/><line class="lg" x1="244" y1="19.2" x2="244" y2="300.8"/><line class="lg" x1="50.4" y1="204" x2="349.6" y2="204"/><line class="lg" x1="288" y1="19.2" x2="288" y2="300.8"/><line class="lg" x1="50.4" y1="248" x2="349.6" y2="248"/><line class="lg" x1="332" y1="19.2" x2="332" y2="300.8"/><line class="lg" x1="50.4" y1="292" x2="349.6" y2="292"/><rect class="fs" x="188" y="148" width="24" height="24" rx="3"/><text text-anchor="middle" x="200" y="164">X</text><line class="la" x1="172.0" y1="188.0" x2="112.0" y2="248.0" marker-end="url(#ahnz)"/><text class="ac" x="101.0" y="228.2">α</text><line class="la" x1="186.0" y1="146.0" x2="156.0" y2="116.0" marker-end="url(#ahnz)"/><text class="ac" x="141.9" y="111.6">β⁻</text><line class="la" x1="214.0" y1="174.0" x2="244.0" y2="204.0" marker-end="url(#ahnz)"/><text class="ac" x="231.7" y="228.6">β⁺, captura</text><text class="mt" text-anchor="middle" x="200" y="325.0">N (neutrones) →</text><text class="mt" x="10" y="16">Z ↑</text></svg><figcaption>Cómo se mueve el núcleo. $\alpha$: pierde 2 protones y 2 neutrones. $\beta^-$: un neutrón pasa a protón. $\beta^+$ y captura: un protón pasa a neutrón. $\gamma$: no se mueve.</figcaption></figure>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Situación del núcleo</th><th>Decaimiento típico</th><th>Qué pasa adentro</th></tr></thead>
+      <tbody>
+        <tr><td>Exceso de neutrones</td><td>$\beta^-$</td><td>$n\to p+e^-+\bar\nu_e$</td></tr>
+        <tr><td>Le faltan neutrones</td><td>$\beta^+$ o captura electrónica</td><td>$p\to n+e^++\nu_e$, o $p+e^-\to n+\nu_e$</td></tr>
+        <tr><td>Muy pesado</td><td>$\alpha$</td><td>Sale un núcleo de He: $Z-2$, $A-4$</td></tr>
+        <tr><td>Excitado</td><td>$\gamma$</td><td>Se relaja emitiendo un fotón: $Z$ y $A$ no cambian</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>En cada ecuación se conservan $A$ y la carga. Ejemplo (2023-2): $^{98}_{43}\text{Tc}\to{}^{98}_{44}\text{Ru}+\beta^-+\bar\nu_e$. Que sea inestable $\beta^-$ quiere decir que tiene un exceso de neutrones.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#C6">C6</a>, <a href="Ejercicios-C3-FIS140.html#C8">C8</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=6yioSUK5_yM" target="_blank" rel="noopener">Introducción a la física nuclear. Estructura del núcleo. Radiactividad alfa, beta, gamma</a> <span class="meta">Física Explicada · 31 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=7_L32gJUOr8" target="_blank" rel="noopener">Tipos de desintegraciones radiactivas</a> <span class="meta">Juanma Física · 7 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=4SfB8HOXSNU" target="_blank" rel="noopener">Decaimiento alfa, beta y gamma</a> <span class="meta">Khan Academy Español · 13 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="c-enlace">
+  <p class="eyebrow">Bloque C · Núcleo · Problema 3</p>
+  <p class="prio"><span class="lv">Probabilidad media</span><strong>Leer completo.</strong> Salió en 2025-1 P3a. Es una resta, pero con la trampa de los electrones.</p>
+  <h2>Energía de enlace</h2>
+  <p>Un núcleo pesa menos que sus protones y neutrones por separado. Esa diferencia, multiplicada por $c^2$, es la energía de enlace: lo que habría que entregar para desarmarlo.</p>
+  $$E_B=\big[Z\,M_H+N\,m_n-M(^A_ZX)\big]c^2,\qquad 1\ \text{u}=931{,}5\ \text{MeV}/c^2.$$
+  <p>Se usa $M_H=m_p+m_e=1{,}007825$ u para que los electrones se cancelen con los del átomo. La pauta de 2025-1 lo escribe $4(m_p+m_n+m_e)-M_{\text{Be}}$, que es lo mismo.</p>
+  <p>La energía de enlace por nucleón sube rápido en los núcleos livianos, llega a un máximo cerca de <strong>8,8 MeV en el hierro y el níquel</strong> y baja lentamente en los pesados. Ahí está la razón de que la fusión de núcleos livianos y la fisión de los pesados liberen energía.</p>
+  <h4>Ejemplo mínimo (C3 2025-1, P3a)</h4>
+  <p>$^8_4\text{Be}$: $E_B=[4(1{,}007276+1{,}008665+0{,}0005485)-8{,}0053051]\cdot931{,}5=0{,}06065\cdot931{,}5=56{,}5$ MeV.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#C3">C3</a>, <a href="Ejercicios-C3-FIS140.html#C12">C12</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=HOvpmP-6JTc" target="_blank" rel="noopener">Defecto de masa y energía de enlace</a> <span class="meta">Juanma Física · 13 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=e9tQW0xGm2g" target="_blank" rel="noopener">Energía de enlace por nucleón: explicación y ejercicio</a> <span class="meta">física fit · 8 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="c-masas">
+  <p class="eyebrow">Bloque C · Núcleo · Problema 3</p>
+  <p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y memorizar la tabla.</strong> El enunciado de 2025-2 lo advierte: «¡Cuidado con los electrones!». Es el error más caro del bloque.</p>
+  <h2>Valor $Q$: masas atómicas o nucleares</h2>
+  <p>$Q$ es la energía liberada: la masa inicial menos la final, por $c^2$. Si $Q>0$, el decaimiento puede ocurrir, y $Q$ se reparte como energía cinética de los productos.</p>
+  <p>Lo delicado es que los certámenes dan a veces la masa del <strong>átomo neutro</strong> $M$ y a veces la del <strong>núcleo solo</strong> $m$, con $M=m+Zm_e$. Según cuál te den, cambia la fórmula:</p>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Decaimiento</th><th>Con masas atómicas $M$</th><th>Con masas nucleares $m$</th></tr></thead>
+      <tbody>
+        <tr><td>$\alpha$</td><td>$[M_X-M_Y-M_{\text{He}}]\,c^2$</td><td>$[m_X-m_Y-m_\alpha]\,c^2$</td></tr>
+        <tr><td>$\beta^-$</td><td>$[M_X-M_Y]\,c^2$</td><td>$[m_X-m_Y-m_e]\,c^2$</td></tr>
+        <tr class="hl"><td>$\beta^+$</td><td>$[M_X-M_Y-2m_e]\,c^2$</td><td>$[m_X-m_Y-m_e]\,c^2$</td></tr>
+        <tr><td>Captura</td><td>$[M_X-M_Y]\,c^2$</td><td>$[m_X+m_e-m_Y]\,c^2$</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>No hay que memorizar la tabla si sabes de dónde sale. Parte de la columna nuclear, que es la física real, y reemplaza $m=M-Zm_e$. En $\beta^+$:</p>
+  $$Q/c^2=(M_X-Zm_e)-\big(M_Y-(Z-1)m_e\big)-m_e=M_X-M_Y-2m_e.$$
+  <p>Con $m_ec^2=0{,}511$ MeV, el $2m_ec^2$ son $1{,}022$ MeV: por eso $\beta^+$ tiene un umbral y la captura no.</p>
+  <div class="warn"><span class="t">Trampas</span>
+    <ul>
+      <li>Leer qué masas te dieron. 2023-2 dio nucleares; 2025-2 dio atómicas y lo avisó; 2024-2 dice «núcleos» y son atómicas, aunque en $\alpha$ no cambia nada.</li>
+      <li>Usar todos los decimales: se restan números que difieren en la tercera o quinta cifra decimal. Un cambio de 0,000001 u en la masa del He mueve el $Q$ del Be-8 en casi 2 keV.</li>
+      <li>Los enunciados incluyen masas que no se usan (Ru-94, C-12, Be-10). Elige solo las del decaimiento.</li>
+    </ul>
+  </div>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#C2">C2</a>, <a href="Ejercicios-C3-FIS140.html#C5">C5</a>, <a href="Ejercicios-C3-FIS140.html#C9">C9</a>, <a href="Ejercicios-C3-FIS140.html#C10">C10</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=6HU_KoOJq6s" target="_blank" rel="noopener">Valor Q de una reacción nuclear</a> <span class="meta">Modesto FISMAT · 21 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=iBqBiWFHW4o" target="_blank" rel="noopener">Energía y ajuste en reacciones nucleares: ejercicios</a> <span class="meta">física fit · 27 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="c-alfa">
+  <p class="eyebrow">Bloque C · Núcleo · Problema 3</p>
+  <p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y hacer los ejercicios.</strong> Salió en 2026-1, 2025-1, 2024-2 y 2021-2. El Be-8 se repitió dos veces.</p>
+  <h2>Decaimiento alfa</h2>
+  <p>$^A_ZX\to{}^{A-4}_{Z-2}Y+\alpha$. El núcleo emite un núcleo de helio, que escapa por efecto túnel a través de la barrera electrostática. La energía se reparte entre los dos productos, y como el padre estaba en reposo, salen con momentum igual y opuesto: $K=p^2/2m$, así que el más liviano se lleva casi todo.</p>
+  <div class="fl">
+    <div class="r"><div class="f">$$K_\alpha=Q\,\frac{M_Y}{M_Y+M_\alpha}$$</div><div class="w">Energía cinética de la $\alpha$. Es no relativista: $Q$ de unos MeV contra $m_\alpha c^2\approx3700$ MeV.</div></div>
+    <div class="r"><div class="f">$$K_Y=Q\,\frac{M_\alpha}{M_Y+M_\alpha}$$</div><div class="w">Retroceso del núcleo hijo.</div></div>
+    <div class="r"><div class="f">$$K=\frac Q2$$</div><div class="w">Si los dos productos son iguales, como en el Be-8.</div></div>
+  </div>
+  <h4>Ejemplo mínimo (C3 2026-1, P3b)</h4>
+  <p>$Q=(232{,}0380536-228{,}031064-4{,}002603)\cdot931{,}5=4{,}086$ MeV. Y $K_\alpha=4{,}086\cdot\dfrac{228{,}03}{232{,}03}=4{,}02$ MeV.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#C1">C1</a>, <a href="Ejercicios-C3-FIS140.html#C3">C3</a>, <a href="Ejercicios-C3-FIS140.html#C4">C4</a>, <a href="Ejercicios-C3-FIS140.html#C7">C7</a>, <a href="Ejercicios-C3-FIS140.html#C11">C11</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=WRxTvldnKXY" target="_blank" rel="noopener">Decaimientos radiactivos: alfa, beta, gamma</a> <span class="meta">Modesto FISMAT · 24 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="c-beta">
+  <p class="eyebrow">Bloque C · Núcleo · Problema 3</p>
+  <p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo y hacer los ejercicios.</strong> Beta menos en 2026-1 y 2023-2, beta más en 2025-2. La captura está en el formulario y en 2022-2.</p>
+  <h2>Decaimiento beta y captura electrónica</h2>
+  <div class="fl">
+    <div class="r"><div class="f">$$^A_ZX\to{}^{\;A}_{Z+1}Y+\beta^-+\bar\nu_e$$</div><div class="w">Beta menos: un neutrón pasa a protón.</div></div>
+    <div class="r"><div class="f">$$^A_ZX\to{}^{\;A}_{Z-1}Y+\beta^++\nu_e$$</div><div class="w">Beta más: un protón pasa a neutrón.</div></div>
+    <div class="r"><div class="f">$$^A_ZX+e^-\to{}^{\;A}_{Z-1}Y+\nu_e$$</div><div class="w">Captura: el núcleo se traga un electrón de una capa interna.</div></div>
+  </div>
+  <h4>Cómo se reparte la energía</h4>
+  <p>El núcleo hijo es tan pesado que su retroceso se desprecia. Queda repartir $Q$ entre el electrón y el neutrino, y como son tres cuerpos, el reparto <strong>no es fijo</strong>: el espectro del electrón es continuo, desde 0 hasta $Q$.</p>
+  <ul>
+    <li><strong>Si te dicen la fracción del neutrino</strong> (2026-1, el 40 %): $K_e=(1-0{,}40)\,Q$.</li>
+    <li><strong>Energía máxima del electrón:</strong> $K_{\max}=Q$, con el neutrino casi sin energía.</li>
+    <li><strong>Si salen en sentidos opuestos con el núcleo en reposo</strong> (2025-2): el momentum total es cero, así que $pc=E_\nu$. Con $Q=K+pc$ y $(pc)^2=K^2+2K\,m_ec^2$ se llega a una fórmula corta:</li>
+  </ul>
+  $$K=\frac{Q^2}{2\,(Q+m_ec^2)}.$$
+  <p>Aquí hay que usar energía relativista: $K$ es del orden de $m_ec^2$, y $\tfrac12mv^2$ da un resultado malo.</p>
+  <h4>Quién puede decaer cómo</h4>
+  <p>Con masas atómicas: $\beta^-$ exige $M_X>M_Y$; $\beta^+$ exige $M_X>M_Y+2m_e$; la captura solo $M_X>M_Y$. El Be-7 tiene un $Q$ de 0,86 MeV, menor que 1,022 MeV: <strong>solo puede decaer por captura</strong>. Y en la captura el neutrino se lleva toda la energía, con un único valor.</p>
+  <p class="muted">Un detalle que une con el bloque A: la captura deja un hueco en la capa K, y al llenarse emite rayos X característicos del elemento hijo.</p>
+  <h4>Ejemplo mínimo (C3 2025-2, P1)</h4>
+  <p>$^{11}_6\text{C}\to{}^{11}_5\text{B}+\beta^++\nu_e$. Con masas atómicas, $Q=(11{,}011431-11{,}00931)\cdot931{,}5-1{,}022=0{,}954$ MeV. Si positrón y neutrino salen opuestos: $K=0{,}954^2/(2\cdot1{,}465)=0{,}31$ MeV.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#C1">C1</a>, <a href="Ejercicios-C3-FIS140.html#C2">C2</a>, <a href="Ejercicios-C3-FIS140.html#C5">C5</a>, <a href="Ejercicios-C3-FIS140.html#C6">C6</a>, <a href="Ejercicios-C3-FIS140.html#C9">C9</a>, <a href="Ejercicios-C3-FIS140.html#C10">C10</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=ZJMRVDD4zAQ" target="_blank" rel="noopener">Decaimiento beta paso a paso: beta menos, beta más y captura electrónica</a> <span class="meta">U V · 14 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="c-gamma">
+  <p class="eyebrow">Bloque C · Núcleo · Problema 3</p>
+  <p class="prio"><span class="lv p1">Probabilidad baja</span><strong>Pasar por encima.</strong> No ha salido como inciso, pero puede aparecer dentro de un decaimiento $\beta$.</p>
+  <h2>Decaimiento gamma</h2>
+  <p>Un núcleo excitado baja a un nivel inferior emitiendo un fotón, igual que un átomo pero con energías de keV a MeV. $Z$ y $A$ no cambian. Si un decaimiento $\beta$ deja al hijo excitado, a la energía disponible para el electrón hay que restarle la de esos fotones: en el Co-60, $Q=2{,}82$ MeV, pero 2,51 MeV se van en dos $\gamma$, así que $K_{\max}=0{,}32$ MeV.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#C15">C15</a>.</p>
+</section>
+
+<section id="c-ley">
+  <p class="eyebrow">Bloque C · Núcleo · Problema 3</p>
+  <p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo y hacer los ejercicios.</strong> Salió en 2026-1 P3c, y el formulario trae $A=\lambda N$, el curio y el número de Avogadro: da para un inciso más.</p>
+  <h2>Ley de decaimiento y actividad</h2>
+  <div class="fl">
+    <div class="r"><div class="f">$$N(t)=N_0e^{-\lambda t}=N_02^{-t/T_{1/2}}$$</div><div class="w">Núcleos que quedan. Vale igual para la masa: $m(t)=m_0e^{-\lambda t}$.</div></div>
+    <div class="r"><div class="f">$$T_{1/2}=\frac{\ln2}{\lambda},\qquad T_m=\frac1\lambda$$</div><div class="w">Semivida y vida media (tiempo de vida).</div></div>
+    <div class="r"><div class="f">$$A=\lambda N=A_0e^{-\lambda t}$$</div><div class="w">Actividad: decaimientos por segundo. 1 Bq es un decaimiento por segundo y 1 Ci $=3{,}7\times10^{10}$ Bq.</div></div>
+    <div class="r"><div class="f">$$N=\frac{m\,N_A}{M}$$</div><div class="w">Núcleos en una muestra de masa $m$.</div></div>
+    <div class="r"><div class="f">$$t=\frac{T_{1/2}}{\ln2}\,\ln\frac{A_0}{A}$$</div><div class="w">Datación: la edad, desde cuánto bajó la actividad.</div></div>
+  </div>
+  <div class="tablewrap">
+    <table class="small num">
+      <thead><tr><th>Tiempo</th><th>$T_{1/2}$</th><th>$2T_{1/2}$</th><th>$3T_{1/2}$</th><th>$3{,}32\,T_{1/2}$</th><th>$6{,}64\,T_{1/2}$</th></tr></thead>
+      <tbody><tr><td>Queda</td><td>50 %</td><td>25 %</td><td>12,5 %</td><td>10 %</td><td>1 %</td></tr></tbody>
+    </table>
+  </div>
+  <h4>Ejemplo mínimo (C3 2026-1, P3c)</h4>
+  <p>Torio con $T_{1/2}=1{,}40\times10^{10}$ años, 1,0 kg inicial, a $t=1{,}0\times10^9$ años: $m=e^{-\ln2\cdot0{,}0714}=0{,}952$ kg.</p>
+  <div class="warn"><span class="t">Trampas</span>
+    <ul>
+      <li><strong>«Vida media» es ambiguo.</strong> El Sears llama vida media a $T_{1/2}$ y también a $1/\lambda$; el formulario de 2026-1 separa semivida $T_{1/2}$ y $T_m=1/\lambda$. Mira el símbolo y el contexto, y si te queda duda, escribe cuál estás usando.</li>
+      <li><strong>Las unidades de $\lambda$.</strong> Para la actividad en Bq, $\lambda$ va en s⁻¹: un año son $3{,}156\times10^7$ s.</li>
+      <li>La masa molar se usa en g/mol con la masa en gramos.</li>
+    </ul>
+  </div>
+  <p class="muted">Lo viste en tu Experiencia 7 con el Cs-137: las cuentas por segundo fluctuaban con desviación cercana a $\sqrt N$ (28 cuentas, $\sigma\approx5{,}3$). Cada núcleo decae al azar; lo que es predecible es el promedio.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#C1">C1</a>, <a href="Ejercicios-C3-FIS140.html#C13">C13</a>, <a href="Ejercicios-C3-FIS140.html#C14">C14</a>, <a href="Ejercicios-C3-FIS140.html#C15">C15</a>, <a href="Ejercicios-C3-FIS140.html#C17">C17</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=IJvCK41PJMM" target="_blank" rel="noopener">Ley exponencial de la desintegración radiactiva. Actividad. Datación por carbono-14</a> <span class="meta">Física Explicada · 25 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=s5_b7K7ZzjE" target="_blank" rel="noopener">Ley de desintegración radiactiva: fórmulas y ejercicios</a> <span class="meta">física fit · 20 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=2TZuSMvevts" target="_blank" rel="noopener">Ejercicio de desintegración radiactiva y carbono-14</a> <span class="meta">Física Explicada · 22 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=KC8pCImvn34" target="_blank" rel="noopener">Datación con carbono-14</a> <span class="meta">Modesto FISMAT · 20 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="c-reac">
+  <p class="eyebrow">Bloque C · Núcleo</p>
+  <p class="prio"><span class="lv p1">Probabilidad baja</span><strong>No es necesario.</strong> Ningún C3 de Casa Central la preguntó. Déjala para el final.</p>
+  <h2>Reacciones, fisión y fusión</h2>
+  <p>Una reacción se calcula igual que un decaimiento: se conservan $A$ y $Z$, y $Q$ es la masa antes menos la masa después, por $c^2$. Si $Q>0$ libera energía. La fisión de un núcleo pesado libera unos 200 MeV; la fusión deuterio-tritio, $^2\text{H}+{}^3\text{H}\to{}^4\text{He}+n$, libera 17,6 MeV, y de ellos el neutrón se lleva 14,0 MeV por la misma razón que la $\alpha$ se lleva casi todo en el decaimiento.</p>
+  <p><strong>Practica:</strong> <a href="Ejercicios-C3-FIS140.html#C16">C16</a>.</p>
+  <div class="vbox"><span class="t">Para verlo en video</span>
+    <ul class="videos">
+      <li><a href="https://www.youtube.com/watch?v=qe7v1HuXZno" target="_blank" rel="noopener">Fusión nuclear</a> <span class="meta">Física Explicada · 21 min</span></li>
+      <li><a href="https://www.youtube.com/watch?v=CEleE4ur5-Q" target="_blank" rel="noopener">Fisión nuclear</a> <span class="meta">Física Explicada · 23 min</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="formulario">
+  <p class="eyebrow">Cierre</p>
+  <p class="prio"><strong>Leer completo.</strong> Saber qué no te van a dar ahorra tiempo durante el certamen.</p>
+  <h2>Formulario: qué te dan y qué no</h2>
+  <p>El C3 de 2026-1 traía este formulario en la primera hoja, y tu C1 de este semestre usó el mismo formato, así que lo más probable es que el tuyo sea igual o muy similar. La columna de la derecha es lo que <strong>no</strong> viene y tienes que saber tú.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Tema</th><th>Viene en el formulario (2026-1)</th><th>Tienes que saberlo tú</th></tr></thead>
+      <tbody>
+        <tr><td>Constantes</td><td>$e$, $c$, $h$ en J·s y eV·s, $hc=1240$ eV·nm, $\hbar c=197$ eV·nm, $k_B=1/12\,000$ eV/K, $N_A$, $e^2/4\pi\varepsilon_0=1{,}44$ eV·nm, $m_ec^2=0{,}51$, $m_pc^2=938{,}27$, $m_nc^2=939{,}57$ MeV, 1 u $=931{,}5$ MeV/$c^2$, 1 Ci</td><td>$kT=0{,}025$ eV a 300 K; $a_0=0{,}0529$ nm; $2m_ec^2=1{,}022$ MeV; $0{,}376$ eV·nm² para el electrón en una caja; 1 año $=3{,}156\times10^7$ s</td></tr>
+        <tr><td>Fotones y relatividad</td><td>$E=hf=hc/\lambda$, $p=h/\lambda$, $E_\gamma=|\Delta E|$, $E=\sqrt{(mc^2)^2+(pc)^2}$</td><td>$K=E-mc^2$; regiones del espectro</td></tr>
+        <tr><td>Hidrógeno</td><td>$E_n=-E_0Z^2/n^2$, $E_0=13{,}6$ eV</td><td>Rangos de $n$, $\ell$, $m_\ell$; degeneración $n^2$; $L=\sqrt{\ell(\ell+1)}\hbar$; $L_z=m\hbar$; ángulo; $P(r)=r^2|R|^2$; series</td></tr>
+        <tr><td>Zeeman y selección</td><td>$\mu_B=e\hbar/2m_e$, $\Delta E=m\mu_BB_z$; $\Delta\ell=\pm1$, $\Delta m=0,\pm1$</td><td>Que son tres líneas; cómo listar estados finales</td></tr>
+        <tr><td>Caja 3D</td><td>No viene en 2026-1 (el pozo 1D sí venía en 2024-2 y 2025-2)</td><td>$E=E_0(n_x^2+n_y^2+n_z^2)$ y su degeneración</td></tr>
+        <tr><td>Muchos electrones</td><td>$E_n=-E_0Z_{ef}^2/n^2$; Moseley $10{,}2(Z-1)^2$ eV</td><td>Orden de llenado y capas; $Z_{ef}=n\sqrt{E_{ion}/E_0}$; el <a href="#a-rx2">conteo</a> de $K\beta$, $K\gamma$ y $L\alpha$</td></tr>
+        <tr><td>Moléculas</td><td>$E_{n,\ell}$, $\omega=\sqrt{k/m_r}$, $I=m_rd^2$, $m_r$, reglas moleculares</td><td>$\hbar\omega=(E_A+E_B)/2$; $\hbar^2/I=(E_B-E_A)/2$; balance del enlace iónico</td></tr>
+        <tr><td>Sólidos</td><td>Fermi-Dirac; $E_F=\tfrac{\hbar^2}{2m_e}(3\pi^2n)^{2/3}$</td><td>El despeje $E-E_F=kT\ln(1/f-1)$; $E_F$ al medio si es puro; criterio n o p; $E_g=hc/\lambda$; $n=\nu\rho N_A/M$</td></tr>
+        <tr><td>Núcleo</td><td>$Q=\Delta mc^2$, $A=\lambda N$, $N(t)=N_0e^{-\lambda t}$, $T_m=1/\lambda$, $T_{1/2}$, las cuatro ecuaciones de decaimiento</td><td>La <a href="#c-masas">tabla de masas atómicas y nucleares</a>; $E_B$; reparto de $K$ en $\alpha$; $K=Q^2/2(Q+mc^2)$; $N=mN_A/M$; $R=1{,}2A^{1/3}$ fm</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="errores">
+  <p class="eyebrow">Cierre</p>
+  <p class="prio"><strong>Leer completo.</strong> Son cinco minutos que salvan puntos. Léelo el miércoles antes de salir.</p>
+  <h2>Errores que cuestan puntos</h2>
+  <p>Salen de las rúbricas de 2023-2 y 2024-2, de las pautas y de los errores típicos de cada tema.</p>
+  <ol>
+    <li><strong>No poner unidades.</strong> La rúbrica baja de 3 a 2 puntos por eso.</li>
+    <li><strong>Usar $Z-1$ para todas las capas.</strong> Cuenta los electrones de cada nivel con el hueco ya abierto.</li>
+    <li><strong>Dejar el $3d$ en la capa N</strong> porque se llena después del $4s$. La capa la fija $n$.</li>
+    <li><strong>Olvidar las excepciones Cu y Ag</strong>, o entregar una configuración que no suma $Z$.</li>
+    <li><strong>Suponer $E_F$ al medio</strong> sin que el enunciado diga que es puro.</li>
+    <li><strong>Olvidar el 2 en $E_g/2kT$.</strong></li>
+    <li><strong>Equivocar n y p.</strong> Compara $E_c-E_F$ con $E_g/2$ y justifica con los portadores.</li>
+    <li><strong>Olvidar los dos electrones del $\beta^+$</strong> con masas atómicas, o el de $\beta^-$ con masas nucleares.</li>
+    <li><strong>Restar con pocos decimales</strong> en un valor $Q$.</li>
+    <li><strong>Darle toda la $Q$ a la $\alpha$</strong> sin el factor de retroceso. Si son dos productos iguales, cada uno lleva $Q/2$.</li>
+    <li><strong>Usar $\tfrac12mv^2$ en un $\beta$.</strong> Si $K$ es comparable con $m_ec^2$, usa la relación relativista.</li>
+    <li><strong>Confundir semivida con vida media</strong>, o usar $\lambda$ en años⁻¹ para una actividad en Bq.</li>
+    <li><strong>Usar las reglas de selección atómicas en una molécula</strong>, o al revés.</li>
+    <li><strong>Decir que $P(r)$ es máxima en el núcleo.</strong> Lo máximo en el centro es $|\psi|^2$; $P(r)$ se anula en $r=0$.</li>
+    <li><strong>Olvidar el signo de $E_n$:</strong> la energía del nivel es negativa y la del fotón, positiva.</li>
+  </ol>
+</section>
+
+<section id="videos">
+  <p class="eyebrow">Cierre</p>
+  <p class="prio"><strong>No es necesario.</strong> Úsalos solo si un tema no se entiende leyendo.</p>
+  <h2>Todos los videos</h2>
+  <p>Son los mismos de cada sección, reunidos. Revisé que existan, cuánto duran y que tengan el audio en español, pero no los vi completos. Dejé fuera dos que la búsqueda ofrecía en español y son en realidad un video portugués y uno inglés con doblaje automático.</p>
+    <h3>Bloque A · Átomos</h3>
+  <ul class="videos">
+    <li><a href="https://www.youtube.com/watch?v=hViliZVSMjA" target="_blank" rel="noopener">Partícula en una caja en 3 dimensiones</a> <span class="meta">MathArg · 10 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=9n1E3C5eVO0" target="_blank" rel="noopener">Partícula en caja cúbica: grado de degeneración</a> <span class="meta">Germán Fernández · 7 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=KB6_K9YG6tU" target="_blank" rel="noopener">Números cuánticos n, l, m, s</a> <span class="meta">Es Ciencia · 7 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=-QAjWF-BQC4" target="_blank" rel="noopener">FM35 Mecánica cuántica: átomo de hidrógeno 1</a> <span class="meta">Ramón Carrillo Bastos · 43 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=YsysAyCOy64" target="_blank" rel="noopener">Densidad de probabilidad del átomo de hidrógeno</a> <span class="meta">Pedro Cadena · 8 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=Ox-NB3ER3CY" target="_blank" rel="noopener">Función de distribución de probabilidad radial del átomo de hidrógeno</a> <span class="meta">Faustinianos · 36 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=Hq4Q36YSm8o" target="_blank" rel="noopener">Todo lo que siempre quisiste saber sobre el espín</a> <span class="meta">Date un Voltio · 5 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=s_Q9htL8VXY" target="_blank" rel="noopener">Efecto Zeeman normal</a> <span class="meta">Francisco Puente · 14 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=0mzxEGR2hcc" target="_blank" rel="noopener">Efecto Zeeman normal y anómalo</a> <span class="meta">Pamela Llerena · 18 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=sXfquCSZH0s" target="_blank" rel="noopener">Principio de exclusión de Pauli</a> <span class="meta">Rubén Sebastián · 6 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=aIvZ_pCkKNI" target="_blank" rel="noopener">Configuración electrónica: ejercicios resueltos</a> <span class="meta">Jorge Cogollo · 6 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=R3YVIjnKbgM" target="_blank" rel="noopener">Configuración electrónica</a> <span class="meta">Breaking Vlad · 12 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=-XKh8BIKquM" target="_blank" rel="noopener">Carga nuclear efectiva</a> <span class="meta">Es Ciencia · 5 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=rUsAmFfrVr0" target="_blank" rel="noopener">Apantallamiento y carga nuclear efectiva</a> <span class="meta">Amigos de la Química · 11 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=yc48L4u1_cs" target="_blank" rel="noopener">Espectro de rayos X</a> <span class="meta">Lab. Física Cuántica, U. de València · 9 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=x9krWXb-yGo" target="_blank" rel="noopener">Rayos X característicos</a> <span class="meta">Aula Virtual 503 · 4 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=qM_5lc11pHo" target="_blank" rel="noopener">Ley de Moseley</a> <span class="meta">Rumbo a ingeniería · 7 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=GcypkjQ6zy4" target="_blank" rel="noopener">Fluorescencia de rayos X</a> <span class="meta">F. Bautista · 5 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=HUIcquKI-mo" target="_blank" rel="noopener">Clase: fluorescencia de rayos X y ley de Moseley</a> <span class="meta">José Martín Ramallo López · 53 min</span></li>
+  </ul>
+
+  <h3>Bloque B · Moléculas y sólidos</h3>
+  <ul class="videos">
+    <li><a href="https://www.youtube.com/watch?v=-p9ISpso77o" target="_blank" rel="noopener">Los estados de energía de una molécula: rotación, vibración y espectros</a> <span class="meta">U V · 16 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=3hY-6F2B7uk" target="_blank" rel="noopener">Niveles de energía rotacionales de una molécula</a> <span class="meta">Física sin trucos · 5 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=YMIpZCU4hGw" target="_blank" rel="noopener">Energía vibracional de una molécula</a> <span class="meta">Física sin trucos · 5 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=V_B9iNrzFJM" target="_blank" rel="noopener">Teoría de bandas: conductores, semiconductores y aislantes</a> <span class="meta">Es Ciencia · 6 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=lul4YX5Hpb4" target="_blank" rel="noopener">¿WTF es un semiconductor? Teoría de bandas</a> <span class="meta">SizeMatters · 11 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=-RDRXiPLDmk" target="_blank" rel="noopener">Distribución de Fermi-Dirac y gas de electrones libres</a> <span class="meta">MathArg · 9 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=zwsBsyI9dus" target="_blank" rel="noopener">Energía y momento de Fermi</a> <span class="meta">David A. Miranda Mercado · 3 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=b7K7B2oLK5g" target="_blank" rel="noopener">Energía de Fermi</a> <span class="meta">Udearroba · 23 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=p727_9bflkY" target="_blank" rel="noopener">Estudio de semiconductores I</a> <span class="meta">Universitat Politècnica de València · 7 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=o6i8uBvMAcU" target="_blank" rel="noopener">Semiconductores intrínsecos y extrínsecos</a> <span class="meta">Es Ciencia · 5 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=NrN7H5pqwNU" target="_blank" rel="noopener">Nivel de Fermi y dopaje: tipo N y tipo P</a> <span class="meta">Miguel Muñoz · 5 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=7KwGkluhPCQ" target="_blank" rel="noopener">Semiconductores intrínsecos y extrínsecos</a> <span class="meta">EnriQuantum · 14 min</span></li>
+  </ul>
+
+  <h3>Bloque C · Núcleo</h3>
+  <ul class="videos">
+    <li><a href="https://www.youtube.com/watch?v=6yioSUK5_yM" target="_blank" rel="noopener">Introducción a la física nuclear. Estructura del núcleo. Radiactividad alfa, beta, gamma</a> <span class="meta">Física Explicada · 31 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=7_L32gJUOr8" target="_blank" rel="noopener">Tipos de desintegraciones radiactivas</a> <span class="meta">Juanma Física · 7 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=4SfB8HOXSNU" target="_blank" rel="noopener">Decaimiento alfa, beta y gamma</a> <span class="meta">Khan Academy Español · 13 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=HOvpmP-6JTc" target="_blank" rel="noopener">Defecto de masa y energía de enlace</a> <span class="meta">Juanma Física · 13 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=e9tQW0xGm2g" target="_blank" rel="noopener">Energía de enlace por nucleón: explicación y ejercicio</a> <span class="meta">física fit · 8 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=6HU_KoOJq6s" target="_blank" rel="noopener">Valor Q de una reacción nuclear</a> <span class="meta">Modesto FISMAT · 21 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=iBqBiWFHW4o" target="_blank" rel="noopener">Energía y ajuste en reacciones nucleares: ejercicios</a> <span class="meta">física fit · 27 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=WRxTvldnKXY" target="_blank" rel="noopener">Decaimientos radiactivos: alfa, beta, gamma</a> <span class="meta">Modesto FISMAT · 24 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=ZJMRVDD4zAQ" target="_blank" rel="noopener">Decaimiento beta paso a paso: beta menos, beta más y captura electrónica</a> <span class="meta">U V · 14 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=IJvCK41PJMM" target="_blank" rel="noopener">Ley exponencial de la desintegración radiactiva. Actividad. Datación por carbono-14</a> <span class="meta">Física Explicada · 25 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=s5_b7K7ZzjE" target="_blank" rel="noopener">Ley de desintegración radiactiva: fórmulas y ejercicios</a> <span class="meta">física fit · 20 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=2TZuSMvevts" target="_blank" rel="noopener">Ejercicio de desintegración radiactiva y carbono-14</a> <span class="meta">Física Explicada · 22 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=KC8pCImvn34" target="_blank" rel="noopener">Datación con carbono-14</a> <span class="meta">Modesto FISMAT · 20 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=qe7v1HuXZno" target="_blank" rel="noopener">Fusión nuclear</a> <span class="meta">Física Explicada · 21 min</span></li>
+    <li><a href="https://www.youtube.com/watch?v=CEleE4ur5-Q" target="_blank" rel="noopener">Fisión nuclear</a> <span class="meta">Física Explicada · 23 min</span></li>
+  </ul>
+
+  <h3>Fuentes de las técnicas de estudio</h3>
+  <ul>
+    <li>Dunlosky, J., et al. (2013). <a href="https://www.psychologicalscience.org/news/releases/which-study-strategies-make-the-grade.html" target="_blank" rel="noopener">Improving students' learning with effective learning techniques</a>. <em>Psychological Science in the Public Interest</em>.</li>
+    <li>Samani, J. y Pan, S. C. (2021). <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC8589969/" target="_blank" rel="noopener">Interleaved practice enhances memory and problem-solving ability in undergraduate physics</a>. <em>npj Science of Learning</em>.</li>
+    <li>Cepeda, N. J., et al. (2008). <a href="https://pubmed.ncbi.nlm.nih.gov/19076480/" target="_blank" rel="noopener">Spacing effects in learning: a temporal ridgeline of optimal retention</a>. <em>Psychological Science</em>.</li>
+  </ul>
+  <p class="muted" style="margin-top:40px">Hecha el 9 de noviembre de 2026 y actualizada el 10 con la Ayudantía 10. Material de la carpeta Material C3: Ayudantías 9 y 10 y doce certámenes anteriores. Sin las clases 17 en adelante, que no estaban en la carpeta.</p>
+</section>
+
+</div>
+</main>
+</div>
+<script>
+(function(){
+  var root = document.documentElement;
+  try { var saved = localStorage.getItem('fis140-tema'); if (saved === 'dark' || saved === 'light') root.setAttribute('data-theme', saved); } catch(e) {}
+
+  var themeBtn = document.getElementById('themeBtn');
+  if (themeBtn) themeBtn.addEventListener('click', function(){
+    var cur = root.getAttribute('data-theme');
+    if (!cur) cur = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var next = cur === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('fis140-tema', next); } catch(e) {}
+  });
+
+  var printBtn = document.getElementById('printBtn');
+  if (printBtn) printBtn.addEventListener('click', function(){
+    document.querySelectorAll('details.sol').forEach(function(d){ d.open = true; });
+    window.print();
+  });
+
+  var allBtn = document.getElementById('allBtn');
+  if (allBtn) allBtn.addEventListener('click', function(){
+    var ds = document.querySelectorAll('details.sol');
+    var anyClosed = Array.prototype.some.call(ds, function(d){ return !d.open; });
+    ds.forEach(function(d){ d.open = anyClosed; });
+    allBtn.textContent = anyClosed ? 'Cerrar soluciones' : 'Abrir soluciones';
+  });
+
+  var sidebar = document.getElementById('sidebar'), scrim = document.getElementById('scrim'), menuBtn = document.getElementById('menuToggle');
+  function closeMenu(){ sidebar.classList.remove('open'); scrim.classList.remove('on'); }
+  if (menuBtn) menuBtn.addEventListener('click', function(){ sidebar.classList.toggle('open'); scrim.classList.toggle('on'); });
+  if (scrim) scrim.addEventListener('click', closeMenu);
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('#nav a[href^="#"]'));
+  links.forEach(function(a){ a.addEventListener('click', function(){ if (window.innerWidth <= 920) closeMenu(); }); });
+  var targets = links.map(function(a){ return document.getElementById(a.getAttribute('href').slice(1)); });
+
+  var ticking = false;
+  function sync(){
+    ticking = false;
+    var y = window.scrollY + 140, idx = 0;
+    for (var i = 0; i < targets.length; i++) {
+      if (targets[i] && targets[i].getBoundingClientRect().top + window.scrollY <= y) idx = i;
+    }
+    if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 4) idx = targets.length - 1;
+    links.forEach(function(a, i){ a.classList.toggle('active', i === idx); });
+    var act = links[idx];
+    if (act && sidebar) {
+      var top = act.offsetTop, h = act.offsetHeight;
+      if (top < sidebar.scrollTop + 60 || top + h > sidebar.scrollTop + sidebar.clientHeight - 60) {
+        sidebar.scrollTop = top - sidebar.clientHeight / 2;
+      }
+    }
+  }
+  window.addEventListener('scroll', function(){ if (!ticking) { ticking = true; requestAnimationFrame(sync); } }, { passive: true });
+  window.addEventListener('load', sync);
+  sync();
+
+})();
+</script>
+</body>
+</html>

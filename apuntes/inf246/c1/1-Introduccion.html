@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Introducción · SO C1</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T1</div>
+    <div><h1>Introducción</h1><small>Sistemas Operativos · INF-246 · Certamen 1</small></div>
+  </div>
+  <div class="pages"><a href="0-Guia-de-estudio-C1.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del miércoles 30</small></span></a><a href="1-Introduccion.html" class=cur><b>1</b><span>Introducción<br><small style="color:var(--muted)">qué es un SO</small></span></a><a href="2-Planificacion-de-tareas.html"><b>2</b><span>Planificación de tareas<br><small style="color:var(--muted)">modelos, tiempos, estados</small></span></a><a href="3-Scheduling.html"><b>3</b><span>Scheduling<br><small style="color:var(--muted)">los algoritmos</small></span></a><a href="4-Gestion-del-tiempo.html"><b>4</b><span>Gestión del tiempo<br><small style="color:var(--muted)">interrupciones y reloj</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2 y P3 del certamen</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 1</div><a href="#t1-inicio">Qué pesa y qué estudiar</a><a href="#queeso">Qué es un sistema operativo</a><div class="grp">Práctica</div><a href="#t1-videos">Videos del tema</a><a href="#t1-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+
+<section id="t1-inicio">
+<h2>Tema 1 · Introducción</h2>
+<p class="lead">Clase <code>Introduccion</code> (primera clase, 5 de agosto). Qué es un sistema operativo, qué problemas resuelve, qué debe cumplir y qué servicios entrega.</p>
+
+<div class="hero">
+  <div class="big">Peso en el certamen: bajo</div>
+  <div class="sub">En una de las clases de planificación de tareas el profe separó la materia así: <i>“La introducción no es tanto un problema, pero [planificación de tareas], scheduling sí, y gestión de tiempo sí”</i> (audio <code>Voz 002_1</code>, min 50). Léelo una vez y aprende las tres listas; no le dediques más de 20-30 minutos.</div>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder escribir</h5>
+    <p>· La definición de SO (las dos interfaces + maneja usuarios).</p>
+    <p>· Los <b>3 problemas</b> que resuelve.</p>
+    <p>· Los <b>4 requerimientos</b> y los <b>4 servicios</b>.</p>
+    <p>· Por qué el reparto nunca es óptimo ni 100 % equitativo (la “bola de cristal”).</p>
+  </div>
+  <div class="card"><h5>Dónde está en los libros</h5>
+    <p><b>Silberschatz 10ª</b> (en <code>libro de apoyo/</code>): §1.1 <i>What Operating Systems Do</i> y §2.1 <i>Operating-System Services</i>.</p>
+    <p><b>Wolf, <i>Fundamentos de sistemas operativos</i></b> (UNAM, gratis y en español): cap. 1, §1.1-1.2 (pp. 17-19) y §1.7 “Organización de los sistemas operativos” (p. 37).</p>
+  </div>
+  <div class="card"><h5>Plan para este tema</h5>
+    <p>1. Leer la sección de abajo (15 min).</p>
+    <p>2. Si quieres una explicación en video, el de Neso Academy con audio en español (17 min).</p>
+    <p>3. Contestar en voz alta las preguntas del final.</p>
+  </div>
+</div>
+</section>
+<section id="queeso">
+<h2>Qué es un sistema operativo</h2>
+<p class="lead">Clase <code>Introduccion</code>. Es la clase más corta. El profe dijo que para el certamen <i>“la introducción no es tanto problema”</i>, pero sus listas cerradas (3 problemas, 4 requerimientos, 4 servicios) son fáciles de preguntar en la sección de conocimiento, así que vale la pena tenerlas.</p>
+
+<div class="box def">
+  <div class="bt">Definición del curso</div>
+  <p>Un sistema operativo es:</p>
+  <p><b>1.</b> Una <b>interfaz entre el hardware del computador y los usuarios</b> — ejecución de tareas y uso de recursos hardware (memoria, discos, red…).<br>
+  <b>2.</b> Una <b>interfaz entre las aplicaciones y el hardware</b> — uso de recursos con eficiencia y control, y uso equitativo del computador.<br>
+  <b>3.</b> Un sistema que <b>maneja usuarios</b>: personas y usuarios virtuales (otros computadores).</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · el ejemplo de la impresora<span class="ref">Clase 1 · Introducción · 00:30 / Clase 1 · Introducción · 22:46</span></div><p>Para explicar la palabra <b>interfaz</b> usó la impresora. Cada modelo habla un lenguaje distinto (PDF, PostScript, PCL…) y una aplicación no puede saberlos todos. Lo que hace es pedirle al SO “imprime esto”, y el SO, a través del <b>driver</b> (el “piloto de impresión”), se entiende con el aparato. La aplicación ve una <b>impresora genérica</b> con características (¿color?, ¿doble cara?, ¿tamaño máximo?), no el hardware real.</p><p>Y la llevó un paso más allá: la “impresora PDF” que traen todos los sistemas es una <b>impresora virtual</b>. La aplicación imprime igual que siempre, pero el resultado es un archivo. Eso es <b>virtualizar</b>: una interfaz idéntica sobre algo que no existe físicamente.</p></div>
+
+
+<div class="box ana">
+  <div class="bt">🎯 Analogía · el conserje del edificio</div>
+  <p>El hardware es el edificio: ascensores, luz, agua, bodegas. Tú eres un residente que no sabe (ni quiere saber) cómo funciona la caldera. El SO es el <b>conserje</b>: le pides "necesito agua caliente" y él se entiende con la caldera. Además reparte lo que es escaso —el ascensor, los estacionamientos— entre todos los residentes, y evita que uno se quede con todo. Las dos caras: <b>te simplifica la vida</b> (abstracción) y <b>reparte lo escaso</b> (administración de recursos).</p>
+</div>
+
+<h3>Los 3 problemas que resuelve un SO</h3>
+<div class="tw">
+<table>
+<thead><tr><th>#</th><th>Problema</th><th>Qué significa</th></tr></thead>
+<tbody>
+<tr><td><b>1</b></td><td>Control de un conjunto <b>complejo y evolutivo</b> de componentes</td><td>CPU, memoria, controladores, buses (PCI, USB), tarjeta de red, de sonido; y periféricos: teclados, mouse, impresoras 2D/3D, pendrives, discos externos, cintas, cámaras, micrófonos. Complejo <i>y evolutivo</i>: mañana enchufas hardware que no existía cuando se escribió el SO.</td></tr>
+<tr><td><b>2</b></td><td>Gestión de los <b>requerimientos de los usuarios</b></td><td>Ejecución de tareas múltiples, almacenamiento (crear y manipular archivos, gestionar el espacio de disco), comunicaciones (red local, Internet) y uso de periféricos.</td></tr>
+<tr><td><b>3</b></td><td>Realizar <b>compromisos</b></td><td>Todos quieren que su tarea termine primero y que su impresión salga primera. El SO debe satisfacer la mayor cantidad de requerimientos posible <i>preservando el funcionamiento correcto y equitativo</i> del computador para todos.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box def">
+  <div class="bt">Frase para citar</div>
+  <p>"El sistema operativo es un <b>intermedio necesario e imperativo</b> entre el computador, los usuarios y las aplicaciones."</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · “el sistema operativo no tiene bola de cristal”<span class="ref">Clase 1 · Introducción · 08:50 / Clase 1 · Introducción · 17:10 / Clase 1 · Introducción · 18:10</span></div><p>Es la frase que más repitió en todo el semestre, y la anunció así: <i>“eso lo voy a repetir no sé cuántas veces”</i>. El SO no sabe qué aplicaciones van a llegar, cuándo, cuánto van a durar ni cuánta memoria van a pedir o liberar. Tampoco puede confiar en el usuario (<i>“es el peor recurso que hay: todos quieren lo mejor para ellos y no para el de al lado”</i>) ni en las estadísticas. Por eso el reparto <b>nunca puede ser 100 % equitativo ni óptimo</b>: se hace lo mejor posible, y cuando el SO se equivoca lo paga en costo de gestión, <i>“pero será una vez de mil”</i>.</p><p>Sobre el tercer problema (compromisos) dio dos ejemplos de cosas que el SO debe <b>preservar</b>:</p><ul><li><b>Evitar el interbloqueo (deadlock):</b> A espera un recurso de B, B espera uno de C, y C espera uno de A. Es un ciclo de espera sin salida, salvo matar aplicaciones.</li><li><b>La saturación de memoria es inevitable:</b> si se ejecutan demasiados programas que piden mucha memoria, se va a saturar <i>sí o sí</i>; lo único que no se sabe es cuándo.</li></ul></div>
+
+
+<h3>Los 4 requerimientos de un SO</h3>
+<ol>
+  <li><b>Interfaz entre el hardware y las aplicaciones</b>, con <b>transparencia</b> frente a la evolución de ambos:
+    <ul><li>del <i>hardware</i>: cambias procesador, disco, placa madre o memoria, o enchufas algo por USB, y las aplicaciones siguen funcionando;</li>
+    <li>de las <i>aplicaciones</i>: piden recursos (memoria, almacenamiento, red) de forma dinámica y el SO debe seguirles el ritmo.</li></ul></li>
+  <li><b>Simplificación y abstracción</b> del uso del computador: virtualización e interfaz común de programación.</li>
+  <li><b>Gestión eficiente de los recursos</b>: optimizar lo disponible en función de las aplicaciones y los usuarios.</li>
+  <li><b>Corrección y protección</b>: buen uso de la arquitectura, gestión de derechos de acceso, <b>control de las instrucciones permitidas</b> y tolerancia a fallas (del hardware y de las aplicaciones).</li>
+</ol>
+
+<div class="box tip">
+  <div class="bt">Truco · el requerimiento 4 es el que enlaza con todo lo demás</div>
+  <p>"Control de las instrucciones permitidas" es la semilla de los <b>modos usuario / sistema</b> del procesador, que salen en varios certámenes. En <b>modo sistema</b> se pueden ejecutar <i>todas</i> las instrucciones, incluyendo un conjunto de <b>instrucciones privilegiadas</b>; en <b>modo usuario</b> solo las no privilegiadas. Si una aplicación corriera en modo sistema (como en el Intel 8086 con DOS) podría cambiar el propio SO o leer la memoria de otra aplicación, y el SO no tendría ningún control sobre ella.</p>
+</div>
+
+
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · los ejemplos de cada requerimiento<span class="ref">Clase 1 · Introducción · 11:18 / Clase 1 · Introducción · 21:08 / Clase 1 · Introducción · 24:47 / Clase 1 · Introducción · 28:02 / Clase 1 · Introducción · 29:03</span></div><ul><li><b>Evolución del hardware:</b> los periféricos USB son <i>hot plug</i> (se enchufan en caliente) y el SO tiene que adaptarse sin apagar. La memoria no: <i>“te aconsejo no abrir el computador y enchufar una placa de memoria en funcionamiento”</i>.</li><li><b>Evolución de las aplicaciones:</b> en C hacen <code>malloc</code> y casi nunca <code>free</code>; esa memoria no vuelve a estar disponible para las otras aplicaciones. Y la cantidad de aplicaciones cambia: no es lo mismo ejecutar 50 que 1000 en 16 GB.</li><li><b>Gestión eficiente:</b> nadie optimiza ya. Puso de ejemplo WhatsApp: unos 5 MB hace años contra cientos de MB hoy, casi sin funciones nuevas. Cuando las aplicaciones no ahorran, el SO tiene que hacerlo por ellas.</li><li><b>Protección:</b> el <i>segmentation fault</i> es el SO diciendo “esa zona de memoria no es tuya” y terminando el programa. Lo mismo con los archivos del laboratorio: todos están en el mismo disco, pero el sistema de archivos filtra según derechos de acceso.</li><li><b>Tolerancia a fallas:</b> un servidor nuevo del departamento con 8 GPU H200 perdió una placa de memoria a las dos semanas. En casa hay una sola fuente de poder; ese servidor tiene 8 redundantes que se cambian sin apagar.</li></ul></div>
+<h3>Los 4 servicios principales</h3>
+<div class="tw">
+<table>
+<thead><tr><th>Servicio</th><th>Incluye</th></tr></thead>
+<tbody>
+<tr><td><b>1. Inicio y término del sistema</b></td><td>Verificación del estado del hardware, <b>asignación de las interrupciones</b>, terminación limpia (aplicaciones, discos, etc.).</td></tr>
+<tr><td><b>2. Gestión de memoria, procesos y procesador</b></td><td>Entidades de ejecución (procesos / threads) y <b>planificación de procesos</b> (Batch, Time Sharing). ← esta es tu Unidad 1.</td></tr>
+<tr><td><b>3. Gestión de periféricos y comunicaciones</b></td><td><b>Interrupciones y excepciones</b>; tarjetas de red, video, sonido, discos, impresoras.</td></tr>
+<tr><td><b>4. Interfaz con el usuario</b></td><td>Lenguaje de comandos — <b>SHELL</b> (sh, bash, csh, tcsh, zsh), comandos (<code>ls</code>, <code>ps</code>, <code>kill</code>, <code>less</code>, <code>cd</code>) y aplicaciones.</td></tr>
+</tbody>
+</table>
+</div>
+
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 720 340" width="720" role="img" aria-label="Estructura general de un sistema operativo">
+ <g font-family="system-ui,sans-serif" font-size="13">
+  <rect x="30" y="18" width="660" height="46" rx="9" fill="var(--ana-soft)" stroke="var(--ana)"/>
+  <text x="360" y="41" text-anchor="middle" fill="var(--ana)" font-weight="700">USUARIOS</text>
+  <text x="360" y="57" text-anchor="middle" fill="var(--muted)" font-size="11">personas · usuarios virtuales (otros computadores)</text>
+
+  <rect x="30" y="76" width="660" height="52" rx="9" fill="var(--ex-soft)" stroke="var(--ex)"/>
+  <text x="360" y="97" text-anchor="middle" fill="var(--ex)" font-weight="700">APLICACIONES  ·  SHELL</text>
+  <text x="360" y="116" text-anchor="middle" fill="var(--muted)" font-size="11">firefox, libreoffice, gcc, juegos · bash / zsh · ls, ps, kill, cd</text>
+
+  <rect x="30" y="140" width="660" height="40" rx="9" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="360" y="165" text-anchor="middle" fill="var(--warn)" font-weight="700">LLAMADAS AL SISTEMA (system calls)  —  frontera usuario / sistema</text>
+
+  <rect x="30" y="192" width="660" height="88" rx="9" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="360" y="214" text-anchor="middle" fill="var(--brand)" font-weight="700">KERNEL — modo SISTEMA (todas las instrucciones)</text>
+  <rect x="46" y="226" width="150" height="42" rx="7" fill="var(--panel)" stroke="var(--brand)"/>
+  <text x="121" y="243" text-anchor="middle" fill="var(--ink)" font-size="11.5">Planificación</text>
+  <text x="121" y="258" text-anchor="middle" fill="var(--muted)" font-size="10.5">scheduler + allocator</text>
+  <rect x="206" y="226" width="150" height="42" rx="7" fill="var(--panel)" stroke="var(--brand)"/>
+  <text x="281" y="243" text-anchor="middle" fill="var(--ink)" font-size="11.5">Memoria</text>
+  <text x="281" y="258" text-anchor="middle" fill="var(--muted)" font-size="10.5">asignación · swapping</text>
+  <rect x="366" y="226" width="150" height="42" rx="7" fill="var(--panel)" stroke="var(--brand)"/>
+  <text x="441" y="243" text-anchor="middle" fill="var(--ink)" font-size="11.5">E/S y periféricos</text>
+  <text x="441" y="258" text-anchor="middle" fill="var(--muted)" font-size="10.5">drivers · interrupciones</text>
+  <rect x="526" y="226" width="148" height="42" rx="7" fill="var(--panel)" stroke="var(--brand)"/>
+  <text x="600" y="243" text-anchor="middle" fill="var(--ink)" font-size="11.5">Tiempo</text>
+  <text x="600" y="258" text-anchor="middle" fill="var(--muted)" font-size="10.5">reloj · timers · plazos</text>
+
+  <rect x="30" y="292" width="660" height="38" rx="9" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="360" y="316" text-anchor="middle" fill="var(--accent)" font-weight="700">HARDWARE — CPU · memoria · discos · controladores · buses · periféricos</text>
+ </g>
+</svg>
+</div>
+<figcaption>Estructura general de un SO. La línea naranja es la frontera del ramo: todo lo que está arriba pide, todo lo que está abajo obedece, y el kernel traduce.</figcaption>
+</figure>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · los dos pilares y POSIX<span class="ref">Clase 1 · Introducción · 31:04 / Clase 1 · Introducción · 32:06 / Clase 1 · Introducción · 34:41</span></div><p>Del servicio de <b>inicio</b> dijo que al prender el computador el SO revisa el hardware (memoria, puertos, velocidad y cantidad de cores) y el estado del disco si no se apagó bien. Y remarcó que de todos los servicios hay dos sin los cuales <i>“no hay ejecución de nada”</i>: <b>la planificación de tareas y la gestión de memoria</b>. Son justamente las unidades 1 y 2 del ramo.</p><p>Sobre la capa de interfaz: hay normas internacionales como <b>POSIX</b> que ofrecen la misma interfaz de llamadas al sistema en distintos SO, para que una aplicación no dependa de uno solo.</p></div>
+
+
+<h3>Variedad de sistemas operativos</h3>
+<ul>
+  <li><b>Computadores:</b> Linux, Windows, macOS, FreeBSD, Solaris.</li>
+  <li><b>Smartphones y TV:</b> Android, iOS, Tizen, WebOS.</li>
+  <li><b>Tiempo real</b> (aviones, autos): <b>QNX</b>.</li>
+</ul>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · de dónde está cada SO<span class="ref">Clase 1 · Introducción · 35:43</span></div><p>Tizen está en la mayoría de los televisores (y hasta lavadoras) Samsung; WebOS es el equivalente de LG; <b>QNX</b> está en muchos autos, como sistema de tiempo real. macOS viene de FreeBSD, “con la salsa de UNIX”. En uso real manda Windows en computadores y Android en teléfonos (más o menos 80/20 contra iOS).</p></div>
+
+<div class="box tip">
+  <div class="bt">Truco · por qué menciona los de tiempo real</div>
+  <p>No es relleno. Un SO de tiempo real debe <b>reaccionar a un evento antes de un tiempo máximo t</b>, y eso obliga a que las rutinas de interrupción sean <b>reentrantes</b> (una nueva interrupción puede entrar a la misma rutina mientras la anterior aún no termina). Es mucho más difícil de programar. Sale en el <code>Mini_curso_Interrupciones</code>.</p>
+</div>
+</section><section id="t1-videos">
+<h2>Videos del tema</h2>
+<p class="lead">Elegidos después de revisar decenas de candidatos. De cada uno se transcribió el audio para comprobar qué explica y en qué minuto; los marcados como recomendados son los que más se parecen a lo que pregunta el profe.</p>
+
+<div class="box tip"><div class="bt">Cómo ver estos videos en español</div>
+<p><b>Audio en español:</b> en los marcados “Audio en español (doblaje)”, ⚙ Configuración → <b>Pista de audio</b> → Español. Es un doblaje automático de YouTube; se entiende bien.<br>
+<b>Subtítulos:</b> en los que están solo en inglés, activa CC y luego ⚙ → Subtítulos → <b>Traducir automáticamente</b> → Español.</p></div>
+<div class="box warn"><div class="bt">Ojo con la nomenclatura de los videos</div>
+<p>El profe usa la escuela francesa. En los videos vas a oír: <b>SJF</b> = SJN · <b>SRTF / SRT</b> = SRTN · <b>SPN</b> = SJN · <b>HRRN</b> = HPRN (no entra) · <b>preemptive / apropiativo</b> = con requisición · <b>non-preemptive / no apropiativo</b> = sin interrupción · <b>MLFQ / feedback</b> ≈ MLQ del profe · <b>turnaround time</b> = lo que el profe llama <b>tiempo de respuesta</b>. Cuidado: <b>response time</b> en OSTEP y en muchos videos es otra cosa (el tiempo hasta que la tarea se ejecuta por primera vez).</p></div>
+<div class="vgrid">
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=vBURTt97EkA" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/vBURTt97EkA/mqdefault.jpg" alt=""><span class="rk">RECOMENDADO</span><span class="dur">16:45</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=vBURTt97EkA" target="_blank" rel="noopener">Introduction to Operating Systems</a>
+    <div class="ch">Neso Academy · 16:45 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Qué es un SO como intermediario entre el usuario y el hardware, cómo administra CPU, memoria y E/S, y sus funciones y metas. Es la versión en video de la definición y los servicios de la clase.</p>
+    <div class="ver"><b>Qué ver:</b> Completo. Es básico y va lento: puedes verlo a 1,5×.</div>
+    
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=sBkpJdysm9k" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/sBkpJdysm9k/mqdefault.jpg" alt=""><span class="dur">8:33</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=sBkpJdysm9k" target="_blank" rel="noopener">Introducción a los Sistemas Operativos · Capítulo I</a>
+    <div class="ch">Detrás del Sistema Operativo · 8:33 min</div>
+    <div class="tags"><span class="lt es">En español</span></div>
+    <p>Basado en el capítulo 1 de Tanenbaum: el SO como “máquina extendida” (abstracción) y como “administrador de recursos”, más un recorrido por las generaciones de computadores que sirve de puente al Tema 2.</p>
+    <div class="ver"><b>Qué ver:</b> Completo (8 min).</div>
+    
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=eP_P4KOjwhs" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/eP_P4KOjwhs/mqdefault.jpg" alt=""><span class="dur">13:09</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=eP_P4KOjwhs" target="_blank" rel="noopener">Why Applications Are Operating-System Specific</a>
+    <div class="ch">Core Dumped · 13:09 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Por qué un mismo programa no corre en otro SO: las aplicaciones piden servicios al SO por llamadas al sistema, y cada SO tiene las suyas. Es la idea de “interfaz entre aplicaciones y hardware” y explica para qué existe POSIX.</p>
+    <div class="ver"><b>Qué ver:</b> Opcional. Hasta el minuto 9 es lo que conecta con la clase; lo de formatos de ejecutables es extra.</div>
+    
+  </div>
+</div>
+</div>
+</section>
+<section id="t1-preguntas">
+<h2>Preguntas del tema</h2>
+<p class="lead">No hay ejercicios numéricos en este tema. Lo que cae son preguntas cortas de conocimiento. Contesta en voz alta antes de abrir.</p>
+
+<details class="ex">
+  <summary>1 · ¿Qué es un sistema operativo? <span class="tag">definición</span></summary>
+  <div class="body"><p>Es una <b>interfaz entre el hardware y los usuarios</b> (permite ejecutar tareas y usar los recursos del hardware: memoria, discos, red) y una <b>interfaz entre las aplicaciones y el hardware</b> (uso eficiente, controlado y equitativo de los recursos). Además <b>maneja usuarios</b>, tanto personas como usuarios virtuales (otros computadores). Es un intermediario necesario entre el computador, los usuarios y las aplicaciones.</p></div>
+</details>
+
+<details class="ex">
+  <summary>2 · ¿Cuáles son los tres problemas que resuelve un SO? <span class="tag">lista cerrada</span></summary>
+  <div class="body"><p><b>1.</b> Controlar un conjunto <b>complejo y evolutivo</b> de componentes (CPU, memoria, buses, periféricos que se enchufan y desenchufan).<br><b>2.</b> Gestionar los <b>requerimientos de los usuarios</b>: ejecución de tareas, almacenamiento, comunicaciones y periféricos.<br><b>3.</b> Realizar <b>compromisos</b>: todos quieren que su tarea termine primero, y hay que satisfacer la mayor cantidad posible preservando el funcionamiento correcto y equitativo del computador.</p></div>
+</details>
+
+<details class="ex">
+  <summary>3 · ¿Por qué un SO no puede repartir los recursos de forma óptima ni 100 % equitativa? <span class="tag">idea del profe</span></summary>
+  <div class="body"><p>Porque <b>no conoce el futuro</b>: no sabe qué tareas llegarán, cuándo, cuánto durarán ni cuánta memoria usarán. No puede confiar en lo que declara el usuario, y las estadísticas no sirven porque la mayoría de las tareas no son deterministas. Solo puede aplicar aproximaciones de bajo costo, que a veces se equivocan (poco frecuente) y ese error se paga en costo de gestión.</p></div>
+</details>
+
+<details class="ex">
+  <summary>4 · Nombre los 4 requerimientos de un SO <span class="tag">lista cerrada</span></summary>
+  <div class="body"><p><b>1.</b> Interfaz entre hardware y aplicaciones, <b>transparente</b> a la evolución de ambos. <b>2.</b> <b>Simplificación y abstracción</b> (virtualización, interfaz común de programación). <b>3.</b> <b>Gestión eficiente</b> de los recursos. <b>4.</b> <b>Corrección y protección</b>: derechos de acceso, control de las instrucciones permitidas y tolerancia a fallas.</p></div>
+</details>
+
+<details class="ex">
+  <summary>5 · Dé un ejemplo de abstracción y uno de virtualización <span class="tag">ejemplo de clase</span></summary>
+  <div class="body"><p><b>Abstracción:</b> la aplicación imprime sobre una impresora “genérica” sin saber el lenguaje del modelo real; el driver se encarga. <b>Virtualización:</b> la impresora PDF, que presenta la misma interfaz que una impresora pero no existe físicamente (el resultado es un archivo).</p></div>
+</details>
+
+<details class="ex">
+  <summary>6 · ¿Cuáles son los 4 servicios principales? ¿Cuáles dos son imprescindibles? <span class="tag">lista + clase</span></summary>
+  <div class="body"><p><b>1.</b> Inicio y término del sistema. <b>2.</b> Gestión de memoria, procesos y procesador (incluye la planificación). <b>3.</b> Gestión de periféricos y comunicaciones (interrupciones y excepciones). <b>4.</b> Interfaz con el usuario (shell, comandos, aplicaciones). Según el profe, sin <b>planificación de tareas</b> y <b>gestión de memoria</b> no se ejecuta nada.</p></div>
+</details>
+<details class="ex">
+  <summary>11 · Diferencia entre modo de ejecución USUARIO y SISTEMA <span class="tag">2014 · 5 pts</span></summary>
+  <div class="body"><p>En modo <b>sistema</b> se pueden ejecutar <b>todas</b> las instrucciones del procesador, incluyendo un conjunto de <b>instrucciones privilegiadas</b>. En modo <b>usuario</b> solamente las <b>no privilegiadas</b>.</p><p><i>Extra (2015 P4.1):</i> si las aplicaciones corren en modo sistema (como en el 8086 con DOS), pueden hacer cualquier operación —cambiar el SO, acceder a la memoria de otra aplicación— y el SO <b>no puede ejercer ningún control</b> sobre ellas.</p></div>
+</details>
+</section>
+
+<div class="pnav"><a href="0-Guia-de-estudio-C1.html"><small>← Anterior</small>Guía de estudio</a><a class="nx" href="2-Planificacion-de-tareas.html"><small>Siguiente →</small>Planificación de tareas</a></div>
+</main>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('so-c1-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('so-c1-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='so-c1-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+</script>
+
+</body>
+</html>

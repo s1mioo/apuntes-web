@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modo V/F del Control 3 · IMAFI</title>
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+  --line:#e6e6ea; --brand:#0e7a5f; --brand-soft:#e3f4ee;
+  --accent:#3a5bd9; --accent-soft:#eaefff;
+  --warn:#c2410c; --warn-soft:#fdecdf;
+  --ex:#7c3aed; --ex-soft:#f1eafe;
+  --ana:#b4306e; --ana-soft:#fce8f1;
+  --cert:#a16207; --cert-soft:#fdf5d8;
+  --ok:#0e7a5f; --ok-soft:#dff3ea; --no:#c0392b; --no-soft:#fbe4e1;
+  --code:#f0f1f4;
+  --g-mov:#f3f3f6; --g-sal:#edf1ff; --g-inv:#e6f5ef; --g-res:#fdf0e6;
+  --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+  --sidew:300px;
+}
+:root[data-theme="dark"]{
+  --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+  --line:#2a2e39; --brand:#4fd1ab; --brand-soft:#16302a;
+  --accent:#8aa2ff; --accent-soft:#20263a;
+  --warn:#f5a15f; --warn-soft:#3a2413;
+  --ex:#c4a6ff; --ex-soft:#271c3d;
+  --ana:#ff9ec4; --ana-soft:#3a1a2a;
+  --cert:#f2c94c; --cert-soft:#332a10;
+  --ok:#4fd1ab; --ok-soft:#153129; --no:#ff8a80; --no-soft:#3a1c1a;
+  --code:#232733;
+  --g-mov:#20232c; --g-sal:#1d2436; --g-inv:#162a24; --g-res:#2f2318;
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#4fd1ab; --brand-soft:#16302a;
+    --accent:#8aa2ff; --accent-soft:#20263a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --cert:#f2c94c; --cert-soft:#332a10;
+    --ok:#4fd1ab; --ok-soft:#153129; --no:#ff8a80; --no-soft:#3a1c1a;
+    --code:#232733;
+    --g-mov:#20232c; --g-sal:#1d2436; --g-inv:#162a24; --g-res:#2f2318;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.62;font-size:16.5px;-webkit-font-smoothing:antialiased}
+.layout{display:flex;align-items:flex-start}
+.sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--panel);border-right:1px solid var(--line);padding:22px 14px 60px}
+.content{flex:1 1 auto;min-width:0;padding:38px clamp(16px,4vw,64px) 120px;max-width:1040px;margin:0 auto}
+.brand{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.brand .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+  display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;flex:0 0 auto}
+.brand h1{font-size:15px;margin:0;line-height:1.2}
+.brand small{color:var(--muted);font-size:12px;display:block}
+nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 8px 6px;font-weight:700}
+nav a{display:block;color:var(--ink);text-decoration:none;padding:6px 10px;border-radius:7px;font-size:13.5px;opacity:.85}
+nav a:hover{background:var(--brand-soft);opacity:1}
+nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+nav a.sec{display:flex;align-items:baseline;gap:6px}
+nav a .nt{flex:1 1 auto;min-width:0}
+nav a.page{display:flex;gap:8px;align-items:baseline}
+nav a.page .pn{font-size:11px;font-weight:700;color:var(--muted);min-width:14px}
+nav a.page.cur{background:var(--brand);color:#fff;opacity:1;font-weight:600}
+nav a.page.cur .pn{color:#fff}
+.toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:7px 10px;
+  font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;font-family:inherit}
+.btn:hover{background:var(--brand-soft)}
+.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn.primary:hover{filter:brightness(1.08)}
+h2{font-size:26px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px;line-height:1.25}
+h3{font-size:20px;margin:30px 0 6px;scroll-margin-top:20px}
+h4{font-size:16px;margin:20px 0 4px;color:var(--brand)}
+p{margin:10px 0}
+.lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+.pagehead{margin-bottom:10px}
+.pagehead .kicker{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.pagehead h1{font-size:32px;margin:4px 0 6px;letter-spacing:-.015em;line-height:1.15}
+section{border-top:1px solid var(--line);padding-top:34px;margin-top:46px}
+section:first-of-type{border-top:0;margin-top:10px}
+a{color:var(--brand)}
+ul,ol{margin:10px 0;padding-left:22px}
+li{margin:5px 0}
+code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;font-family:"SF Mono",Menlo,Consolas,monospace}
+.mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px}
+hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--brand-soft);
+  color:var(--brand);margin-right:6px;vertical-align:middle;white-space:nowrap}
+.pill.a{background:var(--accent-soft);color:var(--accent)}
+.pill.w{background:var(--warn-soft);color:var(--warn)}
+.pill.e{background:var(--ex-soft);color:var(--ex)}
+.pill.c{background:var(--cert-soft);color:var(--cert)}
+.pill.hi{background:var(--no-soft);color:var(--no)}
+/* prioridad */
+.prio{margin:2px 0 18px;font-size:14.5px;color:var(--muted)}
+.prio strong{color:var(--ink)}
+.lv{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:1px 8px;border-radius:5px;border:1px solid var(--line);color:var(--ink);margin-right:8px;vertical-align:1px;white-space:nowrap}
+.lv.p3{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+.lv.p2{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.lv.p1{color:var(--muted);border-style:dashed}
+td .lv{margin-right:0}
+.pd{display:inline-flex;gap:3px;align-items:center;color:var(--muted);vertical-align:1px;flex:0 0 auto}
+.pd i{display:inline-block;width:6px;height:6px;border-radius:50%;border:1px solid currentColor;box-sizing:border-box}
+.pd i.on{background:currentColor}
+.pd.p3{color:var(--brand)}
+.pd.p2{color:var(--accent)}
+/* cajas */
+.box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;margin:16px 0;
+  background:var(--panel);box-shadow:var(--shadow)}
+.box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px}
+.box.formula{border-left-color:var(--brand);background:var(--brand-soft)} .box.formula .bt{color:var(--brand)}
+.box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+.box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+.box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+.box.cert{border-left-color:var(--cert);background:var(--cert-soft)} .box.cert .bt{color:var(--cert)}
+.box > :last-child{margin-bottom:0}
+.fx{display:block;text-align:center;font-size:17px;margin:14px 0;padding:10px 12px;background:var(--panel);
+  border:1px solid var(--line);border-radius:9px;font-variant-numeric:tabular-nums;overflow-x:auto}
+.fx b{color:var(--brand)}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 5px}
+.frac .top{border-bottom:1.5px solid currentColor;padding:0 6px;font-size:.9em}
+.frac .bot{padding:0 6px;font-size:.9em}
+.tsec{font-size:12px;color:var(--muted)}
+/* ejercicios */
+details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;margin:16px 0;
+  background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;background:var(--ex-soft);color:var(--ex);flex-wrap:wrap;
+  display:flex;gap:10px;align-items:center}
+details.ex>summary::-webkit-details-marker{display:none}
+details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);padding:1px 8px;border-radius:999px;
+  border:1px solid var(--line);margin-left:auto}
+details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+details.ex[open]>summary::before{transform:rotate(90deg)}
+details.ex .body{padding:6px 18px 16px}
+.enun{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--panel);box-shadow:var(--shadow);margin:16px 0}
+.enun .et{font-weight:700;font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.enun ol[type="a"]{padding-left:26px}
+.step{margin:14px 0;overflow-x:auto}
+.step .n{display:inline-block;background:var(--ex);color:#fff;border-radius:6px;font-size:11px;font-weight:700;padding:1px 7px;margin-right:6px}
+.ans{display:inline-block;font-weight:700;color:var(--brand);background:var(--brand-soft);border-radius:6px;padding:0 7px}
+/* tablas */
+.tablewrap{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:10px}
+.tablewrap.narrow{max-width:560px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:420px;background:var(--panel)}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--brand-soft);color:var(--brand);font-size:12.5px;text-transform:uppercase;letter-spacing:.03em}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.z{color:var(--muted);opacity:.6}
+tr.tot td{font-weight:700;border-top:2px solid var(--line);background:var(--code)}
+tr.sub td{font-weight:600;background:var(--code)}
+td.ind{padding-left:28px}
+td.grp{font-style:italic;color:var(--muted);font-size:13.5px}
+td.b{font-weight:700}
+td details summary{cursor:pointer;color:var(--brand);font-weight:600;font-size:13.5px}
+td details[open] summary{margin-bottom:4px}
+.vf{font-weight:700} .vf.v{color:var(--ok)} .vf.f{color:var(--no)}
+.up{color:var(--ok);font-weight:700} .dn{color:var(--no);font-weight:700} .eq{color:var(--muted);font-weight:700}
+/* balance de 8 columnas */
+table.b8{font-size:13.5px;min-width:860px}
+table.b8 th,table.b8 td{padding:6px 9px}
+table.b8 th{text-align:center}
+table.b8 th.g-mov,table.b8 td:nth-child(3),table.b8 td:nth-child(4){background:var(--g-mov)}
+table.b8 th.g-sal{background:var(--g-sal);color:var(--accent)}
+table.b8 th.g-inv{background:var(--g-inv);color:var(--brand)}
+table.b8 th.g-res{background:var(--g-res);color:var(--warn)}
+table.b8 th.g-mov{color:var(--muted)}
+table.b8 tbody tr td:nth-child(5),table.b8 tbody tr td:nth-child(6){background:var(--g-sal)}
+table.b8 tbody tr td:nth-child(7),table.b8 tbody tr td:nth-child(8){background:var(--g-inv)}
+table.b8 tbody tr td:nth-child(9),table.b8 tbody tr td:nth-child(10){background:var(--g-res)}
+table.b8 tr.sub td,table.b8 tr.tot td{font-weight:700}
+table.b8 tr.tot td{border-top:2px solid var(--ink)}
+table.b8 td.sh{background:repeating-linear-gradient(45deg,var(--code),var(--code) 4px,transparent 4px,transparent 8px)!important}
+table.b8 td.hl{font-weight:800;color:var(--no);outline:2px solid var(--no);outline-offset:-3px;border-radius:4px}
+.b8wrap{border-color:var(--line)}
+/* tabla de 4 columnas (solo inventario y resultado) */
+table.b8.c4{min-width:560px}
+table.b8.c4 tbody tr td:nth-child(2),table.b8.c4 tbody tr td:nth-child(3){background:var(--g-inv)}
+table.b8.c4 tbody tr td:nth-child(4),table.b8.c4 tbody tr td:nth-child(5){background:var(--g-res)}
+table.eeff{min-width:0}
+table.eeff tr.sub td{background:var(--code)}
+table.mayor{min-width:0}
+table.rt td:nth-child(3){color:var(--muted)}
+table.esf2{min-width:620px}
+/* esquema de columnas */
+.cols8{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;gap:6px;margin:16px 0;font-size:13.5px;text-align:center}
+.cols8 > div{border-radius:9px;padding:8px 6px;border:1px solid var(--line)}
+.cols8 .h{font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.cols8 .k0{background:var(--panel)} .cols8 .k1{background:var(--g-mov)} .cols8 .k2{background:var(--g-sal)}
+.cols8 .k3{background:var(--g-inv)} .cols8 .k4{background:var(--g-res)}
+.cols8 .s{font-size:12px;color:var(--muted)}
+@media (max-width:640px){.cols8{grid-template-columns:1fr 1fr}.cols8 .k0{grid-column:1/3}}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:16px 0}
+.flow .st{border:1px solid var(--line);background:var(--panel);border-radius:9px;padding:7px 12px;font-size:14px;font-weight:600;box-shadow:var(--shadow)}
+.flow .st small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.flow .ar{color:var(--muted);font-weight:700}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+@media (max-width:760px){.pair{grid-template-columns:1fr}}
+.scale{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel);box-shadow:var(--shadow)}
+.scale h4{margin:0 0 6px}
+.scale .row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}
+.scale .cl{border-radius:8px;padding:6px 8px;font-size:13.5px;text-align:center;border:1px solid var(--line)}
+.scale .cl.inv{background:var(--g-inv)} .scale .cl.res{background:var(--g-res)}
+.scale .cl.add{outline:2px dashed var(--no);outline-offset:-3px;font-weight:700}
+/* tarjetas */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0}
+.card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--panel);box-shadow:var(--shadow)}
+.card .num{font-size:12px;font-weight:700;color:var(--brand)}
+.card h4{margin:2px 0 4px;color:var(--ink)}
+.card p{margin:0;font-size:13.8px;color:var(--muted)}
+a.card{text-decoration:none;color:inherit;display:block}
+a.card:hover{border-color:var(--brand)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+/* chuleta */
+.cheat{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px;margin:16px 0}
+.cheat .cc{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel);box-shadow:var(--shadow)}
+.cheat .cc h4{margin:0 0 6px}
+.cheat .cc ul{margin:4px 0;padding-left:18px;font-size:14px}
+.cheat .cc li{margin:3px 0}
+/* videos */
+.videos{margin:18px 0}
+.video{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px 14px;
+  margin:8px 0;background:var(--panel)}
+.video .vi{flex:0 0 auto;width:30px;height:30px;border-radius:8px;background:var(--no);color:#fff;display:grid;place-items:center;
+  font-size:13px;margin-top:2px}
+.video a{font-weight:600;text-decoration:none}
+.video a:hover{text-decoration:underline}
+.video .meta{font-size:12.5px;color:var(--muted)}
+.video .why{font-size:14px;margin-top:2px}
+/* plan */
+.day{border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0;background:var(--panel);box-shadow:var(--shadow)}
+.day h4{margin:0 0 4px;color:var(--ink)}
+.day .when{font-size:12px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.06em}
+/* quiz */
+.qz-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0;padding:12px 14px;border:1px solid var(--line);
+  border-radius:10px;background:var(--panel);position:sticky;top:0;z-index:5;box-shadow:var(--shadow)}
+.qz-bar select{font-family:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.qz-score{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums}
+.qz{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0;background:var(--panel);box-shadow:var(--shadow)}
+.qz .qh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+.qz .qn{font-weight:800;color:var(--muted);font-size:13px}
+.qz .qt{font-weight:600;margin:0 0 8px}
+.qz .opt{display:flex;gap:10px;width:100%;text-align:left;border:1px solid var(--line);border-radius:9px;padding:9px 12px;margin:6px 0;
+  background:var(--panel);color:var(--ink);cursor:pointer;font-family:inherit;font-size:15px;line-height:1.45}
+.qz .opt:hover{border-color:var(--accent)}
+.qz .opt .l{font-weight:700;color:var(--muted);flex:0 0 auto}
+.qz .opt.ok{background:var(--ok-soft);border-color:var(--ok)}
+.qz .opt.ok .l{color:var(--ok)}
+.qz .opt.bad{background:var(--no-soft);border-color:var(--no)}
+.qz .opt.bad .l{color:var(--no)}
+.qz.done .opt{cursor:default}
+.qz .exp{display:none;margin-top:10px;padding:10px 12px;border-radius:9px;background:var(--code);font-size:14.5px}
+.qz.done .exp{display:block}
+.qz .src{font-size:12px;color:var(--muted);margin-top:4px}
+.menuToggle{display:none}
+@media (max-width:900px){
+  .sidebar{position:fixed;z-index:40;left:0;top:0;transform:translateX(-102%);transition:transform .22s;box-shadow:var(--shadow)}
+  .sidebar.open{transform:none}
+  .menuToggle{display:inline-flex;position:fixed;z-index:50;top:12px;left:12px}
+  .content{padding-top:64px}
+  .scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:35}
+  .scrim.on{display:block}
+  .qz-bar{top:52px}
+}
+.backtop{position:fixed;right:18px;bottom:18px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.backtop.on{opacity:1;pointer-events:auto}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:60px;border-top:1px solid var(--line);padding-top:20px;flex-wrap:wrap}
+.pager a{text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--panel);max-width:48%}
+.pager a small{display:block;color:var(--muted);font-size:12px}
+@media print{
+  .sidebar,.menuToggle,.backtop,.toolbar,.qz-bar,.pager{display:none}
+  details.ex{break-inside:avoid} details.ex:not([open]) .body{display:block}
+  body{font-size:11pt;background:#fff;color:#000}
+}
+</style>
+</head>
+<body>
+<button class="btn menuToggle" id="menuToggle">&#9776; Índice</button>
+<div class="scrim" id="scrim"></div>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="dot">C3</div><div><h1>IMAFI · Control 3</h1><small>ICN-270 · ratios y balance de 8 columnas</small></div></div>
+  <div class="toolbar">
+    <button class="btn" id="themeBtn">Claro / oscuro</button>
+    <button class="btn" id="printBtn">Imprimir</button>
+    <button class="btn" id="openAll">Abrir soluciones</button>
+  </div>
+  <nav id="nav">
+<div class="grp">Páginas</div>
+<a class="page" href="Guia-Control3-IMAFI.html"><span class="pn">1</span><span>Guía del Control 3</span></a>
+<a class="page" href="Practica-Control3-IMAFI.html"><span class="pn">2</span><span>Práctica y banco de preguntas</span></a>
+<a class="page cur" href="VF-Control3-IMAFI.html"><span class="pn">3</span><span>Modo V/F: precontrol</span></a>
+<div class="grp">Antes del control</div>
+<a class="sec" href="#vf-cambio"><span class="nt">Lo que cambia con el precontrol</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+<a class="sec" href="#vf-como"><span class="nt">Cómo justificar un V/F</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+<div class="grp">Precontrol resuelto</div>
+<a class="sec" href="#pre-boldo"><span class="nt">Ej. 1 · Boldo: 8 columnas</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+<a class="sec" href="#pre-maderera"><span class="nt">Ej. 2 · Maderera: liquidez</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+<a class="sec" href="#pre-empresas"><span class="nt">Ej. 3 · Tres empresas: Du Pont</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+<div class="grp">Practicar</div>
+<a class="sec" href="#vf-banco"><span class="nt">Banco de V/F con justificación</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+<a class="sec" href="#vf-ultima"><span class="nt">La última hora</span></a>
+  </nav>
+</aside>
+<main class="content">
+<header class="pagehead"><div class="kicker">IMAFI · Control 3 · Modo V/F</div><h1>El precontrol resuelto y el banco de verdadero o falso</h1>
+<p class="lead">El control es el <b>lunes 26 de octubre</b> y será completo de verdadero o falso, probablemente justificando también los verdaderos. Esta página parte de la guía de preparación que el ayudante subió el 25 de octubre: qué cambia respecto de la Ayudantía 6, cómo justificar, el precontrol resuelto y 72 afirmaciones para practicar.</p></header>
+
+<section id="vf-cambio">
+<h2>Lo que cambia con el precontrol</h2>
+<p class="prio"><span class="lv p3">Leer completo primero</span>Son cinco diferencias con lo que vimos en la Ayudantía 6. Cualquiera puede ser una afirmación del control.</p>
+<div class="tablewrap"><table><thead><tr><th>Tema</th><th>Ayudantía 6 (19 oct)</th><th>Guía precontrol (25 oct)</th><th>Qué hacer en un V/F</th></tr></thead><tbody>
+<tr><td><b>Depreciación Acumulada</b> en el balance de 8 columnas</td><td>Columna Activo, <b>restando</b></td><td>Columna <b>Pasivo</b>, «por ser acreedora» (Boldo: Activo 110 M, Pasivo 95 M)</td><td>Ver el recuadro de abajo</td></tr>
+<tr><td>«Margen»</td><td>Margen Bruto y ROS por separado</td><td>Margen = Resultado / Ventas × 100 (es el ROS)</td><td>Si dice «margen» a secas, es utilidad neta sobre ventas</td></tr>
+<tr><td>Du Pont</td><td>«Complementario, menor prioridad»</td><td><b>En el formulario:</b> ROA = Margen × Rotación de Activos</td><td>Ahora sí entra: estúdialo</td></tr>
+<tr><td>Cobertura</td><td>Resultado Operacional / Gastos Financieros</td><td><b>Utilidad Neta / Intereses</b></td><td>Usa la que defina la afirmación; si no define, la del precontrol</td></tr>
+<tr><td>ROE y deuda</td><td>ROE &gt; ROA por apalancamiento</td><td>ROE = ROA / (1 − Endeudamiento s/ Activos); sin deuda, ROE = ROA</td><td>Fórmula nueva, muy «verdadero o falso»</td></tr>
+<tr><td>Efectos</td><td>Pagar, comprar a crédito, préstamo</td><td>Además: <b>vender existencias</b> con utilidad, al costo o con pérdida</td><td>Vender no siempre mejora la RC</td></tr>
+</tbody></table></div>
+<div class="box warn"><div class="bt">La depreciación acumulada: cómo responder si sale</div>
+<p>Las dos versiones <b>cuadran y dan el mismo resultado</b>: ponerla en Pasivo suma lo mismo a Activo − Pasivo que restarla en Activo. En Boldo, con la pauta del precontrol: Activo 110 M − Pasivo 95 M = 15 M; con la de la Ayudantía 6: 102 M − 87 M = 15 M. Lo que cambia son los totales de las columnas.</p>
+<p>En un V/F como «la Depreciación Acumulada se registra en la columna Pasivo», lo más seguro es justificar mencionando las dos cosas: <i>«Verdadero según el criterio del precontrol: su saldo es acreedor y en el balance de 8 columnas se ubica en Pasivo; también puede presentarse restando del activo fijo, y el resultado es el mismo. Pero no es una deuda: no se suma a la Deuda Total para el endeudamiento.»</i> Esa última parte es la que las dos pautas comparten: es una cuenta complementaria de activo, no una obligación con terceros (V/F 9 de la Ayudantía 6).</p></div>
+<div class="box tip"><div class="bt">Lo que se mantiene igual</div>
+<p>Saldos, clasificación, dónde va el resultado (utilidad en Pasivo y Pérdida; pérdida en Activo y Ganancia), las tres igualdades de cuadre, que el cuadre no prueba que todo esté bien, CTN, RC, PA, endeudamiento y el efecto de las operaciones.</p></div>
+</section>
+
+<section id="vf-como">
+<h2>Cómo justificar un verdadero o falso</h2>
+<p class="prio"><span class="lv p3">Leer completo</span>Si piden justificar todo, la justificación vale más que la letra.</p>
+<ol>
+<li><b>Nombra el concepto y su fórmula.</b> «La Razón Corriente es AC / PC…»</li>
+<li><b>Si es falso, corrige la afirmación</b> diciendo lo que sí es cierto, no solo «es falso porque no».</li>
+<li><b>Agrega un ejemplo con números chicos</b> cuando la afirmación tiene «siempre», «nunca», «necesariamente» o «solo»: un contraejemplo de una línea liquida un falso. (AC = 30, PC = 20; paga 10 → 20/10 = 2,0.)</li>
+<li><b>Si es verdadero, explica el porqué</b>, no lo repitas con otras palabras. «Verdadero, porque las existencias son el activo corriente menos líquido: hay que venderlas primero y pueden perder valor.»</li>
+<li><b>Dos o tres líneas bastan.</b> Así son las justificaciones de las pautas del ayudante.</li>
+</ol>
+<div class="box ana"><div class="bt">Analogía: el árbitro que cobra un penal</div>
+<p>No basta con pitar: hay que decir qué falta fue y dónde. «Falso» es el pitazo; la justificación es mostrar la falta (el concepto) y el lugar (el número que lo prueba).</p></div>
+<div class="box formula"><div class="bt">Palabras que casi siempre delatan un falso</div>
+<p><b>Siempre, nunca, necesariamente, garantiza, solo, todas.</b> En este tema casi todo «depende»: depende de si la razón está sobre o bajo 1, de si la venta fue con utilidad, de cuánta deuda hay. Pero ojo: «la Prueba Ácida siempre es menor o igual que la Razón Corriente» es verdadero; lee la afirmación completa antes de marcar.</p></div>
+<h3>Ejemplos de justificación</h3>
+<div class="tablewrap"><table><thead><tr><th>Afirmación</th><th>Respuesta modelo</th></tr></thead><tbody>
+<tr><td>«Vender existencias siempre mejora la Razón Corriente.»</td><td><span class="vf f">Falso.</span> Depende del precio: si se venden con utilidad, el AC sube (entra más caja que lo que sale de existencias) y la RC mejora; al costo, el AC no cambia y la RC tampoco; con pérdida, el AC baja y la RC empeora.</td></tr>
+<tr><td>«Si la empresa no tuviera deuda, su ROE sería igual a su ROA.»</td><td><span class="vf v">Verdadero.</span> Sin deuda, Patrimonio = Activo, así que Resultado/Patrimonio = Resultado/Activo. Toda diferencia entre ROE y ROA viene del endeudamiento: ROE = ROA / (1 − Endeudamiento).</td></tr>
+<tr><td>«Si el balance de 8 columnas cuadra, todas las operaciones fueron bien contabilizadas.»</td><td><span class="vf f">Falso.</span> El cuadre solo comprueba que cada débito tiene su crédito. No detecta una operación omitida, una cuenta mal clasificada (un activo fijo cargado a Gastos Generales) ni dos errores que se compensan.</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="pre-boldo">
+<h2>Precontrol · Ej. 1: Distribuidora Boldo Ltda.</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Hacerlo a mano.</strong> Es el formato más probable de las afirmaciones sobre balance de 8 columnas.</p>
+<div class="enun"><div class="et">Enunciado (resumen)</div>
+<p>Movimientos del mayor 2026, en pesos: Caja/Banco D 50 M, H 36 M · Clientes D 40 M, H 24 M · Existencias D 70 M, H 50 M · Activo Fijo D 60 M · Depreciación Acum. H 8 M · Proveedores D 30 M, H 40 M · Préstamos Bancarios D 3 M, H 20 M · Capital H 60 M · Ventas H 90 M · Costo de Ventas D 50 M · Remuneraciones D 15 M · Gastos Generales D 10 M. Se pide: saldos, D/A, clasificación, balance, resultado, dónde va, las igualdades de cuadre y por qué cuadrar no garantiza que todo esté bien.</p></div>
+<details class="ex"><summary>Solución con el criterio de la pauta (depreciación en Pasivo) <span class="tag">pauta verificada</span></summary><div class="body">
+<div class="tablewrap b8wrap"><table class="b8"><thead><tr><th rowspan="2" class="num">N°</th><th rowspan="2">Cuenta</th><th colspan="2" class="g-mov">Movimientos</th><th colspan="2" class="g-sal">Saldos</th><th colspan="2" class="g-inv">Inventario</th><th colspan="2" class="g-res">Resultado</th></tr><tr><th class="num g-mov">Débitos</th><th class="num g-mov">Créditos</th><th class="num g-sal">Deudor</th><th class="num g-sal">Acreedor</th><th class="num g-inv">Activo</th><th class="num g-inv">Pasivo</th><th class="num g-res">Pérdida</th><th class="num g-res">Ganancia</th></tr></thead><tbody><tr><td class="num">1</td><td>Caja/Banco</td><td class="num">50.000.000</td><td class="num">36.000.000</td><td class="num">14.000.000</td><td class="num z">–</td><td class="num">14.000.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">2</td><td>Clientes</td><td class="num">40.000.000</td><td class="num">24.000.000</td><td class="num">16.000.000</td><td class="num z">–</td><td class="num">16.000.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">3</td><td>Existencias</td><td class="num">70.000.000</td><td class="num">50.000.000</td><td class="num">20.000.000</td><td class="num z">–</td><td class="num">20.000.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">4</td><td>Activo Fijo</td><td class="num">60.000.000</td><td class="num z">–</td><td class="num">60.000.000</td><td class="num z">–</td><td class="num">60.000.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">5</td><td>Depreciación Acum.</td><td class="num z">–</td><td class="num">8.000.000</td><td class="num z">–</td><td class="num">8.000.000</td><td class="num z">–</td><td class="num">8.000.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">6</td><td>Proveedores</td><td class="num">30.000.000</td><td class="num">40.000.000</td><td class="num z">–</td><td class="num">10.000.000</td><td class="num z">–</td><td class="num">10.000.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">7</td><td>Préstamos Bancarios</td><td class="num">3.000.000</td><td class="num">20.000.000</td><td class="num z">–</td><td class="num">17.000.000</td><td class="num z">–</td><td class="num">17.000.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">8</td><td>Capital</td><td class="num z">–</td><td class="num">60.000.000</td><td class="num z">–</td><td class="num">60.000.000</td><td class="num z">–</td><td class="num">60.000.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">9</td><td>Ventas</td><td class="num z">–</td><td class="num">90.000.000</td><td class="num z">–</td><td class="num">90.000.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">90.000.000</td></tr><tr><td class="num">10</td><td>Costo de Ventas</td><td class="num">50.000.000</td><td class="num z">–</td><td class="num">50.000.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">50.000.000</td><td class="num z">–</td></tr><tr><td class="num">11</td><td>Remuneraciones</td><td class="num">15.000.000</td><td class="num z">–</td><td class="num">15.000.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">15.000.000</td><td class="num z">–</td></tr><tr><td class="num">12</td><td>Gastos Generales</td><td class="num">10.000.000</td><td class="num z">–</td><td class="num">10.000.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">10.000.000</td><td class="num z">–</td></tr><tr class="sub"><td></td><td>Sub-total</td><td class="num">328.000.000</td><td class="num">328.000.000</td><td class="num">185.000.000</td><td class="num">185.000.000</td><td class="num">110.000.000</td><td class="num">95.000.000</td><td class="num">75.000.000</td><td class="num">90.000.000</td></tr><tr class="resrow"><td></td><td>Utilidad del Ejercicio</td><td class="num sh"></td><td class="num sh"></td><td class="num sh"></td><td class="num sh"></td><td class="num z">–</td><td class="num hl">15.000.000</td><td class="num hl">15.000.000</td><td class="num z">–</td></tr><tr class="tot"><td></td><td>Total</td><td class="num">328.000.000</td><td class="num">328.000.000</td><td class="num">185.000.000</td><td class="num">185.000.000</td><td class="num">110.000.000</td><td class="num">110.000.000</td><td class="num">90.000.000</td><td class="num">90.000.000</td></tr></tbody></table></div>
+<ul>
+<li><b>Resultado</b> = Ganancia − Pérdida = 90 M − 75 M = <span class="ans">utilidad de $15.000.000</span>, anotada en Pasivo (es de los dueños) y en Pérdida (iguala el bloque de resultado).</li>
+<li><b>Cuadre:</b> Débitos = Créditos = 328 M ✓; Saldos Deudores = Acreedores = 185 M ✓; Activo 110 M = Pasivo 95 M + 15 M ✓; Pérdida 75 M + 15 M = Ganancia 90 M ✓.</li>
+<li><b>Por qué cuadrar no basta:</b> el balance solo prueba la igualdad mecánica de la partida doble. No detecta una transacción omitida (no aparece en ningún lado), una compra de activo fijo cargada a Gastos Generales (cuadra, pero subestima el resultado), ni dos errores que se compensan.</li>
+</ul>
+<p>Con el criterio de la Ayudantía 6 (depreciación restando en Activo), las columnas quedan Activo 102 M y Pasivo 87 M: la diferencia sigue siendo 15 M.</p></div></details>
+<div class="box tip"><div class="bt">Afirmaciones que salen de este ejercicio</div>
+<p>«El saldo de Proveedores es deudor por 10 M» (falso: Debe 30 − Haber 40 = −10 → acreedor). «Préstamos Bancarios tiene saldo acreedor de 17 M» (verdadero). «La utilidad se anota en Activo y Ganancia» (falso). «Omitir una venta descuadra el balance» (falso). Están en el banco de abajo.</p></div>
+</section>
+
+<section id="pre-maderera">
+<h2>Precontrol · Ej. 2: Maderera Curicó S.A.</h2>
+<p class="prio"><span class="lv p3">Probabilidad muy alta</span><strong>Leer completo.</strong> Las operaciones, sobre todo la venta de existencias, son material perfecto para V/F.</p>
+<div class="enun"><div class="et">Datos</div>
+<p>Caja/Banco 8 M, Clientes 22 M, Existencias 30 M (AC = <b>60 M</b>), Activo No Corriente 140 M (Activo = <b>200 M</b>). Pasivo Corriente 40 M, Pasivo No Corriente 60 M, Patrimonio = 200 − 100 = <b>100 M</b>.</p></div>
+<div class="tablewrap"><table class="rt"><thead><tr><th>Indicador</th><th>Cálculo</th><th class="num">Resultado</th></tr></thead><tbody>
+<tr><td>CTN</td><td class="mono">60 − 40</td><td class="num"><b>$20.000.000</b></td></tr>
+<tr><td>Razón Corriente</td><td class="mono">60 / 40</td><td class="num"><b>1,5</b></td></tr>
+<tr><td>Prueba Ácida</td><td class="mono">(60 − 30) / 40</td><td class="num"><b>0,75</b></td></tr>
+<tr><td>Endeud. s/ Activos</td><td class="mono">100 / 200 × 100</td><td class="num"><b>50 %</b></td></tr>
+<tr><td>Endeud. s/ Patrimonio</td><td class="mono">100 / 100 × 100</td><td class="num"><b>100 %</b></td></tr>
+</tbody></table></div>
+<p><b>CTN positivo, cero o negativo</b> (lo pide el a): positivo = sobra colchón después de cubrir el PC; cero = el AC alcanza justo, sin holgura (ajustado, no necesariamente malo); negativo = el PC supera al AC y la empresa dependería de activos de largo plazo o de nuevo financiamiento: alerta de liquidez.</p>
+<p>La PA es la mitad de la RC porque la mitad del AC (30 de 60) son existencias.</p>
+<h3>Las cuatro operaciones (cada una por separado)</h3>
+<div class="tablewrap"><table><thead><tr><th>Operación</th><th>Qué cambia</th><th class="num">RC</th><th class="num">CTN</th><th>Por qué</th></tr></thead><tbody>
+<tr><td>1. Paga 10 M de deuda CP con caja</td><td>Caja −10; PC −10</td><td class="num">50/30 = 1,67 <span class="up">↑</span></td><td class="num">20 M <span class="eq">=</span></td><td>Restar lo mismo arriba y abajo aleja de 1 a una razón mayor que 1; la resta no cambia</td></tr>
+<tr><td>2. Compra existencias a crédito 15 M</td><td>Existencias +15; Proveedores +15</td><td class="num">75/55 = 1,36 <span class="dn">↓</span></td><td class="num">20 M <span class="eq">=</span></td><td>Sumar lo mismo acerca a 1</td></tr>
+<tr><td>3. Vende en 16 M al contado existencias que costaron 12 M</td><td>Existencias −12; Caja +16 (AC +4)</td><td class="num">64/40 = 1,6 <span class="up">↑</span></td><td class="num">24 M <span class="up">↑</span></td><td>La utilidad de 4 M entra al AC sin subir el PC</td></tr>
+<tr><td>4. Préstamo LP de 20 M a la cuenta corriente</td><td>Caja +20; PNC +20</td><td class="num">80/40 = 2,0 <span class="up">↑</span></td><td class="num">40 M <span class="up">↑</span></td><td>Entra caja sin subir el PC; pero el endeudamiento sube de 50 % a 120/220 = 54,55 %</td></tr>
+</tbody></table></div>
+<div class="box formula"><div class="bt">La pregunta extra de la operación 3 (la más «V/F» de todo el precontrol)</div>
+<ul>
+<li><b>Vendida al costo</b> (12 M): Existencias −12, Caja +12 → el AC total no cambia → <b>la RC no cambia</b> (1,5). Pero la Prueba Ácida <b>sube</b> a (60 − 18)/40 = 1,05: la caja cuenta en la PA y la existencia no.</li>
+<li><b>Vendida con pérdida</b> (por ejemplo en 9 M): el AC baja 3 M → <b>la RC baja</b>.</li>
+<li><b>Al contado o a crédito da lo mismo</b> para la RC: a crédito el aumento queda en Clientes en vez de Caja, pero el AC total cambia igual.</li>
+<li>Conclusión de la pauta: «vender existencias siempre mejora la Razón Corriente» es <b>falso</b>.</li>
+</ul></div>
+</section>
+
+<section id="pre-empresas">
+<h2>Precontrol · Ej. 3: Viña Los Robles, Textiles Longaví y Agroexport Ñuble</h2>
+<p class="prio"><span class="lv p3">Probabilidad alta</span><strong>Leer completo.</strong> Trae Du Pont, la relación ROE–endeudamiento y la cobertura de intereses, que no estaban en la Ayudantía 6.</p>
+<div class="fx"><b>Margen</b> = Resultado / Ventas &nbsp;·&nbsp; <b>Rotación</b> = Ventas / Activos &nbsp;·&nbsp; <b>ROA</b> = Resultado / Activos = Margen × Rotación &nbsp;·&nbsp; <b>ROE</b> = ROA / (1 − Endeud.)</div>
+<div class="tablewrap"><table><thead><tr><th>Empresa</th><th class="num">Margen</th><th class="num">Rotación</th><th class="num">ROA</th><th class="num">Ventas</th><th class="num">Activos</th><th class="num">Resultado</th><th class="num">Endeud.</th><th class="num">Patrimonio</th><th class="num">ROE</th></tr></thead><tbody>
+<tr><td>X · Viña</td><td class="num">3/30 = <b>10 %</b></td><td class="num">30/50 = <b>0,6</b></td><td class="num">3/50 = <b>6 %</b></td><td class="num">30</td><td class="num">50</td><td class="num">3</td><td class="num">40 %</td><td class="num">50 × 0,6 = <b>30</b></td><td class="num">3/30 = <b>10 %</b></td></tr>
+<tr><td>Y · Textiles</td><td class="num">20 %</td><td class="num">0,75</td><td class="num">0,2 × 0,75 = <b>15 %</b></td><td class="num">3,6/0,2 = <b>18</b></td><td class="num">18/0,75 = <b>24</b></td><td class="num">3,6</td><td class="num">60 %</td><td class="num">24 × 0,4 = <b>9,6</b></td><td class="num">3,6/9,6 = <b>37,5 %</b></td></tr>
+<tr><td>Z · Agroexport</td><td class="num">5/50 = <b>10 %</b></td><td class="num">50/100 = <b>0,5</b></td><td class="num">5 %</td><td class="num">50</td><td class="num">100</td><td class="num">0,05 × 100 = <b>5</b></td><td class="num">20 %</td><td class="num">100 × 0,8 = <b>80</b></td><td class="num">5/80 = <b>6,25 %</b></td></tr>
+</tbody></table></div>
+<p class="tsec">Cifras en MM$. Orden: Margen Y &gt; X = Z · ROA Y &gt; X &gt; Z · ROE Y &gt; X &gt; Z · Endeudamiento Y &gt; X &gt; Z.</p>
+<ul>
+<li><b>Más margen no es más utilidad (e):</b> Y tiene el doble de margen que Z (20 % contra 10 %) pero gana menos (3,6 contra 5 MM$), porque Z vende mucho más (50 contra 18). El margen mide rentabilidad por peso vendido, no el tamaño.</li>
+<li><b>Crecer no cambia el ROA (f):</b> si Ventas y Activos de X suben 50 % con el mismo margen y rotación, el resultado sube a 0,10 × 45 = 4,5 MM$, pero el ROA sigue en 4,5/75 = 6 %. ROA = Margen × Rotación: si ninguno cambia, el ROA tampoco.</li>
+<li><b>ROE y deuda (g):</b> ROE = ROA / (1 − Endeud.). Con 60 % de deuda, Y multiplica su ROA por 2,5 (15 % → 37,5 %); Z, con 20 %, solo por 1,25. Un ROE alto puede ser un buen negocio o un ROA moderado inflado por deuda. Y si la tasa de la deuda superara al ROA, el apalancamiento jugaría en contra.</li>
+<li><b>Sin deuda (h):</b> Patrimonio = Activo → <b>ROE = ROA</b> en las tres (6 %, 15 % y 5 %).</li>
+<li><b>Intereses (i):</b> Intereses = Utilidad Neta / (UN/Intereses): X 3/1,5 = 2; Y 3,6/1,2 = 3; Z 5/2,5 = 2 MM$. Sin intereses, los márgenes pasan a X 5/30 = 16,67 % (+66,7 %), Y 6,6/18 = 36,67 % (+83,3 %) y Z 7/50 = 14 % (+40 %). Sube más la de <b>menor razón UN/Intereses</b> (Y, 1,2): el aumento porcentual es justo 1 / (UN/Intereses).</li>
+</ul>
+</section>
+
+<section id="vf-banco">
+<h2>Banco de verdadero o falso con justificación</h2>
+<p class="prio"><span class="lv p3">Lo más importante de la página</span>72 afirmaciones en el estilo del precontrol y de la Ayudantía 6. Cada una trae una justificación modelo de dos o tres líneas.</p>
+<p>Antes de tocar V o F, <b>di en voz alta o escribe tu justificación</b>; después compárala con la modelo. Elige un tema, haz un simulacro de 15 al azar, o usa «Ver todas las respuestas» para leerlas de corrido la noche antes. Las que falles quedan guardadas para repasarlas.</p>
+<div class="vfquiz"></div>
+</section>
+
+<section id="vf-ultima">
+<h2>La última hora antes del control</h2>
+<p class="prio"><span class="lv">Pasar por encima</span>Lo mínimo que tiene que estar en la cabeza al entrar.</p>
+<ul>
+<li>Saldo = Debe − Haber; negativo → acreedor. Cada saldo va a <b>una sola</b> de las cuatro columnas finales.</li>
+<li>Utilidad → Pasivo y Pérdida. Pérdida → Activo y Ganancia. El mismo monto cuadra los dos pares.</li>
+<li>Cuadrar no prueba que todo esté bien: omisiones, clasificaciones erróneas y errores compensados pasan igual.</li>
+<li>Depreciación acumulada: acreedora; en Pasivo (precontrol) o restando en Activo (Ayudantía 6), mismo resultado; nunca es deuda.</li>
+<li>CTN en $; RC y PA en veces; PA ≤ RC; CTN &gt; 0 ⟺ RC &gt; 1.</li>
+<li>AC y PC bajan lo mismo → la razón se aleja de 1; suben lo mismo → se acerca a 1; el CTN no cambia.</li>
+<li>Vender existencias: con utilidad RC ↑, al costo RC = (pero PA ↑), con pérdida RC ↓; contado o crédito da igual para la RC.</li>
+<li>D/AT 50 % ⟺ D/Pat 100 %; 60 % ⟺ 150 %. Patrimonio = Activo × (1 − Endeud.).</li>
+<li>Margen = Resultado/Ventas; Rotación = Ventas/Activos (veces); ROA = Margen × Rotación; ROE = ROA/(1 − Endeud.); sin deuda ROE = ROA.</li>
+<li>Más margen no es más utilidad absoluta; crecer con el mismo margen y rotación no cambia el ROA.</li>
+<li>UN/Intereses: cuántas veces la utilidad cubre los intereses; Intereses = UN / razón.</li>
+</ul>
+</section>
+
+<div class="pager"><a href="Practica-Control3-IMAFI.html"><small>Anterior</small>Práctica y banco de preguntas</a><a href="Guia-Control3-IMAFI.html" style="text-align:right"><small>Volver</small>Guía del Control 3</a></div>
+</main>
+</div>
+<button class="btn backtop" id="backtop">&#8593; Arriba</button>
+<script>
+(function(){
+  var root=document.documentElement;
+  function setTheme(t){ if(t){root.setAttribute('data-theme',t);} try{localStorage.setItem('imafi-c3-theme',t||'');}catch(e){} }
+  try{var st=localStorage.getItem('imafi-c3-theme'); if(st) root.setAttribute('data-theme',st);}catch(e){}
+  var tb=document.getElementById('themeBtn');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    if(!cur){cur=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+    setTheme(cur==='dark'?'light':'dark');
+  });
+  var pb=document.getElementById('printBtn'); if(pb) pb.addEventListener('click',function(){
+    document.querySelectorAll('details').forEach(function(d){d.setAttribute('open','');}); window.print();});
+  var ob=document.getElementById('openAll'); if(ob) ob.addEventListener('click',function(){
+    var ds=document.querySelectorAll('details.ex'); var anyClosed=[].some.call(ds,function(d){return !d.open;});
+    ds.forEach(function(d){d.open=anyClosed;}); ob.textContent=anyClosed?'Cerrar soluciones':'Abrir soluciones';});
+  var sb=document.getElementById('sidebar'), sc=document.getElementById('scrim'), mt=document.getElementById('menuToggle');
+  function closeM(){sb.classList.remove('open');sc.classList.remove('on');}
+  if(mt) mt.addEventListener('click',function(){sb.classList.toggle('open');sc.classList.toggle('on');});
+  if(sc) sc.addEventListener('click',closeM);
+  var bt=document.getElementById('backtop');
+  if(bt) bt.addEventListener('click',function(){window.scrollTo({top:0});});
+
+  var links=[].slice.call(document.querySelectorAll('#nav a.sec'));
+  links.forEach(function(a){a.addEventListener('click',function(){ if(window.innerWidth<=900) closeM(); });});
+  var targets=links.map(function(a){return document.getElementById(a.getAttribute('href').slice(1));});
+  var ticking=false;
+  function sync(){
+    ticking=false;
+    if(bt) bt.classList.toggle('on',window.scrollY>900);
+    var y=window.scrollY+140, idx=0;
+    for(var i=0;i<targets.length;i++){
+      if(targets[i] && targets[i].getBoundingClientRect().top+window.scrollY<=y) idx=i;
+    }
+    if((window.innerHeight+window.scrollY)>=document.body.scrollHeight-4) idx=targets.length-1;
+    links.forEach(function(a,i){a.classList.toggle('active',i===idx);});
+    var act=links[idx];
+    if(act && sb){
+      var top=act.offsetTop, h=act.offsetHeight;
+      if(top<sb.scrollTop+60 || top+h>sb.scrollTop+sb.clientHeight-60){ sb.scrollTop=top-sb.clientHeight/2; }
+    }
+  }
+  window.addEventListener('scroll',function(){ if(!ticking){ticking=true;requestAnimationFrame(sync);} },{passive:true});
+  window.addEventListener('load',sync);
+  sync();
+})();
+</script>
+<script>
+window.VFTAGS={"b8":"Balance de 8 columnas","liq":"Liquidez","end":"Endeudamiento","rent":"Rentabilidad y ROE","dp":"Du Pont e intereses","efe":"Efectos de operaciones"};
+window.VFBANK=[
+{"id":"v1","t":"b8","src":"Precontrol 1 a)","q":"El saldo de una cuenta se calcula como Debe − Haber; si el resultado es negativo, la cuenta tiene saldo acreedor por ese monto en valor absoluto.","a":true,"j":"Así lo define la pauta del precontrol. Proveedores de Boldo: 30 M − 40 M = −10 M ⇒ saldo acreedor de 10 M."},
+{"id":"v2","t":"b8","src":"Precontrol, formulario","q":"En el balance de 8 columnas, una misma cuenta puede repartir su saldo entre dos de las cuatro columnas finales, por ejemplo Activo y Pérdida.","a":false,"j":"Cada cuenta aporta su saldo a una sola de las cuatro columnas (Activo, Pasivo, Pérdida o Ganancia) según su naturaleza. Caja es solo activo; Costo de Ventas, solo pérdida."},
+{"id":"v3","t":"b8","src":"Ayudantía 6, V/F 7","q":"Si la columna Ganancia suma más que la columna Pérdida, la diferencia es utilidad y se anota en las columnas Pasivo y Pérdida.","a":true,"j":"La utilidad va en el lado más chico de cada par: en Pérdida para igualar a Ganancia, y en Pasivo porque aumenta el patrimonio de los dueños."},
+{"id":"v4","t":"b8","src":"Ayudantía 6, formulario","q":"Si el ejercicio arroja pérdida, ésta se anota en las columnas Pasivo y Ganancia.","a":false,"j":"La pérdida se anota en Activo y Ganancia, que son las columnas más chicas cuando Pérdida > Ganancia y Pasivo > Activo (lámina 152)."},
+{"id":"v5","t":"b8","src":"Precontrol 1 g)","q":"El monto que cuadra el bloque de Resultado (Pérdida y Ganancia) es distinto del que cuadra el bloque de Inventario (Activo y Pasivo).","a":false,"j":"Es el mismo: Ganancia − Pérdida = Activo − Pasivo = Resultado del Ejercicio. En Boldo, 90 − 75 = 110 − 95 = 15 M."},
+{"id":"v6","t":"b8","src":"Precontrol 1 i)","q":"Si el balance de 8 columnas cuadra, todas las operaciones del período fueron contabilizadas correctamente.","a":false,"j":"El cuadre solo verifica la igualdad mecánica de la partida doble. No detecta operaciones omitidas, cuentas mal clasificadas ni errores que se compensan."},
+{"id":"v7","t":"b8","src":"Precontrol 1 i)","q":"Omitir por completo una transacción en los registros no descuadra el balance de 8 columnas.","a":true,"j":"Si no se registra, no aparece ni en el Debe ni en el Haber: las sumas siguen iguales. Por eso el cuadre no garantiza que todo esté contabilizado."},
+{"id":"v8","t":"b8","src":"Precontrol 1 i)","q":"Registrar la compra de un activo fijo como Gastos Generales descuadra el balance de 8 columnas.","a":false,"j":"El asiento sigue teniendo el mismo débito y crédito, así que cuadra. Lo que cambia es la clasificación: el activo queda subestimado y el resultado también."},
+{"id":"v9","t":"b8","src":"Ayudantía 6, V/F 9","q":"La Depreciación Acumulada tiene saldo acreedor.","a":true,"j":"Se abona cada vez que se registra la depreciación del ejercicio (débito Depreciación del Ejercicio, crédito Depreciación Acumulada)."},
+{"id":"v10","t":"b8","src":"Ayudantía 6, V/F 9","q":"Como la Depreciación Acumulada tiene saldo acreedor, es una deuda con terceros y se suma a la Deuda Total.","a":false,"j":"Es una cuenta complementaria de activo: representa el desgaste ya reconocido del activo fijo, no dinero que se deba. Sumarla a la deuda sobrestima el endeudamiento."},
+{"id":"v11","t":"b8","src":"Ayudantía 6 vs. precontrol","q":"El resultado del ejercicio es el mismo si la Depreciación Acumulada se anota en la columna Pasivo o restando en la columna Activo.","a":true,"j":"Anotarla en Pasivo o restarla del Activo cambia Activo − Pasivo en lo mismo. Boldo: 110 − 95 = 15 M con el criterio del precontrol y 102 − 87 = 15 M con el de la Ayudantía 6."},
+{"id":"v12","t":"b8","src":"Precontrol 1","q":"En Distribuidora Boldo, Préstamos Bancarios (Debe 3 M, Haber 20 M) tiene saldo deudor de 17 M.","a":false,"j":"Debe − Haber = 3 − 20 = −17 M ⇒ saldo acreedor de 17 M, que va en la columna Pasivo."},
+{"id":"v13","t":"b8","src":"Ayudantía 6, formulario","q":"Si la suma de débitos es igual a la suma de créditos, la suma de saldos deudores es igual a la suma de saldos acreedores.","a":true,"j":"Cada saldo es la diferencia entre los débitos y créditos de su cuenta; si las sumas totales son iguales, las diferencias deudoras y acreedoras también se igualan (Boldo: 185 M = 185 M)."},
+{"id":"v14","t":"b8","src":"Ayudantía 6, V/F 2","q":"Las cuentas de las columnas Pérdida y Ganancia forman el Estado de Situación Financiera.","a":false,"j":"Forman el Estado de Resultados. El ESF sale de las columnas Activo y Pasivo, más la utilidad que pasa al patrimonio."},
+{"id":"v15","t":"b8","src":"Ayudantía 6","q":"El Capital se ubica en la columna Pasivo del balance de 8 columnas.","a":true,"j":"La columna Pasivo incluye el Patrimonio. El Capital tiene saldo acreedor y es una obligación con los dueños."},
+{"id":"v16","t":"b8","src":"Precontrol 1 g)","q":"La utilidad del ejercicio se suma en la columna Pasivo porque es una obligación con terceros.","a":false,"j":"Se suma en Pasivo porque esa columna incluye el Patrimonio y la utilidad pertenece a los dueños, no a terceros."},
+{"id":"v17","t":"b8","src":"Ayudantía 6, V/F 4","q":"Una cuenta con Débitos por $8.000.000 y Créditos por $11.000.000 tiene saldo acreedor de $3.000.000.","a":true,"j":"Créditos mayores que débitos ⇒ saldo acreedor = 11.000.000 − 8.000.000 = 3.000.000."},
+{"id":"v18","t":"b8","src":"Ayudantía 6, V/F 3","q":"Las cuentas de gasto, como Remuneraciones o Gastos Generales, tienen saldo acreedor y van en la columna Ganancia.","a":false,"j":"Los gastos son de naturaleza deudora: saldo deudor, columna Pérdida. Ganancia es para ingresos, como Ventas."},
+{"id":"v19","t":"b8","src":"Trampa de nombre","q":"Remuneraciones por Pagar va en la columna Pérdida porque las remuneraciones son un gasto.","a":false,"j":"«Por pagar» es una deuda con los trabajadores: saldo acreedor, columna Pasivo. El gasto es la cuenta Remuneraciones, que sí va en Pérdida."},
+{"id":"v20","t":"liq","src":"Precontrol 2 a)","q":"El Capital de Trabajo Neto se expresa en veces.","a":false,"j":"CTN = AC − PC es una resta de montos: se expresa en pesos. Las que van en veces son la Razón Corriente y la Prueba Ácida."},
+{"id":"v21","t":"liq","src":"Precontrol 2 a)","q":"Un CTN igual a cero significa que la empresa no tiene activo corriente.","a":false,"j":"Significa que el AC es igual al PC: alcanza justo para cubrir las deudas de corto plazo, sin colchón. Es una situación ajustada, no necesariamente mala."},
+{"id":"v22","t":"liq","src":"Precontrol 2 a)","q":"Un CTN negativo implica que la Razón Corriente es menor que 1.","a":true,"j":"AC − PC < 0 ⟺ AC < PC ⟺ AC/PC < 1. Es señal de alerta: la empresa dependería de activos de largo plazo o de nuevo financiamiento."},
+{"id":"v23","t":"liq","src":"Ayudantía 5, V/F 4","q":"La Prueba Ácida siempre es menor o igual que la Razón Corriente.","a":true,"j":"La PA resta las existencias del numerador y las existencias no son negativas. Son iguales solo si no hay existencias."},
+{"id":"v24","t":"liq","src":"Precontrol, formulario","q":"La Prueba Ácida excluye las existencias porque son el activo corriente menos líquido.","a":true,"j":"Primero hay que venderlas para convertirlas en efectivo, y si se venden apurado pueden perder valor (lámina 192)."},
+{"id":"v25","t":"liq","src":"Precontrol 2 c)","q":"En Maderera Curicó, la Prueba Ácida (0,75) es la mitad de la Razón Corriente (1,5) porque la mitad de su activo corriente son existencias.","a":true,"j":"AC = 60 M y Existencias = 30 M: (60 − 30)/40 = 0,75 contra 60/40 = 1,5."},
+{"id":"v26","t":"liq","src":"Resumen Carozzi","q":"Una Razón Corriente de 1,5 significa que la empresa tiene $1,5 en caja por cada $1 de deuda de corto plazo.","a":false,"j":"Tiene $1,5 de activo corriente, que incluye clientes y existencias, no solo caja. Lo que mide la caja es la razón de efectivo: (Caja + Banco)/PC."},
+{"id":"v27","t":"liq","src":"Ayudantía 6, Ej. 2 f)","q":"Una Razón Corriente mayor que 1 garantiza que la empresa puede pagar su pasivo corriente sin vender existencias.","a":false,"j":"Eso lo indica la Prueba Ácida, no la RC. Maderera tiene RC 1,5 pero PA 0,75: sin vender existencias no cubre su PC."},
+{"id":"v28","t":"liq","src":"Ayudantía 6, Ej. 3 f)","q":"Una Razón Corriente muy alta siempre es buena para la empresa.","a":false,"j":"Puede reflejar caja ociosa o inventario acumulado. La empresa A del Ej. 3 tenía RC 3,00 y la peor PA (0,70)."},
+{"id":"v29","t":"liq","src":"Relación PA y RC","q":"Si una empresa no tiene existencias, su Prueba Ácida es igual a su Razón Corriente.","a":true,"j":"La PA resta las existencias del AC; si son cero, el numerador es el mismo. Pasa en empresas de servicios."},
+{"id":"v30","t":"end","src":"Precontrol, formulario","q":"El Endeudamiento sobre Activos distingue entre deuda de corto y de largo plazo.","a":false,"j":"Usa la Deuda Total (PC + PNC) sobre el Activo: no distingue plazos. Para eso está la composición de la deuda (PC/Deuda y PNC/Deuda)."},
+{"id":"v31","t":"end","src":"Precontrol 2 e)","q":"Un Endeudamiento sobre Patrimonio de 100 % significa que hay $1 de deuda por cada $1 aportado por los dueños.","a":true,"j":"Deuda/Patrimonio = 1. Maderera: 100 M de deuda y 100 M de patrimonio."},
+{"id":"v32","t":"end","src":"Precontrol 2 d) y e)","q":"Si el Endeudamiento sobre Activos es 50 %, el Endeudamiento sobre Patrimonio es 100 %.","a":true,"j":"Si la deuda es la mitad del activo, el patrimonio es la otra mitad, así que deuda = patrimonio. D/P = (D/A)/(1 − D/A) = 0,5/0,5 = 1."},
+{"id":"v33","t":"end","src":"Ayudantía 6, V/F 6","q":"Un Endeudamiento sobre Patrimonio de 150 % significa que el 150 % de los activos está financiado con deuda.","a":false,"j":"Compara la deuda con el patrimonio: $1,50 de deuda por cada $1 de los dueños. Sobre activos es 1,5/2,5 = 60 %; ninguna parte del activo puede superar el 100 %."},
+{"id":"v34","t":"end","src":"Ecuación contable","q":"Con patrimonio positivo, el Endeudamiento sobre Activos nunca supera el 100 %.","a":true,"j":"Activo = Deuda + Patrimonio; si el patrimonio es positivo, la deuda es menor que el activo y D/A es menor que 100 %."},
+{"id":"v35","t":"end","src":"Ayudantía 6, conceptos","q":"La Deuda Total incluye el Patrimonio.","a":false,"j":"Deuda Total = Pasivo Corriente + Pasivo No Corriente: solo deuda exigible con terceros. El patrimonio es de los dueños."},
+{"id":"v36","t":"end","src":"Precontrol 3 b)","q":"El Patrimonio puede calcularse como Activo × (1 − Endeudamiento sobre Activos).","a":true,"j":"Si la deuda es Activo × Endeudamiento, lo que queda es patrimonio. Viña: 50 × (1 − 0,40) = 30 MM$."},
+{"id":"v37","t":"end","src":"Práctica P7","q":"Una empresa que debe más pesos que otra está necesariamente más endeudada.","a":false,"j":"El endeudamiento se mide en proporción. Debiendo 120 sobre 200 de activos (60 %) se está menos endeudado que debiendo 55 sobre 90 (61,11 %)."},
+{"id":"v38","t":"rent","src":"Precontrol, formulario","q":"El Margen sobre ventas mide qué porcentaje de cada peso vendido queda como utilidad neta.","a":true,"j":"Margen = Resultado/Ventas × 100. Viña: 3/30 = 10 %: de cada $100 vendidos quedan $10 de utilidad."},
+{"id":"v39","t":"rent","src":"Precontrol 3 e)","q":"Una empresa con mayor Margen sobre ventas siempre genera mayor utilidad absoluta.","a":false,"j":"Depende también del volumen de ventas. Textiles tiene 20 % de margen y gana 3,6 MM$; Agroexport tiene 10 % pero vende 50 contra 18 y gana 5 MM$."},
+{"id":"v40","t":"rent","src":"Precontrol, formulario","q":"El ROA mide la rentabilidad de cada peso de activo, independiente de cómo se financió.","a":true,"j":"ROA = Resultado/Activo: considera todos los activos, financiados con deuda o con patrimonio."},
+{"id":"v41","t":"rent","src":"Precontrol, formulario","q":"El ROE incluye el efecto del endeudamiento.","a":true,"j":"Divide por el patrimonio, no por el activo: mientras más deuda, más chico el patrimonio y más se amplifica el ROA. ROE = ROA/(1 − Endeud.)."},
+{"id":"v42","t":"rent","src":"Precontrol 3 h)","q":"Si una empresa se financiara solo con fondos propios, su ROE sería igual a su ROA.","a":true,"j":"Sin deuda, Patrimonio = Activo, así que Resultado/Patrimonio = Resultado/Activo. La diferencia entre ROE y ROA se debe solo al apalancamiento."},
+{"id":"v43","t":"rent","src":"Pautas Ay. 6 y precontrol","q":"Con utilidad positiva y algo de deuda, el ROE es menor que el ROA.","a":false,"j":"Es mayor: ROE = ROA/(1 − Endeud.) y el divisor es menor que 1. Viña: ROA 6 %, ROE 10 %."},
+{"id":"v44","t":"rent","src":"Precontrol 3 g)","q":"Un ROE alto indica siempre que el negocio es muy rentable.","a":false,"j":"Puede ser un ROA moderado amplificado por mucha deuda. Hay que mirarlo junto con el endeudamiento y el ROA (Ayudantía 6, empresa C: ROE 20 % con ROA 6 %)."},
+{"id":"v45","t":"rent","src":"Precontrol 3 g)","q":"ROE = ROA / (1 − Endeudamiento sobre Activos).","a":true,"j":"ROE = Resultado/Patrimonio = Resultado/[Activo × (1 − Endeud.)] = ROA/(1 − Endeud.). Textiles: 15 %/0,4 = 37,5 %."},
+{"id":"v46","t":"rent","src":"Precontrol 3 g)","q":"Con un Endeudamiento sobre Activos de 60 %, el ROE es 2,5 veces el ROA.","a":true,"j":"1/(1 − 0,6) = 1/0,4 = 2,5. Textiles Longaví: ROA 15 % y ROE 37,5 %."},
+{"id":"v47","t":"rent","src":"Precontrol 3 g)","q":"Si la tasa de interés de la deuda es mayor que el ROA, endeudarse más aumenta el ROE.","a":false,"j":"La pauta lo advierte: si la deuda cuesta más de lo que rinden los activos, el apalancamiento juega en contra y reduce el ROE."},
+{"id":"v48","t":"rent","src":"Práctica P2","q":"Si la empresa tiene pérdida y deuda, el ROE es más negativo que el ROA.","a":true,"j":"La deuda amplifica en ambos sentidos: el mismo resultado negativo se divide por un patrimonio menor que el activo. Los Olmos: ROA −16,45 %, ROE −59,52 %."},
+{"id":"v49","t":"dp","src":"Precontrol, formulario","q":"ROA = Margen × Rotación de Activos.","a":true,"j":"(Resultado/Ventas) × (Ventas/Activo) = Resultado/Activo: las ventas se cancelan. Textiles: 20 % × 0,75 = 15 %."},
+{"id":"v50","t":"dp","src":"Precontrol, formulario","q":"La Rotación de Activos se expresa en porcentaje.","a":false,"j":"Ventas/Activos se expresa en veces: cuántas veces «se dan vuelta» los activos generando ventas (Viña: 0,6 veces)."},
+{"id":"v51","t":"dp","src":"Precontrol 3 f)","q":"Si las Ventas y los Activos crecen 50 % manteniendo el mismo Margen y la misma Rotación, el ROA aumenta 50 %.","a":false,"j":"El ROA no cambia: ROA = Margen × Rotación y ninguno cambió. Viña: el resultado sube de 3 a 4,5 MM$, pero el ROA sigue en 4,5/75 = 6 %."},
+{"id":"v52","t":"dp","src":"Precontrol 3 f)","q":"Si las Ventas y los Activos crecen 50 % manteniendo Margen y Rotación, el Resultado también crece 50 %.","a":true,"j":"Resultado = Margen × Ventas: con el mismo margen y 50 % más de ventas, el resultado sube 50 % (Viña: de 3 a 4,5 MM$). Lo que no cambia es el ROA."},
+{"id":"v53","t":"dp","src":"Lámina 229","q":"Dos empresas con márgenes muy distintos pueden tener el mismo ROA.","a":true,"j":"Una puede compensar el margen bajo con rotación alta. Comida rápida: 5 % × 2,0 = 10 %; hotel: 20 % × 0,5 = 10 %."},
+{"id":"v54","t":"dp","src":"Du Pont","q":"Un margen sobre ventas bajo indica necesariamente una baja rentabilidad sobre los activos.","a":false,"j":"Si la rotación es alta, el ROA puede ser bueno (el caso del supermercado: margen chico, ventas enormes)."},
+{"id":"v55","t":"dp","src":"Precontrol, formulario","q":"La razón Utilidad Neta / Intereses indica cuántas veces la utilidad neta cubre el gasto por intereses.","a":true,"j":"Relaciona el resultado con el costo de la deuda. Agroexport: 2,5 veces."},
+{"id":"v56","t":"dp","src":"Precontrol 3 i)","q":"Si la razón Utilidad Neta / Intereses es 1,5 y la utilidad neta es MM$3, los intereses son MM$4,5.","a":false,"j":"Intereses = Utilidad Neta / razón = 3/1,5 = MM$2 (Viña Los Robles). Multiplicar es el error."},
+{"id":"v57","t":"dp","src":"Precontrol 3 i)","q":"Si se eliminaran los intereses, el mayor aumento porcentual del margen lo tendría la empresa con la menor razón Utilidad Neta / Intereses.","a":true,"j":"El aumento porcentual es Intereses/Utilidad = 1/(UN/Intereses). Textiles (1,2) sube 83,3 %; Viña (1,5) 66,7 %; Agroexport (2,5) 40 %."},
+{"id":"v58","t":"efe","src":"Precontrol 2, op. 1","q":"Pagar deuda de corto plazo con caja no cambia el Capital de Trabajo Neto.","a":true,"j":"AC y PC bajan en el mismo monto y la diferencia se mantiene. Maderera: 60 − 40 = 50 − 30 = 20 M."},
+{"id":"v59","t":"efe","src":"Ayudantía 6, V/F 8","q":"Pagar deuda de corto plazo con caja siempre aumenta la Razón Corriente.","a":false,"j":"Solo si la RC era mayor que 1 (Maderera: 1,5 → 1,67). Si era menor que 1 baja (0,8: 40/50 → 30/40 = 0,75) y si era 1 no cambia."},
+{"id":"v60","t":"efe","src":"Precontrol 2, op. 2","q":"Comprar existencias a crédito disminuye la Razón Corriente cuando ésta es mayor que 1.","a":true,"j":"Sumar lo mismo al AC y al PC acerca la razón a 1. Maderera: 60/40 = 1,5 → 75/55 = 1,36."},
+{"id":"v61","t":"efe","src":"Precontrol 2, op. 2","q":"Comprar existencias a crédito aumenta el Capital de Trabajo Neto.","a":false,"j":"No cambia: suben Existencias (AC) y Proveedores (PC) en el mismo monto. Maderera: 75 − 55 = 20 M, igual que antes."},
+{"id":"v62","t":"efe","src":"Precontrol 2, op. 3","q":"Vender existencias al contado con utilidad aumenta la Razón Corriente.","a":true,"j":"Entra más caja de lo que sale en existencias, así que el AC sube sin que suba el PC. Maderera: costo 12 M, venta 16 M → 64/40 = 1,6."},
+{"id":"v63","t":"efe","src":"Precontrol 2, op. 3","q":"Vender existencias siempre mejora la Razón Corriente.","a":false,"j":"Al costo, el AC no cambia y la RC tampoco; con pérdida, el AC baja y la RC empeora. Solo mejora si hay utilidad."},
+{"id":"v64","t":"efe","src":"Precontrol 2, op. 3","q":"Vender existencias a su mismo costo, al contado, no cambia la Razón Corriente.","a":true,"j":"Existencias baja y Caja sube en el mismo monto: el AC total es igual y la RC también (Maderera sigue en 1,5)."},
+{"id":"v65","t":"efe","src":"Precontrol 2, op. 3","q":"Vender existencias a su mismo costo, al contado, no cambia la Prueba Ácida.","a":false,"j":"La PA sube: la caja que entra cuenta en el numerador y la existencia que sale no contaba. Maderera: (60 − 18)/40 = 1,05, antes 0,75."},
+{"id":"v66","t":"efe","src":"Precontrol 2, op. 3","q":"Si la venta con utilidad se hiciera a crédito en vez de al contado, el efecto sobre la Razón Corriente sería el mismo.","a":true,"j":"A crédito el aumento queda en Clientes en vez de Caja, pero ambas son activo corriente: el AC total cambia lo mismo."},
+{"id":"v67","t":"efe","src":"Precontrol 2, op. 4","q":"Obtener un préstamo de largo plazo mejora la Razón Corriente y el CTN, pero aumenta el endeudamiento.","a":true,"j":"Entra caja sin subir el PC (RC 1,5 → 2,0; CTN 20 → 40 M), pero la deuda sube: endeudamiento de 50 % a 120/220 = 54,55 %."},
+{"id":"v68","t":"efe","src":"Ayudantía 6, Ej. 2 h)","q":"Endeudarse a largo plazo para mejorar la liquidez no tiene ningún costo para la empresa.","a":false,"j":"Sube el endeudamiento y vienen intereses que reducen la utilidad futura. Se compra liquidez con más riesgo financiero."},
+{"id":"v69","t":"efe","src":"Lámina 201","q":"Comprar existencias al contado no cambia la Razón Corriente, pero disminuye la Prueba Ácida.","a":true,"j":"Sale caja y entra existencia por el mismo monto dentro del AC: RC igual. La caja contaba en la PA y la existencia no: la PA baja."},
+{"id":"v70","t":"efe","src":"Tabla de efectos","q":"Cobrar a clientes aumenta la Razón Corriente.","a":false,"j":"Sale Clientes y entra Caja, las dos dentro del AC: la RC y la PA no cambian. Lo único que sube es la razón de efectivo."},
+{"id":"v71","t":"efe","src":"Ayudantía 6, Ej. 5 f)","q":"Comprar mercaderías a crédito siempre baja la Prueba Ácida.","a":true,"j":"La mercadería nueva no entra al numerador (se resta como existencia), pero la deuda sí sube el denominador. El Roble: 1,05 → 0,70."},
+{"id":"v72","t":"rent","src":"Pautas Ay. 6 y precontrol","q":"Para calcular el ROE, el patrimonio debe incluir la utilidad del ejercicio.","a":true,"j":"Así lo hacen las pautas: es el patrimonio de cierre (Capital + Utilidades Acumuladas + Utilidad del Ejercicio). En El Roble, 42.000 + 12.000 = 54.000."}
+];
+</script>
+<script>
+(function(){
+  if(!window.VFBANK) return;
+  var TAGS=window.VFTAGS||{}, KEY='imafi-c3vf-wrong';
+  function loadW(){ try{return JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){return {};} }
+  function saveW(w){ try{localStorage.setItem(KEY,JSON.stringify(w));}catch(e){} }
+  function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+  document.querySelectorAll('.vfquiz').forEach(function(box){
+    var st={ok:0,done:0,total:0}, current=window.VFBANK.slice();
+    var bar='<div class="qz-bar"><select class="qz-tag"><option value="all">Todos los temas ('+window.VFBANK.length+')</option>';
+    Object.keys(TAGS).forEach(function(k){ var c=window.VFBANK.filter(function(q){return q.t===k;}).length; bar+='<option value="'+k+'">'+TAGS[k]+' ('+c+')</option>'; });
+    bar+='</select><button class="btn primary qz-sim">Simulacro: 15 al azar</button><button class="btn qz-wrong">Solo las que fallé</button>'+
+      '<button class="btn qz-show">Ver todas las respuestas</button><button class="btn qz-re">Reiniciar</button><span class="qz-score"></span></div><div class="qz-list"></div>';
+    box.innerHTML=bar;
+    function upd(){ box.querySelector('.qz-score').textContent=st.ok+' / '+st.done+' correctas · '+st.total+' afirmaciones'; }
+    function reveal(d,q){ d.classList.add('done'); d.querySelectorAll('.opt')[q.a?0:1].classList.add('ok'); }
+    function render(list, mostrar){
+      var cont=box.querySelector('.qz-list'); cont.innerHTML=''; st.ok=0; st.done=0; st.total=list.length; upd();
+      list.forEach(function(q,i){
+        var d=document.createElement('div'); d.className='qz';
+        d.innerHTML='<div class="qh"><span class="qn">'+(i+1)+'.</span><span class="pill a">'+(TAGS[q.t]||q.t)+'</span></div><p class="qt">'+q.q+'</p>'+
+          '<button class="opt" data-v="1"><span class="l">V</span><span>Verdadero</span></button><button class="opt" data-v="0"><span class="l">F</span><span>Falso</span></button>'+
+          '<div class="exp"><b>'+(q.a?'Verdadero.':'Falso.')+'</b> '+q.j+'<div class="src">Fuente: '+q.src+'</div></div>';
+        d.querySelectorAll('.opt').forEach(function(b){ b.addEventListener('click',function(){
+          if(d.classList.contains('done')) return;
+          var v=b.getAttribute('data-v')==='1'; reveal(d,q); var w=loadW();
+          if(v!==q.a){ b.classList.add('bad'); w[q.id]=1; } else { st.ok++; delete w[q.id]; }
+          saveW(w); st.done++; upd(); });});
+        if(mostrar) reveal(d,q);
+        cont.appendChild(d);
+      });
+    }
+    var sel=box.querySelector('.qz-tag');
+    function pool(){ return sel.value==='all'?window.VFBANK.slice():window.VFBANK.filter(function(q){return q.t===sel.value;}); }
+    render(current,false);
+    sel.addEventListener('change',function(){ current=pool(); render(current,false); });
+    box.querySelector('.qz-re').addEventListener('click',function(){ render(current,false); });
+    box.querySelector('.qz-show').addEventListener('click',function(){ render(current,true); });
+    box.querySelector('.qz-sim').addEventListener('click',function(){ current=shuffle(window.VFBANK).slice(0,15); render(current,false); box.scrollIntoView(); });
+    box.querySelector('.qz-wrong').addEventListener('click',function(){ var w=loadW(); var l=window.VFBANK.filter(function(q){return w[q.id];});
+      if(!l.length){ alert('No tienes afirmaciones falladas guardadas (o tu navegador no guarda datos locales).'); return; } current=l; render(current,false); });
+  });
+})();
+</script>
+
+</body>
+</html>

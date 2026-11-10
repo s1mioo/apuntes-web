@@ -1,0 +1,64 @@
+# Cada 3 horas (o a mano, con "Run workflow"): trae los HTML de estudio del repo
+# de respaldo de Gabriel, los deja en apuntes/ y vuelve a publicar el sitio.
+name: Sincronizar apuntes
+
+on:
+  schedule:
+    - cron: '17 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write  # para lanzar "Publicar sitio" después del commit
+
+concurrency:
+  group: sincronizar
+
+jobs:
+  sincronizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clonar ramos-2026-2 (solo HTML e imágenes)
+        env:
+          RAMOS_DEPLOY_KEY: ${{ secrets.RAMOS_DEPLOY_KEY }}
+          GIT_LFS_SKIP_SMUDGE: '1'
+        run: |
+          install -m 600 /dev/null "$RUNNER_TEMP/llave"
+          printf '%s\n' "$RAMOS_DEPLOY_KEY" > "$RUNNER_TEMP/llave"
+          export GIT_SSH_COMMAND="ssh -i $RUNNER_TEMP/llave -o IdentitiesOnly=yes"
+          git clone --depth 1 --filter=blob:none --no-checkout \
+            git@github.com:Gabobriel7/ramos-2026-2.git "$RUNNER_TEMP/origen"
+          cd "$RUNNER_TEMP/origen"
+          git sparse-checkout set --no-cone '*.html' '*.png' '*.jpg' '*.jpeg' '*.gif' '*.svg' '*.webp'
+          git checkout
+          rm -f "$RUNNER_TEMP/llave"
+
+      - name: Copiar lo nuevo a apuntes/
+        id: copiar
+        # Si el script omite algo sale con 1: el job queda en ❌ pero igual se publica lo demás
+        continue-on-error: true
+        shell: bash  # con pipefail, para que el código de salida sea el del script y no el de tee
+        run: python3 scripts/sincronizar.py "$RUNNER_TEMP/origen" | tee "$RUNNER_TEMP/salida.txt"
+
+      - name: Commit y publicación
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add apuntes
+          if git diff --cached --quiet; then
+            echo "Nada nuevo."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Sincroniza desde ramos-2026-2: $(tail -n 1 "$RUNNER_TEMP/salida.txt")"
+          git pull --rebase
+          git push
+          # Un push hecho por la Action no dispara otros workflows; se lanza a mano
+          gh workflow run publicar.yml --ref main
+
+      - name: Avisar si se omitió algo
+        if: steps.copiar.outcome == 'failure'
+        run: exit 1

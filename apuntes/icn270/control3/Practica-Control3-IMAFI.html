@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Práctica del Control 3 · IMAFI</title>
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+  --line:#e6e6ea; --brand:#0e7a5f; --brand-soft:#e3f4ee;
+  --accent:#3a5bd9; --accent-soft:#eaefff;
+  --warn:#c2410c; --warn-soft:#fdecdf;
+  --ex:#7c3aed; --ex-soft:#f1eafe;
+  --ana:#b4306e; --ana-soft:#fce8f1;
+  --cert:#a16207; --cert-soft:#fdf5d8;
+  --ok:#0e7a5f; --ok-soft:#dff3ea; --no:#c0392b; --no-soft:#fbe4e1;
+  --code:#f0f1f4;
+  --g-mov:#f3f3f6; --g-sal:#edf1ff; --g-inv:#e6f5ef; --g-res:#fdf0e6;
+  --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+  --sidew:300px;
+}
+:root[data-theme="dark"]{
+  --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+  --line:#2a2e39; --brand:#4fd1ab; --brand-soft:#16302a;
+  --accent:#8aa2ff; --accent-soft:#20263a;
+  --warn:#f5a15f; --warn-soft:#3a2413;
+  --ex:#c4a6ff; --ex-soft:#271c3d;
+  --ana:#ff9ec4; --ana-soft:#3a1a2a;
+  --cert:#f2c94c; --cert-soft:#332a10;
+  --ok:#4fd1ab; --ok-soft:#153129; --no:#ff8a80; --no-soft:#3a1c1a;
+  --code:#232733;
+  --g-mov:#20232c; --g-sal:#1d2436; --g-inv:#162a24; --g-res:#2f2318;
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#4fd1ab; --brand-soft:#16302a;
+    --accent:#8aa2ff; --accent-soft:#20263a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --cert:#f2c94c; --cert-soft:#332a10;
+    --ok:#4fd1ab; --ok-soft:#153129; --no:#ff8a80; --no-soft:#3a1c1a;
+    --code:#232733;
+    --g-mov:#20232c; --g-sal:#1d2436; --g-inv:#162a24; --g-res:#2f2318;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.62;font-size:16.5px;-webkit-font-smoothing:antialiased}
+.layout{display:flex;align-items:flex-start}
+.sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--panel);border-right:1px solid var(--line);padding:22px 14px 60px}
+.content{flex:1 1 auto;min-width:0;padding:38px clamp(16px,4vw,64px) 120px;max-width:1040px;margin:0 auto}
+.brand{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.brand .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+  display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;flex:0 0 auto}
+.brand h1{font-size:15px;margin:0;line-height:1.2}
+.brand small{color:var(--muted);font-size:12px;display:block}
+nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 8px 6px;font-weight:700}
+nav a{display:block;color:var(--ink);text-decoration:none;padding:6px 10px;border-radius:7px;font-size:13.5px;opacity:.85}
+nav a:hover{background:var(--brand-soft);opacity:1}
+nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+nav a.sec{display:flex;align-items:baseline;gap:6px}
+nav a .nt{flex:1 1 auto;min-width:0}
+nav a.page{display:flex;gap:8px;align-items:baseline}
+nav a.page .pn{font-size:11px;font-weight:700;color:var(--muted);min-width:14px}
+nav a.page.cur{background:var(--brand);color:#fff;opacity:1;font-weight:600}
+nav a.page.cur .pn{color:#fff}
+.toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:7px 10px;
+  font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;font-family:inherit}
+.btn:hover{background:var(--brand-soft)}
+.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn.primary:hover{filter:brightness(1.08)}
+h2{font-size:26px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px;line-height:1.25}
+h3{font-size:20px;margin:30px 0 6px;scroll-margin-top:20px}
+h4{font-size:16px;margin:20px 0 4px;color:var(--brand)}
+p{margin:10px 0}
+.lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+.pagehead{margin-bottom:10px}
+.pagehead .kicker{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.pagehead h1{font-size:32px;margin:4px 0 6px;letter-spacing:-.015em;line-height:1.15}
+section{border-top:1px solid var(--line);padding-top:34px;margin-top:46px}
+section:first-of-type{border-top:0;margin-top:10px}
+a{color:var(--brand)}
+ul,ol{margin:10px 0;padding-left:22px}
+li{margin:5px 0}
+code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;font-family:"SF Mono",Menlo,Consolas,monospace}
+.mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px}
+hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--brand-soft);
+  color:var(--brand);margin-right:6px;vertical-align:middle;white-space:nowrap}
+.pill.a{background:var(--accent-soft);color:var(--accent)}
+.pill.w{background:var(--warn-soft);color:var(--warn)}
+.pill.e{background:var(--ex-soft);color:var(--ex)}
+.pill.c{background:var(--cert-soft);color:var(--cert)}
+.pill.hi{background:var(--no-soft);color:var(--no)}
+/* prioridad */
+.prio{margin:2px 0 18px;font-size:14.5px;color:var(--muted)}
+.prio strong{color:var(--ink)}
+.lv{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:1px 8px;border-radius:5px;border:1px solid var(--line);color:var(--ink);margin-right:8px;vertical-align:1px;white-space:nowrap}
+.lv.p3{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+.lv.p2{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+.lv.p1{color:var(--muted);border-style:dashed}
+td .lv{margin-right:0}
+.pd{display:inline-flex;gap:3px;align-items:center;color:var(--muted);vertical-align:1px;flex:0 0 auto}
+.pd i{display:inline-block;width:6px;height:6px;border-radius:50%;border:1px solid currentColor;box-sizing:border-box}
+.pd i.on{background:currentColor}
+.pd.p3{color:var(--brand)}
+.pd.p2{color:var(--accent)}
+/* cajas */
+.box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;margin:16px 0;
+  background:var(--panel);box-shadow:var(--shadow)}
+.box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px}
+.box.formula{border-left-color:var(--brand);background:var(--brand-soft)} .box.formula .bt{color:var(--brand)}
+.box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+.box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+.box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+.box.cert{border-left-color:var(--cert);background:var(--cert-soft)} .box.cert .bt{color:var(--cert)}
+.box > :last-child{margin-bottom:0}
+.fx{display:block;text-align:center;font-size:17px;margin:14px 0;padding:10px 12px;background:var(--panel);
+  border:1px solid var(--line);border-radius:9px;font-variant-numeric:tabular-nums;overflow-x:auto}
+.fx b{color:var(--brand)}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 5px}
+.frac .top{border-bottom:1.5px solid currentColor;padding:0 6px;font-size:.9em}
+.frac .bot{padding:0 6px;font-size:.9em}
+.tsec{font-size:12px;color:var(--muted)}
+/* ejercicios */
+details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;margin:16px 0;
+  background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;background:var(--ex-soft);color:var(--ex);flex-wrap:wrap;
+  display:flex;gap:10px;align-items:center}
+details.ex>summary::-webkit-details-marker{display:none}
+details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);padding:1px 8px;border-radius:999px;
+  border:1px solid var(--line);margin-left:auto}
+details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+details.ex[open]>summary::before{transform:rotate(90deg)}
+details.ex .body{padding:6px 18px 16px}
+.enun{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--panel);box-shadow:var(--shadow);margin:16px 0}
+.enun .et{font-weight:700;font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.enun ol[type="a"]{padding-left:26px}
+.step{margin:14px 0;overflow-x:auto}
+.step .n{display:inline-block;background:var(--ex);color:#fff;border-radius:6px;font-size:11px;font-weight:700;padding:1px 7px;margin-right:6px}
+.ans{display:inline-block;font-weight:700;color:var(--brand);background:var(--brand-soft);border-radius:6px;padding:0 7px}
+/* tablas */
+.tablewrap{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:10px}
+.tablewrap.narrow{max-width:560px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:420px;background:var(--panel)}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--brand-soft);color:var(--brand);font-size:12.5px;text-transform:uppercase;letter-spacing:.03em}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.z{color:var(--muted);opacity:.6}
+tr.tot td{font-weight:700;border-top:2px solid var(--line);background:var(--code)}
+tr.sub td{font-weight:600;background:var(--code)}
+td.ind{padding-left:28px}
+td.grp{font-style:italic;color:var(--muted);font-size:13.5px}
+td.b{font-weight:700}
+td details summary{cursor:pointer;color:var(--brand);font-weight:600;font-size:13.5px}
+td details[open] summary{margin-bottom:4px}
+.vf{font-weight:700} .vf.v{color:var(--ok)} .vf.f{color:var(--no)}
+.up{color:var(--ok);font-weight:700} .dn{color:var(--no);font-weight:700} .eq{color:var(--muted);font-weight:700}
+/* balance de 8 columnas */
+table.b8{font-size:13.5px;min-width:860px}
+table.b8 th,table.b8 td{padding:6px 9px}
+table.b8 th{text-align:center}
+table.b8 th.g-mov,table.b8 td:nth-child(3),table.b8 td:nth-child(4){background:var(--g-mov)}
+table.b8 th.g-sal{background:var(--g-sal);color:var(--accent)}
+table.b8 th.g-inv{background:var(--g-inv);color:var(--brand)}
+table.b8 th.g-res{background:var(--g-res);color:var(--warn)}
+table.b8 th.g-mov{color:var(--muted)}
+table.b8 tbody tr td:nth-child(5),table.b8 tbody tr td:nth-child(6){background:var(--g-sal)}
+table.b8 tbody tr td:nth-child(7),table.b8 tbody tr td:nth-child(8){background:var(--g-inv)}
+table.b8 tbody tr td:nth-child(9),table.b8 tbody tr td:nth-child(10){background:var(--g-res)}
+table.b8 tr.sub td,table.b8 tr.tot td{font-weight:700}
+table.b8 tr.tot td{border-top:2px solid var(--ink)}
+table.b8 td.sh{background:repeating-linear-gradient(45deg,var(--code),var(--code) 4px,transparent 4px,transparent 8px)!important}
+table.b8 td.hl{font-weight:800;color:var(--no);outline:2px solid var(--no);outline-offset:-3px;border-radius:4px}
+.b8wrap{border-color:var(--line)}
+/* tabla de 4 columnas (solo inventario y resultado) */
+table.b8.c4{min-width:560px}
+table.b8.c4 tbody tr td:nth-child(2),table.b8.c4 tbody tr td:nth-child(3){background:var(--g-inv)}
+table.b8.c4 tbody tr td:nth-child(4),table.b8.c4 tbody tr td:nth-child(5){background:var(--g-res)}
+table.eeff{min-width:0}
+table.eeff tr.sub td{background:var(--code)}
+table.mayor{min-width:0}
+table.rt td:nth-child(3){color:var(--muted)}
+table.esf2{min-width:620px}
+/* esquema de columnas */
+.cols8{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 1fr;gap:6px;margin:16px 0;font-size:13.5px;text-align:center}
+.cols8 > div{border-radius:9px;padding:8px 6px;border:1px solid var(--line)}
+.cols8 .h{font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.cols8 .k0{background:var(--panel)} .cols8 .k1{background:var(--g-mov)} .cols8 .k2{background:var(--g-sal)}
+.cols8 .k3{background:var(--g-inv)} .cols8 .k4{background:var(--g-res)}
+.cols8 .s{font-size:12px;color:var(--muted)}
+@media (max-width:640px){.cols8{grid-template-columns:1fr 1fr}.cols8 .k0{grid-column:1/3}}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:16px 0}
+.flow .st{border:1px solid var(--line);background:var(--panel);border-radius:9px;padding:7px 12px;font-size:14px;font-weight:600;box-shadow:var(--shadow)}
+.flow .st small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.flow .ar{color:var(--muted);font-weight:700}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+@media (max-width:760px){.pair{grid-template-columns:1fr}}
+.scale{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel);box-shadow:var(--shadow)}
+.scale h4{margin:0 0 6px}
+.scale .row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}
+.scale .cl{border-radius:8px;padding:6px 8px;font-size:13.5px;text-align:center;border:1px solid var(--line)}
+.scale .cl.inv{background:var(--g-inv)} .scale .cl.res{background:var(--g-res)}
+.scale .cl.add{outline:2px dashed var(--no);outline-offset:-3px;font-weight:700}
+/* tarjetas */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0}
+.card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--panel);box-shadow:var(--shadow)}
+.card .num{font-size:12px;font-weight:700;color:var(--brand)}
+.card h4{margin:2px 0 4px;color:var(--ink)}
+.card p{margin:0;font-size:13.8px;color:var(--muted)}
+a.card{text-decoration:none;color:inherit;display:block}
+a.card:hover{border-color:var(--brand)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+/* chuleta */
+.cheat{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px;margin:16px 0}
+.cheat .cc{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel);box-shadow:var(--shadow)}
+.cheat .cc h4{margin:0 0 6px}
+.cheat .cc ul{margin:4px 0;padding-left:18px;font-size:14px}
+.cheat .cc li{margin:3px 0}
+/* videos */
+.videos{margin:18px 0}
+.video{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px 14px;
+  margin:8px 0;background:var(--panel)}
+.video .vi{flex:0 0 auto;width:30px;height:30px;border-radius:8px;background:var(--no);color:#fff;display:grid;place-items:center;
+  font-size:13px;margin-top:2px}
+.video a{font-weight:600;text-decoration:none}
+.video a:hover{text-decoration:underline}
+.video .meta{font-size:12.5px;color:var(--muted)}
+.video .why{font-size:14px;margin-top:2px}
+/* plan */
+.day{border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0;background:var(--panel);box-shadow:var(--shadow)}
+.day h4{margin:0 0 4px;color:var(--ink)}
+.day .when{font-size:12px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.06em}
+/* quiz */
+.qz-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0;padding:12px 14px;border:1px solid var(--line);
+  border-radius:10px;background:var(--panel);position:sticky;top:0;z-index:5;box-shadow:var(--shadow)}
+.qz-bar select{font-family:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.qz-score{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums}
+.qz{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0;background:var(--panel);box-shadow:var(--shadow)}
+.qz .qh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+.qz .qn{font-weight:800;color:var(--muted);font-size:13px}
+.qz .qt{font-weight:600;margin:0 0 8px}
+.qz .opt{display:flex;gap:10px;width:100%;text-align:left;border:1px solid var(--line);border-radius:9px;padding:9px 12px;margin:6px 0;
+  background:var(--panel);color:var(--ink);cursor:pointer;font-family:inherit;font-size:15px;line-height:1.45}
+.qz .opt:hover{border-color:var(--accent)}
+.qz .opt .l{font-weight:700;color:var(--muted);flex:0 0 auto}
+.qz .opt.ok{background:var(--ok-soft);border-color:var(--ok)}
+.qz .opt.ok .l{color:var(--ok)}
+.qz .opt.bad{background:var(--no-soft);border-color:var(--no)}
+.qz .opt.bad .l{color:var(--no)}
+.qz.done .opt{cursor:default}
+.qz .exp{display:none;margin-top:10px;padding:10px 12px;border-radius:9px;background:var(--code);font-size:14.5px}
+.qz.done .exp{display:block}
+.qz .src{font-size:12px;color:var(--muted);margin-top:4px}
+.menuToggle{display:none}
+@media (max-width:900px){
+  .sidebar{position:fixed;z-index:40;left:0;top:0;transform:translateX(-102%);transition:transform .22s;box-shadow:var(--shadow)}
+  .sidebar.open{transform:none}
+  .menuToggle{display:inline-flex;position:fixed;z-index:50;top:12px;left:12px}
+  .content{padding-top:64px}
+  .scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:35}
+  .scrim.on{display:block}
+  .qz-bar{top:52px}
+}
+.backtop{position:fixed;right:18px;bottom:18px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.backtop.on{opacity:1;pointer-events:auto}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:60px;border-top:1px solid var(--line);padding-top:20px;flex-wrap:wrap}
+.pager a{text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--panel);max-width:48%}
+.pager a small{display:block;color:var(--muted);font-size:12px}
+@media print{
+  .sidebar,.menuToggle,.backtop,.toolbar,.qz-bar,.pager{display:none}
+  details.ex{break-inside:avoid} details.ex:not([open]) .body{display:block}
+  body{font-size:11pt;background:#fff;color:#000}
+}
+</style>
+</head>
+<body>
+<button class="btn menuToggle" id="menuToggle">&#9776; Índice</button>
+<div class="scrim" id="scrim"></div>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="dot">C3</div><div><h1>IMAFI · Control 3</h1><small>ICN-270 · ratios y balance de 8 columnas</small></div></div>
+  <div class="toolbar">
+    <button class="btn" id="themeBtn">Claro / oscuro</button>
+    <button class="btn" id="printBtn">Imprimir</button>
+    <button class="btn" id="openAll">Abrir soluciones</button>
+  </div>
+  <nav id="nav">
+<div class="grp">Páginas</div>
+<a class="page" href="Guia-Control3-IMAFI.html"><span class="pn">1</span><span>Guía del Control 3</span></a>
+<a class="page cur" href="Practica-Control3-IMAFI.html"><span class="pn">2</span><span>Práctica y banco de preguntas</span></a>
+<a class="page" href="VF-Control3-IMAFI.html"><span class="pn">3</span><span>Modo V/F: precontrol</span></a>
+<div class="grp">Empezar</div>
+<a class="sec" href="#p-como"><span class="nt">Cómo usar esta página</span></a>
+<div class="grp">Balance de 8 columnas</div>
+<a class="sec" href="#p1"><span class="nt">P1 · Doña Rosa: saldos</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+<a class="sec" href="#p2"><span class="nt">P2 · Los Olmos: con pérdida</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+<a class="sec" href="#p3"><span class="nt">P3 · Pehuén: errores</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a>
+<div class="grp">Integradores tipo control</div>
+<a class="sec" href="#p4"><span class="nt">P4 · Las Vertientes</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+<a class="sec" href="#p5"><span class="nt">P5 · La Espiga</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+<div class="grp">Ratios</div>
+<a class="sec" href="#p6"><span class="nt">P6 · Cruz del Sur: desde un ESF</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+<a class="sec" href="#p7"><span class="nt">P7 · Tres empresas X, Y, Z</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a>
+<a class="sec" href="#p8"><span class="nt">P8 · Despejes rápidos</span><span class="pd p2" title="Probabilidad media"><i class="on"></i><i class="on"></i><i></i></span></a>
+<a class="sec" href="#p9"><span class="nt">P9 · Alerce: ¿sube o baja?</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+<div class="grp">Autoevaluación</div>
+<a class="sec" href="#quiz"><span class="nt">Banco de preguntas</span><span class="pd p3" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i></span></a>
+  </nav>
+</aside>
+<main class="content">
+<header class="pagehead"><div class="kicker">IMAFI · Control 3 · Práctica</div><h1>Ejercicios nuevos y banco de preguntas</h1>
+<p class="lead">Nueve ejercicios con otros números, ordenados por familia, y 61 preguntas de verdadero o falso y alternativas. Todo resuelto; los números los verifiqué con un script que rehace cada balance y cada indicador.</p></header>
+
+<section id="p-como">
+<h2>Cómo usar esta página</h2>
+<p class="prio"><span class="lv">Pasar por encima</span>Dos minutos.</p>
+<ul>
+<li>Cada ejercicio tiene el enunciado a la vista y la solución plegada. Intenta primero en papel, con las 8 columnas dibujadas a mano.</li>
+<li>Las familias siguen el orden de la guía: primero la mecánica del balance de 8 columnas (P1 a P3), después dos integradores tipo control (P4 y P5), y al final ratios sueltos, comparación, despejes y efectos (P6 a P9).</li>
+<li>Si tienes poco tiempo: <b>P4</b> (integrador con utilidad), <b>P2</b> (balance con pérdida) y el banco de preguntas en modo simulacro.</li>
+</ul>
+<div class="tablewrap"><table><thead><tr><th>Ejercicio</th><th>Se parece a…</th><th>Qué entrena</th></tr></thead><tbody>
+<tr><td><a href="#p1">P1 · Doña Rosa</a></td><td>—</td><td>Pasar saldos a las columnas; un ingreso fuera del giro</td></tr>
+<tr><td><a href="#p2">P2 · Los Olmos</a></td><td>Tamarugal</td><td>Balance con <b>pérdida</b>, capital faltante, ROE negativo</td></tr>
+<tr><td><a href="#p3">P3 · Pehuén</a></td><td>V/F 10</td><td>Encontrar errores de clasificación en un balance que cuadra</td></tr>
+<tr><td><a href="#p4">P4 · Las Vertientes</a></td><td>El Roble</td><td>Integrador completo con ventas faltantes y depreciación acumulada</td></tr>
+<tr><td><a href="#p5">P5 · La Espiga</a></td><td>El Roble + Los Aromos h)</td><td>Integrador con problemas de liquidez; comparar dos soluciones</td></tr>
+<tr><td><a href="#p6">P6 · Cruz del Sur</a></td><td>Los Aromos</td><td>Ratios desde un ESF con datos faltantes y tres operaciones</td></tr>
+<tr><td><a href="#p7">P7 · X, Y, Z</a></td><td>Tres empresas</td><td>Despejar con un ratio, comparar y Du Pont</td></tr>
+<tr><td><a href="#p8">P8 · Despejes</a></td><td>—</td><td>Nueve preguntas cortas de un paso</td></tr>
+<tr><td><a href="#p9">P9 · Alerce</a></td><td>Los Aromos g)</td><td>Ocho operaciones: ¿sube, baja o no cambia?</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="p1">
+<h2>P1 · Almacén Doña Rosa: de los saldos a las columnas</h2>
+<p class="prio"><span class="lv p3">Calentamiento</span>Pasos 4 a 7 del método, sin movimientos. Diez minutos.</p>
+<div class="enun"><div class="et">Enunciado</div>
+<p>Saldos al 31 de diciembre (M$):</p>
+<div class="tablewrap narrow"><table class="mayor"><thead><tr><th class="num">N°</th><th>Cuenta</th><th class="num">Saldo (M$)</th><th>Tipo de saldo</th></tr></thead><tbody><tr><td class="num">1</td><td>Caja</td><td class="num">4.200</td><td>Deudor</td></tr><tr><td class="num">2</td><td>Clientes</td><td class="num">3.100</td><td>Deudor</td></tr><tr><td class="num">3</td><td>Mercaderías</td><td class="num">6.500</td><td>Deudor</td></tr><tr><td class="num">4</td><td>Muebles</td><td class="num">9.000</td><td>Deudor</td></tr><tr><td class="num">5</td><td>Depreciación Acumulada Muebles</td><td class="num">1.800</td><td>Acreedor</td></tr><tr><td class="num">6</td><td>Proveedores</td><td class="num">5.400</td><td>Acreedor</td></tr><tr><td class="num">7</td><td>Remuneraciones por Pagar</td><td class="num">900</td><td>Acreedor</td></tr><tr><td class="num">8</td><td>Capital</td><td class="num">12.000</td><td>Acreedor</td></tr><tr><td class="num">9</td><td>Ventas</td><td class="num">21.000</td><td>Acreedor</td></tr><tr><td class="num">10</td><td>Intereses Ganados</td><td class="num">500</td><td>Acreedor</td></tr><tr><td class="num">11</td><td>Costo de Ventas</td><td class="num">11.200</td><td>Deudor</td></tr><tr><td class="num">12</td><td>Remuneraciones</td><td class="num">4.300</td><td>Deudor</td></tr><tr><td class="num">13</td><td>Arriendo</td><td class="num">2.400</td><td>Deudor</td></tr><tr><td class="num">14</td><td>Depreciación del Ejercicio</td><td class="num">900</td><td>Deudor</td></tr></tbody></table></div>
+<ol type="a"><li>Complete las columnas Activo, Pasivo, Pérdida y Ganancia.</li><li>Determine el resultado del ejercicio y dónde se anota.</li><li>Prepare el Estado de Resultados.</li></ol></div>
+<details class="ex"><summary>Solución</summary><div class="body">
+<div class="tablewrap"><table class="b8 c4"><thead><tr><th>Cuenta</th><th class="num g-inv">Activo</th><th class="num g-inv">Pasivo</th><th class="num g-res">Pérdida</th><th class="num g-res">Ganancia</th></tr></thead><tbody><tr><td>Caja</td><td class="num">4.200</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Clientes</td><td class="num">3.100</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Mercaderías</td><td class="num">6.500</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Muebles</td><td class="num">9.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Depreciación Acumulada Muebles</td><td class="num">(1.800)</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Proveedores</td><td class="num z">–</td><td class="num">5.400</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Remuneraciones por Pagar</td><td class="num z">–</td><td class="num">900</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Capital</td><td class="num z">–</td><td class="num">12.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Ventas</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">21.000</td></tr><tr><td>Intereses Ganados</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">500</td></tr><tr><td>Costo de Ventas</td><td class="num z">–</td><td class="num z">–</td><td class="num">11.200</td><td class="num z">–</td></tr><tr><td>Remuneraciones</td><td class="num z">–</td><td class="num z">–</td><td class="num">4.300</td><td class="num z">–</td></tr><tr><td>Arriendo</td><td class="num z">–</td><td class="num z">–</td><td class="num">2.400</td><td class="num z">–</td></tr><tr><td>Depreciación del Ejercicio</td><td class="num z">–</td><td class="num z">–</td><td class="num">900</td><td class="num z">–</td></tr><tr class="sub"><td>Sub-total</td><td class="num">21.000</td><td class="num">18.300</td><td class="num">18.800</td><td class="num">21.500</td></tr><tr class="resrow"><td>Utilidad del Ejercicio</td><td class="num z">–</td><td class="num hl">2.700</td><td class="num hl">2.700</td><td class="num z">–</td></tr><tr class="tot"><td>Total</td><td class="num">21.000</td><td class="num">21.000</td><td class="num">21.500</td><td class="num">21.500</td></tr></tbody></table></div>
+<p>Ganancia − Pérdida = 21.500 − 18.800 = 2.700 y Activo − Pasivo = 21.000 − 18.300 = 2.700 ✓. <span class="ans">Utilidad de M$2.700</span>, en Pasivo y Pérdida.</p>
+<p>Las dos trampas: <b>Intereses Ganados</b> es un ingreso, va en Ganancia aunque no sea del giro; y <b>Remuneraciones por Pagar</b> es pasivo, no gasto. La depreciación acumulada resta dentro de Activo.</p>
+<div class="tablewrap narrow"><table class="eeff"><thead><tr><th>Estado de Resultados</th><th class="num">M$</th></tr></thead><tbody><tr class=""><td>Ventas</td><td class="num">21.000</td></tr><tr class=""><td>Costo de Ventas</td><td class="num">(11.200)</td></tr><tr class="sub"><td>Ganancia Bruta</td><td class="num">9.800</td></tr><tr class=""><td>Remuneraciones</td><td class="num">(4.300)</td></tr><tr class=""><td>Arriendo</td><td class="num">(2.400)</td></tr><tr class=""><td>Depreciación del Ejercicio</td><td class="num">(900)</td></tr><tr class="sub"><td>Resultado Operacional</td><td class="num">2.200</td></tr><tr class=""><td>Intereses Ganados</td><td class="num">500</td></tr><tr class="tot"><td>Resultado del Ejercicio</td><td class="num">2.700</td></tr></tbody></table></div>
+<p>Los intereses ganados se suman después del resultado operacional, igual que los intereses pagados se restan ahí.</p>
+</div></details>
+</section>
+
+<section id="p2">
+<h2>P2 · Taller Mecánico Los Olmos Ltda.: balance con pérdida</h2>
+<p class="prio"><span class="lv p3">Muy recomendado</span>La ayudantía no trae ningún balance con pérdida; el control podría.</p>
+<div class="enun"><div class="et">Enunciado</div>
+<p>Movimientos del Libro Mayor al 31/12/2025 (M$). El crédito de Capital no fue informado.</p>
+<div class="tablewrap"><table class="mayor"><thead><tr><th class="num">N°</th><th>Cuenta</th><th class="num">Débitos (M$)</th><th class="num">Créditos (M$)</th></tr></thead><tbody><tr><td class="num">1</td><td>Caja y Banco</td><td class="num">20.000</td><td class="num">17.800</td></tr><tr><td class="num">2</td><td>Clientes</td><td class="num">9.000</td><td class="num">5.000</td></tr><tr><td class="num">3</td><td>Repuestos (Existencias)</td><td class="num">12.000</td><td class="num">7.000</td></tr><tr><td class="num">4</td><td>Maquinarias</td><td class="num">24.000</td><td class="num z">–</td></tr><tr><td class="num">5</td><td>Depreciación Acumulada Maquinarias</td><td class="num z">–</td><td class="num">4.800</td></tr><tr><td class="num">6</td><td>Proveedores</td><td class="num">6.000</td><td class="num">13.000</td></tr><tr><td class="num">7</td><td>Préstamo Bancario Corto Plazo</td><td class="num">1.000</td><td class="num">6.000</td></tr><tr><td class="num">8</td><td>Préstamo Bancario Largo Plazo</td><td class="num z">–</td><td class="num">10.000</td></tr><tr><td class="num">9</td><td>Capital</td><td class="num z">–</td><td class="num">?</td></tr><tr><td class="num">10</td><td>Ingresos por Servicios</td><td class="num z">–</td><td class="num">30.000</td></tr><tr><td class="num">11</td><td>Costo de Repuestos Utilizados</td><td class="num">7.000</td><td class="num z">–</td></tr><tr><td class="num">12</td><td>Remuneraciones</td><td class="num">18.000</td><td class="num z">–</td></tr><tr><td class="num">13</td><td>Arriendo</td><td class="num">6.000</td><td class="num z">–</td></tr><tr><td class="num">14</td><td>Depreciación del Ejercicio</td><td class="num">2.400</td><td class="num z">–</td></tr><tr><td class="num">15</td><td>Intereses Pagados</td><td class="num">1.600</td><td class="num z">–</td></tr></tbody></table></div>
+<ol type="a"><li>Determine el crédito de Capital.</li><li>Complete el Balance de 8 Columnas, determine el resultado y compruebe el cuadre.</li><li>Prepare el ER y el ESF clasificado.</li>
+<li>Calcule CTN, RC, PA, RE, Endeudamiento sobre Activos y sobre Patrimonio, Margen Bruto, ROS, ROA y ROE.</li><li>Diagnostique la situación de la empresa. ¿Dónde está el problema de su rentabilidad?</li><li>¿Por qué el ROE es mucho más negativo que el ROA?</li></ol></div>
+<details class="ex"><summary>Solución a) y b)</summary><div class="body">
+<div class="step"><span class="n">a</span>ΣDébitos = 20.000 + 9.000 + 12.000 + 24.000 + 6.000 + 1.000 + 7.000 + 18.000 + 6.000 + 2.400 + 1.600 = <b>107.000</b>. ΣCréditos conocidos = 17.800 + 5.000 + 7.000 + 4.800 + 13.000 + 6.000 + 10.000 + 30.000 = <b>93.600</b>. Capital = <span class="ans">M$13.400</span>.</div>
+<div class="step"><span class="n">b</span><div class="tablewrap b8wrap"><table class="b8"><thead><tr><th rowspan="2" class="num">N°</th><th rowspan="2">Cuenta</th><th colspan="2" class="g-mov">Movimientos</th><th colspan="2" class="g-sal">Saldos</th><th colspan="2" class="g-inv">Inventario</th><th colspan="2" class="g-res">Resultado</th></tr><tr><th class="num g-mov">Débitos</th><th class="num g-mov">Créditos</th><th class="num g-sal">Deudor</th><th class="num g-sal">Acreedor</th><th class="num g-inv">Activo</th><th class="num g-inv">Pasivo</th><th class="num g-res">Pérdida</th><th class="num g-res">Ganancia</th></tr></thead><tbody><tr><td class="num">1</td><td>Caja y Banco</td><td class="num">20.000</td><td class="num">17.800</td><td class="num">2.200</td><td class="num z">–</td><td class="num">2.200</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">2</td><td>Clientes</td><td class="num">9.000</td><td class="num">5.000</td><td class="num">4.000</td><td class="num z">–</td><td class="num">4.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">3</td><td>Repuestos (Existencias)</td><td class="num">12.000</td><td class="num">7.000</td><td class="num">5.000</td><td class="num z">–</td><td class="num">5.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">4</td><td>Maquinarias</td><td class="num">24.000</td><td class="num z">–</td><td class="num">24.000</td><td class="num z">–</td><td class="num">24.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">5</td><td>Depreciación Acumulada Maquinarias</td><td class="num z">–</td><td class="num">4.800</td><td class="num z">–</td><td class="num">4.800</td><td class="num">(4.800)</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">6</td><td>Proveedores</td><td class="num">6.000</td><td class="num">13.000</td><td class="num z">–</td><td class="num">7.000</td><td class="num z">–</td><td class="num">7.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">7</td><td>Préstamo Bancario Corto Plazo</td><td class="num">1.000</td><td class="num">6.000</td><td class="num z">–</td><td class="num">5.000</td><td class="num z">–</td><td class="num">5.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">8</td><td>Préstamo Bancario Largo Plazo</td><td class="num z">–</td><td class="num">10.000</td><td class="num z">–</td><td class="num">10.000</td><td class="num z">–</td><td class="num">10.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">9</td><td>Capital</td><td class="num z">–</td><td class="num">13.400</td><td class="num z">–</td><td class="num">13.400</td><td class="num z">–</td><td class="num">13.400</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">10</td><td>Ingresos por Servicios</td><td class="num z">–</td><td class="num">30.000</td><td class="num z">–</td><td class="num">30.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">30.000</td></tr><tr><td class="num">11</td><td>Costo de Repuestos Utilizados</td><td class="num">7.000</td><td class="num z">–</td><td class="num">7.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">7.000</td><td class="num z">–</td></tr><tr><td class="num">12</td><td>Remuneraciones</td><td class="num">18.000</td><td class="num z">–</td><td class="num">18.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">18.000</td><td class="num z">–</td></tr><tr><td class="num">13</td><td>Arriendo</td><td class="num">6.000</td><td class="num z">–</td><td class="num">6.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">6.000</td><td class="num z">–</td></tr><tr><td class="num">14</td><td>Depreciación del Ejercicio</td><td class="num">2.400</td><td class="num z">–</td><td class="num">2.400</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">2.400</td><td class="num z">–</td></tr><tr><td class="num">15</td><td>Intereses Pagados</td><td class="num">1.600</td><td class="num z">–</td><td class="num">1.600</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">1.600</td><td class="num z">–</td></tr><tr class="sub"><td></td><td>Sub-total</td><td class="num">107.000</td><td class="num">107.000</td><td class="num">70.200</td><td class="num">70.200</td><td class="num">30.400</td><td class="num">35.400</td><td class="num">35.000</td><td class="num">30.000</td></tr><tr class="resrow"><td></td><td>Pérdida del Ejercicio</td><td class="num sh"></td><td class="num sh"></td><td class="num sh"></td><td class="num sh"></td><td class="num hl">5.000</td><td class="num z">–</td><td class="num z">–</td><td class="num hl">5.000</td></tr><tr class="tot"><td></td><td>Total</td><td class="num">107.000</td><td class="num">107.000</td><td class="num">70.200</td><td class="num">70.200</td><td class="num">35.400</td><td class="num">35.400</td><td class="num">35.000</td><td class="num">35.000</td></tr></tbody></table></div>
+<p>(1) 107.000 = 107.000 ✓ (2) 70.200 = 70.200 ✓ (3) Ganancia − Pérdida = 30.000 − 35.000 = −5.000 y Activo − Pasivo = 30.400 − 35.400 = −5.000 ✓. <span class="ans">Pérdida de M$5.000</span>: se anota en <b>Activo y Ganancia</b> (las columnas cortas).</p></div>
+</div></details>
+<details class="ex"><summary>Solución c) y d)</summary><div class="body">
+<div class="two"><div class="tablewrap narrow"><table class="eeff"><thead><tr><th>Estado de Resultados</th><th class="num">M$</th></tr></thead><tbody><tr class=""><td>Ingresos por Servicios</td><td class="num">30.000</td></tr><tr class=""><td>Costo de Repuestos Utilizados</td><td class="num">(7.000)</td></tr><tr class="sub"><td>Ganancia Bruta</td><td class="num">23.000</td></tr><tr class=""><td>Remuneraciones</td><td class="num">(18.000)</td></tr><tr class=""><td>Arriendo</td><td class="num">(6.000)</td></tr><tr class=""><td>Depreciación del Ejercicio</td><td class="num">(2.400)</td></tr><tr class="sub"><td>Resultado Operacional</td><td class="num">(3.400)</td></tr><tr class=""><td>Intereses Pagados</td><td class="num">(1.600)</td></tr><tr class="tot"><td>Resultado del Ejercicio</td><td class="num">(5.000)</td></tr></tbody></table></div><div class="tablewrap narrow"><table class="eeff"><thead><tr><th>Estado de Situación Financiera</th><th class="num">M$</th></tr></thead><tbody><tr class=""><td class="ind">Caja y Banco</td><td class="num">2.200</td></tr><tr class=""><td class="ind">Clientes</td><td class="num">4.000</td></tr><tr class=""><td class="ind">Repuestos (Existencias)</td><td class="num">5.000</td></tr><tr class="sub"><td class="">Activo Corriente</td><td class="num">11.200</td></tr><tr class=""><td class="ind">Maquinarias</td><td class="num">24.000</td></tr><tr class=""><td class="ind">Depreciación Acumulada Maquinarias</td><td class="num">(4.800)</td></tr><tr class="sub"><td class="">Activo No Corriente</td><td class="num">19.200</td></tr><tr class="tot"><td class="">TOTAL ACTIVO</td><td class="num">30.400</td></tr><tr class=""><td class="ind">Proveedores</td><td class="num">7.000</td></tr><tr class=""><td class="ind">Préstamo Bancario Corto Plazo</td><td class="num">5.000</td></tr><tr class="sub"><td class="">Pasivo Corriente</td><td class="num">12.000</td></tr><tr class=""><td class="ind">Préstamo Bancario Largo Plazo</td><td class="num">10.000</td></tr><tr class="sub"><td class="">Pasivo No Corriente</td><td class="num">10.000</td></tr><tr class=""><td class="ind">Capital</td><td class="num">13.400</td></tr><tr class=""><td class="ind">Pérdida del Ejercicio</td><td class="num">(5.000)</td></tr><tr class="sub"><td class="">Patrimonio</td><td class="num">8.400</td></tr><tr class="tot"><td class="">TOTAL PASIVO + PATRIMONIO</td><td class="num">30.400</td></tr></tbody></table></div></div>
+<p>Patrimonio = Capital 13.400 − pérdida 5.000 = 8.400. Control: 22.000 + 8.400 = 30.400 ✓.</p>
+<div class="tablewrap"><table class="rt"><thead><tr><th>Indicador</th><th>Fórmula</th><th>Datos y reemplazo</th><th class="num">Resultado</th></tr></thead><tbody><tr><td>CTN</td><td>AC − PC</td><td class="mono">11.200 − 12.000</td><td class="num"><b>M$−800</b></td></tr><tr><td>Razón Corriente</td><td>AC / PC</td><td class="mono">11.200 / 12.000</td><td class="num"><b>0,93 veces</b></td></tr><tr><td>Prueba Ácida</td><td>(AC − Existencias) / PC</td><td class="mono">(11.200 − 5.000) / 12.000</td><td class="num"><b>0,52 veces</b></td></tr><tr><td>Razón de Efectivo</td><td>(Caja + Banco) / PC</td><td class="mono">2.200 / 12.000</td><td class="num"><b>0,18 veces</b></td></tr><tr><td>Endeud. s/ Activos</td><td>Deuda Total / AT × 100</td><td class="mono">22.000 / 30.400 × 100</td><td class="num"><b>72,37 %</b></td></tr><tr><td>Endeud. s/ Patrimonio</td><td>Deuda Total / Patrimonio × 100</td><td class="mono">22.000 / 8.400 × 100</td><td class="num"><b>261,90 %</b></td></tr><tr><td>Margen Bruto</td><td>Ganancia Bruta / Ventas × 100</td><td class="mono">23.000 / 30.000 × 100</td><td class="num"><b>76,67 %</b></td></tr><tr><td>ROS</td><td>Resultado Neto / Ventas × 100</td><td class="mono">−5.000 / 30.000 × 100</td><td class="num"><b>−16,67 %</b></td></tr><tr><td>ROA</td><td>Resultado Neto / AT × 100</td><td class="mono">−5.000 / 30.400 × 100</td><td class="num"><b>−16,45 %</b></td></tr><tr><td>ROE</td><td>Resultado Neto / Patrimonio × 100</td><td class="mono">−5.000 / 8.400 × 100</td><td class="num"><b>−59,52 %</b></td></tr></tbody></table></div>
+</div></details>
+<details class="ex"><summary>Solución e) y f)</summary><div class="body">
+<div class="step"><span class="n">e</span><b>Liquidez insuficiente:</b> CTN negativo (−800) y RC 0,93: el activo corriente no alcanza a cubrir el pasivo corriente; sin vender repuestos tendría solo $0,52 por cada $1 que debe, y con caja, $0,18. <b>Endeudamiento alto:</b> 72,37 % de los activos con deuda, sobre el 60 %, y $2,62 de deuda por cada $1 de patrimonio. <b>Rentabilidad:</b> el problema no es el precio (margen bruto 76,67 %), sino los gastos de operación: las remuneraciones (18.000) más el arriendo y la depreciación superan la ganancia bruta (23.000) y el resultado operacional ya es negativo (−3.400) antes de los intereses.</div>
+<div class="step"><span class="n">f</span>Por el apalancamiento, que amplifica en los dos sentidos: ROE = ROA × AT/Patrimonio = (−5.000/30.400) × (30.400/8.400) = −5.000/8.400 = −59,52 %. El activo es 3,6 veces el patrimonio, así que la misma pérdida pesa 3,6 veces más sobre los dueños que sobre los activos.</div>
+</div></details>
+</section>
+
+<section id="p3">
+<h2>P3 · Comercial Pehuén Ltda.: encuentra los errores</h2>
+<p class="prio"><span class="lv p2">Recomendado</span>Entrena el V/F 10 al revés: un balance que cuadra y está mal.</p>
+<div class="enun"><div class="et">Enunciado</div>
+<p>Un alumno pasó los saldos de Pehuén (M$) a las columnas de Inventario y Resultado, y le dio una utilidad de 3.000. Los saldos (todos con su naturaleza normal) eran: Caja y Banco 7.000, Clientes 5.000, Mercaderías 8.000, Arriendo Pagado por Anticipado 3.000, Equipos 20.000, Depreciación Acumulada Equipos 4.000, Proveedores 6.000, Remuneraciones por Pagar 2.000, Préstamo Bancario Largo Plazo 9.000, Capital 18.000, Ventas 40.000, Costo de Ventas 22.000, Remuneraciones 8.000, Depreciación del Ejercicio 2.000 y Arriendo 4.000.</p>
+<div class="tablewrap"><table class="b8 c4"><thead><tr><th>Cuenta</th><th class="num g-inv">Activo</th><th class="num g-inv">Pasivo</th><th class="num g-res">Pérdida</th><th class="num g-res">Ganancia</th></tr></thead><tbody><tr><td>Caja y Banco</td><td class="num">7.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Clientes</td><td class="num">5.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Mercaderías</td><td class="num">8.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Arriendo Pagado por Anticipado</td><td class="num z">–</td><td class="num z">–</td><td class="num">3.000</td><td class="num z">–</td></tr><tr><td>Equipos</td><td class="num">20.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Depreciación Acumulada Equipos</td><td class="num z">–</td><td class="num">4.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Proveedores</td><td class="num z">–</td><td class="num">6.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Remuneraciones por Pagar</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">2.000</td></tr><tr><td>Préstamo Bancario Largo Plazo</td><td class="num z">–</td><td class="num">9.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Capital</td><td class="num z">–</td><td class="num">18.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Ventas</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">40.000</td></tr><tr><td>Costo de Ventas</td><td class="num z">–</td><td class="num z">–</td><td class="num">22.000</td><td class="num z">–</td></tr><tr><td>Remuneraciones</td><td class="num z">–</td><td class="num z">–</td><td class="num">8.000</td><td class="num z">–</td></tr><tr><td>Depreciación del Ejercicio</td><td class="num z">–</td><td class="num z">–</td><td class="num">2.000</td><td class="num z">–</td></tr><tr><td>Arriendo</td><td class="num z">–</td><td class="num z">–</td><td class="num">4.000</td><td class="num z">–</td></tr><tr class="sub"><td>Sub-total</td><td class="num">40.000</td><td class="num">37.000</td><td class="num">39.000</td><td class="num">42.000</td></tr><tr class="resrow"><td>Utilidad del Ejercicio</td><td class="num z">–</td><td class="num hl">3.000</td><td class="num hl">3.000</td><td class="num z">–</td></tr><tr class="tot"><td>Total</td><td class="num">40.000</td><td class="num">40.000</td><td class="num">42.000</td><td class="num">42.000</td></tr></tbody></table></div>
+<ol type="a"><li>¿El balance del alumno cuadra? ¿Eso prueba que está bien?</li><li>Encuentre los tres errores y diga cómo afecta cada uno al resultado.</li><li>Rehaga las cuatro columnas y determine el resultado correcto.</li><li>Calcule el endeudamiento sobre activos correcto y el que obtendría el alumno con su balance.</li></ol></div>
+<details class="ex"><summary>Solución</summary><div class="body">
+<div class="step"><span class="n">a</span>Sí cuadra: 40.000 = 40.000 y 42.000 = 42.000. Pero el cuadre solo controla la aritmética, no la clasificación.</div>
+<div class="step"><span class="n">b</span>
+<div class="tablewrap"><table><thead><tr><th>Error</th><th>Dónde debía ir</th><th class="num">Efecto en el resultado</th></tr></thead><tbody>
+<tr><td>Arriendo Pagado por Anticipado (3.000) en Pérdida</td><td>Activo: es un derecho, no un gasto del año</td><td class="num">−3.000</td></tr>
+<tr><td>Depreciación Acumulada (4.000) en Pasivo, sumando</td><td>Activo, restando</td><td class="num">0 (infla activo y pasivo)</td></tr>
+<tr><td>Remuneraciones por Pagar (2.000) en Ganancia</td><td>Pasivo: es una deuda</td><td class="num">+2.000</td></tr>
+<tr class="tot"><td>Efecto neto</td><td></td><td class="num">−1.000</td></tr>
+</tbody></table></div></div>
+<div class="step"><span class="n">c</span><div class="tablewrap"><table class="b8 c4"><thead><tr><th>Cuenta</th><th class="num g-inv">Activo</th><th class="num g-inv">Pasivo</th><th class="num g-res">Pérdida</th><th class="num g-res">Ganancia</th></tr></thead><tbody><tr><td>Caja y Banco</td><td class="num">7.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Clientes</td><td class="num">5.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Mercaderías</td><td class="num">8.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Arriendo Pagado por Anticipado</td><td class="num">3.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Equipos</td><td class="num">20.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Depreciación Acumulada Equipos</td><td class="num">(4.000)</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Proveedores</td><td class="num z">–</td><td class="num">6.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Remuneraciones por Pagar</td><td class="num z">–</td><td class="num">2.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Préstamo Bancario Largo Plazo</td><td class="num z">–</td><td class="num">9.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Capital</td><td class="num z">–</td><td class="num">18.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td>Ventas</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">40.000</td></tr><tr><td>Costo de Ventas</td><td class="num z">–</td><td class="num z">–</td><td class="num">22.000</td><td class="num z">–</td></tr><tr><td>Remuneraciones</td><td class="num z">–</td><td class="num z">–</td><td class="num">8.000</td><td class="num z">–</td></tr><tr><td>Depreciación del Ejercicio</td><td class="num z">–</td><td class="num z">–</td><td class="num">2.000</td><td class="num z">–</td></tr><tr><td>Arriendo</td><td class="num z">–</td><td class="num z">–</td><td class="num">4.000</td><td class="num z">–</td></tr><tr class="sub"><td>Sub-total</td><td class="num">39.000</td><td class="num">35.000</td><td class="num">36.000</td><td class="num">40.000</td></tr><tr class="resrow"><td>Utilidad del Ejercicio</td><td class="num z">–</td><td class="num hl">4.000</td><td class="num hl">4.000</td><td class="num z">–</td></tr><tr class="tot"><td>Total</td><td class="num">39.000</td><td class="num">39.000</td><td class="num">40.000</td><td class="num">40.000</td></tr></tbody></table></div>
+<p><span class="ans">Utilidad correcta: M$4.000</span> (el alumno la subestimó en 1.000).</p></div>
+<div class="step"><span class="n">d</span>Correcto: Deuda = 6.000 + 2.000 + 9.000 = 17.000; AT = 39.000 → <span class="ans">43,59 %</span>. El alumno: Deuda = 6.000 + 9.000 + 4.000 (la depreciación) = 19.000, sin las remuneraciones por pagar; AT = 40.000 → 47,50 %.</div>
+</div></details>
+</section>
+
+<section id="p4">
+<h2>P4 · Distribuidora Las Vertientes Ltda.: integrador tipo control</h2>
+<p class="prio"><span class="lv p3">El más importante de la página</span>Mismo formato que El Roble, con depreciación acumulada, utilidades acumuladas y la venta como dato faltante.</p>
+<div class="enun"><div class="et">Enunciado</div>
+<p>Movimientos del Libro Mayor al 31/12/2025 (M$). El crédito de la cuenta Ventas no fue informado.</p>
+<div class="tablewrap"><table class="mayor"><thead><tr><th class="num">N°</th><th>Cuenta</th><th class="num">Débitos (M$)</th><th class="num">Créditos (M$)</th></tr></thead><tbody><tr><td class="num">1</td><td>Caja y Banco</td><td class="num">85.000</td><td class="num">70.000</td></tr><tr><td class="num">2</td><td>Clientes</td><td class="num">40.000</td><td class="num">22.000</td></tr><tr><td class="num">3</td><td>Mercaderías</td><td class="num">64.000</td><td class="num">37.000</td></tr><tr><td class="num">4</td><td>Muebles y Equipos</td><td class="num">36.000</td><td class="num z">–</td></tr><tr><td class="num">5</td><td>Depreciación Acumulada Muebles y Equipos</td><td class="num z">–</td><td class="num">9.000</td></tr><tr><td class="num">6</td><td>Terreno</td><td class="num">20.000</td><td class="num z">–</td></tr><tr><td class="num">7</td><td>Proveedores</td><td class="num">18.000</td><td class="num">40.000</td></tr><tr><td class="num">8</td><td>Remuneraciones por Pagar</td><td class="num">3.000</td><td class="num">6.000</td></tr><tr><td class="num">9</td><td>Préstamo Bancario Largo Plazo</td><td class="num">6.000</td><td class="num">24.000</td></tr><tr><td class="num">10</td><td>Capital</td><td class="num z">–</td><td class="num">40.000</td></tr><tr><td class="num">11</td><td>Utilidades Acumuladas</td><td class="num z">–</td><td class="num">8.000</td></tr><tr><td class="num">12</td><td>Ventas</td><td class="num z">–</td><td class="num">?</td></tr><tr><td class="num">13</td><td>Costo de Ventas</td><td class="num">37.000</td><td class="num z">–</td></tr><tr><td class="num">14</td><td>Remuneraciones</td><td class="num">14.000</td><td class="num z">–</td></tr><tr><td class="num">15</td><td>Gastos Generales</td><td class="num">5.000</td><td class="num z">–</td></tr><tr><td class="num">16</td><td>Depreciación del Ejercicio</td><td class="num">4.500</td><td class="num z">–</td></tr><tr><td class="num">17</td><td>Intereses Pagados</td><td class="num">2.500</td><td class="num z">–</td></tr></tbody></table></div>
+<p><b>Paso 1.</b> a) Determine las Ventas.<br><b>Paso 2.</b> b) Complete el Balance de 8 Columnas, el resultado y el cuadre.<br><b>Paso 3.</b> c) ER y ESF clasificado.<br><b>Paso 4.</b> d) CTN, RC, PA, RE, Endeudamiento sobre Activos y sobre Patrimonio, composición de la deuda, Margen Bruto, ROS, ROA y ROE. (Opcional: Rotación de Activos y Cobertura de Intereses.)<br><b>Paso 5.</b> e) Interprete y señale la fortaleza y el punto débil. f) La gerencia evalúa pagar M$10.000 a proveedores con caja. Calcule la nueva RC, PA y Razón de Efectivo, y comente.</p></div>
+<details class="ex"><summary>Paso 1: las Ventas</summary><div class="body">
+<p>ΣDébitos = 85.000 + 40.000 + 64.000 + 36.000 + 20.000 + 18.000 + 3.000 + 6.000 + 37.000 + 14.000 + 5.000 + 4.500 + 2.500 = <b>335.000</b></p>
+<p>ΣCréditos conocidos = 70.000 + 22.000 + 37.000 + 9.000 + 40.000 + 6.000 + 24.000 + 40.000 + 8.000 = <b>256.000</b></p>
+<p>Ventas = 335.000 − 256.000 = <span class="ans">M$79.000</span></p></div></details>
+<details class="ex"><summary>Paso 2: saldos y balance de 8 columnas</summary><div class="body">
+<div class="tablewrap"><table class="saldos"><thead><tr><th class="num">N°</th><th>Cuenta</th><th>Movimientos (mayor − menor)</th><th class="num">Saldo</th><th>Deudor / Acreedor</th><th>Tipo</th><th>Columna</th></tr></thead><tbody><tr><td class="num">1</td><td>Caja y Banco</td><td class="mono">D 85.000 − C 70.000</td><td class="num">15.000</td><td>Deudor</td><td>Activo</td><td>Activo</td></tr><tr><td class="num">2</td><td>Clientes</td><td class="mono">D 40.000 − C 22.000</td><td class="num">18.000</td><td>Deudor</td><td>Activo</td><td>Activo</td></tr><tr><td class="num">3</td><td>Mercaderías</td><td class="mono">D 64.000 − C 37.000</td><td class="num">27.000</td><td>Deudor</td><td>Activo</td><td>Activo</td></tr><tr><td class="num">4</td><td>Muebles y Equipos</td><td class="mono">D 36.000 − C 0</td><td class="num">36.000</td><td>Deudor</td><td>Activo</td><td>Activo</td></tr><tr><td class="num">5</td><td>Depreciación Acumulada Muebles y Equipos</td><td class="mono">C 9.000 − D 0</td><td class="num">9.000</td><td>Acreedor</td><td>Contra-activo</td><td>Activo (restando)</td></tr><tr><td class="num">6</td><td>Terreno</td><td class="mono">D 20.000 − C 0</td><td class="num">20.000</td><td>Deudor</td><td>Activo</td><td>Activo</td></tr><tr><td class="num">7</td><td>Proveedores</td><td class="mono">C 40.000 − D 18.000</td><td class="num">22.000</td><td>Acreedor</td><td>Pasivo / Patrimonio</td><td>Pasivo</td></tr><tr><td class="num">8</td><td>Remuneraciones por Pagar</td><td class="mono">C 6.000 − D 3.000</td><td class="num">3.000</td><td>Acreedor</td><td>Pasivo / Patrimonio</td><td>Pasivo</td></tr><tr><td class="num">9</td><td>Préstamo Bancario Largo Plazo</td><td class="mono">C 24.000 − D 6.000</td><td class="num">18.000</td><td>Acreedor</td><td>Pasivo / Patrimonio</td><td>Pasivo</td></tr><tr><td class="num">10</td><td>Capital</td><td class="mono">C 40.000 − D 0</td><td class="num">40.000</td><td>Acreedor</td><td>Pasivo / Patrimonio</td><td>Pasivo</td></tr><tr><td class="num">11</td><td>Utilidades Acumuladas</td><td class="mono">C 8.000 − D 0</td><td class="num">8.000</td><td>Acreedor</td><td>Pasivo / Patrimonio</td><td>Pasivo</td></tr><tr><td class="num">12</td><td>Ventas</td><td class="mono">C 79.000 − D 0</td><td class="num">79.000</td><td>Acreedor</td><td>Ganancia (ingreso)</td><td>Ganancia</td></tr><tr><td class="num">13</td><td>Costo de Ventas</td><td class="mono">D 37.000 − C 0</td><td class="num">37.000</td><td>Deudor</td><td>Pérdida (costo o gasto)</td><td>Pérdida</td></tr><tr><td class="num">14</td><td>Remuneraciones</td><td class="mono">D 14.000 − C 0</td><td class="num">14.000</td><td>Deudor</td><td>Pérdida (costo o gasto)</td><td>Pérdida</td></tr><tr><td class="num">15</td><td>Gastos Generales</td><td class="mono">D 5.000 − C 0</td><td class="num">5.000</td><td>Deudor</td><td>Pérdida (costo o gasto)</td><td>Pérdida</td></tr><tr><td class="num">16</td><td>Depreciación del Ejercicio</td><td class="mono">D 4.500 − C 0</td><td class="num">4.500</td><td>Deudor</td><td>Pérdida (costo o gasto)</td><td>Pérdida</td></tr><tr><td class="num">17</td><td>Intereses Pagados</td><td class="mono">D 2.500 − C 0</td><td class="num">2.500</td><td>Deudor</td><td>Pérdida (costo o gasto)</td><td>Pérdida</td></tr></tbody></table></div>
+<div class="tablewrap b8wrap"><table class="b8"><thead><tr><th rowspan="2" class="num">N°</th><th rowspan="2">Cuenta</th><th colspan="2" class="g-mov">Movimientos</th><th colspan="2" class="g-sal">Saldos</th><th colspan="2" class="g-inv">Inventario</th><th colspan="2" class="g-res">Resultado</th></tr><tr><th class="num g-mov">Débitos</th><th class="num g-mov">Créditos</th><th class="num g-sal">Deudor</th><th class="num g-sal">Acreedor</th><th class="num g-inv">Activo</th><th class="num g-inv">Pasivo</th><th class="num g-res">Pérdida</th><th class="num g-res">Ganancia</th></tr></thead><tbody><tr><td class="num">1</td><td>Caja y Banco</td><td class="num">85.000</td><td class="num">70.000</td><td class="num">15.000</td><td class="num z">–</td><td class="num">15.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">2</td><td>Clientes</td><td class="num">40.000</td><td class="num">22.000</td><td class="num">18.000</td><td class="num z">–</td><td class="num">18.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">3</td><td>Mercaderías</td><td class="num">64.000</td><td class="num">37.000</td><td class="num">27.000</td><td class="num z">–</td><td class="num">27.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">4</td><td>Muebles y Equipos</td><td class="num">36.000</td><td class="num z">–</td><td class="num">36.000</td><td class="num z">–</td><td class="num">36.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">5</td><td>Depreciación Acumulada Muebles y Equipos</td><td class="num z">–</td><td class="num">9.000</td><td class="num z">–</td><td class="num">9.000</td><td class="num">(9.000)</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">6</td><td>Terreno</td><td class="num">20.000</td><td class="num z">–</td><td class="num">20.000</td><td class="num z">–</td><td class="num">20.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">7</td><td>Proveedores</td><td class="num">18.000</td><td class="num">40.000</td><td class="num z">–</td><td class="num">22.000</td><td class="num z">–</td><td class="num">22.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">8</td><td>Remuneraciones por Pagar</td><td class="num">3.000</td><td class="num">6.000</td><td class="num z">–</td><td class="num">3.000</td><td class="num z">–</td><td class="num">3.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">9</td><td>Préstamo Bancario Largo Plazo</td><td class="num">6.000</td><td class="num">24.000</td><td class="num z">–</td><td class="num">18.000</td><td class="num z">–</td><td class="num">18.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">10</td><td>Capital</td><td class="num z">–</td><td class="num">40.000</td><td class="num z">–</td><td class="num">40.000</td><td class="num z">–</td><td class="num">40.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">11</td><td>Utilidades Acumuladas</td><td class="num z">–</td><td class="num">8.000</td><td class="num z">–</td><td class="num">8.000</td><td class="num z">–</td><td class="num">8.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">12</td><td>Ventas</td><td class="num z">–</td><td class="num">79.000</td><td class="num z">–</td><td class="num">79.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">79.000</td></tr><tr><td class="num">13</td><td>Costo de Ventas</td><td class="num">37.000</td><td class="num z">–</td><td class="num">37.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">37.000</td><td class="num z">–</td></tr><tr><td class="num">14</td><td>Remuneraciones</td><td class="num">14.000</td><td class="num z">–</td><td class="num">14.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">14.000</td><td class="num z">–</td></tr><tr><td class="num">15</td><td>Gastos Generales</td><td class="num">5.000</td><td class="num z">–</td><td class="num">5.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">5.000</td><td class="num z">–</td></tr><tr><td class="num">16</td><td>Depreciación del Ejercicio</td><td class="num">4.500</td><td class="num z">–</td><td class="num">4.500</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">4.500</td><td class="num z">–</td></tr><tr><td class="num">17</td><td>Intereses Pagados</td><td class="num">2.500</td><td class="num z">–</td><td class="num">2.500</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">2.500</td><td class="num z">–</td></tr><tr class="sub"><td></td><td>Sub-total</td><td class="num">335.000</td><td class="num">335.000</td><td class="num">179.000</td><td class="num">179.000</td><td class="num">107.000</td><td class="num">91.000</td><td class="num">63.000</td><td class="num">79.000</td></tr><tr class="resrow"><td></td><td>Utilidad del Ejercicio</td><td class="num sh"></td><td class="num sh"></td><td class="num sh"></td><td class="num sh"></td><td class="num z">–</td><td class="num hl">16.000</td><td class="num hl">16.000</td><td class="num z">–</td></tr><tr class="tot"><td></td><td>Total</td><td class="num">335.000</td><td class="num">335.000</td><td class="num">179.000</td><td class="num">179.000</td><td class="num">107.000</td><td class="num">107.000</td><td class="num">79.000</td><td class="num">79.000</td></tr></tbody></table></div>
+<p>(1) 335.000 = 335.000 ✓ (2) 179.000 = 179.000 ✓ (3) 79.000 − 63.000 = 16.000 = 107.000 − 91.000 ✓. <span class="ans">Utilidad de M$16.000</span>.</p></div></details>
+<details class="ex"><summary>Paso 3: ER y ESF clasificado</summary><div class="body">
+<div class="two"><div class="tablewrap narrow"><table class="eeff"><thead><tr><th>Estado de Resultados</th><th class="num">M$</th></tr></thead><tbody><tr class=""><td>Ventas</td><td class="num">79.000</td></tr><tr class=""><td>Costo de Ventas</td><td class="num">(37.000)</td></tr><tr class="sub"><td>Ganancia Bruta</td><td class="num">42.000</td></tr><tr class=""><td>Remuneraciones</td><td class="num">(14.000)</td></tr><tr class=""><td>Gastos Generales</td><td class="num">(5.000)</td></tr><tr class=""><td>Depreciación del Ejercicio</td><td class="num">(4.500)</td></tr><tr class="sub"><td>Resultado Operacional</td><td class="num">18.500</td></tr><tr class=""><td>Intereses Pagados</td><td class="num">(2.500)</td></tr><tr class="tot"><td>Resultado del Ejercicio</td><td class="num">16.000</td></tr></tbody></table></div><div class="tablewrap narrow"><table class="eeff"><thead><tr><th>Estado de Situación Financiera</th><th class="num">M$</th></tr></thead><tbody><tr class=""><td class="ind">Caja y Banco</td><td class="num">15.000</td></tr><tr class=""><td class="ind">Clientes</td><td class="num">18.000</td></tr><tr class=""><td class="ind">Mercaderías</td><td class="num">27.000</td></tr><tr class="sub"><td class="">Activo Corriente</td><td class="num">60.000</td></tr><tr class=""><td class="ind">Muebles y Equipos</td><td class="num">36.000</td></tr><tr class=""><td class="ind">Depreciación Acumulada Muebles y Equipos</td><td class="num">(9.000)</td></tr><tr class=""><td class="ind">Terreno</td><td class="num">20.000</td></tr><tr class="sub"><td class="">Activo No Corriente</td><td class="num">47.000</td></tr><tr class="tot"><td class="">TOTAL ACTIVO</td><td class="num">107.000</td></tr><tr class=""><td class="ind">Proveedores</td><td class="num">22.000</td></tr><tr class=""><td class="ind">Remuneraciones por Pagar</td><td class="num">3.000</td></tr><tr class="sub"><td class="">Pasivo Corriente</td><td class="num">25.000</td></tr><tr class=""><td class="ind">Préstamo Bancario Largo Plazo</td><td class="num">18.000</td></tr><tr class="sub"><td class="">Pasivo No Corriente</td><td class="num">18.000</td></tr><tr class=""><td class="ind">Capital</td><td class="num">40.000</td></tr><tr class=""><td class="ind">Utilidades Acumuladas</td><td class="num">8.000</td></tr><tr class=""><td class="ind">Utilidad del Ejercicio</td><td class="num">16.000</td></tr><tr class="sub"><td class="">Patrimonio</td><td class="num">64.000</td></tr><tr class="tot"><td class="">TOTAL PASIVO + PATRIMONIO</td><td class="num">107.000</td></tr></tbody></table></div></div>
+<p>Patrimonio = 40.000 + 8.000 + 16.000 = 64.000 (las utilidades acumuladas también son patrimonio). Deuda Total = 25.000 + 18.000 = 43.000; 43.000 + 64.000 = 107.000 ✓.</p></div></details>
+<details class="ex"><summary>Paso 4: indicadores</summary><div class="body">
+<div class="tablewrap"><table class="rt"><thead><tr><th>Indicador</th><th>Fórmula</th><th>Datos y reemplazo</th><th class="num">Resultado</th></tr></thead><tbody><tr><td>CTN</td><td>AC − PC</td><td class="mono">60.000 − 25.000</td><td class="num"><b>M$35.000</b></td></tr><tr><td>Razón Corriente</td><td>AC / PC</td><td class="mono">60.000 / 25.000</td><td class="num"><b>2,40 veces</b></td></tr><tr><td>Prueba Ácida</td><td>(AC − Existencias) / PC</td><td class="mono">(60.000 − 27.000) / 25.000</td><td class="num"><b>1,32 veces</b></td></tr><tr><td>Razón de Efectivo</td><td>(Caja + Banco) / PC</td><td class="mono">15.000 / 25.000</td><td class="num"><b>0,60 veces</b></td></tr><tr><td>Endeud. s/ Activos</td><td>Deuda Total / AT × 100</td><td class="mono">43.000 / 107.000 × 100</td><td class="num"><b>40,19 %</b></td></tr><tr><td>Endeud. s/ Patrimonio</td><td>Deuda Total / Patrimonio × 100</td><td class="mono">43.000 / 64.000 × 100</td><td class="num"><b>67,19 %</b></td></tr><tr><td>Deuda de corto plazo</td><td>PC / Deuda Total × 100</td><td class="mono">25.000 / 43.000 × 100</td><td class="num"><b>58,14 %</b></td></tr><tr><td>Deuda de largo plazo</td><td>PNC / Deuda Total × 100</td><td class="mono">18.000 / 43.000 × 100</td><td class="num"><b>41,86 %</b></td></tr><tr><td>Margen Bruto</td><td>Ganancia Bruta / Ventas × 100</td><td class="mono">42.000 / 79.000 × 100</td><td class="num"><b>53,16 %</b></td></tr><tr><td>ROS</td><td>Resultado Neto / Ventas × 100</td><td class="mono">16.000 / 79.000 × 100</td><td class="num"><b>20,25 %</b></td></tr><tr><td>ROA</td><td>Resultado Neto / AT × 100</td><td class="mono">16.000 / 107.000 × 100</td><td class="num"><b>14,95 %</b></td></tr><tr><td>ROE</td><td>Resultado Neto / Patrimonio × 100</td><td class="mono">16.000 / 64.000 × 100</td><td class="num"><b>25,00 %</b></td></tr><tr><td>Rotación de Activos</td><td>Ventas / AT</td><td class="mono">79.000 / 107.000</td><td class="num"><b>0,74 veces</b></td></tr><tr><td>Cobertura de Intereses</td><td>Resultado Operacional / Gastos Financieros</td><td class="mono">18.500 / 2.500</td><td class="num"><b>7,40 veces</b></td></tr></tbody></table></div>
+</div></details>
+<details class="ex"><summary>Paso 5: interpretación y la operación</summary><div class="body">
+<div class="step"><span class="n">e</span><b>Liquidez buena:</b> RC 2,40, sobre la referencia de 2 a 1; sin vender existencias tiene $1,32 por cada $1 de deuda de corto plazo y con caja cubre el 60 %. <b>Endeudamiento moderado:</b> 40,19 % de los activos con deuda (bajo el 60 %) y $0,67 de deuda por cada $1 de patrimonio; eso sí, el 58,14 % de la deuda vence dentro del año. <b>Rentabilidad alta:</b> margen bruto 53,16 %, ROS 20,25 %, ROA 14,95 % y ROE 25,00 %; la cobertura de intereses (7,40 veces) muestra que la deuda no la ahoga.<br>
+<b>Fortaleza:</b> rentabilidad con poco endeudamiento. <b>Punto débil:</b> si algo hay que vigilar, es que más de la mitad de la deuda es de corto plazo.</div>
+<div class="step"><span class="n">f</span>Caja −10.000 y Proveedores −10.000: AC = 50.000, PC = 15.000, Caja = 5.000.
+<ul><li>RC = 50.000 / 15.000 = <span class="ans">3,33</span> (sube desde 2,40)</li>
+<li>PA = (50.000 − 27.000) / 15.000 = <span class="ans">1,53</span> (sube desde 1,32)</li>
+<li>RE = 5.000 / 15.000 = <span class="ans">0,33</span> (baja desde 0,60)</li></ul>
+<p>RC y PA suben porque estaban sobre 1; la RE baja porque estaba bajo 1. El CTN no cambia (35.000). Pagar deja menos deuda de corto plazo, pero la empresa queda con solo M$5.000 en caja: conviene hacerlo si no necesita esa caja para operar.</p></div>
+</div></details>
+</section>
+
+<section id="p5">
+<h2>P5 · Panadería La Espiga Ltda.: integrador con problemas de liquidez</h2>
+<p class="prio"><span class="lv p3">Recomendado</span>Mismo formato, pero el diagnóstico es otro y se comparan dos soluciones.</p>
+<div class="enun"><div class="et">Enunciado</div>
+<p>Movimientos del Libro Mayor al 31/12/2025 (M$):</p>
+<div class="tablewrap"><table class="mayor"><thead><tr><th class="num">N°</th><th>Cuenta</th><th class="num">Débitos (M$)</th><th class="num">Créditos (M$)</th></tr></thead><tbody><tr><td class="num">1</td><td>Caja y Banco</td><td class="num">30.000</td><td class="num">27.000</td></tr><tr><td class="num">2</td><td>Clientes</td><td class="num">8.000</td><td class="num">5.000</td></tr><tr><td class="num">3</td><td>Materias Primas (Existencias)</td><td class="num">25.000</td><td class="num">16.000</td></tr><tr><td class="num">4</td><td>Maquinarias</td><td class="num">60.000</td><td class="num z">–</td></tr><tr><td class="num">5</td><td>Depreciación Acumulada Maquinarias</td><td class="num z">–</td><td class="num">12.000</td></tr><tr><td class="num">6</td><td>Proveedores</td><td class="num">10.000</td><td class="num">18.000</td></tr><tr><td class="num">7</td><td>Préstamo Bancario Corto Plazo</td><td class="num">2.000</td><td class="num">10.000</td></tr><tr><td class="num">8</td><td>Imposiciones por Pagar</td><td class="num z">–</td><td class="num">1.000</td></tr><tr><td class="num">9</td><td>Préstamo Bancario Largo Plazo</td><td class="num">4.000</td><td class="num">30.000</td></tr><tr><td class="num">10</td><td>Capital</td><td class="num z">–</td><td class="num">18.000</td></tr><tr><td class="num">11</td><td>Ventas</td><td class="num z">–</td><td class="num">48.000</td></tr><tr><td class="num">12</td><td>Costo de Ventas</td><td class="num">16.000</td><td class="num z">–</td></tr><tr><td class="num">13</td><td>Remuneraciones</td><td class="num">15.000</td><td class="num z">–</td></tr><tr><td class="num">14</td><td>Arriendo</td><td class="num">4.000</td><td class="num z">–</td></tr><tr><td class="num">15</td><td>Depreciación del Ejercicio</td><td class="num">6.000</td><td class="num z">–</td></tr><tr><td class="num">16</td><td>Intereses Pagados</td><td class="num">5.000</td><td class="num z">–</td></tr></tbody></table></div>
+<ol type="a"><li>Complete el Balance de 8 Columnas y determine el resultado.</li><li>Prepare el ER y el ESF clasificado.</li><li>Calcule los diez indicadores, la composición de la deuda y la cobertura de intereses.</li>
+<li>Diagnostique la empresa. Su ROE es 10 %: ¿es una buena noticia?</li>
+<li>Se evalúan dos alternativas independientes: (A) el banco refinancia los M$8.000 del préstamo de corto plazo a 4 años; (B) un socio aporta M$10.000 en efectivo. Calcule RC, PA, RE, CTN y endeudamiento sobre activos y sobre patrimonio en cada caso, y recomiende.</li></ol></div>
+<details class="ex"><summary>Solución a) y b)</summary><div class="body">
+<div class="tablewrap b8wrap"><table class="b8"><thead><tr><th rowspan="2" class="num">N°</th><th rowspan="2">Cuenta</th><th colspan="2" class="g-mov">Movimientos</th><th colspan="2" class="g-sal">Saldos</th><th colspan="2" class="g-inv">Inventario</th><th colspan="2" class="g-res">Resultado</th></tr><tr><th class="num g-mov">Débitos</th><th class="num g-mov">Créditos</th><th class="num g-sal">Deudor</th><th class="num g-sal">Acreedor</th><th class="num g-inv">Activo</th><th class="num g-inv">Pasivo</th><th class="num g-res">Pérdida</th><th class="num g-res">Ganancia</th></tr></thead><tbody><tr><td class="num">1</td><td>Caja y Banco</td><td class="num">30.000</td><td class="num">27.000</td><td class="num">3.000</td><td class="num z">–</td><td class="num">3.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">2</td><td>Clientes</td><td class="num">8.000</td><td class="num">5.000</td><td class="num">3.000</td><td class="num z">–</td><td class="num">3.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">3</td><td>Materias Primas (Existencias)</td><td class="num">25.000</td><td class="num">16.000</td><td class="num">9.000</td><td class="num z">–</td><td class="num">9.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">4</td><td>Maquinarias</td><td class="num">60.000</td><td class="num z">–</td><td class="num">60.000</td><td class="num z">–</td><td class="num">60.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">5</td><td>Depreciación Acumulada Maquinarias</td><td class="num z">–</td><td class="num">12.000</td><td class="num z">–</td><td class="num">12.000</td><td class="num">(12.000)</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">6</td><td>Proveedores</td><td class="num">10.000</td><td class="num">18.000</td><td class="num z">–</td><td class="num">8.000</td><td class="num z">–</td><td class="num">8.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">7</td><td>Préstamo Bancario Corto Plazo</td><td class="num">2.000</td><td class="num">10.000</td><td class="num z">–</td><td class="num">8.000</td><td class="num z">–</td><td class="num">8.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">8</td><td>Imposiciones por Pagar</td><td class="num z">–</td><td class="num">1.000</td><td class="num z">–</td><td class="num">1.000</td><td class="num z">–</td><td class="num">1.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">9</td><td>Préstamo Bancario Largo Plazo</td><td class="num">4.000</td><td class="num">30.000</td><td class="num z">–</td><td class="num">26.000</td><td class="num z">–</td><td class="num">26.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">10</td><td>Capital</td><td class="num z">–</td><td class="num">18.000</td><td class="num z">–</td><td class="num">18.000</td><td class="num z">–</td><td class="num">18.000</td><td class="num z">–</td><td class="num z">–</td></tr><tr><td class="num">11</td><td>Ventas</td><td class="num z">–</td><td class="num">48.000</td><td class="num z">–</td><td class="num">48.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">48.000</td></tr><tr><td class="num">12</td><td>Costo de Ventas</td><td class="num">16.000</td><td class="num z">–</td><td class="num">16.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">16.000</td><td class="num z">–</td></tr><tr><td class="num">13</td><td>Remuneraciones</td><td class="num">15.000</td><td class="num z">–</td><td class="num">15.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">15.000</td><td class="num z">–</td></tr><tr><td class="num">14</td><td>Arriendo</td><td class="num">4.000</td><td class="num z">–</td><td class="num">4.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">4.000</td><td class="num z">–</td></tr><tr><td class="num">15</td><td>Depreciación del Ejercicio</td><td class="num">6.000</td><td class="num z">–</td><td class="num">6.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">6.000</td><td class="num z">–</td></tr><tr><td class="num">16</td><td>Intereses Pagados</td><td class="num">5.000</td><td class="num z">–</td><td class="num">5.000</td><td class="num z">–</td><td class="num z">–</td><td class="num z">–</td><td class="num">5.000</td><td class="num z">–</td></tr><tr class="sub"><td></td><td>Sub-total</td><td class="num">185.000</td><td class="num">185.000</td><td class="num">121.000</td><td class="num">121.000</td><td class="num">63.000</td><td class="num">61.000</td><td class="num">46.000</td><td class="num">48.000</td></tr><tr class="resrow"><td></td><td>Utilidad del Ejercicio</td><td class="num sh"></td><td class="num sh"></td><td class="num sh"></td><td class="num sh"></td><td class="num z">–</td><td class="num hl">2.000</td><td class="num hl">2.000</td><td class="num z">–</td></tr><tr class="tot"><td></td><td>Total</td><td class="num">185.000</td><td class="num">185.000</td><td class="num">121.000</td><td class="num">121.000</td><td class="num">63.000</td><td class="num">63.000</td><td class="num">48.000</td><td class="num">48.000</td></tr></tbody></table></div>
+<p>(1) 185.000 = 185.000 ✓ (2) 121.000 = 121.000 ✓ (3) 48.000 − 46.000 = 2.000 = 63.000 − 61.000 ✓. <span class="ans">Utilidad de M$2.000</span>.</p>
+<div class="two"><div class="tablewrap narrow"><table class="eeff"><thead><tr><th>Estado de Resultados</th><th class="num">M$</th></tr></thead><tbody><tr class=""><td>Ventas</td><td class="num">48.000</td></tr><tr class=""><td>Costo de Ventas</td><td class="num">(16.000)</td></tr><tr class="sub"><td>Ganancia Bruta</td><td class="num">32.000</td></tr><tr class=""><td>Remuneraciones</td><td class="num">(15.000)</td></tr><tr class=""><td>Arriendo</td><td class="num">(4.000)</td></tr><tr class=""><td>Depreciación del Ejercicio</td><td class="num">(6.000)</td></tr><tr class="sub"><td>Resultado Operacional</td><td class="num">7.000</td></tr><tr class=""><td>Intereses Pagados</td><td class="num">(5.000)</td></tr><tr class="tot"><td>Resultado del Ejercicio</td><td class="num">2.000</td></tr></tbody></table></div><div class="tablewrap narrow"><table class="eeff"><thead><tr><th>Estado de Situación Financiera</th><th class="num">M$</th></tr></thead><tbody><tr class=""><td class="ind">Caja y Banco</td><td class="num">3.000</td></tr><tr class=""><td class="ind">Clientes</td><td class="num">3.000</td></tr><tr class=""><td class="ind">Materias Primas (Existencias)</td><td class="num">9.000</td></tr><tr class="sub"><td class="">Activo Corriente</td><td class="num">15.000</td></tr><tr class=""><td class="ind">Maquinarias</td><td class="num">60.000</td></tr><tr class=""><td class="ind">Depreciación Acumulada Maquinarias</td><td class="num">(12.000)</td></tr><tr class="sub"><td class="">Activo No Corriente</td><td class="num">48.000</td></tr><tr class="tot"><td class="">TOTAL ACTIVO</td><td class="num">63.000</td></tr><tr class=""><td class="ind">Proveedores</td><td class="num">8.000</td></tr><tr class=""><td class="ind">Préstamo Bancario Corto Plazo</td><td class="num">8.000</td></tr><tr class=""><td class="ind">Imposiciones por Pagar</td><td class="num">1.000</td></tr><tr class="sub"><td class="">Pasivo Corriente</td><td class="num">17.000</td></tr><tr class=""><td class="ind">Préstamo Bancario Largo Plazo</td><td class="num">26.000</td></tr><tr class="sub"><td class="">Pasivo No Corriente</td><td class="num">26.000</td></tr><tr class=""><td class="ind">Capital</td><td class="num">18.000</td></tr><tr class=""><td class="ind">Utilidad del Ejercicio</td><td class="num">2.000</td></tr><tr class="sub"><td class="">Patrimonio</td><td class="num">20.000</td></tr><tr class="tot"><td class="">TOTAL PASIVO + PATRIMONIO</td><td class="num">63.000</td></tr></tbody></table></div></div></div></details>
+<details class="ex"><summary>Solución c)</summary><div class="body">
+<div class="tablewrap"><table class="rt"><thead><tr><th>Indicador</th><th>Fórmula</th><th>Datos y reemplazo</th><th class="num">Resultado</th></tr></thead><tbody><tr><td>CTN</td><td>AC − PC</td><td class="mono">15.000 − 17.000</td><td class="num"><b>M$−2.000</b></td></tr><tr><td>Razón Corriente</td><td>AC / PC</td><td class="mono">15.000 / 17.000</td><td class="num"><b>0,88 veces</b></td></tr><tr><td>Prueba Ácida</td><td>(AC − Existencias) / PC</td><td class="mono">(15.000 − 9.000) / 17.000</td><td class="num"><b>0,35 veces</b></td></tr><tr><td>Razón de Efectivo</td><td>(Caja + Banco) / PC</td><td class="mono">3.000 / 17.000</td><td class="num"><b>0,18 veces</b></td></tr><tr><td>Endeud. s/ Activos</td><td>Deuda Total / AT × 100</td><td class="mono">43.000 / 63.000 × 100</td><td class="num"><b>68,25 %</b></td></tr><tr><td>Endeud. s/ Patrimonio</td><td>Deuda Total / Patrimonio × 100</td><td class="mono">43.000 / 20.000 × 100</td><td class="num"><b>215,00 %</b></td></tr><tr><td>Deuda de corto plazo</td><td>PC / Deuda Total × 100</td><td class="mono">17.000 / 43.000 × 100</td><td class="num"><b>39,53 %</b></td></tr><tr><td>Deuda de largo plazo</td><td>PNC / Deuda Total × 100</td><td class="mono">26.000 / 43.000 × 100</td><td class="num"><b>60,47 %</b></td></tr><tr><td>Margen Bruto</td><td>Ganancia Bruta / Ventas × 100</td><td class="mono">32.000 / 48.000 × 100</td><td class="num"><b>66,67 %</b></td></tr><tr><td>ROS</td><td>Resultado Neto / Ventas × 100</td><td class="mono">2.000 / 48.000 × 100</td><td class="num"><b>4,17 %</b></td></tr><tr><td>ROA</td><td>Resultado Neto / AT × 100</td><td class="mono">2.000 / 63.000 × 100</td><td class="num"><b>3,17 %</b></td></tr><tr><td>ROE</td><td>Resultado Neto / Patrimonio × 100</td><td class="mono">2.000 / 20.000 × 100</td><td class="num"><b>10,00 %</b></td></tr><tr><td>Cobertura de Intereses</td><td>Resultado Operacional / Gastos Financieros</td><td class="mono">7.000 / 5.000</td><td class="num"><b>1,40 veces</b></td></tr></tbody></table></div>
+</div></details>
+<details class="ex"><summary>Solución d) y e)</summary><div class="body">
+<div class="step"><span class="n">d</span><b>Liquidez crítica:</b> CTN −2.000 y RC 0,88; sin vender existencias tiene $0,35 por cada $1 que debe en el año, y con caja, $0,18. <b>Endeudamiento alto:</b> 68,25 % de los activos con deuda (sobre el 60 %) y $2,15 de deuda por cada $1 de patrimonio. <b>Rentabilidad débil:</b> buen margen bruto (66,67 %), pero ROS 4,17 % y ROA 3,17 %; la cobertura de intereses es 1,40 veces: el resultado operacional apenas cubre los intereses (como Polpaico en 2022, lámina 212).<br>
+El ROE de 10 % <b>no es una buena noticia por sí solo</b>: sale de un ROA de 3,17 % multiplicado por mucha deuda (AT/Pat = 63.000/20.000 = 3,15). Es el caso de la empresa C del Ej. 3.</div>
+<div class="step"><span class="n">e</span>
+<div class="tablewrap"><table><thead><tr><th>Indicador</th><th class="num">Hoy</th><th class="num">(A) Refinanciar</th><th class="num">(B) Aporte</th></tr></thead><tbody>
+<tr><td>Qué cambia</td><td></td><td class="num">PC −8.000; PNC +8.000</td><td class="num">Caja +10.000; Patrimonio +10.000</td></tr>
+<tr><td>Razón Corriente</td><td class="num">0,88</td><td class="num">15.000/9.000 = 1,67</td><td class="num">25.000/17.000 = 1,47</td></tr>
+<tr><td>Prueba Ácida</td><td class="num">0,35</td><td class="num">6.000/9.000 = 0,67</td><td class="num">16.000/17.000 = 0,94</td></tr>
+<tr><td>Razón de Efectivo</td><td class="num">0,18</td><td class="num">3.000/9.000 = 0,33</td><td class="num">13.000/17.000 = 0,76</td></tr>
+<tr><td>CTN</td><td class="num">−2.000</td><td class="num">6.000</td><td class="num">8.000</td></tr>
+<tr><td>Endeud. s/ Activos</td><td class="num">68,25 %</td><td class="num">68,25 % (igual)</td><td class="num">43.000/73.000 = 58,90 %</td></tr>
+<tr><td>Endeud. s/ Patrimonio</td><td class="num">215,00 %</td><td class="num">215,00 % (igual)</td><td class="num">43.000/30.000 = 143,33 %</td></tr>
+<tr><td>Deuda de corto plazo</td><td class="num">39,53 %</td><td class="num">9.000/43.000 = 20,93 %</td><td class="num">39,53 % (igual)</td></tr>
+</tbody></table></div>
+<p>(A) arregla la liquidez sin plata nueva, pero deja el endeudamiento igual de alto y probablemente con más intereses en total. (B) mejora la liquidez <b>y</b> baja el endeudamiento bajo el 60 %. Recomendación: B, o las dos juntas; con una cobertura de intereses de 1,40, la empresa no está para más deuda.</p></div>
+</div></details>
+</section>
+
+<section id="p6">
+<h2>P6 · Importadora Cruz del Sur Ltda.: ratios desde un ESF</h2>
+<p class="prio"><span class="lv p3">Recomendado</span>Mismo esquema que Los Aromos: despejar, calcular, interpretar y tres operaciones.</p>
+<div class="enun"><div class="et">Enunciado</div>
+<p>Estado de Situación Financiera al 31/12/2025 (cifras en $). Además, se sabe que las ventas del año fueron $120.000.000 y el costo de ventas $78.000.000.</p>
+<div class="tablewrap"><table class="esf2"><thead><tr><th>Activos</th><th class="num">$</th><th>Pasivos y Patrimonio</th><th class="num">$</th></tr></thead><tbody><tr><td class="grp" colspan="2">Activo Corriente</td><td class="grp" colspan="2">Pasivo Corriente</td></tr><tr><td>Caja y Banco</td><td class="num">10.000.000</td><td>Proveedores</td><td class="num">28.000.000</td></tr><tr><td>Clientes</td><td class="num">20.000.000</td><td>Préstamo Bancario Corto Plazo</td><td class="num">10.000.000</td></tr><tr><td>Existencias</td><td class="num">*****</td><td>Remuneraciones por Pagar</td><td class="num">2.000.000</td></tr><tr><td class="b">Total Activo Corriente</td><td class="num b">66.000.000</td><td class="grp" colspan="2">Pasivo No Corriente</td></tr><tr><td class="grp" colspan="2">Activo No Corriente</td><td>Préstamo Bancario Largo Plazo</td><td class="num">45.000.000</td></tr><tr><td>Vehículos</td><td class="num">50.000.000</td><td class="grp" colspan="2">Patrimonio</td></tr><tr><td>Depreciación Acumulada Vehículos</td><td class="num">(10.000.000)</td><td>Capital</td><td class="num">40.000.000</td></tr><tr><td>Terreno</td><td class="num">34.000.000</td><td>Utilidades Acumuladas</td><td class="num">6.000.000</td></tr><tr><td class="b">Total Activos</td><td class="num b">140.000.000</td><td>Utilidad del Ejercicio</td><td class="num">*****</td></tr><tr><td></td><td class="num"></td><td class="b">Total Pasivos y Patrimonio</td><td class="num b">*****</td></tr></tbody></table></div>
+<ol type="a"><li>Determine las Existencias y la Utilidad del Ejercicio.</li><li>Calcule CTN, RC, PA y RE.</li><li>Calcule el endeudamiento sobre activos, sobre patrimonio y la composición de la deuda.</li><li>Calcule Margen Bruto, ROS, ROA y ROE.</li>
+<li>Para cada operación independiente, calcule la nueva RC, PA, RE y endeudamiento sobre activos: (i) cobra $8.000.000 a clientes; (ii) paga $4.000.000 del préstamo de largo plazo con dinero del banco; (iii) compra mercaderías al contado por $6.000.000.</li>
+<li>El gerente dice: «Con una razón corriente de 1,65 no tenemos ningún problema de liquidez». Comente con al menos dos indicadores.</li></ol></div>
+<details class="ex"><summary>Solución a) a d) (en millones de $)</summary><div class="body">
+<div class="step"><span class="n">a</span>Existencias = 66 − 10 − 20 = <span class="ans">$36.000.000</span>. PC = 28 + 10 + 2 = 40; PNC = 45; Deuda Total = 85. Patrimonio = AT − Deuda = 140 − 85 = 55 ⇒ Utilidad del Ejercicio = 55 − 40 − 6 = <span class="ans">$9.000.000</span>.</div>
+<div class="step"><span class="n">b–d</span>
+<div class="tablewrap"><table class="rt"><thead><tr><th>Indicador</th><th>Reemplazo</th><th class="num">Resultado</th></tr></thead><tbody>
+<tr><td>CTN</td><td class="mono">66 − 40</td><td class="num"><b>$26.000.000</b></td></tr>
+<tr><td>Razón Corriente</td><td class="mono">66 / 40</td><td class="num"><b>1,65 veces</b></td></tr>
+<tr><td>Prueba Ácida</td><td class="mono">(66 − 36) / 40</td><td class="num"><b>0,75 veces</b></td></tr>
+<tr><td>Razón de Efectivo</td><td class="mono">10 / 40</td><td class="num"><b>0,25 veces</b></td></tr>
+<tr><td>Endeud. s/ Activos</td><td class="mono">85 / 140 × 100</td><td class="num"><b>60,71 %</b></td></tr>
+<tr><td>Endeud. s/ Patrimonio</td><td class="mono">85 / 55 × 100</td><td class="num"><b>154,55 %</b></td></tr>
+<tr><td>Deuda de corto plazo</td><td class="mono">40 / 85 × 100</td><td class="num"><b>47,06 %</b></td></tr>
+<tr><td>Deuda de largo plazo</td><td class="mono">45 / 85 × 100</td><td class="num"><b>52,94 %</b></td></tr>
+<tr><td>Margen Bruto</td><td class="mono">(120 − 78) / 120 × 100</td><td class="num"><b>35,00 %</b></td></tr>
+<tr><td>ROS</td><td class="mono">9 / 120 × 100</td><td class="num"><b>7,50 %</b></td></tr>
+<tr><td>ROA</td><td class="mono">9 / 140 × 100</td><td class="num"><b>6,43 %</b></td></tr>
+<tr><td>ROE</td><td class="mono">9 / 55 × 100</td><td class="num"><b>16,36 %</b></td></tr>
+</tbody></table></div></div>
+</div></details>
+<details class="ex"><summary>Solución e) y f)</summary><div class="body">
+<div class="tablewrap"><table><thead><tr><th>Operación</th><th class="num">RC</th><th class="num">PA</th><th class="num">RE</th><th class="num">D / AT</th></tr></thead><tbody>
+<tr class="sub"><td>Hoy</td><td class="num">1,65</td><td class="num">0,75</td><td class="num">0,25</td><td class="num">60,71 %</td></tr>
+<tr><td>i. Cobra 8 a clientes (Banco +8, Clientes −8)</td><td class="num">1,65 <span class="eq">=</span></td><td class="num">0,75 <span class="eq">=</span></td><td class="num">18/40 = 0,45 <span class="up">↑</span></td><td class="num">60,71 % <span class="eq">=</span></td></tr>
+<tr><td>ii. Paga 4 del préstamo LP (Banco −4, PNC −4)</td><td class="num">62/40 = 1,55 <span class="dn">↓</span></td><td class="num">26/40 = 0,65 <span class="dn">↓</span></td><td class="num">6/40 = 0,15 <span class="dn">↓</span></td><td class="num">81/136 = 59,56 % <span class="dn">↓</span></td></tr>
+<tr><td>iii. Compra mercaderías al contado por 6 (Banco −6, Existencias +6)</td><td class="num">1,65 <span class="eq">=</span></td><td class="num">24/40 = 0,60 <span class="dn">↓</span></td><td class="num">4/40 = 0,10 <span class="dn">↓</span></td><td class="num">60,71 % <span class="eq">=</span></td></tr>
+</tbody></table></div>
+<p>En ii, pagar deuda de <b>largo</b> plazo con caja empeora toda la liquidez (el PC no baja) aunque mejora el endeudamiento: es el reverso de la operación iii de Los Aromos.</p>
+<div class="step"><span class="n">f</span><b>La afirmación es optimista.</b> La RC de 1,65 cubre el pasivo corriente, pero está bajo la referencia de 2 y se apoya en las existencias, que son el 54,55 % del activo corriente: sin venderlas, la PA es 0,75 &lt; 1, y con caja solo pagaría el 25 % de lo que vence. Además, el 47,06 % de la deuda es de corto plazo y el endeudamiento total (60,71 %) ya está sobre la referencia del profe. Hay un riesgo de liquidez si las ventas se frenan.</div>
+</div></details>
+</section>
+
+<section id="p7">
+<h2>P7 · Tres empresas: X, Y y Z</h2>
+<p class="prio"><span class="lv p2">Recomendado si sale una comparación</span>Mismo formato que el Ej. 3, con una trampa nueva en el endeudamiento.</p>
+<div class="enun"><div class="et">Enunciado</div>
+<p>X es una cadena de supermercados, Y una empresa de software y Z una forestal. Cifras en MM$ al 31/12/2025.</p>
+<div class="tablewrap"><table><thead><tr><th>Concepto (MM$)</th><th class="num">X</th><th class="num">Y</th><th class="num">Z</th></tr></thead><tbody>
+<tr><td>Caja y Banco</td><td class="num">5</td><td class="num">20</td><td class="num">4</td></tr>
+<tr><td>Clientes</td><td class="num">3</td><td class="num">25</td><td class="num">10</td></tr>
+<tr><td>Existencias</td><td class="num">?</td><td class="num">0</td><td class="num">16</td></tr>
+<tr><td>Activo No Corriente</td><td class="num">54</td><td class="num">35</td><td class="num">170</td></tr>
+<tr><td>Pasivo Corriente</td><td class="num">30</td><td class="num">15</td><td class="num">20</td></tr>
+<tr><td>Pasivo No Corriente</td><td class="num">25</td><td class="num">5</td><td class="num">?</td></tr>
+<tr><td>Patrimonio</td><td class="num">35</td><td class="num">60</td><td class="num">80</td></tr>
+<tr><td>Ventas</td><td class="num">360</td><td class="num">100</td><td class="num">90</td></tr>
+<tr><td>Resultado Neto</td><td class="num">7,2</td><td class="num">?</td><td class="num">8</td></tr>
+<tr class="sub"><td>Dato adicional</td><td class="num">RC = 1,20</td><td class="num">ROA = 15 %</td><td class="num">D/Pat = 150 %</td></tr>
+</tbody></table></div>
+<ol type="a"><li>Determine los valores faltantes y compruebe con la ecuación contable.</li><li>Calcule RC, PA, RE, endeudamiento sobre activos y sobre patrimonio, ROS, ROA, ROE y rotación de activos.</li><li>¿Cuál es la más líquida? ¿Es grave la PA de X?</li><li>Z debe 120 y X solo 55. ¿Significa que Z está más endeudada?</li><li>X e Y tienen casi el mismo ROE. ¿Son igual de buenas?</li><li>Use Du Pont (ROA = ROS × Rotación) para explicar cómo gana cada una.</li></ol></div>
+<details class="ex"><summary>Solución</summary><div class="body">
+<div class="step"><span class="n">a</span>
+<ul><li><b>X:</b> AC = 1,20 × 30 = 36 ⇒ Existencias = 36 − 5 − 3 = <span class="ans">28</span>. AT = 36 + 54 = 90 = 30 + 25 + 35 ✓</li>
+<li><b>Y:</b> AT = 20 + 25 + 0 + 35 = 80 ⇒ Resultado Neto = 0,15 × 80 = <span class="ans">12</span>. 15 + 5 + 60 = 80 ✓</li>
+<li><b>Z:</b> Deuda = 1,5 × 80 = 120 ⇒ PNC = 120 − 20 = <span class="ans">100</span>. AT = 4 + 10 + 16 + 170 = 200 = 120 + 80 ✓</li></ul></div>
+<div class="step"><span class="n">b</span>
+<div class="tablewrap"><table><thead><tr><th>Indicador</th><th class="num">X</th><th class="num">Y</th><th class="num">Z</th></tr></thead><tbody>
+<tr class="sub"><td>AC | AT | Deuda</td><td class="num">36 | 90 | 55</td><td class="num">45 | 80 | 20</td><td class="num">30 | 200 | 120</td></tr>
+<tr><td>Razón Corriente</td><td class="num">1,20</td><td class="num">3,00</td><td class="num">1,50</td></tr>
+<tr><td>Prueba Ácida</td><td class="num">8/30 = 0,27</td><td class="num">3,00</td><td class="num">14/20 = 0,70</td></tr>
+<tr><td>Razón de Efectivo</td><td class="num">5/30 = 0,17</td><td class="num">20/15 = 1,33</td><td class="num">4/20 = 0,20</td></tr>
+<tr><td>Endeud. s/ Activos</td><td class="num">55/90 = 61,11 %</td><td class="num">20/80 = 25,00 %</td><td class="num">120/200 = 60,00 %</td></tr>
+<tr><td>Endeud. s/ Patrimonio</td><td class="num">55/35 = 157,14 %</td><td class="num">20/60 = 33,33 %</td><td class="num">120/80 = 150,00 %</td></tr>
+<tr><td>ROS</td><td class="num">7,2/360 = 2,00 %</td><td class="num">12/100 = 12,00 %</td><td class="num">8/90 = 8,89 %</td></tr>
+<tr><td>ROA</td><td class="num">7,2/90 = 8,00 %</td><td class="num">15,00 %</td><td class="num">8/200 = 4,00 %</td></tr>
+<tr><td>ROE</td><td class="num">7,2/35 = 20,57 %</td><td class="num">12/60 = 20,00 %</td><td class="num">8/80 = 10,00 %</td></tr>
+<tr><td>Rotación de Activos</td><td class="num">360/90 = 4,00</td><td class="num">100/80 = 1,25</td><td class="num">90/200 = 0,45</td></tr>
+</tbody></table></div></div>
+<div class="step"><span class="n">c</span><b>Y es la más líquida en los tres indicadores</b> (RC y PA 3,00, porque no tiene existencias; RE 1,33). La PA de X (0,27) es la peor, pero hay que leerla con el giro: un supermercado vende al contado, rota su inventario muy rápido (rotación de activos 4,00) y paga a proveedores a plazo. Para un supermercado, una PA baja es normal; para una consultora sería alarmante.</div>
+<div class="step"><span class="n">d</span><b>No.</b> El endeudamiento se mide en proporción, no en pesos. X debe 55 sobre 90 de activos (61,11 %) y Z 120 sobre 200 (60,00 %): <b>X está levemente más endeudada</b>, y también tiene más deuda por cada peso de patrimonio (157,14 % contra 150 %). Las dos están en o sobre la referencia de 60 %.</div>
+<div class="step"><span class="n">e</span><b>No.</b> Tienen el mismo ROE por caminos opuestos: Y rinde 15 % sobre sus activos con muy poca deuda (33,33 % sobre patrimonio); X rinde solo 8 % sobre activos y llega al 20,57 % gracias a la deuda (157,14 %). Si las ventas de X bajan, su ROE cae más fuerte y los intereses se siguen pagando. Y es la de mejor posición.</div>
+<div class="step"><span class="n">f</span>X: 2,00 % × 4,00 = 8 % (margen chico, rotación alta: el supermercado). Y: 12 % × 1,25 = 15 %. Z: 8,89 % × 0,45 = 4 % (mucho activo fijo que rota lento, como el hotel de la lámina 229). Para comprobarlo usa las fracciones: en Z, (8/90) × (90/200) = 8/200 = 4 %.</div>
+</div></details>
+</section>
+
+<section id="p8">
+<h2>P8 · Despejes rápidos</h2>
+<p class="prio"><span class="lv p2">Para el V/F y la selección</span>Cada uno es un paso. Tápate la columna de la derecha.</p>
+<div class="tablewrap"><table><thead><tr><th>#</th><th>Dato</th><th>Respuesta y cómo</th></tr></thead><tbody>
+<tr><td>1</td><td>Endeudamiento sobre patrimonio 150 %. ¿Sobre activos?</td><td><details><summary>ver</summary>1,5 / (1 + 1,5) = <b>60,00 %</b></details></td></tr>
+<tr><td>2</td><td>Endeudamiento sobre activos 40 %. ¿Sobre patrimonio?</td><td><details><summary>ver</summary>0,4 / 0,6 = <b>66,67 %</b></details></td></tr>
+<tr><td>3</td><td>RC = 2,5 y CTN = $30.000.000. ¿AC y PC?</td><td><details><summary>ver</summary>PC = CTN / (RC − 1) = 30 / 1,5 = <b>$20.000.000</b>; AC = 20 + 30 = <b>$50.000.000</b></details></td></tr>
+<tr><td>4</td><td>RC = 2,0, PA = 1,2 y PC = 40. ¿Existencias?</td><td><details><summary>ver</summary>(RC − PA) × PC = 0,8 × 40 = <b>32</b></details></td></tr>
+<tr><td>5</td><td>ROA = 8 % y ROE = 20 %. ¿Endeudamiento sobre activos?</td><td><details><summary>ver</summary>AT/Pat = 20/8 = 2,5 ⇒ Pat/AT = 40 % ⇒ D/AT = <b>60 %</b></details></td></tr>
+<tr><td>6</td><td>ROS = 5 % y rotación de activos = 1,6. ¿ROA?</td><td><details><summary>ver</summary>5 % × 1,6 = <b>8 %</b></details></td></tr>
+<tr><td>7</td><td>Margen bruto 40 % y ventas 500. ¿Costo de ventas?</td><td><details><summary>ver</summary>Ganancia bruta = 200 ⇒ CV = <b>300</b></details></td></tr>
+<tr><td>8</td><td>Balance de 8 columnas: Activo 80.000, Pasivo 72.500 y Pérdida 41.000. ¿Ganancia y resultado?</td><td><details><summary>ver</summary>Resultado = 80.000 − 72.500 = <b>utilidad 7.500</b>; Ganancia = 41.000 + 7.500 = <b>48.500</b></details></td></tr>
+<tr><td>9</td><td>Endeudamiento sobre activos 45 % y AT = 200. ¿Deuda y patrimonio?</td><td><details><summary>ver</summary>Deuda = <b>90</b>; patrimonio = <b>110</b> (autonomía 55 %)</details></td></tr>
+</tbody></table></div>
+</section>
+
+<section id="p9">
+<h2>P9 · Comercial Alerce: ¿sube, baja o no cambia?</h2>
+<p class="prio"><span class="lv p3">Recomendado</span>Ocho operaciones sobre la misma base, como el Ej. 2 g).</p>
+<div class="enun"><div class="et">Enunciado</div>
+<p>Comercial Alerce (MM$): Caja y Banco 12, Clientes 18, Existencias 30, Activo No Corriente 90, Pasivo Corriente 40, Pasivo No Corriente 35, Patrimonio 75. Situación inicial: RC 1,50; PA 0,75; RE 0,30; CTN 20; endeudamiento sobre activos 50,00 %.</p>
+<p>Para cada operación independiente, calcule los nuevos valores e indique si suben, bajan o no cambian:</p>
+<ol><li>Paga 10 a proveedores con el banco.</li><li>Compra mercaderías a crédito por 12.</li><li>Cobra 6 a clientes.</li><li>Obtiene un préstamo de largo plazo de 20, depositado en el banco.</li><li>Compra una camioneta al contado por 8.</li><li>Un socio aporta 16 en efectivo.</li><li>Compra mercaderías al contado por 6.</li><li>10 del préstamo de largo plazo pasan a vencer dentro del año.</li></ol></div>
+<details class="ex"><summary>Solución</summary><div class="body">
+<div class="tablewrap"><table><thead><tr><th>Operación</th><th class="num">RC</th><th class="num">PA</th><th class="num">RE</th><th class="num">CTN</th><th class="num">D / AT</th></tr></thead><tbody>
+<tr class="sub"><td>Inicial</td><td class="num">1,50</td><td class="num">0,75</td><td class="num">0,30</td><td class="num">20</td><td class="num">50,00 %</td></tr>
+<tr><td>1. Paga 10 a proveedores</td><td class="num">50/30 = 1,67 <span class="up">↑</span></td><td class="num">20/30 = 0,67 <span class="dn">↓</span></td><td class="num">2/30 = 0,07 <span class="dn">↓</span></td><td class="num">20 <span class="eq">=</span></td><td class="num">65/140 = 46,43 % <span class="dn">↓</span></td></tr>
+<tr><td>2. Compra a crédito por 12</td><td class="num">72/52 = 1,38 <span class="dn">↓</span></td><td class="num">30/52 = 0,58 <span class="dn">↓</span></td><td class="num">12/52 = 0,23 <span class="dn">↓</span></td><td class="num">20 <span class="eq">=</span></td><td class="num">87/162 = 53,70 % <span class="up">↑</span></td></tr>
+<tr><td>3. Cobra 6 a clientes</td><td class="num">1,50 <span class="eq">=</span></td><td class="num">0,75 <span class="eq">=</span></td><td class="num">18/40 = 0,45 <span class="up">↑</span></td><td class="num">20 <span class="eq">=</span></td><td class="num">50,00 % <span class="eq">=</span></td></tr>
+<tr><td>4. Préstamo LP de 20</td><td class="num">80/40 = 2,00 <span class="up">↑</span></td><td class="num">50/40 = 1,25 <span class="up">↑</span></td><td class="num">32/40 = 0,80 <span class="up">↑</span></td><td class="num">40 <span class="up">↑</span></td><td class="num">95/170 = 55,88 % <span class="up">↑</span></td></tr>
+<tr><td>5. Camioneta al contado por 8</td><td class="num">52/40 = 1,30 <span class="dn">↓</span></td><td class="num">22/40 = 0,55 <span class="dn">↓</span></td><td class="num">4/40 = 0,10 <span class="dn">↓</span></td><td class="num">12 <span class="dn">↓</span></td><td class="num">50,00 % <span class="eq">=</span></td></tr>
+<tr><td>6. Aporte de 16</td><td class="num">76/40 = 1,90 <span class="up">↑</span></td><td class="num">46/40 = 1,15 <span class="up">↑</span></td><td class="num">28/40 = 0,70 <span class="up">↑</span></td><td class="num">36 <span class="up">↑</span></td><td class="num">75/166 = 45,18 % <span class="dn">↓</span></td></tr>
+<tr><td>7. Mercaderías al contado por 6</td><td class="num">1,50 <span class="eq">=</span></td><td class="num">24/40 = 0,60 <span class="dn">↓</span></td><td class="num">6/40 = 0,15 <span class="dn">↓</span></td><td class="num">20 <span class="eq">=</span></td><td class="num">50,00 % <span class="eq">=</span></td></tr>
+<tr><td>8. Reclasificación de 10 a CP</td><td class="num">60/50 = 1,20 <span class="dn">↓</span></td><td class="num">30/50 = 0,60 <span class="dn">↓</span></td><td class="num">12/50 = 0,24 <span class="dn">↓</span></td><td class="num">10 <span class="dn">↓</span></td><td class="num">50,00 % <span class="eq">=</span></td></tr>
+</tbody></table></div>
+<p>Las que conviene mirar dos veces: la <b>1</b> (la RC sube y la PA baja, porque una estaba sobre 1 y la otra bajo 1), la <b>5</b> (el activo total no cambia, pero la liquidez sí) y la <b>8</b> (no entra ni sale plata y aun así la liquidez empeora). En la 8, la deuda de corto plazo pasa de 40/75 = 53,33 % a 50/75 = 66,67 % del total.</p>
+</div></details>
+</section>
+
+<section id="quiz">
+<h2>Banco de preguntas</h2>
+<p class="prio"><span class="lv p3">Para el final</span>61 preguntas de verdadero o falso y alternativas, cada una con su explicación y su fuente. Las marcadas «de la ayudantía» son los V/F del Ej. 1.</p>
+<p>Elige un tema o haz un simulacro de 20 al azar. Las que falles quedan guardadas en este navegador para repasarlas con «Solo las que fallé».</p>
+<div class="quiz" data-controls></div>
+</section>
+
+<div class="pager"><a href="Guia-Control3-IMAFI.html"><small>Anterior</small>Guía del Control 3</a><span></span></div>
+</main>
+</div>
+<button class="btn backtop" id="backtop">&#8593; Arriba</button>
+<script>
+(function(){
+  var root=document.documentElement;
+  function setTheme(t){ if(t){root.setAttribute('data-theme',t);} try{localStorage.setItem('imafi-c3-theme',t||'');}catch(e){} }
+  try{var st=localStorage.getItem('imafi-c3-theme'); if(st) root.setAttribute('data-theme',st);}catch(e){}
+  var tb=document.getElementById('themeBtn');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    if(!cur){cur=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+    setTheme(cur==='dark'?'light':'dark');
+  });
+  var pb=document.getElementById('printBtn'); if(pb) pb.addEventListener('click',function(){
+    document.querySelectorAll('details').forEach(function(d){d.setAttribute('open','');}); window.print();});
+  var ob=document.getElementById('openAll'); if(ob) ob.addEventListener('click',function(){
+    var ds=document.querySelectorAll('details.ex'); var anyClosed=[].some.call(ds,function(d){return !d.open;});
+    ds.forEach(function(d){d.open=anyClosed;}); ob.textContent=anyClosed?'Cerrar soluciones':'Abrir soluciones';});
+  var sb=document.getElementById('sidebar'), sc=document.getElementById('scrim'), mt=document.getElementById('menuToggle');
+  function closeM(){sb.classList.remove('open');sc.classList.remove('on');}
+  if(mt) mt.addEventListener('click',function(){sb.classList.toggle('open');sc.classList.toggle('on');});
+  if(sc) sc.addEventListener('click',closeM);
+  var bt=document.getElementById('backtop');
+  if(bt) bt.addEventListener('click',function(){window.scrollTo({top:0});});
+
+  var links=[].slice.call(document.querySelectorAll('#nav a.sec'));
+  links.forEach(function(a){a.addEventListener('click',function(){ if(window.innerWidth<=900) closeM(); });});
+  var targets=links.map(function(a){return document.getElementById(a.getAttribute('href').slice(1));});
+  var ticking=false;
+  function sync(){
+    ticking=false;
+    if(bt) bt.classList.toggle('on',window.scrollY>900);
+    var y=window.scrollY+140, idx=0;
+    for(var i=0;i<targets.length;i++){
+      if(targets[i] && targets[i].getBoundingClientRect().top+window.scrollY<=y) idx=i;
+    }
+    if((window.innerHeight+window.scrollY)>=document.body.scrollHeight-4) idx=targets.length-1;
+    links.forEach(function(a,i){a.classList.toggle('active',i===idx);});
+    var act=links[idx];
+    if(act && sb){
+      var top=act.offsetTop, h=act.offsetHeight;
+      if(top<sb.scrollTop+60 || top+h>sb.scrollTop+sb.clientHeight-60){ sb.scrollTop=top-sb.clientHeight/2; }
+    }
+  }
+  window.addEventListener('scroll',function(){ if(!ticking){ticking=true;requestAnimationFrame(sync);} },{passive:true});
+  window.addEventListener('load',sync);
+  sync();
+})();
+</script>
+<script>
+window.QTAGS={"b8":"Balance de 8 columnas","eeff":"Del balance a los EEFF","liq":"Liquidez","end":"Endeudamiento","rent":"Rentabilidad","efe":"Efectos de operaciones","comp":"Complementarios"};
+window.QBANK=[
+{"id":"b1","t":"b8","q":"Una cuenta registra Débitos por $12.000.000 y Créditos por $7.000.000. Su saldo es:","o":["Acreedor por $5.000.000","Deudor por $5.000.000","Deudor por $19.000.000","Cero, porque tiene movimientos en ambas columnas"],"a":1,"e":"Débitos mayores que créditos ⇒ saldo deudor = 12.000.000 − 7.000.000. El saldo es siempre una resta (mayor − menor), nunca una suma.","l":"Ayudantía 6, formulario"},
+{"id":"b2","t":"b8","q":"En el balance de 8 columnas de la ayudantía, la Depreciación Acumulada se anota en:","o":["La columna Pasivo, porque su saldo es acreedor","La columna Pérdida, porque es un gasto","La columna Activo, restando","La columna Ganancia"],"a":2,"e":"Es un contra-activo: saldo acreedor, pero rebaja el activo fijo. La ayudantía la pone en Activo entre paréntesis. La Depreciación del Ejercicio (el gasto del año) es la que va en Pérdida.","l":"Ayudantía 6, formulario y Ej. 4"},
+{"id":"b3","t":"b8","q":"Subtotales: Ganancia 50.000 y Pérdida 42.000. ¿Qué se anota y dónde?","o":["Utilidad de 8.000 en las columnas Pasivo y Pérdida","Utilidad de 8.000 en las columnas Activo y Ganancia","Pérdida de 8.000 en las columnas Activo y Ganancia","Utilidad de 92.000 en la columna Pasivo"],"a":0,"e":"Ganancia mayor que Pérdida ⇒ utilidad de 8.000. Va en el lado chico de cada par: Pérdida (para igualar a Ganancia) y Pasivo (la utilidad aumenta el patrimonio).","l":"Ayudantía 6, V/F 7"},
+{"id":"b4","t":"b8","q":"Subtotales del bloque Inventario: Activo 30.000 y Pasivo 34.000. Entonces:","o":["Hubo utilidad de 4.000","Hubo pérdida de 4.000, que se anota en Activo y Ganancia","El balance está mal, porque el Activo debe ser mayor que el Pasivo","Hubo pérdida de 4.000, que se anota en Pasivo y Pérdida"],"a":1,"e":"Activo − Pasivo = −4.000 ⇒ pérdida (Ganancia − Pérdida también dará −4.000). Se anota en las columnas cortas: Activo y Ganancia. Es el caso de la lámina 152.","l":"Láminas 150 y 152"},
+{"id":"b5","t":"b8","ay":0,"q":"La columna «Pasivo» del bloque Inventario incluye el Patrimonio (Capital, Utilidades Acumuladas).","o":["Verdadero","Falso"],"a":0,"e":"Sí: la ayudantía lo dice explícitamente. Por eso el Capital, con saldo acreedor, va en la columna Pasivo.","l":"Ayudantía 6, formulario"},
+{"id":"b6","t":"b8","ay":1,"q":"Las cuentas que quedan en las columnas Pérdida y Ganancia forman el Estado de Situación Financiera.","o":["Verdadero","Falso"],"a":1,"e":"Forman el Estado de Resultados. El ESF sale de las columnas Activo y Pasivo (más la utilidad, que pasa al patrimonio). Es el V/F 2 dado vuelta.","l":"Ayudantía 6, V/F 2"},
+{"id":"b7","t":"b8","q":"¿Cuál de estas cuentas va en la columna Ganancia?","o":["Remuneraciones por Pagar","Intereses Ganados","Clientes","Utilidades Acumuladas"],"a":1,"e":"Intereses Ganados es un ingreso (saldo acreedor) ⇒ Ganancia. Remuneraciones por Pagar y Utilidades Acumuladas son acreedoras pero van en Pasivo (deuda y patrimonio). Clientes es activo.","l":"Clasificación de cuentas"},
+{"id":"b8","t":"b8","q":"«Remuneraciones por Pagar» se anota en:","o":["Pérdida, porque las remuneraciones son un gasto","Pasivo, porque es una deuda con los trabajadores","Activo, porque su saldo es deudor","Ganancia, porque su saldo es acreedor"],"a":1,"e":"El apellido manda: «por pagar» es una obligación, de saldo acreedor ⇒ Pasivo (corriente). El gasto «Remuneraciones» es otra cuenta, deudora, que va en Pérdida.","l":"Trampas de nombre"},
+{"id":"b9","t":"b8","ay":1,"q":"Si el balance de 8 columnas cuadra, todas las cuentas están necesariamente bien clasificadas.","o":["Verdadero","Falso"],"a":1,"e":"El cuadre controla la aritmética, no la clasificación. Un activo puesto en Pérdida baja en lo mismo las dos diferencias y el balance sigue cuadrando con un resultado subestimado.","l":"Ayudantía 6, V/F 10"},
+{"id":"b10","t":"b8","q":"Un alumno anotó Terreno (saldo deudor 10.000) en la columna Pérdida. El resultado correcto era una utilidad de 15.000. ¿Qué resultado obtuvo él?","o":["Utilidad de 25.000, y el balance no cuadra","Utilidad de 5.000, y el balance cuadra igual","Utilidad de 15.000, porque el error no afecta el resultado","Pérdida de 10.000"],"a":1,"e":"La Pérdida sube 10.000 ⇒ Ganancia − Pérdida baja 10.000; el Activo baja 10.000 ⇒ Activo − Pasivo también baja 10.000. Las dos diferencias dan 5.000: cuadra, pero con el resultado subestimado.","l":"Ayudantía 6, V/F 10"},
+{"id":"b11","t":"b8","q":"En un libro mayor, la suma de débitos es 150.000 y la de créditos conocidos es 110.000; falta solo el crédito de Capital. Ese crédito es:","o":["260.000","40.000","110.000","No se puede determinar"],"a":1,"e":"En el mayor completo ΣDébitos = ΣCréditos ⇒ Capital = 150.000 − 110.000 = 40.000. Es el Paso 1 de El Roble.","l":"Ayudantía 6, Ej. 5 a)"},
+{"id":"b12","t":"b8","q":"¿Por qué la utilidad del ejercicio se anota en la columna Pasivo?","o":["Porque es una deuda con el banco","Porque aumenta el patrimonio de los dueños, que está incluido en esa columna","Porque su saldo es deudor","Por convención, sin razón contable"],"a":1,"e":"La utilidad es de los dueños: aumenta el patrimonio. Al sumarla, Pasivo + Patrimonio iguala al Activo.","l":"Ayudantía 6, V/F 7"},
+{"id":"b13","t":"b8","q":"Según la lámina 149, el balance de 8 columnas también se conoce como:","o":["Balance consolidado o FECU","Balance tabulado o tributario","Balance pro-forma","Estado de flujo de efectivo"],"a":1,"e":"Lámina 149: «También se le conoce como balance tabulado o balance tributario». Es una extensión del balance de comprobación de sumas y saldos.","l":"Lámina 149"},
+{"id":"b14","t":"b8","q":"Depreciación del Ejercicio y Depreciación Acumulada se anotan en la misma columna.","o":["Verdadero","Falso"],"a":1,"e":"La del ejercicio es un gasto (deudora) ⇒ Pérdida. La acumulada es un contra-activo (acreedora) ⇒ Activo, restando.","l":"Ayudantía 6, Ej. 4"},
+{"id":"b15","t":"b8","q":"Subtotales: Activo 80.000, Pasivo 72.500 y Pérdida 41.000. ¿Cuánto suma la columna Ganancia?","o":["33.500","48.500","41.000","121.000"],"a":1,"e":"Activo − Pasivo = 7.500 = Ganancia − Pérdida ⇒ Ganancia = 41.000 + 7.500 = 48.500.","l":"Cuadre del balance"},
+{"id":"b16","t":"b8","q":"«Arriendo Pagado por Anticipado» va en la columna:","o":["Pérdida","Activo","Pasivo","Ganancia"],"a":1,"e":"Es el derecho a usar el local en meses futuros: un activo (corriente). El gasto del período es la cuenta «Arriendo», que sí va en Pérdida.","l":"Trampas de nombre"},
+{"id":"b17","t":"b8","ay":1,"q":"Las cuentas de gasto, como Remuneraciones o Arriendos, presentan normalmente saldo acreedor, por lo que se registran en la columna Ganancia.","o":["Verdadero","Falso"],"a":1,"e":"Los gastos son de naturaleza deudora (aumentan por el debe): saldo deudor, columna Pérdida. Ganancia es para los ingresos.","l":"Ayudantía 6, V/F 3"},
+{"id":"f1","t":"eeff","q":"En el ESF que sale del balance de 8 columnas, la Utilidad del Ejercicio aparece en:","o":["El Pasivo Corriente","El Patrimonio","El Activo Corriente","No aparece: solo va en el Estado de Resultados"],"a":1,"e":"Se suma al patrimonio (Capital + Utilidades Acumuladas + Utilidad del Ejercicio). Si se olvida, el ESF no cuadra. En El Roble: 42.000 + 12.000 = 54.000.","l":"Ayudantía 6, Ej. 5 c)"},
+{"id":"f2","t":"eeff","q":"El Resultado Operacional se obtiene como:","o":["Ventas − Costo de Ventas","Ganancia Bruta − gastos de operación","Ganancia Bruta − gastos de operación − intereses","Resultado del Ejercicio + impuestos"],"a":1,"e":"Ventas − CV = Ganancia Bruta; menos remuneraciones, arriendos, gastos generales y depreciación = Resultado Operacional (EBIT). Los intereses van después.","l":"Pauta Ej. 5"},
+{"id":"f3","t":"eeff","q":"Los Intereses Pagados se restan antes de llegar al Resultado Operacional.","o":["Verdadero","Falso"],"a":1,"e":"Son gastos financieros: se restan después del resultado operacional. En El Roble: RO 14.000 − intereses 2.000 = 12.000.","l":"Pauta Ej. 5"},
+{"id":"f4","t":"eeff","q":"Un préstamo bancario que vence en 3 años se clasifica como:","o":["Pasivo corriente","Pasivo no corriente","Patrimonio","Activo no corriente"],"a":1,"e":"Vence en más de 12 meses ⇒ pasivo no corriente. Entra en la Deuda Total, pero no en el PC (no afecta la razón corriente).","l":"Ayudantía 6, Ej. 2 g iii"},
+{"id":"f5","t":"eeff","q":"Para el ROE y el endeudamiento sobre patrimonio, el patrimonio de cierre debe incluir la utilidad del ejercicio.","o":["Verdadero","Falso"],"a":0,"e":"Así lo hace la pauta: en Los Aromos, Patrimonio = 50 + 8 + 12 = 70 millones (incluye la utilidad de 12); en El Roble, 54.000.","l":"Pauta Ej. 2 y Ej. 5"},
+{"id":"l1","t":"liq","q":"AC = 80, PC = 50 y Existencias = 30. La Prueba Ácida es:","o":["1,60 veces","1,00 vez","0,60 veces","2,67 veces"],"a":1,"e":"(80 − 30) / 50 = 50/50 = 1,00. La RC sería 80/50 = 1,60.","l":"Formulario"},
+{"id":"l2","t":"liq","q":"Si una empresa no tiene existencias, su Razón Corriente y su Prueba Ácida son iguales.","o":["Verdadero","Falso"],"a":0,"e":"La PA resta las existencias del AC; si son cero, el numerador es el mismo. Pasa en empresas de servicios (empresa Y de la práctica).","l":"Relación RE ≤ PA ≤ RC"},
+{"id":"l3","t":"liq","q":"Una Razón Corriente de 3,5 siempre indica una mejor situación que una de 2,0.","o":["Verdadero","Falso"],"a":1,"e":"Una RC muy alta puede reflejar caja ociosa o inventario acumulado. La empresa A del Ej. 3 tiene RC 3,00 pero PA 0,70: su liquidez real es la peor de las tres.","l":"Ayudantía 6, Ej. 3 f)"},
+{"id":"l4","t":"liq","q":"Una Razón de Efectivo de 0,25 significa que:","o":["La empresa tiene $25 de deuda por cada $100 de caja","Con su caja podría pagar el 25 % de su pasivo corriente","El 25 % de sus activos es efectivo","Tiene $0,25 de activo corriente por cada $1 de pasivo corriente"],"a":1,"e":"RE = (Caja + Banco)/PC: con el efectivo de hoy cubre el 25 % de lo que vence en el corto plazo.","l":"Formulario"},
+{"id":"l5","t":"liq","q":"Un Capital de Trabajo Neto negativo implica que:","o":["La empresa no tiene activo corriente","La Razón Corriente es menor que 1","La Prueba Ácida es mayor que 1","El endeudamiento supera el 60 %"],"a":1,"e":"CTN = AC − PC negativo ⟺ AC menor que PC ⟺ RC menor que 1. No significa que no haya activo corriente, sino que no alcanza.","l":"Formulario"},
+{"id":"l6","t":"liq","q":"La Prueba Ácida puede ser mayor que la Razón Corriente.","o":["Verdadero","Falso"],"a":1,"e":"Como las existencias son mayores o iguales a cero, AC − Existencias ≤ AC ⇒ PA ≤ RC. Son iguales solo sin existencias.","l":"Ayudantía 5, V/F 4"},
+{"id":"l7","t":"liq","q":"RC = 1,8 y PA = 0,6. La lectura correcta es:","o":["La empresa tiene una liquidez holgada en todo sentido","Su liquidez depende de vender existencias","La empresa no puede pagar sus deudas de largo plazo","La PA está mal calculada, porque debería ser mayor"],"a":1,"e":"Cubre su PC contando el inventario (RC 1,8), pero sin venderlo tendría solo $0,60 por cada $1 que debe. Es el caso de Los Aromos.","l":"Ayudantía 6, Ej. 2 f)"},
+{"id":"l8","t":"liq","q":"Según la lámina 191, una liquidez corriente que permite trabajar «sin apuros» es de:","o":["1 a 1","2 a 1","0,5 a 1","5 a 1"],"a":1,"e":"«Liquidez corriente de 2 a 1, permite a la empresa trabajar sin apuros. Significa tener dos pesos por cada peso que debe.»","l":"Lámina 191"},
+{"id":"l9","t":"liq","ay":1,"q":"Una Prueba Ácida de 0,80 veces indica que, por cada $1 de Pasivo Corriente, la empresa dispone de $0,80 de Activo Corriente excluidas las Existencias.","o":["Verdadero","Falso"],"a":0,"e":"Es exactamente la lectura del indicador: sin vender inventario cubriría el 80 % de sus obligaciones de corto plazo.","l":"Ayudantía 6, V/F 5"},
+{"id":"e1","t":"end","ay":1,"q":"El Endeudamiento sobre Patrimonio es 150 %. ¿Qué porcentaje de los activos está financiado con deuda?","o":["150 %","60 %","40 %","66,67 %"],"a":1,"e":"D/A = (D/P)/(1 + D/P) = 1,5/2,5 = 60 %. Ningún porcentaje de los activos financiado con deuda puede superar el 100 %.","l":"Ayudantía 6, V/F 6"},
+{"id":"e2","t":"end","q":"Activo Total 200 y Patrimonio 120. El Endeudamiento sobre Activos es:","o":["60 %","40 %","66,67 %","166,67 %"],"a":1,"e":"Deuda = 200 − 120 = 80; 80/200 = 40 %. Sobre patrimonio sería 80/120 = 66,67 %.","l":"Ayudantía 5, formulario"},
+{"id":"e3","t":"end","q":"La Deuda Total incluye el Patrimonio, porque la columna Pasivo del balance de 8 columnas lo incluye.","o":["Verdadero","Falso"],"a":1,"e":"Deuda Total = PC + PNC: deuda exigible con terceros. El patrimonio es «pasivo no exigible» y no entra.","l":"Ayudantía 6, conceptos previos"},
+{"id":"e4","t":"end","q":"Si el Endeudamiento sobre Activos es 45 %, entonces:","o":["El patrimonio financia el 55 % de los activos","La deuda es el 45 % del patrimonio","La empresa debe $45 por cada $100 de patrimonio","El 45 % de la deuda es de corto plazo"],"a":0,"e":"Endeudamiento + autonomía = 100 %: el patrimonio financia el 55 % restante.","l":"Resumen Carozzi"},
+{"id":"e5","t":"end","q":"Polpaico informa una «razón de endeudamiento» de 1,71 veces. Ese número solo puede ser:","o":["Deuda / Activos","Deuda / Patrimonio","Activo Corriente / Pasivo Corriente","Patrimonio / Activos"],"a":1,"e":"Deuda/Activos no puede pasar de 1 si el patrimonio es positivo. Un 1,71 tiene que ser deuda sobre patrimonio: debe $1,71 por cada $1 de patrimonio.","l":"Lámina 225"},
+{"id":"e6","t":"end","q":"PC = 30 y PNC = 70. La composición de la deuda de corto plazo es:","o":["30 %","70 %","42,86 %","100 %"],"a":0,"e":"PC / Deuda Total = 30/100 = 30 %; la de largo plazo es 70 %. Suman 100 %.","l":"Ayudantía 6, formulario"},
+{"id":"e7","t":"end","q":"Según la lámina 203, el endeudamiento (pasivos sobre activos) debe ser:","o":["Inferior al 60 %","Superior al 60 %","Exactamente 50 %","Inferior al 100 %, sin otra referencia"],"a":0,"e":"«Debe ser inferior al 60 %. Si el endeudamiento es del 60 %, significa que la empresa debe $60 por cada $100 de sus activos.»","l":"Lámina 203"},
+{"id":"e8","t":"end","ay":1,"q":"La Depreciación Acumulada tiene saldo acreedor, pero no es una obligación con terceros; por lo tanto, no debe incluirse en la Deuda Total al calcular el endeudamiento.","o":["Verdadero","Falso"],"a":0,"e":"Es un contra-activo. Sumarla infla el activo y la deuda: en Tamarugal el endeudamiento pasaría de 39,30 % a 43,72 %.","l":"Ayudantía 6, V/F 9 y Ej. 4 g)"},
+{"id":"r1","t":"rent","q":"Ventas 200, Costo de Ventas 120 y Resultado Neto 20. El Margen Bruto y el ROS son:","o":["40 % y 10 %","60 % y 10 %","40 % y 20 %","10 % y 40 %"],"a":0,"e":"Ganancia Bruta = 80 ⇒ MB = 80/200 = 40 %. ROS = 20/200 = 10 %.","l":"Formulario"},
+{"id":"r2","t":"rent","q":"Con utilidad positiva y algo de deuda, el ROE es mayor que el ROA.","o":["Verdadero","Falso"],"a":0,"e":"ROE = ROA × AT/Patrimonio, y con deuda el AT es mayor que el patrimonio. Es el apalancamiento: en El Roble, ROA 12,77 % y ROE 22,22 %.","l":"Pauta Ej. 2 y Ej. 5"},
+{"id":"r3","t":"rent","q":"ROA = 6 %, Activo Total = 100 y Patrimonio = 40. El ROE es:","o":["2,4 %","15 %","6 %","10 %"],"a":1,"e":"Resultado neto = 6 % × 100 = 6 ⇒ ROE = 6/40 = 15 %. O bien ROE = ROA × AT/Pat = 6 % × 2,5.","l":"ROE = ROA × AT/Pat"},
+{"id":"r4","t":"rent","q":"Un ROE alto siempre indica que la empresa está en mejor posición que otra con un ROE menor.","o":["Verdadero","Falso"],"a":1,"e":"Puede venir de mucha deuda y no de activos rentables. La empresa C del Ej. 3 tiene el mayor ROE (20 %) con un ROA de 6 % y 70 % de endeudamiento.","l":"Ayudantía 6, Ej. 3 e)"},
+{"id":"r5","t":"rent","q":"Si la empresa tiene pérdida, el endeudamiento hace que:","o":["El ROE sea menos negativo que el ROA","El ROE sea más negativo que el ROA","ROE y ROA sean iguales","El ROE sea positivo"],"a":1,"e":"El apalancamiento amplifica en ambos sentidos. En Los Olmos (práctica): ROA −16,45 % y ROE −59,52 %.","l":"Práctica, Los Olmos"},
+{"id":"r6","t":"rent","q":"En la ayudantía, el ROA se calcula como:","o":["Resultado Operacional / Activo Total × 100","Resultado Neto / Activo Total × 100","Resultado Neto / Patrimonio × 100","Ventas / Activo Total"],"a":1,"e":"ROA (= ROI) = Resultado Neto / Activo Total × 100, igual que la lámina 221. Ventas/AT es la rotación de activos; RN/Patrimonio, el ROE.","l":"Ayudantía 6, formulario"},
+{"id":"r7","t":"rent","q":"Un Margen Bruto de 54 % y un ROS de 17 % significan que:","o":["Los gastos de operación y los intereses se llevan unos $37 de cada $100 vendidos","El costo de ventas es el 17 % de las ventas","La utilidad final es el 54 % de las ventas","La empresa tiene pérdida operacional"],"a":0,"e":"De cada $100 vendidos quedan $54 tras el costo de ventas y $17 al final: la diferencia (unos $37) se la llevan los gastos de operación y financieros.","l":"Pauta Ej. 5"},
+{"id":"x1","t":"efe","q":"AC = 40 y PC = 20 (RC = 2,0). Paga 10 a proveedores con caja. La nueva RC es:","o":["2,0 (no cambia)","3,0","1,0","1,5"],"a":1,"e":"(40 − 10)/(20 − 10) = 30/10 = 3,0: sube, porque estaba sobre 1 y ambos bajaron lo mismo. El CTN se mantiene en 20.","l":"Ayudantía 6, V/F 8"},
+{"id":"x2","t":"efe","q":"Una empresa compra mercaderías a crédito. ¿Qué pasa siempre con la Prueba Ácida (si es positiva)?","o":["Sube","Baja","No cambia","Depende de si es mayor o menor que 1"],"a":1,"e":"La mercadería no entra al numerador (se resta como existencia), pero la deuda con proveedores sí sube el denominador. En El Roble: 1,05 → 0,70.","l":"Ayudantía 6, Ej. 5 f)"},
+{"id":"x3","t":"efe","q":"Pagar a proveedores con caja no cambia el Capital de Trabajo Neto.","o":["Verdadero","Falso"],"a":0,"e":"AC y PC bajan en el mismo monto, y una resta no cambia: (30 − 10) − (20 − 10) = 30 − 20.","l":"Pauta V/F 8"},
+{"id":"x4","t":"efe","q":"La empresa cobra a sus clientes. ¿Qué ocurre con RC, PA y Razón de Efectivo?","o":["Las tres suben","RC y PA no cambian; la Razón de Efectivo sube","Las tres bajan","RC sube y PA baja"],"a":1,"e":"Sale Clientes y entra Caja: el AC no cambia y las existencias tampoco, pero la caja sube.","l":"Tabla de efectos"},
+{"id":"x5","t":"efe","q":"Obtener un préstamo de largo plazo depositado en el banco provoca que:","o":["La liquidez suba y el endeudamiento baje","La liquidez suba y el endeudamiento suba","La liquidez baje y el endeudamiento suba","Nada cambie, porque es de largo plazo"],"a":1,"e":"Sube el AC (banco) sin subir el PC: RC, PA y RE suben. Pero suben deuda y activo en el mismo monto: el endeudamiento sube. Es el Ej. 2 h): liquidez comprada con riesgo.","l":"Ayudantía 6, Ej. 2 g iii y h)"},
+{"id":"x6","t":"efe","q":"La empresa usa efectivo para comprar existencias. ¿Qué pasa con la RC y la PA?","o":["RC sube y PA sube","RC no cambia y PA baja","RC baja y PA no cambia","Ambas bajan"],"a":1,"e":"Sale caja y entra mercadería por el mismo monto, todo dentro del AC: la RC no cambia. Pero la caja contaba en la PA y la mercadería no: la PA baja.","l":"Lámina 201"},
+{"id":"x7","t":"efe","q":"AC = 1,2 millones y PC = 1 millón. Se usan 0,5 millones de tesorería para pagar cuentas por pagar. Entonces:","o":["RC 1,2 y fondo de maniobra 0,2","RC 1,4 y fondo de maniobra 0,2","RC 1,4 y fondo de maniobra 0,7","RC 0,7 y fondo de maniobra 0,5"],"a":1,"e":"AC 0,7 y PC 0,5 ⇒ RC = 1,4. El fondo de maniobra (AC − PC) era 0,2 y sigue en 0,2.","l":"Lámina 207"},
+{"id":"x8","t":"efe","q":"Comprar un vehículo al contado no cambia la Razón Corriente, porque el activo total no cambia.","o":["Verdadero","Falso"],"a":1,"e":"Sale caja (corriente) y entra un vehículo (no corriente): el AC baja y la RC baja. El activo total sí se mantiene, por eso el endeudamiento no cambia.","l":"Tabla de efectos"},
+{"id":"x9","t":"efe","ay":1,"q":"Cuando una empresa paga una deuda con proveedores usando dinero de Caja, su Razón Corriente siempre se mantiene igual, porque el AC y el PC disminuyen en el mismo monto.","o":["Verdadero","Falso"],"a":1,"e":"Solo se mantiene si RC = 1; si es mayor que 1 sube y si es menor baja. Lo que no cambia es el CTN.","l":"Ayudantía 6, V/F 8"},
+{"id":"c1","t":"comp","q":"Ventas 150 y Activo Total 100. La Rotación de Activos es:","o":["0,67 veces","1,50 veces","150 %","15 %"],"a":1,"e":"Ventas/AT = 1,5: vende $1,50 por cada $1 de activos. Se expresa en veces.","l":"Ayudantía 6, complementarios"},
+{"id":"c2","t":"comp","q":"ROS = 5 % y Rotación de Activos = 2,0. Por Du Pont, el ROA es:","o":["2,5 %","10 %","7 %","40 %"],"a":1,"e":"ROA = ROS × Rotación = 5 % × 2 = 10 %. Es el ejemplo de la cadena de comida rápida de la lámina 229.","l":"Lámina 229"},
+{"id":"c3","t":"comp","q":"Resultado Operacional 24.000 y Gastos Financieros 3.000. La Cobertura de Intereses es:","o":["8 veces","0,125 veces","21.000","12,5 %"],"a":0,"e":"24.000/3.000 = 8: el resultado operacional cubre 8 veces los intereses.","l":"Ayudantía 6, complementarios"},
+{"id":"c4","t":"comp","q":"¿Por qué se multiplica por 1,19 en la rotación de clientes?","o":["Porque es la inflación anual","Porque Clientes en el balance incluye IVA y las ventas del ER no","Porque se usa el año de 365 días","Porque es la tasa de impuesto a la renta"],"a":1,"e":"La cuenta Clientes registra el monto bruto (con IVA) y las ventas del ER van netas. Multiplicar por 1,19 las pone en la misma base.","l":"Lámina 217"},
+{"id":"c5","t":"comp","q":"Para los indicadores en días, el formulario de la ayudantía usa:","o":["Año uniforme de 360 días","Año calendario de 365 días","Año de 12 meses de 31 días","252 días hábiles"],"a":1,"e":"«Para cálculos en días: año calendario = 365 días.» La lámina 188 menciona también el año uniforme de 360, pero el formulario fija 365.","l":"Ayudantía 6, conceptos previos"},
+{"id":"c6","t":"comp","ay":1,"q":"La Razón Corriente se obtiene dividiendo el Activo Corriente por el Pasivo Corriente y se expresa en veces.","o":["Verdadero","Falso"],"a":0,"e":"RC = AC/PC: un cociente entre dos montos en pesos, así que el resultado queda en veces (1,4 veces = $1,40 de AC por cada $1 de PC).","l":"Ayudantía 6, V/F 1"}
+];
+</script>
+<script>
+(function(){
+  if(!window.QBANK) return;
+  var TAGS=window.QTAGS||{};
+  var LET='abcde';
+  function loadWrong(){ try{return JSON.parse(localStorage.getItem('imafi-c3-wrong')||'{}');}catch(e){return {};} }
+  function saveWrong(w){ try{localStorage.setItem('imafi-c3-wrong',JSON.stringify(w));}catch(e){} }
+  function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+  function upd(box,st){ var s=box.querySelector('.qz-score'); if(s) s.textContent=st.ok+' / '+st.done+' correctas'+(st.total?'  ·  '+st.total+' preguntas':''); }
+  function render(box, list, state){
+    var cont=box.querySelector('.qz-list'); cont.innerHTML='';
+    state.ok=0; state.done=0; state.total=list.length; upd(box,state);
+    list.forEach(function(q,i){
+      var d=document.createElement('div'); d.className='qz';
+      var h='<div class="qh"><span class="qn">'+(i+1)+'.</span><span class="pill a">'+(TAGS[q.t]||q.t)+'</span>'+
+        (q.ay?'<span class="pill c">de la ayudantía</span>':'')+'</div><p class="qt">'+q.q+'</p>';
+      q.o.forEach(function(o,k){ h+='<button class="opt" data-k="'+k+'"><span class="l">'+LET[k]+')</span><span>'+o+'</span></button>'; });
+      h+='<div class="exp"><b>Respuesta: '+LET[q.a]+')</b> '+q.e+(q.l?'<div class="src">Fuente: '+q.l+'</div>':'')+'</div>';
+      d.innerHTML=h;
+      d.querySelectorAll('.opt').forEach(function(b){ b.addEventListener('click',function(){
+        if(d.classList.contains('done')) return;
+        var k=+b.getAttribute('data-k'); d.classList.add('done');
+        d.querySelectorAll('.opt')[q.a].classList.add('ok');
+        var w=loadWrong();
+        if(k!==q.a){ b.classList.add('bad'); w[q.id]=1; } else { state.ok++; delete w[q.id]; }
+        saveWrong(w); state.done++; upd(box,state);
+      });});
+      cont.appendChild(d);
+    });
+  }
+  document.querySelectorAll('.quiz').forEach(function(box){
+    var state={ok:0,done:0,total:0};
+    function pool(tag){ return window.QBANK.filter(function(q){ return tag==='all' || q.t===tag; }); }
+    var bar='<div class="qz-bar"><select class="qz-tag"><option value="all">Todos los temas ('+window.QBANK.length+')</option>';
+    Object.keys(TAGS).forEach(function(k){ var c=pool(k).length; if(c) bar+='<option value="'+k+'">'+TAGS[k]+' ('+c+')</option>'; });
+    bar+='</select><button class="btn primary qz-sim">Simulacro: 20 al azar</button><button class="btn qz-wrong">Solo las que fallé</button>'+
+      '<button class="btn qz-re">Reiniciar</button><span class="qz-score"></span></div><div class="qz-list"></div>';
+    box.innerHTML=bar;
+    var sel=box.querySelector('.qz-tag');
+    var current=pool('all');
+    render(box,current,state);
+    sel.addEventListener('change',function(){ current=pool(sel.value); render(box,current,state); });
+    box.querySelector('.qz-re').addEventListener('click',function(){ render(box,current,state); });
+    box.querySelector('.qz-sim').addEventListener('click',function(){ current=shuffle(window.QBANK).slice(0,20); render(box,current,state); box.scrollIntoView(); });
+    box.querySelector('.qz-wrong').addEventListener('click',function(){ var w=loadWrong();
+      var l=window.QBANK.filter(function(q){return w[q.id];});
+      if(!l.length){ alert('No tienes preguntas falladas guardadas (o tu navegador no guarda datos locales).'); return; }
+      current=l; render(box,current,state); });
+  });
+})();
+</script>
+
+</body>
+</html>

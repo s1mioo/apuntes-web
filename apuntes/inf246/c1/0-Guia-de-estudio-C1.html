@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía de estudio · SO C1</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">GUÍA<br>C1</div>
+    <div><h1>Guía de estudio</h1><small>Sistemas Operativos · INF-246 · Certamen 1</small></div>
+  </div>
+  <div class="pages"><a href="0-Guia-de-estudio-C1.html" class=cur><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del miércoles 30</small></span></a><a href="1-Introduccion.html"><b>1</b><span>Introducción<br><small style="color:var(--muted)">qué es un SO</small></span></a><a href="2-Planificacion-de-tareas.html"><b>2</b><span>Planificación de tareas<br><small style="color:var(--muted)">modelos, tiempos, estados</small></span></a><a href="3-Scheduling.html"><b>3</b><span>Scheduling<br><small style="color:var(--muted)">los algoritmos</small></span></a><a href="4-Gestion-del-tiempo.html"><b>4</b><span>Gestión del tiempo<br><small style="color:var(--muted)">interrupciones y reloj</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2 y P3 del certamen</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">El certamen</div><a href="#g-datos">Fecha, hora y sala</a><a href="#g-temario">Qué entra y qué no</a><a href="#g-formato">Cómo es el certamen</a><div class="grp">Estudiar</div><a href="#g-plan">Plan día por día</a><a href="#g-check">Checklist sin mirar</a><a href="#g-sala">En la sala</a><div class="grp">Repaso final</div><a href="#chuleta">Chuleta / formulario</a><a href="#g-relampago">Repaso relámpago</a><a href="#errores">Errores típicos</a><a href="#g-videos">Todos los videos</a><a href="#glosario">Glosario</a><a href="#g-fuentes">Fuentes y erratas</a></nav>
+</aside>
+<main class="content">
+
+<section id="g-datos">
+<h2>Certamen 1 · Sistemas Operativos</h2>
+<p class="lead">Guía para llegar al miércoles con lo que más puntaje da. Todo el material está separado por tema en las páginas 1 a 4 (menú de la izquierda); cada una trae la materia explicada, lo que dijo el profe en clases, videos verificados, ejercicios resueltos y las preguntas de certámenes anteriores de ese tema.</p>
+<div class="hero">
+  <div class="big">Miércoles 30 de septiembre</div>
+  <div class="sub">Unidad 1 completa: planificación de tareas, scheduling y gestión del tiempo (la introducción pesa poco).</div>
+  <div class="kpis">
+    <div class="kpi"><b>14:40</b><span>bloque 9-10, el horario de los miércoles</span></div>
+    <div class="kpi"><b>P407</b><span>sala de los miércoles (confírmalo)</span></div>
+    <div class="kpi"><b>70 min</b><span>105 puntos en el formato 2024</span></div>
+    <div class="kpi"><b>2-3 partes</b><span>independientes, según el profe</span></div>
+  </div>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · de dónde sale la fecha<span class="ref">Gestión del tiempo · Voz 003 · 61:05 / Clase de repaso · 60:31</span></div><p>El calendario oficial ponía el certamen el 23 de septiembre. Al terminar Gestión del Tiempo, el profe ofreció empezar Memoria y hacer el repaso y el certamen dos semanas después, para dar tiempo de preguntar, y el curso aceptó. En el repaso lo confirmó: <i>“se da el miércoles de la semana del 28”</i>.</p></div>
+<div class="box warn"><div class="bt">Revisa en Moodle antes del miércoles</div>
+<p><b>1.</b> Sala y hora exactas (se asume la del miércoles: 14:40, P407).<br>
+<b>2.</b> El documento que el profe dijo que iba a subir, <i>“como una checklist”</i> de lo que hay que saber <i>“sí o sí”</i> de esta unidad (audio <code>Voz 002_1</code>, min 50). Si está, compáralo con la sección “Qué entra” de abajo.<br>
+<b>3.</b> La ponderación real: el programa dice 2 certámenes y el calendario tiene 3.</p></div>
+</section>
+
+<section id="g-temario">
+<h2>Qué entra y cuánto pesa</h2>
+<div class="tw"><table>
+<thead><tr><th>Tema</th><th>Peso</th><th>Sirve para</th><th>Lo esencial</th></tr></thead>
+<tbody>
+<tr><td><a class="inl" href="1-Introduccion.html">1 · Introducción</a></td><td>Bajo</td><td>Teoría</td><td>Definición de SO, 3 problemas, 4 requerimientos, 4 servicios.</td></tr>
+<tr><td><a class="inl" href="2-Planificacion-de-tareas.html">2 · Planificación de tareas</a></td><td><b>Alto</b></td><td>Teoría + ejercicio</td><td>Modelo vs algoritmo, batch / multiprogramación / tiempo compartido, quantum, swapping, <b>tiempos y tasas</b>.</td></tr>
+<tr><td><a class="inl" href="3-Scheduling.html">3 · Scheduling</a></td><td><b>Alto</b></td><td>Teoría + ejercicio</td><td>FCFS, SJN, PSJN, SRTN, RR, PV, MLQ, CFS: idea, inanición, costo. Cartas Gantt.</td></tr>
+<tr><td><a class="inl" href="4-Gestion-del-tiempo.html">4 · Gestión del tiempo</a></td><td><b>Un tercio</b></td><td>Teoría + cálculo</td><td>Interrupciones, RTMAX = F·TICK, rutina del reloj, hora universal, NTP, lista de plazos.</td></tr>
+</tbody></table></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · lo que el profe excluyó y lo que pidió<span class="ref">Planificación · Voz 006_1 · 05:13 / Planificación · Voz 006_1 · 26:46 / Planificación · Voz 002_1 · 50:30 / Clase de repaso · 42:49</span></div><ul><li><b>No entra HPRN:</b> <i>“ese algoritmo no va a entrar en el certamen. El FIFO sí, el Shortest Job Next sí, pero este no”</i>.</li><li><b>No entra PHPN:</b> de los algoritmos con requisición, <i>“el Preemptive Shortest Job Next, ese tiene que saberlo; ese siguiente [PHPN] no tiene que saberlo; y el SRTN sí”</i>.</li><li><b>Lo importante:</b> <i>“la introducción no es tanto un problema, pero [planificación], scheduling sí, y gestión de tiempo sí”</i>. Y le advirtió al curso que en gestión del tiempo entran las interrupciones y excepciones, aunque se supone que las vieron en Arquitectura de Computadores.</li><li><b>En el repaso:</b> hay que saber calcular tiempo de respuesta, de ejecución y de espera, y la tasa de uso del procesador de una tarea y global. El detalle está en la página 2, sección “Los tiempos”.</li></ul></div>
+<div class="box def"><div class="bt">¿Y la memoria?</div>
+<p>El repaso cubrió solo la Unidad 1 y nada de lo que dijo el profe indica que Memoria entre en este certamen (en el calendario es la Unidad 2, con su propio certamen). Los certámenes 2014-2016 traen preguntas de memoria continua porque ese año el C1 cubría más materia: sáltalas.</p></div>
+</section>
+
+<section id="g-formato">
+<h2>Cómo es el certamen</h2>
+<p>Hay dos certámenes recientes del mismo profe sobre esta unidad, y se parecen muchísimo: <b>2024-1</b> y <b>2023-1</b> (el que llegó como “Regalito”). Los dos están completos y resueltos en las páginas 2 y 4.</p>
+<div class="tw"><table>
+<thead><tr><th>Sección</th><th>2024-1 (70 min, 105 pts)</th><th>2023-1 (70 min, 104 pts)</th><th>Dónde practicarla</th></tr></thead>
+<tbody>
+<tr><td><b>Conocimiento</b></td><td>5 preguntas × 7 = 35</td><td>7 preguntas × 8 = <b>56</b></td><td>“Preguntas del tema” de las páginas 2, 3 y 4</td></tr>
+<tr><td><b>Tiempo compartido</b></td><td>5 preguntas × 7 = 35</td><td>6 preguntas × 8 = 48</td><td><a class="inl" href="2-Planificacion-de-tareas.html#c1">Certamen 2024</a> y <a class="inl" href="2-Planificacion-de-tareas.html#c3">certamen 2023</a> (página 2), N1, N2</td></tr>
+<tr><td><b>Gestión del tiempo</b></td><td>5 preguntas × 7 = 35</td><td>No estaba: ese año fue al C2 (ver abajo)</td><td><a class="inl" href="4-Gestion-del-tiempo.html#c2">Certamen 2024</a>, <a class="inl" href="4-Gestion-del-tiempo.html#c4">C2 2023</a>, <a class="inl" href="4-Gestion-del-tiempo.html#ay3-2">Ayudantía 3</a> (página 4)</td></tr>
+</tbody></table></div>
+<div class="box tip"><div class="bt">Lo que se repite de un año a otro (y probablemente se repita el miércoles)</div>
+<p><b>Cuatro preguntas de conocimiento idénticas</b> en 2023 y 2024: la diferencia entre modelo de planificación y algoritmo de scheduling; por qué hay inanición en cualquier batch; la dificultad práctica de SJN/SRTN; por qué no se puede implementar el óptimo. Tenlas de memoria.</p>
+<p><b>El mismo ejercicio de tiempo compartido</b> con otros números: Round Robin con tres tareas y su tiempo de respuesta; una tarea cíclica T0 que usa 3 quanta y hace una E/S de 50 ms (su tasa); llega T1 cíclica sin E/S a t<sub>0</sub> + 25 ms (tasas y rendimiento); se sube el quantum a 50 ms (¿quién sale favorecida?); el administrador lo baja a 5 ms (¿buena idea?). En 2023 se agregó: ¿por qué Round Robin no tiene inanición? Si dominas esa plantilla tienes asegurado un tercio del certamen.</p>
+<p><b>Gestión del tiempo:</b> en 2023 fue al Certamen 2 y en 2024 al 1. Este año se pasó antes del C1 y el profe dijo que entra (“gestión de tiempo sí”), así que prepárala. Las preguntas de RTMAX (F = 5 GHz, TICK = 1 ms) son idénticas en el C2 2023 y el C1 2024.</p></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · cómo lo describió en el repaso<span class="ref">Clase de repaso · 41:14 / Clase de repaso · 56:04 / Clase de repaso · 57:28</span></div><p><i>“Si olvidamos la introducción, en el peor caso hay tres partes, en el mejor hay dos”</i>, y <i>“son partes independientes: empiecen por la parte que les parece más fácil, donde saben más”</i>. Si empiezas por la difícil y te quedas pegado, <i>“la parte fácil tampoco logran terminar”</i>.</p><p>También comentó los promedios: el del C1 suele andar entre 65 y 69 (hay notas desde muy bajas hasta sobre 90), y contó de un semestre en que el promedio bajó a cerca de 54 porque no estudiaron (el audio se entiende a medias en ese tramo). Y: <i>“no es tan difícil, si vienen a clases y estudian”</i>.</p></div>
+</section>
+
+<section id="g-plan">
+<h2>Plan día por día</h2>
+<p class="lead">Pensado para una semana cargada: el lunes 28 entregas la Tarea 2 de IMAFI y el martes 29 das el C1 de ADS. Son unas 8 horas en total, con lo de más puntaje primero. Las casillas se guardan en este navegador.</p>
+<div class="bar"><i></i></div><div class="barlbl" style="font-size:12.5px;color:var(--muted)"></div>
+<div class="day"><h4>Domingo 27 · noche</h4><div class="when">≈ 1,5 h · entender la historia y los tiempos</div><ul class="check">
+<li><input type="checkbox" data-k="d27a"><span>Leer esta guía (15 min).</span></li><li><input type="checkbox" data-k="d27b"><span><a class=inl href='1-Introduccion.html'>Tema 1</a> completo, rápido (20 min).</span></li><li><input type="checkbox" data-k="d27c"><span>Ver Crash Course #18: 0:00-5:05 y 8:00-10:50 (8 min).</span></li><li><input type="checkbox" data-k="d27d"><span><a class=inl href='2-Planificacion-de-tareas.html'>Tema 2</a>: historia, estados, <b>los tiempos</b> y modelo vs algoritmo (45 min).</span></li></ul></div>
+<div class="day"><h4>Lunes 28</h4><div class="when">≈ 3 h · modelos, tiempos y los primeros algoritmos</div><ul class="check">
+<li><input type="checkbox" data-k="d28a"><span>Tema 2: batch, multiprogramación, tiempo compartido, swapping y <b>los modelos lado a lado</b> (45 min).</span></li><li><input type="checkbox" data-k="d28b"><span>Ejercicios <a class=inl href='2-Planificacion-de-tareas.html#n1'>N1</a>, N2 y el <a class=inl href='2-Planificacion-de-tareas.html#c1'>certamen 2024 sección 2</a> (45 min).</span></li><li><input type="checkbox" data-k="d28f"><span>El mismo ejercicio en el <a class=inl href='2-Planificacion-de-tareas.html#c3'>certamen 2023 sección 2</a>, sin mirar la solución (20 min).</span></li><li><input type="checkbox" data-k="d28c"><span><a class=inl href='3-Scheduling.html'>Tema 3</a>: el mapa, FCFS, SJN, PSJN, SRTN y Round Robin (45 min).</span></li><li><input type="checkbox" data-k="d28d"><span>Videos de Jacob Schrum 1 y 2, con audio en español (20 min).</span></li><li><input type="checkbox" data-k="d28e"><span>Ejercicios <a class=inl href='3-Scheduling.html#b1'>B1</a>, B2 y <a class=inl href='3-Scheduling.html#n6'>N6</a> (30 min).</span></li></ul></div>
+<div class="day"><h4>Martes 29 · después del C1 de ADS</h4><div class="when">≈ 3 h · el resto de scheduling y gestión del tiempo</div><ul class="check">
+<li><input type="checkbox" data-k="d29a"><span>Tema 3: PV, MLQ, CFS y la tabla comparativa (45 min).</span></li><li><input type="checkbox" data-k="d29b"><span>Ejercicios <a class=inl href='3-Scheduling.html#n3'>N3</a> (PV) y N5 (MLQ); si sobra, N4 (CFS) (30 min).</span></li><li><input type="checkbox" data-k="d29c"><span><a class=inl href='4-Gestion-del-tiempo.html'>Tema 4</a> completo (1 h).</span></li><li><input type="checkbox" data-k="d29d"><span>Video de Core Dumped sobre <code>sleep</code>, con audio en español (20 min).</span></li><li><input type="checkbox" data-k="d29e"><span><a class=inl href='4-Gestion-del-tiempo.html#c2'>Certamen 2024 sección 3</a> y <a class=inl href='4-Gestion-del-tiempo.html#n7'>N7</a> (30 min).</span></li><li><input type="checkbox" data-k="d29f"><span><a class=inl href='4-Gestion-del-tiempo.html#ay3-1'>Ayudantía 3</a> completa: quantum y overhead, interrupción del reloj, costo del TICK (30 min).</span></li></ul></div>
+<div class="day"><h4>Miércoles 30 · mañana</h4><div class="when">≈ 1,5 h · repasar, no aprender nada nuevo</div><ul class="check">
+<li><input type="checkbox" data-k="d30a"><span>“Preguntas del tema” de las páginas 2, 3 y 4 con la respuesta tapada (45 min).</span></li><li><input type="checkbox" data-k="d30b"><span><a class=inl href='#g-relampago'>Repaso relámpago</a> y <a class=inl href='#errores'>errores típicos</a> (20 min).</span></li><li><input type="checkbox" data-k="d30c"><span>Escribir la <a class=inl href='#chuleta'>chuleta</a> de memoria en una hoja (15 min).</span></li><li><input type="checkbox" data-k="d30d"><span>Después de almuerzo, nada de materia. Llegar con tiempo a la sala.</span></li></ul></div>
+
+<div class="box tip"><div class="bt">Si solo alcanzas a estudiar 3 horas</div>
+<p>Ordenado por puntos por hora:</p>
+<p><b>1.</b> Las 4 preguntas de conocimiento que se repitieron en 2023 y 2024 + el resto de “Preguntas del tema” de las páginas 2 y 3 (45 min): la sección de conocimiento fue de 35 a 56 puntos.<br>
+<b>2.</b> “Los tiempos” (página 2) + certamen 2024 sección 2 + certamen 2023 sección 2 (45 min): es la misma plantilla dos años seguidos.<br>
+<b>3.</b> Tema 4 leído + certamen 2024 sección 3 (45 min): las preguntas se repiten casi textuales y RTMAX es un cálculo de una línea.<br>
+<b>4.</b> El mapa y la tabla comparativa de scheduling (30 min).<br>
+<b>5.</b> La chuleta (15 min).</p></div>
+</section>
+
+<section id="g-check">
+<h2>Checklist: lo que tienes que poder hacer sin mirar</h2>
+<p class="lead">Si algo queda sin marcar el martes en la noche, eso es lo único que conviene repasar el miércoles.</p>
+<ul class="check">
+<li><input type="checkbox" data-k="ck0"><span>Explicar la diferencia entre modelo de planificación y algoritmo de scheduling (y que time sharing ≠ Round Robin).</span></li><li><input type="checkbox" data-k="ck1"><span>Nombrar los 4 casos en que una tarea pierde el procesador y a qué estado pasa.</span></li><li><input type="checkbox" data-k="ck2"><span>Escribir t<sub>ejec</sub>, t<sub>espera</sub>, t<sub>resp</sub>, la tasa de uso por tarea y global, y calcularlas en una carta Gantt.</span></li><li><input type="checkbox" data-k="ck3"><span>Explicar por qué en cualquier batch hay inanición y por qué el tiempo compartido la elimina (del modelo).</span></li><li><input type="checkbox" data-k="ck4"><span>Explicar qué hardware hizo posible cada modelo (controlador de disco, temporizador).</span></li><li><input type="checkbox" data-k="ck5"><span>Explicar el quantum grande vs pequeño y la espera máxima (N−1)·q.</span></li><li><input type="checkbox" data-k="ck6"><span>Explicar el swapping, su peor escenario y por qué el disco no reemplaza a la RAM.</span></li><li><input type="checkbox" data-k="ck7"><span>Clasificar FCFS, SJN, PSJN, SRTN, RR, PV, MLQ y CFS en sus familias.</span></li><li><input type="checkbox" data-k="ck8"><span>Decir cuáles necesitan estimar el tiempo de ejecución y por qué eso es casi imposible.</span></li><li><input type="checkbox" data-k="ck9"><span>Decir cuáles tienen inanición, con la justificación.</span></li><li><input type="checkbox" data-k="ck10"><span>Explicar la diferencia exacta entre PSJN y SRTN (total vs restante).</span></li><li><input type="checkbox" data-k="ck11"><span>Explicar PV (dos niveles, Q<sub>i</sub>) y MLQ (i+1 vueltas, q<sub>1</sub> &gt; q<sub>2</sub>, requisición, dinámico).</span></li><li><input type="checkbox" data-k="ck12"><span>Explicar el CFS: t<sub>max</sub> = t<sub>wait</sub>/N, árbol rojo-negro, O(1) y O(log N).</span></li><li><input type="checkbox" data-k="ck13"><span>Diferenciar interrupción y excepción.</span></li><li><input type="checkbox" data-k="ck14"><span>Explicar qué pasa cuando ocurre una interrupción (tabla de vectores, CALL, pila, RET).</span></li><li><input type="checkbox" data-k="ck15"><span>Calcular RTMAX dado F y TICK, y la duración de la rutina con RTempo.</span></li><li><input type="checkbox" data-k="ck16"><span>Explicar por qué la rutina del reloj debe ser corta (3 razones).</span></li><li><input type="checkbox" data-k="ck17"><span>Explicar por qué la hora se atrasa (2 causas) y por qué NTP no salta.</span></li><li><input type="checkbox" data-k="ck18"><span>Explicar la lista de plazos relativos y su costo.</span></li>
+</ul>
+</section>
+
+<section id="g-sala">
+<h2>En la sala: los primeros 3 minutos y el manejo del tiempo</h2>
+<p>Apenas te entreguen el certamen, antes de leer, escribe en la hoja de borrador:</p>
+<pre>t_ejec = Σ t_parciales        t_espera = t_cola + Σ t_E/S
+t_resp = t_final − t_llegada = t_espera + t_ejec   (se corta donde termina ESA tarea)
+Tasa   = CPU usada / intervalo   (≤ 100 %; cíclica ⇒ usar el periodo)
+Pr     = t_resp / t_ejec ≥ 1
+RTMAX  = F × TICK        q = N × TICK        Δt = |RTempo| / F
+Hora   = Hora + TICK − RTempo/F   (RTempo &lt; 0 ⇒ suma)
+Espera máx RR = (N−1)·q     CFS: t_max = t_wait / N ; O(1) elegir, O(log N) insertar</pre>
+<div class="tw"><table>
+<thead><tr><th>Minutos</th><th>Qué hacer</th></tr></thead>
+<tbody>
+<tr><td>0-3</td><td>Escribir el formulario de arriba y leer el certamen completo.</td></tr>
+<tr><td>3-25</td><td>La parte que te resulte más fácil (el profe: “empiecen por lo que saben”). Si es la teoría: unos 4 minutos por pregunta.</td></tr>
+<tr><td>25-50</td><td>El ejercicio de planificación (carta Gantt, tiempos, tasas).</td></tr>
+<tr><td>50-65</td><td>Gestión del tiempo: el cálculo y las preguntas cortas.</td></tr>
+<tr><td>65-70</td><td>Revisar: ¿respondí todas las partes de cada pregunta? ¿alguna tasa pasa de 100 %? ¿las unidades cuadran?</td></tr>
+</tbody></table></div>
+<div class="box tip"><div class="bt">Cómo responder las preguntas de teoría</div>
+<p>Casi todas tienen 2 o 3 partes aunque parezcan una sola (“ventajas y desventajas”, “consecuencias positivas y negativas”, “¿en qué caso?”). El profe lo dijo: <i>“lean bien las preguntas, a veces hay dos en una”</i>. Estructura: definición → mecanismo → consecuencia. Y cuando la pregunta hable de esperas, piensa en el <b>mejor y el peor caso</b> (su ejemplo: la fila del baño con 20 personas y nadie que se demore más de 5 minutos da una espera máxima de 100 minutos).</p></div>
+</section>
+<section id="chuleta">
+<h2>Chuleta / formulario</h2>
+<p class="lead">Lo que deberías poder escribir de memoria en una hoja en blanco antes de entrar a la sala.</p>
+
+<div class="cols">
+  <div class="card">
+    <h5>Tiempos</h5>
+    <p><code>t_ejec = Σ t_parciales</code></p>
+    <p><code>t_espera = t_cola + Σ t_E/S</code></p>
+    <p><code>t_resp = t_final − t_llegada = t_espera + t_ejec</code></p>
+    <p><code>Tp = CPU ocupada / tiempo total</code></p>
+    <p><code>Pr = (W+S)/S = t_resp / t_ejec ≥ 1</code></p>
+  </div>
+  <div class="card">
+    <h5>Tiempo compartido</h5>
+    <p><code>q = N × TICK</code></p>
+    <p><code>t_espera_max = (N−1)·q</code></p>
+    <p>q → ∞ ⇒ RR = FCFS</p>
+    <p>q → 0 ⇒ reparto equitativo, overhead ∞</p>
+    <p>El quantum lo fija el SO en el <b>boot</b></p>
+    <p>Espera máx.: (N−1)·q si N te incluye; N·q si llegas y ya hay N</p>
+  </div>
+  <div class="card">
+    <h5>Temporizador</h5>
+    <p><code>RTMAX = F × TICK</code></p>
+    <p><code>Δt_rutina = |RTempo| / F</code></p>
+    <p><code>Hora = Hora + TICK − RTempo/F</code></p>
+    <p>IRQ 0 = reloj = <b>máxima prioridad</b></p>
+    <p>Linux: 100 Hz (CPU lenta) / 1000 Hz (rápida)</p>
+  </div>
+  <div class="card">
+    <h5>CFS</h5>
+    <p><code>t_max = t_wait / N</code></p>
+    <p>Árbol <b>rojo-negro</b> ordenado por <code>t_exec</code></p>
+    <p>Elegir: <b>O(1)</b> (nodo más a la izquierda)</p>
+    <p>Insertar: <b>O(log N)</b></p>
+    <p>N = <b>todas</b> las tareas (también las bloqueadas)</p>
+    <p>Quantum con mínimo y máximo · una tarea nueva <b>no</b> requisa</p>
+  </div>
+  <div class="card">
+    <h5>MLQ</h5>
+    <p>Tarea nueva → cola F<sub>1</sub></p>
+    <p>Vuelve a F<sub>i</sub> <b>i+1 veces</b>; tras <code>(i+1)·q_i</code> baja a F<sub>i+1</sub></p>
+    <p>Se queda en F<sub>n</sub> (FCFS o q<sub>n</sub> muy grande)</p>
+    <p>Dinámico: tras <code>t ≥ k·q_n</code> vuelve a F<sub>1</sub></p>
+    <p>Requisición si llega algo a una cola j &lt; i</p>
+    <p>Según el profe: <b>q<sub>1</sub> &gt; q<sub>2</sub> &gt; …</b> · elegir e insertar O(1)</p>
+  </div>
+  <div class="card">
+    <h5>Batch FCFS</h5>
+    <p><code>r_T0 = C_0 + Σ E/S_T0</code></p>
+    <p><code>r_Ti = C_i + Σ E/S_Ti + r_Ti−1</code></p>
+  </div>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Costos (elegir · insertar)</h5>
+    <p>FCFS: O(1) · O(1)</p><p>SJN: O(1) · O(N)</p><p>RR y MLQ: O(1) · O(1)</p><p>CFS: O(1) · O(log N)</p><p>HPRN (no entra): O(N) por decisión</p>
+  </div>
+  <div class="card"><h5>No entran</h5>
+    <p><b>HPRN</b> y <b>PHPN</b> (lo dijo el profe en clases).</p><p>Memoria (Unidad 2) y procesos/discos (Unidad 3).</p>
+  </div>
+  <div class="card"><h5>Hora y NTP</h5>
+    <p>Se atrasa por: rearme + return sin contabilizar, y el cuarzo imperfecto.</p>
+    <p>NTP: acelera o frena (reloj oscilante); solo salta al arrancar.</p>
+  </div>
+</div>
+<h3>Las 15 frases que hay que poder escribir</h3>
+<ol>
+  <li>El <b>modelo</b> define cuándo se pierde el procesador y por cuánto tiempo se tiene; el <b>algoritmo</b> define quién es el siguiente.</li>
+  <li>Un proceso pierde el procesador en 4 casos: <b>termina, hace E/S, se acaba el quantum, lo deja voluntariamente / error fatal</b>.</li>
+  <li>Pasar a estado <b>LISTA</b> significa solamente que la tarea es <b>candidata</b> a obtener el procesador.</li>
+  <li>Hay <b>inanición</b> cuando una o más tareas no pueden obtener el procesador. <b>Un buen algoritmo de scheduling no debería tener inanición.</b></li>
+  <li>En <b>cualquier</b> modelo batch hay riesgo de inanición porque la tarea en ejecución puede monopolizar el procesador.</li>
+  <li>El algoritmo <b>óptimo</b> existe pero no es aplicable: no se conoce el futuro y/o es demasiado costoso.</li>
+  <li><b>SJN/SRTN</b> no son implementables de forma confiable: el usuario miente y las estadísticas no sirven porque las tareas no son deterministas.</li>
+  <li>El <b>quantum</b> es un compromiso entre rendimiento global (grande) y favorecer a las tareas cortas (pequeño).</li>
+  <li>La rutina de la <b>interrupción del reloj</b> debe ser lo más corta posible: es tiempo ocioso, es muy frecuente, y si dura demasiado se pierden interrupciones y la hora deriva.</li>
+  <li>La <b>hora se atrasa</b> porque el rearme del temporizador y la instrucción de retorno no se pueden contabilizar.</li>
+  <li><b>NTP</b> no puede saltar de golpe: no existirían los tiempos intermedios y las tareas programadas para ellos no se ejecutarían.</li>
+  <li>La <b>lista de plazos relativos</b> hace la búsqueda O(1) a costa de una inserción O(N), porque la búsqueda ocurre en cada TICK y la inserción es rara.</li>
+<li><b>Time sharing</b> es un modelo; <b>Round Robin</b> es un algoritmo.</li>
+<li>El tiempo de respuesta de una tarea se corta donde termina <b>esa</b> tarea; una tarea cíclica no tiene tiempo de respuesta.</li>
+<li>El <b>CFS</b> es el mejor scheduler práctico: elegir O(1), insertar O(log N) y reparto equitativo; no se puede insertar mejor en una estructura ordenada.</li>
+</ol>
+</section><section id="g-relampago"><h2>Repaso relámpago</h2><p class="lead">Diez preguntas de una línea para el miércoles en la mañana. Menos de 30 segundos cada una.</p><details class="ex"><summary>1 · Un algoritmo con requisición, ¿es lo mismo que uno con reciclaje?</summary><div class="body"><p>No. La <b>requisición</b> la provoca <b>la llegada de una tarea con más prioridad</b> (o el desbloqueo de una); es esporádica. El <b>reciclaje</b> lo provoca el <b>temporizador</b> al acabarse el quantum; es periódico y sistemático.</p></div></details>
+<details class="ex"><summary>2 · ¿Puede un algoritmo tener requisición y reciclaje a la vez?</summary><div class="body"><p>Sí: el <b>MLQ</b>. Tiene reciclaje (quantum q<sub>i</sub> por cola) <b>y</b> requisición (si llega una tarea a una cola j &lt; i mientras la cola i tiene el procesador real).</p></div></details>
+<details class="ex"><summary>3 · Si q → ∞, ¿en qué se convierte Round Robin?</summary><div class="body"><p>En <b>FCFS</b>: nadie alcanza a ser interrumpido, así que cada tarea corre hasta terminar en orden de llegada.</p></div></details>
+<details class="ex"><summary>4 · ¿Por qué el 100 % de tasa de ocupación es inalcanzable?</summary><div class="body"><p>Porque siempre hay momentos en que <b>ninguna tarea está lista</b> (todas bloqueadas en E/S, o el sistema vacío), y porque parte del tiempo el procesador ejecuta <b>código del SO</b> (rutinas de interrupción, scheduler, conmutaciones), que no es ejecución de tareas.</p></div></details>
+<details class="ex"><summary>5 · ¿Cuál es la interrupción de mayor prioridad y por qué?</summary><div class="body"><p>La del <b>reloj / temporizador, IRQ 0</b>. Porque es la que le permite al SO <b>recuperar el control</b>: sin ella, una tarea que no hace E/S se queda con el procesador para siempre. También porque perderla desincroniza la hora universal.</p></div></details>
+<details class="ex"><summary>6 · ¿Qué mide el valor negativo del registro temporizador?</summary><div class="body"><p><b>Cuánto se demoró la rutina de interrupción del reloj</b>: Δt = |RTempo| / F. Sirve para corregir la hora universal.</p></div></details>
+<details class="ex"><summary>7 · ¿Por qué la lista de plazos usa tiempos relativos?</summary><div class="body"><p>Porque la búsqueda de plazos vencidos ocurre <b>en cada TICK</b> (hasta 1000 veces por segundo) y con tiempos relativos cuesta <b>O(1)</b> (solo se decrementa el primero) en vez de O(N). Se paga con una inserción O(N), pero insertar timers es <b>raro</b>.</p></div></details>
+<details class="ex"><summary>8 · ¿Cuál es la única ventaja real de FCFS?</summary><div class="body"><p>Su <b>simplicidad y costo cero de gestión</b>: cola FIFO, sin conmutaciones durante la ejecución, sin necesidad de estimar nada. Y que <b>respeta el orden de llegada</b>, lo que lo hace predecible.</p></div></details>
+<details class="ex"><summary>9 · ¿Por qué el CFS elige el nodo más a la izquierda del árbol?</summary><div class="body"><p>Porque el árbol está ordenado por <b>t<sub>exec</sub></b> (tiempo de ejecución acumulado), así que el nodo más a la izquierda es la tarea que <b>menos procesador ha recibido</b>: la que más "merece" su turno para que el reparto sea equitativo.</p></div></details>
+<details class="ex"><summary>10 · Una tarea termina su E/S. ¿Qué pasa exactamente, en orden?</summary><div class="body"><p>El controlador <b>genera una interrupción</b> → el SO ejecuta la rutina, recupera los datos y los transfiere al espacio de memoria de la tarea → la tarea pasa de <b>BLOQUEADA a LISTA</b> → <b>después de un tiempo T desconocido</b>, el scheduler la elige y la tarea recupera el procesador. <b>Terminar la E/S no es recuperar el procesador.</b></p></div></details></section><section id="errores">
+<h2>Errores típicos</h2>
+
+<div class="tw">
+<table>
+<thead><tr><th>#</th><th>El error</th><th>Lo correcto</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Confundir <b>modelo</b> con <b>algoritmo</b> ("el modelo es Round Robin")</td><td>Round Robin es un <b>algoritmo</b>. El modelo sería <b>tiempo compartido</b>. Son cosas independientes.</td></tr>
+<tr><td>2</td><td>Creer que <b>LISTA ⇒ se ejecuta</b></td><td>LISTA solo significa <b>candidata</b>. Cuándo se ejecuta lo decide el scheduler.</td></tr>
+<tr><td>3</td><td>Sumar el tiempo de E/S al <b>tiempo de ejecución</b></td><td>Las E/S son <b>tiempo de espera</b>. t<sub>ejec</sub> es solo CPU.</td></tr>
+<tr><td>4</td><td>En un ejercicio con un solo disco, hacer <b>dos E/S en paralelo</b></td><td>Si hay un solo controlador, las E/S <b>se serializan</b>. Solo son simultáneas si el enunciado dice que hay varios discos.</td></tr>
+<tr><td>5</td><td>Medir "la E/S cada 10 ms" con el reloj <b>global</b></td><td>Es cada 10 ms del <b>tiempo propio de CPU</b> de esa tarea.</td></tr>
+<tr><td>6</td><td>En la tabla RR, mandar la tarea al final <b>cuando termina su E/S</b></td><td>Según la convención del profesor, al terminar la E/S la tarea pasa de <code>B</code> a <code>L</code> <b>en su lugar</b>; se va al final cuando <b>pierde</b> el procesador.</td></tr>
+<tr><td>7</td><td>Confundir <b>PSJN</b> con <b>SRTF</b></td><td>PSJN compara contra la duración <b>total</b> del que corre; SRTF contra su tiempo <b>restante</b>.</td></tr>
+<tr><td>8</td><td>Decir que <b>RR tiene inanición</b> porque una tarea larga tarda mucho</td><td>Tardar mucho ≠ inanición. RR garantiza el procesador en <b>t ≤ (N−1)q</b>, que es finito. <b>No hay inanición.</b></td></tr>
+<tr><td>9</td><td>Olvidar el <b>tiempo ocioso</b> en la carta Gantt</td><td>El rayado es lo que hace que T<sub>p</sub> &lt; 100 %. Si no lo dibujas, tu tasa sale mal.</td></tr>
+<tr><td>10</td><td>Escribir <code>RTMAX = F / TICK</code></td><td>Es <b>F × TICK</b>. Verifica con unidades: (pulsos/s) × (s) = pulsos. ✔</td></tr>
+<tr><td>11</td><td>Poner el signo <b>+</b> en la corrección de la hora sin pensar</td><td><code>Hora = Hora + TICK − RTempo/F</code>. Como RTempo &lt; 0, el término <b>suma</b>. Si escribes "+RTempo/F" estás <b>restando</b> tiempo.</td></tr>
+<tr><td>12</td><td>Decir que la hora se atrasa "porque la rutina tarda"</td><td>Eso ya <b>se corrige</b> con RTempo. Se atrasa por las <b>dos instrucciones finales</b> (rearme + return) que no alcanzan a contabilizarse.</td></tr>
+<tr><td>13</td><td>Responder una sola razón cuando piden "las consecuencias"</td><td>En este ramo casi todas las preguntas tienen <b>2 o 3 partes</b> (ventaja y desventaja, positivo y negativo). Léelas dos veces.</td></tr>
+<tr><td>14</td><td>Dar una tasa de penalización <b>menor que 1</b></td><td>Imposible: P<sub>r</sub> = (W+S)/S ≥ 1 siempre, porque W ≥ 0.</td></tr>
+<tr><td>15</td><td>Estudiar las preguntas de memoria continua y MMU de los certámenes 2014-2016</td><td>Eso es <b>Certamen 2</b>. Es tiempo perdido para el C1.</td></tr>
+<tr><td>16</td><td>Dar el tiempo de respuesta de una tarea como el instante en que terminan <b>todas</b></td><td>El corte es donde termina <b>esa</b> tarea. El profe dijo que es el error que más ve.</td></tr>
+<tr><td>17</td><td>Tasas de uso por tarea que suman más de 100 %</td><td>Con un procesador, en el mismo intervalo, la suma nunca pasa de 100 %. Ninguna tasa es negativa ni mayor que 1.</td></tr>
+<tr><td>18</td><td>Calcular el tiempo de respuesta de una tarea <b>cíclica</b></td><td>No existe: no termina. Se da su tasa y su espera <b>por ciclo</b>, usando el periodo.</td></tr>
+<tr><td>19</td><td>Decir que en PSJN la tarea interrumpida vuelve con lo que le falta</td><td>Vuelve con su tiempo <b>total</b> estimado (prioridad estática). Eso es SRTN.</td></tr>
+<tr><td>20</td><td>Aprender el MLQ con quantum creciente hacia abajo (como en Silberschatz y los videos)</td><td>El profe: <b>q<sub>1</sub> &gt; q<sub>2</sub> &gt; …</b>, y la tarea da <b>i+1 vueltas</b> en la cola i antes de bajar.</td></tr>
+</tbody>
+</table>
+</div>
+</section><section id="g-videos">
+<h2>Todos los videos, por tema</h2>
+<p class="lead">Índice rápido. En cada página de tema están las tarjetas con qué minutos ver y por qué.</p>
+<div class="tw"><table class="vlist mini">
+<thead><tr><th>Tema</th><th>Video</th><th>Canal</th><th>Duración</th><th>Idioma</th></tr></thead>
+<tbody><tr><td><a href="1-Introduccion.html#t1-videos">Introducción</a></td><td><a href="https://www.youtube.com/watch?v=vBURTt97EkA" target="_blank" rel="noopener">Introduction to Operating Systems</a> <span class="pill" style="background:var(--warn-soft);color:var(--warn)">recomendado</span></td><td>Neso Academy</td><td>16:45</td><td>Doblaje ES</td></tr>
+<tr><td><a href="1-Introduccion.html#t1-videos">Introducción</a></td><td><a href="https://www.youtube.com/watch?v=sBkpJdysm9k" target="_blank" rel="noopener">Introducción a los Sistemas Operativos · Capítulo I</a></td><td>Detrás del Sistema Operativo</td><td>8:33</td><td>Español</td></tr>
+<tr><td><a href="1-Introduccion.html#t1-videos">Introducción</a></td><td><a href="https://www.youtube.com/watch?v=eP_P4KOjwhs" target="_blank" rel="noopener">Why Applications Are Operating-System Specific</a></td><td>Core Dumped</td><td>13:09</td><td>Doblaje ES</td></tr>
+<tr><td><a href="2-Planificacion-de-tareas.html#t2-videos">Planificación de tareas</a></td><td><a href="https://www.youtube.com/watch?v=26QPDBe-NB8" target="_blank" rel="noopener">Operating Systems · Crash Course Computer Science #18</a> <span class="pill" style="background:var(--warn-soft);color:var(--warn)">recomendado</span></td><td>CrashCourse</td><td>13:35</td><td>Inglés + subt.</td></tr>
+<tr><td><a href="2-Planificacion-de-tareas.html#t2-videos">Planificación de tareas</a></td><td><a href="https://www.youtube.com/watch?v=Hz3jXab8LI4" target="_blank" rel="noopener">Multiprogramación en sistemas operativos · uniprogramados y multiprogramados con ejemplo</a></td><td>FNE Profesor - Ciencias de la Computación</td><td>16:43</td><td>Español</td></tr>
+<tr><td><a href="2-Planificacion-de-tareas.html#t2-videos">Planificación de tareas</a></td><td><a href="https://www.youtube.com/watch?v=tadUeiNe5-g" target="_blank" rel="noopener">How CPUs Interact with So Many Different Devices</a></td><td>Core Dumped</td><td>23:28</td><td>Doblaje ES</td></tr>
+<tr><td><a href="2-Planificacion-de-tareas.html#t2-videos">Planificación de tareas</a></td><td><a href="https://www.youtube.com/watch?v=PpaQrzoDW2I" target="_blank" rel="noopener">Computer Timescales Mapped onto Human Timescales</a></td><td>Computerphile</td><td>28:41</td><td>Inglés + subt.</td></tr>
+<tr><td><a href="3-Scheduling.html#t3-videos">Scheduling</a></td><td><a href="https://www.youtube.com/watch?v=-Q0sw3abg30" target="_blank" rel="noopener">Uniprocessor Scheduling 1: First Come First Served and Round Robin</a> <span class="pill" style="background:var(--warn-soft);color:var(--warn)">recomendado</span></td><td>Jacob Schrum</td><td>11:52</td><td>Doblaje ES</td></tr>
+<tr><td><a href="3-Scheduling.html#t3-videos">Scheduling</a></td><td><a href="https://www.youtube.com/watch?v=-drhm9VtB8E" target="_blank" rel="noopener">Uniprocessor Scheduling 2: SPN, SRT, and HRRN</a> <span class="pill" style="background:var(--warn-soft);color:var(--warn)">recomendado</span></td><td>Jacob Schrum</td><td>8:43</td><td>Doblaje ES</td></tr>
+<tr><td><a href="3-Scheduling.html#t3-videos">Scheduling</a></td><td><a href="https://www.youtube.com/watch?v=SJ4SnE9Mc58" target="_blank" rel="noopener">Planificación de procesos de la CPU: FIFO, SJF, prioridades, Round Robin, SRTF</a> <span class="pill" style="background:var(--warn-soft);color:var(--warn)">recomendado</span></td><td>FNE Profesor - Ciencias de la Computación</td><td>24:14</td><td>Español</td></tr>
+<tr><td><a href="3-Scheduling.html#t3-videos">Scheduling</a></td><td><a href="https://www.youtube.com/watch?v=O2tV9q6784k" target="_blank" rel="noopener">The Fancy Algorithms That Make Your Computer Feel Smoother</a></td><td>Core Dumped</td><td>45:02</td><td>Inglés + subt.</td></tr>
+<tr><td><a href="3-Scheduling.html#t3-videos">Scheduling</a></td><td><a href="https://www.youtube.com/watch?v=1fFgy11kjag" target="_blank" rel="noopener">Uniprocessor Scheduling 3: Feedback</a></td><td>Jacob Schrum</td><td>13:46</td><td>Doblaje ES</td></tr>
+<tr><td><a href="3-Scheduling.html#t3-videos">Scheduling</a></td><td><a href="https://www.youtube.com/watch?v=1KLuC0knvs8" target="_blank" rel="noopener">Multilevel Feedback-Queue Scheduling Algorithm</a></td><td>Neso Academy</td><td>14:12</td><td>Doblaje ES</td></tr>
+<tr><td><a href="3-Scheduling.html#t3-videos">Scheduling</a></td><td><a href="https://www.youtube.com/watch?v=2DG6PMXMiek" target="_blank" rel="noopener">Planificación de la CPU: Colas de múltiples niveles</a></td><td>Jesús Torres</td><td>13:39</td><td>Español</td></tr>
+<tr><td><a href="3-Scheduling.html#t3-videos">Scheduling</a></td><td><a href="https://www.youtube.com/watch?v=MkJfuI5_hjc" target="_blank" rel="noopener">Completely Fair Scheduling (#23, Introduction to Operating Systems)</a></td><td>Introduction to Operating Systems</td><td>14:37</td><td>Inglés + subt.</td></tr>
+<tr><td><a href="3-Scheduling.html#t3-videos">Scheduling</a></td><td><a href="https://www.youtube.com/watch?v=xA5bRTH5VLI" target="_blank" rel="noopener">Planificación justa: Lotería y Linux Completely Fair Scheduler</a></td><td>Gunnar Wolf</td><td>20:01</td><td>Español</td></tr>
+<tr><td><a href="3-Scheduling.html#t3-videos">Scheduling</a></td><td><a href="https://www.youtube.com/watch?v=qvZGUFHWChY" target="_blank" rel="noopener">Red-black trees in 4 minutes — Intro</a></td><td>Michael Sambol</td><td>3:53</td><td>Inglés + subt.</td></tr>
+<tr><td><a href="4-Gestion-del-tiempo.html#t4-videos">Gestión del tiempo</a></td><td><a href="https://www.youtube.com/watch?v=e5g8eYKEhMw" target="_blank" rel="noopener">What Happens When a Program Calls Sleep?</a> <span class="pill" style="background:var(--warn-soft);color:var(--warn)">recomendado</span></td><td>Core Dumped</td><td>19:41</td><td>Doblaje ES</td></tr>
+<tr><td><a href="4-Gestion-del-tiempo.html#t4-videos">Gestión del tiempo</a></td><td><a href="https://www.youtube.com/watch?v=g_koa00MBLg" target="_blank" rel="noopener">How do hardware timers work?</a> <span class="pill" style="background:var(--warn-soft);color:var(--warn)">recomendado</span></td><td>Ben Eater</td><td>31:17</td><td>Doblaje ES</td></tr>
+<tr><td><a href="4-Gestion-del-tiempo.html#t4-videos">Gestión del tiempo</a></td><td><a href="https://www.youtube.com/watch?v=G7bqvpAw7HE" target="_blank" rel="noopener">How Interrupts Work in Modern Computers</a></td><td>BitLemon</td><td>9:51</td><td>Doblaje ES</td></tr>
+<tr><td><a href="4-Gestion-del-tiempo.html#t4-videos">Gestión del tiempo</a></td><td><a href="https://www.youtube.com/watch?v=1HHeyUVz43k" target="_blank" rel="noopener">How Hardware Assist Software When Multitasking</a></td><td>Core Dumped</td><td>13:14</td><td>Doblaje ES</td></tr>
+<tr><td><a href="4-Gestion-del-tiempo.html#t4-videos">Gestión del tiempo</a></td><td><a href="https://www.youtube.com/watch?v=DlEa8kd7n3Q" target="_blank" rel="noopener">Hardware interrupts</a></td><td>Ben Eater</td><td>27:35</td><td>Doblaje ES</td></tr>
+<tr><td><a href="4-Gestion-del-tiempo.html#t4-videos">Gestión del tiempo</a></td><td><a href="https://www.youtube.com/watch?v=xs5iOwkX9fU" target="_blank" rel="noopener">Why CPU Time ≠ Wall Clock Time! (Computerphile)</a></td><td>Computerphile</td><td>19:40</td><td>Inglés + subt.</td></tr>
+<tr><td><a href="4-Gestion-del-tiempo.html#t4-videos">Gestión del tiempo</a></td><td><a href="https://www.youtube.com/watch?v=BAo5C2qbLq8" target="_blank" rel="noopener">Network Time Protocol (NTP) · Computerphile</a></td><td>Computerphile</td><td>10:40</td><td>Inglés + subt.</td></tr>
+<tr><td><a href="4-Gestion-del-tiempo.html#t4-videos">Gestión del tiempo</a></td><td><a href="https://www.youtube.com/watch?v=oCtkwEjhyD4" target="_blank" rel="noopener">NTP Explained · Network Time Protocol</a></td><td>CertBros</td><td>10:13</td><td>Doblaje ES</td></tr>
+<tr><td><a href="4-Gestion-del-tiempo.html#t4-videos">Gestión del tiempo</a></td><td><a href="https://www.youtube.com/watch?v=_2By2ane2I4" target="_blank" rel="noopener">How a quartz watch works – its heart beats 32,768 times a second</a></td><td>Steve Mould</td><td>17:35</td><td>Doblaje ES</td></tr>
+<tr><td><a href="4-Gestion-del-tiempo.html#t4-videos">Gestión del tiempo</a></td><td><a href="https://www.youtube.com/watch?v=CVLCLpHYJxM" target="_blank" rel="noopener">Interrupciones por hardware (Arquitectura de Computadoras UNLP)</a></td><td>Arquitectura de Computadoras UNLP</td><td>6:35</td><td>Español</td></tr></tbody></table></div>
+<div class="box libro"><div class="bt">Lecturas gratuitas que sirven</div>
+<p><b>Wolf, Ruiz, Bergero y Meza — <i>Fundamentos de sistemas operativos</i></b> (UNAM, 2015, licencia libre): <a class="inl" href="https://sistop.org/descarga.html" target="_blank" rel="noopener">sistop.org</a> · <a class="inl" href="https://ru.iiec.unam.mx/2718/1/sistemas_operativos.pdf" target="_blank" rel="noopener">PDF directo</a>. En español y con <b>la misma nomenclatura del profe</b> (HPRN, proporción de penalización, SPN apropiativo, retroalimentación multinivel). Capítulos 1, 2 (§2.2.2 y §2.5) y 4.</p>
+<p><b>OSTEP</b> (Arpaci-Dusseau, gratis, en inglés): <a class="inl" href="https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched.pdf" target="_blank" rel="noopener">Scheduling</a> · <a class="inl" href="https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched-mlfq.pdf" target="_blank" rel="noopener">MLFQ</a> · <a class="inl" href="https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-mechanisms.pdf" target="_blank" rel="noopener">Limited Direct Execution</a> (cómo el SO recupera el control con el temporizador).</p>
+<p><b>Silberschatz 10ª ed.</b> (<code>libro de apoyo/</code>): §1.2.1, §1.4, §3.1-3.2, §5.1-5.3 y §5.7.1.</p></div>
+</section><section id="glosario">
+<h2>Glosario</h2>
+<div class="tw">
+<table>
+<thead><tr><th>Término</th><th>Definición</th></tr></thead>
+<tbody>
+<tr><td><b>Algoritmo de scheduling</b></td><td>Define el <i>orden</i> de ejecución: elige la próxima tarea cuando la actual pierde el procesador.</td></tr>
+<tr><td><b>Batch Processing</b></td><td>Modelo en que una tarea se ejecuta hasta terminarse. En su versión simple, el procesador queda ocioso durante las E/S.</td></tr>
+<tr><td><b>CFS</b></td><td>Completely Fair Scheduler. Scheduler de Linux desde el kernel 2.6.22; usa un árbol rojo-negro ordenado por t<sub>exec</sub>.</td></tr>
+<tr><td><b>Conmutación de tareas</b></td><td>Cambio de la tarea que ocupa el procesador. Implica salvar y restaurar el contexto. Genera <b>overhead</b>.</td></tr>
+<tr><td><b>Contexto (PSW)</b></td><td>Estado completo de una tarea: todos los registros, PC, estado de las interrupciones.</td></tr>
+<tr><td><b>DMA</b></td><td>Direct Memory Access. Unidad de intercambio que transfiere datos entre memoria y periférico <b>sin usar el procesador</b>, y avisa al terminar con una interrupción.</td></tr>
+<tr><td><b>Epoch</b></td><td>Referencia temporal de UNIX/Linux: 01-01-1970.</td></tr>
+<tr><td><b>Enmascarar</b></td><td>Prohibir que una interrupción ocurra (que el controlador interrumpa la CPU cuando el evento asociado se produce).</td></tr>
+<tr><td><b>Excepción</b></td><td>Evento anormal durante la ejecución de un programa: error, resultado no deseado (división por 0, segfault, overflow).</td></tr>
+<tr><td><b>Inanición (starvation)</b></td><td>Una o más tareas no pueden obtener el procesador.</td></tr>
+<tr><td><b>Interrupción</b></td><td>Señal para el procesador, hardware o software, que indica un evento que necesita atención inmediata.</td></tr>
+<tr><td><b>IRQ</b></td><td>Interruption ReQuest. El número de IRQ indica la prioridad: IRQ 0 = temporizador = máxima prioridad.</td></tr>
+<tr><td><b>JIFFIES</b></td><td>Contador de Linux con el tiempo transcurrido desde el inicio del sistema; se incrementa cada TICK.</td></tr>
+<tr><td><b>Modelo de planificación</b></td><td>Define <i>cómo</i> las tareas usan el procesador: cuándo lo obtienen, cuándo lo pierden, cuánto tiempo lo tienen.</td></tr>
+<tr><td><b>Multiprogramación</b></td><td>Cargar y ejecutar varias tareas de manera concurrente.</td></tr>
+<tr><td><b>NTP</b></td><td>Network Time Protocol. Sincroniza el reloj local con un servidor de tiempo con hora UTC de reloj atómico. Usa un <i>drifting clock</i>.</td></tr>
+<tr><td><b>Overhead</b></td><td>Tiempo perdido en la gestión del sistema (conmutaciones, rutinas de interrupción, decisiones del scheduler). No ejecuta tareas.</td></tr>
+<tr><td><b>Proceso</b></td><td>La ejecución de una tarea: la tarea más su contexto de ejecución.</td></tr>
+<tr><td><b>Programa</b></td><td>La expresión de un algoritmo en un lenguaje de programación.</td></tr>
+<tr><td><b>Quantum</b></td><td>Duración elemental (10-100 ms) durante la cual una tarea conserva el procesador en tiempo compartido. Múltiplo del TICK, elegido en el boot.</td></tr>
+<tr><td><b>Reciclaje</b></td><td>Interrumpir <b>sistemáticamente</b> una tarea al terminar su quantum. Lo provoca el temporizador.</td></tr>
+<tr><td><b>Requisición</b></td><td>Interrumpir la tarea en ejecución porque <b>llega</b> una tarea con más prioridad (o se desbloquea una). No es periódica.</td></tr>
+<tr><td><b>RTMAX / RTempo</b></td><td>Valor inicial / valor actual del registro temporizador. Se decrementa en cada pulso del cuarzo; al llegar a 0 genera IRQ 0 y se vuelve negativo.</td></tr>
+<tr><td><b>Swapping</b></td><td>Descargar (Swap Out) tareas de memoria al disco y recargarlas (Swap In) para aumentar el grado de multiprogramación.</td></tr>
+<tr><td><b>Tarea</b></td><td>La unión de un programa con los datos a los cuales se aplica.</td></tr>
+<tr><td><b>Tarea lista</b></td><td>Tarea que no está esperando que se termine una entrada/salida.</td></tr>
+<tr><td><b>Tasa de ocupación (T<sub>p</sub>)</b></td><td>Porcentaje de tiempo en que el procesador ejecuta tareas.</td></tr>
+<tr><td><b>Tasa de penalización (P<sub>r</sub>)</b></td><td>(W + S)/S = t<sub>respuesta</sub>/t<sub>ejec</sub>. Mide cuánto se perjudicó la tarea. Siempre ≥ 1.</td></tr>
+<tr><td><b>Throughput</b></td><td>Número de tareas que se ejecutan por segundo.</td></tr>
+<tr><td><b>TICK</b></td><td>Tiempo entre dos interrupciones del reloj. Precisión mínima del sistema para el manejo del tiempo.</td></tr>
+<tr><td><b>Tiempo compartido</b></td><td>Modelo en que una tarea se ejecuta a lo más un quantum, y luego vuelve al estado LISTA.</td></tr>
+<tr><td><b>Vector de interrupción</b></td><td>Entrada de una tabla en memoria que contiene la dirección de la rutina que gestiona esa interrupción.</td></tr>
+</tbody>
+</table>
+</div>
+</section><section id="g-fuentes">
+<h2>De dónde sale este material</h2>
+<ul>
+<li><b>Los 17 audios de clases</b> (unas 10 horas, del zip <code>SO audios.zip</code>), transcritos en este computador con Whisper. Las transcripciones quedaron en <code>clases/transcripciones-audios/</code>: sirven para buscar qué dijo el profe, pero son automáticas y tienen errores (el audio es de sala). Cada recuadro “En clase” indica el audio y el minuto.</li>
+<li>Las 4 presentaciones, las 3 ayudantías con pauta, los certámenes 2014, 2015, 2016, 2023 (C1 y C2, del archivo <code>Regalito.pdf</code>, sin pauta: las soluciones de este material son propias y están verificadas con un simulador) y 2024, y los documentos <code>Mini_curso_Interrupciones</code> y <code>Stack</code>.</li>
+<li>Silberschatz (10ª ed.) y el libro de Wolf (UNAM).</li>
+<li>Los videos: se revisaron decenas de candidatos en español e inglés; de los recomendados se transcribió el audio para comprobar su contenido y anotar los minutos (27 de septiembre de 2026).</li>
+<li>La materia base, los diagramas y los ejercicios A1-A6, B1-B6, C1-C2, D1 y E1-E5 vienen del resumen del 9 de septiembre (quedó guardado en la subcarpeta <code>version-9-sep</code>). Los ejercicios N1-N10 son nuevos.</li>
+</ul>
+<div class="box warn"><div class="bt">Erratas del material oficial</div>
+<p>La lámina dice Epoch = “01-01-1070” (es <b>1970</b>). La pauta 2024 escribe “5 GHz = 5·10<sup>6</sup> Hz” (es 5·10<sup>9</sup>; el resultado final está bien). Las pautas 2015 y 2024 escriben mal la corrección de la hora; la correcta es <b>Hora = Hora + TICK − RTempo/F</b>. En la Ayudantía 3, la pregunta 3.3 dice K = 2 pero la pauta calcula con K = 5 y además divide mal (1020 µs / 40 ms es 2,55 %, no 2,94 %); con K = 2, como dice el enunciado, el resultado es <b>3 %</b>.</p></div>
+</section>
+<div class="pnav"><span></span><a class="nx" href="1-Introduccion.html"><small>Siguiente →</small>Introducción</a></div>
+</main>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('so-c1-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('so-c1-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='so-c1-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+</script>
+
+</body>
+</html>

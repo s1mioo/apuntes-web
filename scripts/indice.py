@@ -56,8 +56,8 @@ def enlaces_rotos(archivo, contenido):
     rotos = []
     for url in RE_ENLACE.findall(contenido):
         partes = urlsplit(url)
-        if not partes.path or partes.scheme or partes.netloc:
-            continue  # anclas (#...), externos (https:, mailto:, data:) y //cdn
+        if not partes.path or partes.scheme or partes.netloc or "'" in url:
+            continue  # anclas (#...), externos (https:, mailto:, data:), //cdn y cadenas armadas por JS
         destino = (archivo.parent / unquote(partes.path)).resolve()
         if not destino.exists():
             rotos.append(url)

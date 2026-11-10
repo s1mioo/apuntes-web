@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Práctica diaria · AlgoCo · Certamen 2</title>
+<style>:root{
+  --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+  --line:#e0e0e6; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+  --accent:#0e7a5f; --warn:#b4400b; --warn-soft:#fdecdf;
+  --code:#f3f4f6; --codeink:#1f2330; --cm:#5f6673; --kw:#0b4f80; --st:#0e6b53; --pp:#7a4a00;
+  --sidew:290px;
+}
+:root[data-theme="dark"]{
+  --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+  --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+  --accent:#4fd1ab; --warn:#f5a15f; --warn-soft:#3a2413;
+  --code:#20242e; --codeink:#e8eaf0; --cm:#9aa3b5; --kw:#7cc0ef; --st:#6fd9bb; --pp:#e0c073;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --warn:#f5a15f; --warn-soft:#3a2413;
+    --code:#20242e; --codeink:#e8eaf0; --cm:#9aa3b5; --kw:#7cc0ef; --st:#6fd9bb; --pp:#e0c073;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.55;font-size:16px}
+.layout{display:flex;align-items:flex-start}
+.sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--panel);border-right:1px solid var(--line);padding:20px 14px 60px}
+.content{flex:1 1 auto;min-width:0;padding:34px clamp(16px,4vw,56px) 110px;max-width:1040px;margin:0 auto}
+.brand{display:flex;gap:10px;align-items:center}
+.brand .dot{width:34px;height:34px;border-radius:9px;background:var(--brand);display:grid;place-items:center;
+  color:#fff;font-weight:800;font-size:12px;flex:0 0 auto}
+.brand h1{font-size:15px;margin:0;line-height:1.2}
+.brand small{color:var(--muted);font-size:12px;display:block;font-weight:400}
+.toolbar{display:flex;gap:8px;margin:12px 0 4px}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 10px;font-size:12.5px;cursor:pointer}
+.btn:hover{background:var(--brand-soft)}
+nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:16px 8px 5px;font-weight:700}
+nav a{display:flex;gap:8px;align-items:center;color:var(--ink);text-decoration:none;padding:5px 9px;border-radius:7px;font-size:13.2px}
+nav a:hover{background:var(--brand-soft)}
+nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600}
+.dots{display:inline-flex;gap:2px;vertical-align:middle;flex:0 0 auto}
+.dots i{width:6px;height:6px;border-radius:50%;border:1px solid var(--muted);display:block}
+.dots i.on{background:var(--brand);border-color:var(--brand)}
+h1,h2,h3,h4{line-height:1.25}
+.portada h1{font-size:30px;margin:4px 0 8px}
+.eyebrow{color:var(--muted);font-size:13px;margin:0;letter-spacing:.02em}
+.lead{color:var(--muted);font-size:17px;margin:4px 0 12px}
+section{margin-top:40px;scroll-margin-top:14px}
+h2{font-size:24px;margin:0 0 8px;border-bottom:2px solid var(--line);padding-bottom:5px}
+h2.ph{font-size:27px;border-bottom:3px solid var(--brand)}
+h3{font-size:18px;margin:20px 0 6px}
+h3.plh{font-size:21px;margin:0 0 4px;color:var(--brand)}
+p{margin:8px 0}
+ul{margin:6px 0;padding-left:21px}
+li{margin:3px 0}
+code{background:var(--code);color:var(--codeink);border-radius:4px;padding:0 4px;font-size:.9em;font-family:Consolas,"SF Mono",Menlo,monospace}
+pre.code{background:var(--code);color:var(--codeink);border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:6px;
+  padding:9px 11px;overflow-x:auto;font-size:13px;line-height:1.38;font-family:Consolas,"SF Mono",Menlo,monospace;margin:9px 0;tab-size:4}
+pre.code code{background:none;padding:0;font-size:inherit;border-radius:0}
+.c{color:var(--cm);font-style:italic}
+.k{color:var(--kw);font-weight:600}
+.s{color:var(--st)}
+.p{color:var(--pp)}
+table{border-collapse:collapse;width:100%;margin:9px 0;font-size:14.2px;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:4px 7px;text-align:left;vertical-align:top}
+th{background:var(--brand-soft);font-weight:700}
+.nw{white-space:nowrap}
+.mini{width:auto}
+.mini td,.mini th{text-align:center;min-width:44px}
+.prio{color:var(--muted);font-size:14px;border-left:3px solid var(--accent);padding-left:9px;margin:4px 0 10px}
+.ficha{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:12px 15px;margin:14px 0;scroll-margin-top:12px}
+.fh{display:flex;flex-wrap:wrap;gap:4px 9px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:5px;margin-bottom:6px}
+.fh h4{margin:0;font-size:17px;flex:1 1 auto}
+.fid{font-weight:800;color:var(--brand);font-size:15px;font-family:Consolas,monospace}
+.tags{display:inline-flex;gap:5px;flex-wrap:wrap}
+.tag{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:0 7px;color:var(--muted);white-space:nowrap}
+.tag.sim{border-color:var(--warn);color:var(--warn);font-weight:700}
+.fb p{margin:5px 0}
+.tr{margin:5px 0}
+.tr ul{margin:1px 0 1px;padding-left:18px}
+.nota{background:var(--warn-soft);border-left:3px solid var(--warn);padding:6px 10px;margin:7px 0;border-radius:4px}
+.icols{columns:2;column-gap:18px}
+.igrupo{break-inside:avoid;margin-bottom:10px}
+.igrupo h4{margin:6px 0 2px;font-size:14.5px}
+.indice{font-size:12.8px;margin:2px 0}
+.indice a{color:var(--brand);text-decoration:none;font-weight:700;font-family:Consolas,monospace}
+.i-id,.i-n,.i-p{white-space:nowrap}
+.i-p{text-align:right}
+.indice .tag{font-size:10.5px;padding:0 4px}
+.pg{font-variant-numeric:tabular-nums}
+@media (max-width:900px){
+  .layout{display:block;align-items:stretch}
+  .sidebar{position:static;width:100%;height:auto;border-right:0;border-bottom:1px solid var(--line);max-height:46vh}
+  .content{width:100%;padding:20px 16px 80px}
+  .icols{columns:1}
+  table{display:block;overflow-x:auto}
+  .nw{white-space:normal}
+}
+@page{size:letter;margin:12mm 11mm 13mm 11mm;
+  @bottom-right{content:counter(page);font:9pt "Segoe UI",sans-serif;color:#444}
+  @bottom-left{content:"AlgoCo · Certamen 2";font:8pt "Segoe UI",sans-serif;color:#777}
+}
+@media print{
+  :root,:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--ink:#111;--muted:#333;--line:#999;--brand:#0b4f80;--brand-soft:#ececec;
+    --accent:#333;--warn:#7a2b00;--warn-soft:#f1f1f1;--code:#fff;--codeink:#000;--cm:#555;--kw:#000;--st:#222;--pp:#333}
+  html{scroll-behavior:auto}
+  body{font-size:9.7pt;line-height:1.32;background:#fff}
+  .sidebar,.toolbar{display:none}
+  .layout{display:block}
+  .content{padding:0;max-width:none;margin:0}
+  section{margin-top:12pt}
+  h2{font-size:15pt;margin:0 0 4pt}
+  h2.ph{font-size:18pt}
+  h3{font-size:11.5pt;margin:8pt 0 3pt}
+  h3.plh{font-size:13.5pt}
+  h2,h3,h4,.fh,.prio{break-after:avoid}
+  .portada h1{font-size:21pt}
+  .lead{font-size:10.5pt}
+  p{margin:3.5pt 0}
+  ul{margin:2.5pt 0;padding-left:14pt}
+  li{margin:1.5pt 0}
+  #que-leer,#mapa,#parte1,#parte2,section.tec{break-before:page}
+  section.pl{margin-top:13pt}
+  section#parte1,section#parte2{margin-top:0}
+  code{background:none;padding:0;font-size:.93em;font-weight:600}
+  pre.code{font-size:7.9pt;line-height:1.2;white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible;border:0;border-left:1.5pt solid #777;
+    border-radius:0;padding:1pt 0 1pt 6pt;margin:4pt 0}
+  pre.code code{font-weight:400}
+  .c{color:#555}
+  .k{font-weight:700}
+  table{font-size:8.7pt;margin:4pt 0}
+  th,td{padding:1.8pt 4pt}
+  tr{break-inside:avoid}
+  thead{display:table-header-group}
+  .ficha{border:0;border-top:1.2pt solid #333;border-radius:0;padding:4pt 0 0;margin:10pt 0 0;background:none}
+  .fh{border-bottom:0;padding-bottom:1pt;margin-bottom:2pt;gap:2pt 6pt}
+  .fh h4{font-size:11pt}
+  .fid{font-size:10.5pt}
+  .tag{font-size:7.6pt;padding:0 4pt;border-color:#888}
+  .tag.sim{border-color:#000;color:#000}
+  .fb p{margin:2.5pt 0}
+  .tr ul{padding-left:12pt}
+  .fb p,.tr,.nota{break-inside:avoid}
+  .nota{background:none;border:0;border-left:1.5pt solid #000;padding:1pt 0 1pt 6pt;margin:3pt 0}
+  .prio{font-size:8.8pt;margin:2pt 0 4pt;border-left:1.5pt solid #333;padding-left:6pt}
+  .dots i{width:5pt;height:5pt;border-color:#333}
+  .dots i.on{background:#333;border-color:#333}
+  .icols{columns:2;column-gap:10pt}
+  .indice{font-size:7.7pt}
+  .indice td,.indice th{padding:.8pt 2.5pt}
+  .igrupo h4{font-size:9pt;margin:3pt 0 1pt}
+  a{color:inherit;text-decoration:none}
+  .mapa,.qleer,.trampas,.erratas,.plan,.hist{font-size:8.6pt}
+}
+.intro{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:13px 16px;margin:12px 0}
+.intro ol{margin:6px 0 2px;padding-left:22px}
+.intro li{margin:3px 0}
+.progreso{height:9px;background:var(--line);border-radius:999px;overflow:hidden;margin:6px 0 3px}
+.progreso i{display:block;height:100%;width:0;background:var(--accent);transition:width .2s}
+.ptxt{font-size:12.5px;color:var(--muted);margin:0 8px 8px}
+.sidebar .progreso{margin:12px 8px 3px}
+nav a .cuenta{margin-left:auto;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+nav a.hoy span:first-child{font-weight:700}
+.pillhoy{display:inline-block;font-size:10.5px;font-weight:700;background:var(--accent);color:#fff;border-radius:999px;padding:0 6px;margin-left:5px}
+.dia{margin-top:36px}
+.dia h2{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.dmeta{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 8px}
+.chip{font-size:12.5px;border:1px solid var(--line);border-radius:999px;padding:1px 9px;color:var(--muted);background:var(--panel)}
+.chip.foco{border-color:var(--brand);color:var(--brand);font-weight:600}
+.chip.sim{border-color:var(--warn);color:var(--warn);font-weight:700}
+.ej{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:13px 16px;margin:14px 0;scroll-margin-top:12px}
+.ej.hecho{border-left:4px solid var(--accent)}
+.ej.opcional{border-style:dashed}
+.eh{display:flex;flex-wrap:wrap;gap:4px 9px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:7px}
+.eh h3{margin:0;font-size:18px;flex:1 1 auto}
+.eid{font-weight:800;color:var(--brand);font-family:Consolas,monospace;font-size:14.5px}
+.por{color:var(--muted);font-size:14px;margin:0 0 8px}
+.ej h4{margin:11px 0 3px;font-size:14.5px}
+.muestras{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin:7px 0}
+.muestras .cab{font-size:12.5px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+pre.io{background:var(--code);color:var(--codeink);border:1px solid var(--line);border-radius:6px;padding:7px 9px;margin:0;font-size:13px;line-height:1.35;
+  font-family:Consolas,"SF Mono",Menlo,monospace;overflow:auto;max-height:190px;white-space:pre}
+.mini-b{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:6px;padding:0 7px;font-size:11.5px;cursor:pointer}
+.mini-b:hover{background:var(--brand-soft)}
+.pistas{list-style:none;padding:0;margin:10px 0 6px}
+.pista{border-left:3px solid var(--brand);background:var(--brand-soft);padding:7px 11px;margin:7px 0;border-radius:0 6px 6px 0}
+.pista>b{display:block;font-size:13px;color:var(--brand);margin-bottom:2px}
+.pista p{margin:3px 0}
+.pista ol{margin:3px 0;padding-left:21px}
+.pista pre.code{background:var(--panel)}
+.hueco{display:inline-block;min-width:24px;text-align:center;background:var(--warn-soft);color:var(--warn);border:1.5px dashed var(--warn);
+  border-radius:4px;padding:0 4px;font-weight:700;font-style:normal}
+.acciones{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:9px 0}
+.b-sig{border:0;background:var(--brand);color:#fff;border-radius:7px;padding:7px 12px;font-size:14px;cursor:pointer;font-weight:600}
+.b-sig:hover{filter:brightness(1.1)}
+.b-esc{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:7px;padding:6px 10px;font-size:13px;cursor:pointer}
+.usadas{font-size:13px;color:var(--muted)}
+details.pl{margin:7px 0;border:1px solid var(--line);border-radius:7px;padding:5px 10px}
+details.pl>summary{cursor:pointer;font-weight:600;font-size:14px}
+details.pl[open]>summary{margin-bottom:5px}
+.caso{margin:8px 0}
+.caso .nota{font-size:13px;color:var(--muted);margin:0 0 3px}
+.marca{display:flex;gap:7px;align-items:center;font-weight:600;margin:9px 0 2px;cursor:pointer}
+.marca input{width:17px;height:17px}
+.simbox{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:7px;padding:10px 14px;margin:10px 0}
+.simbox a{color:var(--brand);font-weight:600}
+.dia:last-of-type{min-height:85vh}
+.tarjeta{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 14px;margin:9px 0}
+.tarjeta>b{font-size:15px}
+.tarjeta p{margin:2px 0 6px;color:var(--muted);font-size:14px}
+#lista-repaso{padding-left:20px}
+#lista-repaso li{margin:5px 0}
+#lista-repaso a{color:var(--brand);font-weight:600;text-decoration:none}
+.vacio{color:var(--muted)}
+@media (max-width:900px){
+  .muestras{grid-template-columns:minmax(0,1fr)}
+}
+@media print{
+  .acciones,.mini-b,.marca,.sidebar{display:none !important}
+  .ej,.tarjeta,.intro,.simbox{border:0;border-top:1pt solid #333;border-radius:0;padding:5pt 0 0;background:none}
+  .dia{break-before:page;margin-top:0}
+  .pista{background:none;border-left:1.5pt solid #333}
+  .hueco{background:none;color:#000;border:1pt dashed #000}
+  pre.io{background:none;border:.6pt solid #888;font-size:8pt;max-height:none;overflow:visible}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+<div class="brand"><div class="dot">C2</div><h1>Práctica diaria<small>AlgoCo · Certamen 2</small></h1></div>
+<div class="toolbar"><button class="btn" id="tema">Tema</button><button class="btn" id="ir-hoy">Ir a hoy</button><button class="btn" id="esconder-todas">Esconder pistas</button></div>
+<div class="progreso"><i id="barra"></i></div><p class="ptxt" id="ptxt"></p>
+<nav id="menu"><div class="grp">Inicio</div><a href="#inicio"><span>Cómo usar esta página</span></a><div class="grp">Días</div><a href="#d09"><span>Lunes 9</span><span class="cuenta" data-dia="d09"></span></a><a href="#d11"><span>Miércoles 11</span><span class="cuenta" data-dia="d11"></span></a><a href="#d13"><span>Viernes 13</span><span class="cuenta" data-dia="d13"></span></a><a href="#d14"><span>Sábado 14 · Simulacro 1</span><span class="cuenta" data-dia="d14"></span></a><a href="#d16"><span>Lunes 16</span><span class="cuenta" data-dia="d16"></span></a><a href="#d19"><span>Jueves 19</span><span class="cuenta" data-dia="d19"></span></a><a href="#d21"><span>Sábado 21 · Simulacro 2</span><span class="cuenta" data-dia="d21"></span></a><a href="#d25"><span>Miércoles 25</span></a><a href="#d26"><span>Jueves 26 · Simulacro 3</span><span class="cuenta" data-dia="d26"></span></a><a href="#d27"><span>Viernes 27 · Repaso</span></a><a href="#d28"><span>Sábado 28 · Certamen</span></a></nav>
+</aside>
+<main class="content"><section id="inicio"><p class="eyebrow">INF-221 · Algoritmos y Complejidad · 2026-2</p><h1 style="font-size:30px;margin:4px 0 8px">Práctica diaria para el Certamen 2</h1><p class="lead">Ejercicios por día, con pistas para armar el código sin ver la solución.</p><div class="intro"><p>Cada día tiene pocos ejercicios, elegidos por lo que más sale. Si un día no alcanzas, haz solo los marcados <strong>Indispensable</strong>.</p><p>Las pistas se abren de a una y parten con preguntas. La penúltima es una plantilla con huecos: lo más parecido a tener el formulario al lado, sin ver la respuesta. Ningún ejercicio trae su solución en esta página.</p><h4 style="margin:9px 0 2px">Cómo trabajar cada ejercicio</h4><p>Intenta primero 10 minutos sin pistas (30 en los simulacros), siguiendo esta rutina, que es la misma del certamen:</p><ol><li><strong>Tamaño:</strong> ¿cuánto vale n? ¿Qué costo cabe en un segundo?</li><li><strong>Pregunta:</strong> ¿piden máximo, mínimo, contar o decidir?</li><li><strong>Familia:</strong> ¿a qué problema conocido se parece?</li><li><strong>Núcleo:</strong> ¿qué guardo, o con qué criterio ordeno?</li><li><strong>Código:</strong> lectura, inicialización, núcleo e impresión.</li><li><strong>Prueba:</strong> ejemplos, un caso chico y los tipos de datos.</li></ol><p>Después abre una pista a la vez. Si llegaste a la plantilla con huecos, el ejercicio volverá a aparecer en el repaso del viernes 27.</p></div></section><section class="dia" id="d09" data-fecha="2026-11-09"><h2>Lunes 9 de noviembre</h2><div class="dmeta"><span class="chip">También</span><span class="chip">25 min</span></div><p>Hoy el foco es ADS. Basta con el primero, y Frosh Week solo si te sobra tiempo.</p><article class="ej" id="e-P1" data-id="P1" data-dia="d09" data-titulo="Planificación con pesos"><header class="eh"><span class="eid">P1</span><h3>Planificación con pesos</h3><span class="dmeta"><span class="chip foco">Indispensable</span><span class="chip">25 min</span><span class="chip"><span class="dots" title="Importancia muy alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span> tema muy alta</span></span></header><p class="por">Ejercicio propio, basado en las clases 16 y 17. Este criterio salió en dos de los últimos tres certámenes y es el voraz que se demuestra en clases.</p><p>Una máquina ejecuta n tareas, una a la vez y sin pausas. La tarea j dura l<sub>j</sub> y tiene peso w<sub>j</sub>. Si C<sub>j</sub> es el instante en que termina, hay que minimizar la suma de w<sub>j</sub> · C<sub>j</sub>.</p><p><b>Entrada.</b> n (1 ≤ n ≤ 10<sup>5</sup>). Luego n líneas con l y w (1 ≤ l, w ≤ 10<sup>4</sup>).</p><p><b>Salida.</b> El costo mínimo.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="P1-ej1">Copiar</button></div><pre class="io" id="P1-ej1">3
+1 3
+2 2
+3 1</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">15</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 2</span><button class="mini-b copiar" data-de="P1-ej2">Copiar</button></div><pre class="io" id="P1-ej2">2
+5 3
+2 1</pre></div><div><div class="cab"><span>Salida 2</span></div><pre class="io">22</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>n = 10<sup>5</sup> descarta probar los n! órdenes. Te piden el mejor orden, así que piensa en ordenar con algún criterio y simular una sola vez. Es un voraz.</p></li><li class="pista" data-nombre="Dos casos extremos" hidden><b>Pista 2 · Dos casos extremos</b><p>Si todas duran lo mismo, ¿cuáles pondrías primero? Si todas pesan lo mismo, ¿cuáles? Responde en papel antes de seguir. El criterio general tiene que respetar las dos respuestas.</p></li><li class="pista" data-nombre="Buscar el criterio" hidden><b>Pista 3 · Buscar el criterio</b><p>A igual largo, primero el de mayor peso; a igual peso, primero el más corto. Hay dos candidatos naturales: w − l y w / l. Calcula ambos a mano con el ejemplo 2. Solo uno da 22.</p></li><li class="pista" data-nombre="Comparar sin decimales" hidden><b>Pista 4 · Comparar sin decimales</b><p>El criterio correcto es w / l, de mayor a menor. Para decidir si a va antes que b no dividas: la desigualdad w<sub>a</sub> / l<sub>a</sub> &gt; w<sub>b</sub> / l<sub>b</sub>, con largos positivos, se puede escribir sin divisiones. Hazlo en papel.</p></li><li class="pista" data-nombre="Cómo armar el programa" hidden><b>Pista 5 · Cómo armar el programa</b><p>Un struct con l y w. Una función que devuelve true si a va antes que b. Leer, ordenar con esa función, y recorrer con dos variables: el reloj y el costo acumulado.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 6 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">struct</span> Tarea { <span class="k">long</span> <span class="k">long</span> l, w; };
+
+<span class="c">/*
+ * antes
+ * Inputs: a, b -&gt; dos tareas.
+ * Return: true si a debe ejecutarse antes que b.
+ * Que hace: compara las razones w/l sin usar decimales.
+ */</span>
+<span class="k">bool</span> antes(<span class="k">const</span> Tarea&amp; a, <span class="k">const</span> Tarea&amp; b){
+    <span class="k">return</span> <span class="hueco">1</span>;
+}
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): n y las n tareas.
+ * Return: 0
+ * Que hace: ordena con el criterio y acumula el costo.
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    <span class="k">int</span> n;
+    cin &gt;&gt; n;
+
+    vector&lt;Tarea&gt; t(n);
+    <span class="k">for</span> (<span class="k">auto</span>&amp; x : t) cin &gt;&gt; x.l &gt;&gt; x.w;
+
+    sort(t.begin(), t.end(), <span class="hueco">2</span>);
+
+    <span class="k">long</span> <span class="k">long</span> tiempo = 0, costo = 0;
+    <span class="k">for</span> (<span class="k">const</span> Tarea&amp; x : t){
+        tiempo += <span class="hueco">3</span>;
+        costo += <span class="hueco">4</span>;
+    }
+
+    cout &lt;&lt; costo &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 7 · Qué va en cada hueco</b><ol><li>La desigualdad sin divisiones que escribiste en la pista 4.</li><li>El comparador que definiste arriba.</li><li>Cuánto avanza el reloj con esta tarea.</li><li>Lo que aporta esta tarea, con el reloj ya actualizado.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li><code>tiempo</code> y <code>costo</code> en <code>long long</code>: el costo llega a unos 5 × 10<sup>17</sup>.</li><li>El comparador usa <code>&gt;</code>, no <code>&gt;=</code>. Con <code>&gt;=</code>, <code>sort</code> se puede caer.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Una sola tarea.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="P1-c1">Copiar</button></div><pre class="io" id="P1-c1">1
+7 9</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">63</pre></div></div></div><div class="caso"><p class="nota">Empate: todas con la misma razón.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="P1-c2">Copiar</button></div><pre class="io" id="P1-c2">3
+2 4
+1 2
+3 6</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">50</pre></div></div></div><div class="caso"><p class="nota">Desborda si usas int.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="P1-c3">Copiar</button></div><pre class="io" id="P1-c3">30
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000
+10000 10000</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">46500000000</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Cuando existe un orden óptimo, encuentra el criterio con casos extremos y compruébalo con un ejemplo chico. Después todo es ordenar y recorrer.</p><p><b>Para comparar:</b> <code>soluciones/practica/planificacionConPesos.cpp</code> y la plantilla de voraces, pág. 12 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article><article class="ej opcional" id="e-L4A" data-id="L4·A" data-dia="d09" data-titulo="Frosh Week"><header class="eh"><span class="eid">L4·A</span><h3>Frosh Week</h3><span class="dmeta"><span class="chip">Si te sobra tiempo</span><span class="chip">25 min</span><span class="chip"><span class="dots" title="Importancia alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> tema alta</span></span></header><p class="por">Listado 4 · A. Es el patrón de emparejar dos listas, que se repite en varios voraces. Ya lo resolviste: hazlo sin mirar tu código.</p><p>Hay n tareas con su duración y m intervalos de silencio con su largo. Cada intervalo admite a lo más una tarea, que debe caber completa (t ≤ ℓ). Maximizar las tareas terminadas.</p><p><b>Entrada.</b> n y m (hasta 2 × 10<sup>5</sup>). Una línea con las n duraciones y otra con los m largos, todos entre 100000 y 199999.</p><p><b>Salida.</b> La mayor cantidad de tareas.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="L4A-ej1">Copiar</button></div><pre class="io" id="L4A-ej1">5 4
+150000 100000 160000 100000 180000
+190000 170000 140000 160000</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">4</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 2</span><button class="mini-b copiar" data-de="L4A-ej2">Copiar</button></div><pre class="io" id="L4A-ej2">4 4
+180000 185000 199999 100000
+199999 180000 170000 120000</pre></div><div><div class="cab"><span>Salida 2</span></div><pre class="io">3</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>Dos listas y hay que formar parejas. Con estos tamaños, lo natural es ordenar las dos.</p></li><li class="pista" data-nombre="Por dónde partir" hidden><b>Pista 2 · Por dónde partir</b><p>Recorre los intervalos de menor a mayor. A cada uno, ¿qué tarea le conviene dar, si es que alguna?</p></li><li class="pista" data-nombre="La decisión" hidden><b>Pista 3 · La decisión</b><p>La tarea más corta que quede. Si esa no cabe, ninguna otra cabe y el intervalo se queda vacío. Si cabe, darle justo esa no perjudica: las largas quedan para los intervalos grandes.</p></li><li class="pista" data-nombre="Dos punteros" hidden><b>Pista 4 · Dos punteros</b><p>Basta un índice con la tarea más corta que queda, que avanza solo cuando se forma una pareja, y un ciclo sobre los intervalos.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 5 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="c">/*
+ * maximoDeTareas
+ * Inputs: tareas, intervalos -&gt; duraciones (se ordenan aqui).
+ * Return: la mayor cantidad de tareas que caben.
+ * Que hace: a cada intervalo, de menor a mayor, le da la tarea mas corta que quede.
+ */</span>
+<span class="k">int</span> maximoDeTareas(vector&lt;<span class="k">int</span>&gt;&amp; tareas, vector&lt;<span class="k">int</span>&gt;&amp; intervalos){
+    sort(tareas.begin(), tareas.end());
+    sort(intervalos.begin(), intervalos.end());
+
+    <span class="k">int</span> hechas = 0;
+    <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; (<span class="k">int</span>)intervalos.size() &amp;&amp; <span class="hueco">1</span>; j++)
+        <span class="k">if</span> (<span class="hueco">2</span>) hechas++;
+
+    <span class="k">return</span> <span class="hueco">3</span>;
+}
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): n, m y las dos listas.
+ * Return: 0
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    <span class="k">int</span> n, m;
+    cin &gt;&gt; n &gt;&gt; m;
+
+    vector&lt;<span class="k">int</span>&gt; tareas(n), intervalos(m);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) cin &gt;&gt; tareas[i];
+    <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; m; j++) cin &gt;&gt; intervalos[j];
+
+    cout &lt;&lt; maximoDeTareas(tareas, intervalos) &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 6 · Qué va en cada hueco</b><ol><li>Mientras queden tareas por asignar.</li><li>La condición de que la tarea más corta quepa en este intervalo.</li><li>Cuántas se lograron.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>Cabe justo también vale: es <code>&lt;=</code>.</li><li>No te salgas del arreglo de tareas cuando ya se asignaron todas.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Cabe justo.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="L4A-c1">Copiar</button></div><pre class="io" id="L4A-c1">1 1
+100000
+100000</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">1</pre></div></div></div><div class="caso"><p class="nota">No cabe.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="L4A-c2">Copiar</button></div><pre class="io" id="L4A-c2">1 1
+150000
+100000</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">Sobran intervalos.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="L4A-c3">Copiar</button></div><pre class="io" id="L4A-c3">2 3
+100000 199999
+100000 150000 100001</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">1</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Emparejar dos listas casi siempre es ordenar ambas y avanzar con dos punteros.</p><p><b>Para comparar:</b> Ficha L4·A, pág. 34 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article></section><section class="dia" id="d11" data-fecha="2026-11-11"><h2>Miércoles 11 de noviembre</h2><div class="dmeta"><span class="chip foco">Foco</span><span class="chip">1 h 30</span></div><p>El día de programación dinámica. Hazlos en este orden: cada uno se apoya en el anterior. Si ya tienes el Listado 5, sigue con él al terminar.</p><article class="ej" id="e-T24B" data-id="T24·B" data-dia="d11" data-titulo="Escaleras para salvar el ramo"><header class="eh"><span class="eid">T24·B</span><h3>Escaleras para salvar el ramo</h3><span class="dmeta"><span class="chip foco">Indispensable</span><span class="chip">20 min</span><span class="chip"><span class="dots" title="Importancia muy alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span> tema muy alta</span></span></header><p class="por">Torneo 2024-2 · B. La PD lineal salió en tres de los cuatro certámenes. Este es el mejor ejercicio para fijar el método.</p><p>Una escalera de n peldaños, cada uno con una penalización. Se parte en el primero, se termina en el último, y cada salto avanza 1, 2 o 3 peldaños. Se empieza con 1000 puntos y al pisar un peldaño se descuenta su penalización. Maximizar el puntaje final.</p><p><b>Entrada.</b> n (1 ≤ n ≤ 10<sup>5</sup>). Luego n enteros p<sub>i</sub> (0 ≤ p<sub>i</sub> ≤ 500).</p><p><b>Salida.</b> El máximo puntaje al llegar al último peldaño.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="T24B-ej1">Copiar</button></div><pre class="io" id="T24B-ej1">1
+100</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">900</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 2</span><button class="mini-b copiar" data-de="T24B-ej2">Copiar</button></div><pre class="io" id="T24B-ej2">3
+0 0 0</pre></div><div><div class="cab"><span>Salida 2</span></div><pre class="io">1000</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 3</span><button class="mini-b copiar" data-de="T24B-ej3">Copiar</button></div><pre class="io" id="T24B-ej3">4
+5 10 15 20</pre></div><div><div class="cab"><span>Salida 3</span></div><pre class="io">975</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>Decisiones en línea, y n = 10<sup>5</sup> pide algo O(n). Probar todos los saltos sería exponencial: es PD lineal.</p></li><li class="pista" data-nombre="Qué guardar" hidden><b>Pista 2 · Qué guardar</b><p>Define A[i] con una frase completa. Pregúntate qué necesitas saber de i para decidir cómo seguir. Maximizar 1000 menos lo descontado es lo mismo que minimizar lo descontado.</p></li><li class="pista" data-nombre="La definición" hidden><b>Pista 3 · La definición</b><p>A[i] es la menor penalización total para llegar pisando el peldaño i.</p></li><li class="pista" data-nombre="La última decisión" hidden><b>Pista 4 · La última decisión</b><p>¿Desde qué peldaños pudiste saltar a i? Son como máximo tres. Lo que se paga al llegar a i es siempre p<sub>i</sub>.</p></li><li class="pista" data-nombre="Caso base y respuesta" hidden><b>Pista 5 · Caso base y respuesta</b><p>El primer peldaño se pisa siempre. Cuidado con los índices: para i chico no existen los tres anteriores. La respuesta sale de la última celda.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 6 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): n y las n penalizaciones.
+ * Return: 0
+ * Que hace: A[i] es la menor penalizacion para llegar pisando el peldano i.
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    <span class="k">int</span> n;
+    cin &gt;&gt; n;
+
+    vector&lt;<span class="k">long</span> <span class="k">long</span>&gt; p(n), A(n);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) cin &gt;&gt; p[i];
+
+    A[0] = <span class="hueco">1</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++){
+        <span class="k">long</span> <span class="k">long</span> mejor = <span class="hueco">2</span>;
+        <span class="k">if</span> (i &gt;= 2) mejor = min(mejor, <span class="hueco">3</span>);
+        <span class="k">if</span> (<span class="hueco">4</span>) mejor = min(mejor, A[i - 3]);
+        A[i] = <span class="hueco">5</span>;
+    }
+
+    cout &lt;&lt; <span class="hueco">6</span> &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 7 · Qué va en cada hueco</b><ol><li>Lo que cuesta estar en el primer peldaño.</li><li>La opción de venir del peldaño anterior.</li><li>La opción de venir desde dos peldaños atrás.</li><li>Cuándo existe el peldaño tres atrás.</li><li>Lo mejor de los anteriores más lo que se paga aquí.</li><li>Los puntos iniciales menos lo descontado.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>El puntaje puede quedar negativo: no lo cortes en 0.</li><li>El primero y el último se pisan siempre.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Solo hay un salto posible.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24B-c1">Copiar</button></div><pre class="io" id="T24B-c1">2
+5 7</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">988</pre></div></div></div><div class="caso"><p class="nota">No se puede saltar del primero al último.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24B-c2">Copiar</button></div><pre class="io" id="T24B-c2">5
+1 100 100 100 1</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">898</pre></div></div></div><div class="caso"><p class="nota">Puntaje negativo.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24B-c3">Copiar</button></div><pre class="io" id="T24B-c3">7
+500 500 500 500 500 500 500</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">-500</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>En PD lineal la pregunta es siempre la misma: ¿desde dónde pude llegar a i?</p><p><b>Para comparar:</b> Ficha T24·B, pág. 47 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article><article class="ej" id="e-T24A" data-id="T24·A" data-dia="d11" data-titulo="El oso negro"><header class="eh"><span class="eid">T24·A</span><h3>El oso negro</h3><span class="dmeta"><span class="chip foco">Indispensable</span><span class="chip">35 min</span><span class="chip"><span class="dots" title="Importancia alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> tema alta</span></span></header><p class="por">Torneo 2024-2 · A. La mochila tiene clase propia y ya salió una vez, además de aparecer disfrazada con frecuencia.</p><p>Hay n alimentos, cada uno con nombre, calorías VC y sabrosidad ISO, y un máximo C de calorías. Elegir alimentos (cada uno a lo más una vez) sin pasarse de C, maximizando la sabrosidad total.</p><p><b>Entrada.</b> n y C (1 ≤ n ≤ 1000, 1 ≤ C ≤ 10<sup>4</sup>). Luego n líneas con el nombre (letras y <strong>espacios</strong>), VC e ISO (entre 0 y 10<sup>4</sup>).</p><p><b>Salida.</b> La sabrosidad total.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="T24A-ej1">Copiar</button></div><pre class="io" id="T24A-ej1">5 50
+brocoli 10 1
+hamburguesa vegana 10 3
+hamburguesa de carne 25 15
+ravioles de acelgas 35 10
+marraqueta 10 5</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">23</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>Elegir un subconjunto con un presupuesto, cada objeto una sola vez: mochila 0/1. n · C = 10<sup>7</sup> cabe.</p></li><li class="pista" data-nombre="Qué guardar" hidden><b>Pista 2 · Qué guardar</b><p>Piensa primero en dos dimensiones: ¿qué significa A[i][c]? Escríbelo en una frase.</p></li><li class="pista" data-nombre="La última decisión" hidden><b>Pista 3 · La última decisión</b><p>A[i][c] es lo mejor con los primeros i alimentos y c calorías. El alimento i o no entra, o entra si cabe. ¿A qué subproblema te lleva cada caso?</p></li><li class="pista" data-nombre="Una sola fila" hidden><b>Pista 4 · Una sola fila</b><p>La fila i solo depende de la fila i − 1, así que un arreglo A[c] alcanza. Para que cada alimento se use una sola vez, ¿en qué sentido debe avanzar c? Imagina qué pasaría si fuera de menor a mayor.</p></li><li class="pista" data-nombre="La lectura" hidden><b>Pista 5 · La lectura</b><p>El nombre tiene espacios y no se usa. Lee palabras hasta que una empiece con un dígito: esa es VC, y lo que sigue es ISO.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 6 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): n, C y los n alimentos.
+ * Return: 0
+ * Que hace: mochila 0/1 en una fila.
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    <span class="k">int</span> n, capacidad;
+    cin &gt;&gt; n &gt;&gt; capacidad;
+
+    vector&lt;<span class="k">int</span>&gt; A(<span class="hueco">1</span>, 0);
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++){
+        string palabra;
+        <span class="k">do</span> {
+            cin &gt;&gt; palabra;
+        } <span class="k">while</span> (<span class="hueco">2</span>);
+
+        <span class="k">int</span> peso = stoi(palabra), valor;
+        cin &gt;&gt; valor;
+
+        <span class="k">for</span> (<span class="k">int</span> c = <span class="hueco">3</span>; c &gt;= <span class="hueco">4</span>; c--)
+            A[c] = max(A[c], <span class="hueco">5</span>);
+    }
+
+    cout &lt;&lt; <span class="hueco">6</span> &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 7 · Qué va en cada hueco</b><ol><li>Tamaño del arreglo: debe existir la casilla de capacidad máxima.</li><li>Sigue leyendo mientras la palabra no parta con un número.</li><li>Desde dónde parte la capacidad.</li><li>Hasta dónde baja: por debajo de esto el alimento no cabe.</li><li>Lo que se obtiene si se toma este alimento.</li><li>La celda con la respuesta.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>La capacidad baja. Si sube, un alimento se puede tomar varias veces.</li><li>VC puede ser 0: el ciclo debe seguir funcionando.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Calorías cero.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24A-c1">Copiar</button></div><pre class="io" id="T24A-c1">1 5
+agua 0 7</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">7</pre></div></div></div><div class="caso"><p class="nota">Uno no cabe.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24A-c2">Copiar</button></div><pre class="io" id="T24A-c2">2 3
+manzana roja 4 9
+pan 3 1</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">1</pre></div></div></div><div class="caso"><p class="nota">Combinar gana a tomar el más valioso.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24A-c3">Copiar</button></div><pre class="io" id="T24A-c3">3 10
+a b c 5 10
+d e 5 20
+f 10 25</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">30</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Presupuesto y cada objeto una vez: mochila. Una fila alcanza si la capacidad baja.</p><p><b>Para comparar:</b> Ficha T24·A, pág. 51 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article><article class="ej" id="e-P2" data-id="P2" data-dia="d11" data-titulo="Distancia de edición"><header class="eh"><span class="eid">P2</span><h3>Distancia de edición</h3><span class="dmeta"><span class="chip foco">Indispensable</span><span class="chip">35 min</span><span class="chip"><span class="dots" title="Importancia alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> tema alta</span></span></header><p class="por">Ejercicio propio, tema de la ayudantía del 7 de noviembre. El alineamiento tiene clase y ayudantía, y salió en el último certamen.</p><p>Dadas dos palabras x e y, convertir x en y con la menor cantidad de operaciones. Se puede insertar una letra, borrar una letra o reemplazar una letra por otra, y cada operación cuesta 1.</p><p><b>Entrada.</b> Dos líneas con x e y (minúsculas, largo entre 1 y 2000).</p><p><b>Salida.</b> La menor cantidad de operaciones.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="P2-ej1">Copiar</button></div><pre class="io" id="P2-ej1">kitten
+sitting</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">3</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 2</span><button class="mini-b copiar" data-de="P2-ej2">Copiar</button></div><pre class="io" id="P2-ej2">flaw
+lawn</pre></div><div><div class="cab"><span>Salida 2</span></div><pre class="io">2</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>Dos secuencias que se comparan en orden, con operaciones que tienen costo: alineamiento de secuencias. Aquí un espacio cuesta 1 y enfrentar letras distintas cuesta 1.</p></li><li class="pista" data-nombre="Qué guardar" hidden><b>Pista 2 · Qué guardar</b><p>Hay dos prefijos en juego, así que hacen falta dos índices. Define A[i][j] con una frase.</p></li><li class="pista" data-nombre="La última columna" hidden><b>Pista 3 · La última columna</b><p>A[i][j] es el costo mínimo de igualar los primeros i de x con los primeros j de y. La última columna solo puede ser: x<sub>i</sub> enfrentada a y<sub>j</sub>, x<sub>i</sub> frente a un espacio, o y<sub>j</sub> frente a un espacio. ¿Qué prefijos quedan en cada caso?</p></li><li class="pista" data-nombre="Casos base" hidden><b>Pista 4 · Casos base</b><p>¿Cuánto cuesta igualar i letras con una palabra vacía? ¿Y una palabra vacía con j letras?</p></li><li class="pista" data-nombre="Orden de llenado" hidden><b>Pista 5 · Orden de llenado</b><p>A[i][j] necesita la celda de arriba, la de la izquierda y la diagonal. Dos ciclos crecientes bastan. La fila i usa la letra <code>x[i - 1]</code>, porque el string parte en 0.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 6 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="c">/*
+ * distancia
+ * Inputs: x, y -&gt; las dos palabras.
+ * Return: minima cantidad de operaciones.
+ * Que hace: llena la tabla de prefijos.
+ */</span>
+<span class="k">int</span> distancia(<span class="k">const</span> string&amp; x, <span class="k">const</span> string&amp; y){
+    <span class="k">int</span> m = x.size(), n = y.size();
+    vector&lt;vector&lt;<span class="k">int</span>&gt;&gt; A(m + 1, vector&lt;<span class="k">int</span>&gt;(n + 1, 0));
+
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt;= m; i++) A[i][0] = <span class="hueco">1</span>;
+    <span class="k">for</span> (<span class="k">int</span> j = 1; j &lt;= n; j++) A[0][j] = <span class="hueco">2</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt;= m; i++)
+        <span class="k">for</span> (<span class="k">int</span> j = 1; j &lt;= n; j++)
+            A[i][j] = min({<span class="hueco">3</span>,
+                           <span class="hueco">4</span>,
+                           <span class="hueco">5</span>});
+    <span class="k">return</span> <span class="hueco">6</span>;
+}
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): las dos palabras.
+ * Return: 0
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    string x, y;
+    cin &gt;&gt; x &gt;&gt; y;
+
+    cout &lt;&lt; distancia(x, y) &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 7 · Qué va en cada hueco</b><ol><li>Borrar las i letras.</li><li>Insertar las j letras.</li><li>Enfrentar las dos últimas letras: cuesta 0 si son iguales y 1 si no.</li><li>x<sub>i</sub> frente a un espacio.</li><li>y<sub>j</sub> frente a un espacio.</li><li>La celda con todo x y todo y.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>La tabla mide (m + 1) × (n + 1).</li><li>Letras en <code>x[i - 1]</code> e <code>y[j - 1]</code>, no en <code>x[i]</code>.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Iguales.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="P2-c1">Copiar</button></div><pre class="io" id="P2-c1">abc
+abc</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">Solo inserciones.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="P2-c2">Copiar</button></div><pre class="io" id="P2-c2">a
+aaaa</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">3</pre></div></div></div><div class="caso"><p class="nota">Todo distinto.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="P2-c3">Copiar</button></div><pre class="io" id="P2-c3">abc
+xyz</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">3</pre></div></div></div><div class="caso"><p class="nota">Reemplazar dos.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="P2-c4">Copiar</button></div><pre class="io" id="P2-c4">ab
+ba</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">2</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Dos secuencias en orden: tabla de prefijos y tres casos para la última columna. Cambian los costos, no la tabla.</p><p><b>Para comparar:</b> <code>soluciones/practica/distanciaEdicion.cpp</code> y la plantilla de alineamiento, pág. 17 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article><article class="ej opcional" id="e-T24J" data-id="T24·J" data-dia="d11" data-titulo="Calle Mágica"><header class="eh"><span class="eid">T24·J</span><h3>Calle Mágica</h3><span class="dmeta"><span class="chip">Si te sobra tiempo</span><span class="chip">25 min</span><span class="chip"><span class="dots" title="Importancia media"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span> tema media</span></span></header><p class="por">Torneo 2024-2 · J. Enseña a simplificar una condición antes de programar. No es del temario central.</p><p>Una calle de baldosas con una letra cada una (cadena S). Desde la baldosa i puedes avanzar a i + 1 con costo 1, o saltar gratis a una baldosa j &gt; i si existe un substring de largo k (1 ≤ k ≤ n) que empieza en i idéntico a uno que empieza en j. Hallar el costo mínimo de la primera a la última.</p><p><b>Entrada.</b> Una línea con S, de minúsculas, largo hasta 10<sup>5</sup>.</p><p><b>Salida.</b> El costo mínimo.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="T24J-ej1">Copiar</button></div><pre class="io" id="T24J-ej1">holacomoestashk</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">1</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 2</span><button class="mini-b copiar" data-de="T24J-ej2">Copiar</button></div><pre class="io" id="T24J-ej2">pandateodio</pre></div><div><div class="cab"><span>Salida 2</span></div><pre class="io">4</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Simplifica la condición" hidden><b>Pista 1 · Simplifica la condición</b><p>El largo k lo eliges tú. ¿Cuál es el k más fácil de satisfacer? ¿Qué queda de la condición entonces?</p></li><li class="pista" data-nombre="La condición real" hidden><b>Pista 2 · La condición real</b><p>Con k = 1 basta: se puede saltar de i a j si S[i] = S[j].</p></li><li class="pista" data-nombre="Qué guardar" hidden><b>Pista 3 · Qué guardar</b><p>A[j] es el costo mínimo de llegar a j: venir de j − 1 pagando 1, o saltar gratis desde alguna baldosa anterior con la misma letra.</p></li><li class="pista" data-nombre="Hacerlo en O(n)" hidden><b>Pista 4 · Hacerlo en O(n)</b><p>Mirar todas las baldosas anteriores es O(n<sup>2</sup>). Por cada letra basta recordar el menor costo con el que se ha llegado a ella.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 5 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): la cadena s.
+ * Return: 0
+ * Que hace: costo es el valor de la baldosa actual; mejor guarda el minimo por letra.
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    string s;
+    cin &gt;&gt; s;
+
+    <span class="k">int</span> n = s.size();
+    <span class="k">const</span> <span class="k">int</span> INF = 1e9;
+    vector&lt;<span class="k">int</span>&gt; mejor(26, INF);
+
+    <span class="k">int</span> costo = 0;
+    mejor[<span class="hueco">1</span>] = 0;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt; n; i++){
+        <span class="k">int</span> letra = s[i] - <span class="s">'a'</span>;
+        costo = min(<span class="hueco">2</span>, <span class="hueco">3</span>);
+        mejor[letra] = min(mejor[letra], <span class="hueco">4</span>);
+    }
+
+    cout &lt;&lt; costo &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 6 · Qué va en cada hueco</b><ol><li>La casilla de la primera letra.</li><li>Llegar desde la baldosa anterior.</li><li>Llegar saltando desde una baldosa de la misma letra.</li><li>El costo de haber llegado a esta baldosa.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>Se inicializa con la primera baldosa.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Una baldosa.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24J-c1">Copiar</button></div><pre class="io" id="T24J-c1">a</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">Sin saltos.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24J-c2">Copiar</button></div><pre class="io" id="T24J-c2">ab</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">1</pre></div></div></div><div class="caso"><p class="nota">Salto directo al final.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24J-c3">Copiar</button></div><pre class="io" id="T24J-c3">abca</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">Salto y un paso final.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24J-c4">Copiar</button></div><pre class="io" id="T24J-c4">abcabcx</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">3</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Antes de programar simplifica la condición: muchas veces el caso más chico ya alcanza.</p><p><b>Para comparar:</b> Ficha T24·J, pág. 49 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article></section><section class="dia" id="d13" data-fecha="2026-11-13"><h2>Viernes 13 de noviembre</h2><div class="dmeta"><span class="chip">También</span><span class="chip">40 min</span></div><p>El foco es Física. Si te queda tiempo y ya tienes el Listado 5, avanza ahí antes que en el opcional.</p><article class="ej" id="e-T24E" data-id="T24·E" data-dia="d13" data-titulo="Juego del Destino"><header class="eh"><span class="eid">T24·E</span><h3>Juego del Destino</h3><span class="dmeta"><span class="chip foco">Indispensable</span><span class="chip">40 min</span><span class="chip"><span class="dots" title="Importancia alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> tema alta</span></span></header><p class="por">Torneo 2024-2 · E. El árbol de expansión salió en dos certámenes, y escribir Union-Find de memoria da mucha soltura.</p><p>Un mapa conexo de puntos y calles, cada calle con una cantidad de fichas. Robert y Rachele recorren todos los puntos, y solo pueden usar calles que lleven a un punto no visitado. Cada uno gana las fichas de las calles que cruza. Maximizar la diferencia de fichas entre ambos.</p><p><b>Entrada.</b> n y m (n ≤ 10<sup>5</sup>, m ≤ 2 × 10<sup>5</sup>). Luego m líneas con a, b y f (1 ≤ f ≤ 10<sup>9</sup>).</p><p><b>Salida.</b> La diferencia máxima.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="T24E-ej1">Copiar</button></div><pre class="io" id="T24E-ej1">5 6
+1 2 3
+2 3 5
+2 4 2
+3 4 8
+5 1 7
+5 4 4</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">10</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Modela el recorrido" hidden><b>Pista 1 · Modela el recorrido</b><p>Visitan todos los puntos y nunca usan una calle hacia un punto ya visitado. ¿Qué forma tiene el conjunto de calles que usa cada uno? Dibuja el ejemplo.</p></li><li class="pista" data-nombre="Qué es" hidden><b>Pista 2 · Qué es</b><p>Conecta todo y no forma ciclos: es un árbol de expansión. Para la mayor diferencia, uno se queda con el árbol de más fichas y el otro con el de menos.</p></li><li class="pista" data-nombre="El algoritmo" hidden><b>Pista 3 · El algoritmo</b><p>Kruskal: revisa las aristas ordenadas y acepta las que no cierran un ciclo. Para saber si la cierra, usa Union-Find.</p></li><li class="pista" data-nombre="Union-Find en palabras" hidden><b>Pista 4 · Union-Find en palabras</b><p><code>p[v]</code> es el padre de v. <code>buscar</code> sube hasta la raíz y comprime el camino. Para unir, la raíz del conjunto chico se cuelga de la raíz del grande, y solo se actualiza el tamaño de la raíz que queda.</p></li><li class="pista" data-nombre="Dos pasadas" hidden><b>Pista 5 · Dos pasadas</b><p>Ordena de menor a mayor para el mínimo. Para el máximo basta invertir ese arreglo. Parte con un Union-Find nuevo en cada pasada.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 6 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">struct</span> Arista { <span class="k">int</span> u, v; <span class="k">long</span> <span class="k">long</span> f; };
+
+<span class="c">/*
+ * buscar
+ * Inputs: p -&gt; arreglo de padres; x -&gt; vertice.
+ * Return: representante del conjunto de x.
+ * Que hace: sube hasta la raiz y comprime el camino.
+ */</span>
+<span class="k">int</span> buscar(vector&lt;<span class="k">int</span>&gt;&amp; p, <span class="k">int</span> x){
+    <span class="k">if</span> (<span class="hueco">1</span>) p[x] = <span class="hueco">2</span>;
+    <span class="k">return</span> p[x];
+}
+
+<span class="c">/*
+ * pesoArbol
+ * Inputs: n -&gt; vertices 1..n; aristas -&gt; en el orden a evaluar.
+ * Return: suma de las aristas que Kruskal acepta en ese orden.
+ * Que hace: Kruskal con union por tamano.
+ */</span>
+<span class="k">long</span> <span class="k">long</span> pesoArbol(<span class="k">int</span> n, <span class="k">const</span> vector&lt;Arista&gt;&amp; aristas){
+    vector&lt;<span class="k">int</span>&gt; p(n + 1), tam(n + 1, 1);
+    iota(p.begin(), p.end(), 0);
+
+    <span class="k">long</span> <span class="k">long</span> total = 0;
+    <span class="k">for</span> (<span class="k">const</span> Arista&amp; e : aristas){
+        <span class="k">int</span> a = buscar(p, e.u), b = buscar(p, e.v);
+        <span class="k">if</span> (<span class="hueco">3</span>) <span class="k">continue</span>;
+        <span class="k">if</span> (tam[a] &lt; tam[b]) swap(a, b);
+        p[<span class="hueco">4</span>] = <span class="hueco">5</span>;
+        tam[a] += <span class="hueco">6</span>;
+        total += <span class="hueco">7</span>;
+    }
+    <span class="k">return</span> total;
+}
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): n, m y las m aristas.
+ * Return: 0
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    <span class="k">int</span> n, m;
+    cin &gt;&gt; n &gt;&gt; m;
+
+    vector&lt;Arista&gt; aristas(m);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) cin &gt;&gt; aristas[i].u &gt;&gt; aristas[i].v &gt;&gt; aristas[i].f;
+
+    sort(aristas.begin(), aristas.end(), [](<span class="k">const</span> Arista&amp; a, <span class="k">const</span> Arista&amp; b){ <span class="k">return</span> <span class="hueco">8</span>; });
+    <span class="k">long</span> <span class="k">long</span> minimo = pesoArbol(n, aristas);
+
+    <span class="hueco">9</span>;
+    <span class="k">long</span> <span class="k">long</span> maximo = pesoArbol(n, aristas);
+
+    cout &lt;&lt; <span class="hueco">10</span> &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 7 · Qué va en cada hueco</b><ol><li>Cuándo x todavía no es la raíz.</li><li>La raíz de su padre: la llamada recursiva.</li><li>Cuándo la arista cerraría un ciclo.</li><li>Quién se cuelga.</li><li>De quién se cuelga.</li><li>Lo que crece el conjunto que queda.</li><li>Lo que aporta esta arista.</li><li>Criterio para ordenar de menor a mayor.</li><li>Dar vuelta las aristas ya ordenadas.</li><li>La respuesta.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>El total llega a 10<sup>14</sup>: <code>long long</code>.</li><li>Los tamaños parten en 1 y cada padre en sí mismo.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Un solo árbol posible.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24E-c1">Copiar</button></div><pre class="io" id="T24E-c1">2 1
+1 2 5</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">Triángulo.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24E-c2">Copiar</button></div><pre class="io" id="T24E-c2">3 3
+1 2 1
+2 3 2
+1 3 3</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">2</pre></div></div></div><div class="caso"><p class="nota">Sumas que no caben en int.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24E-c3">Copiar</button></div><pre class="io" id="T24E-c3">3 3
+1 2 1000000000
+2 3 1000000000
+1 3 1</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">999999999</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Modela primero: llegar a todos sin repetir es un árbol. Kruskal sirve para el mínimo y para el máximo.</p><p><b>Para comparar:</b> Ficha T24·E, pág. 45 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article><article class="ej opcional" id="e-P3" data-id="P3" data-dia="d13" data-titulo="Unir archivos"><header class="eh"><span class="eid">P3</span><h3>Unir archivos</h3><span class="dmeta"><span class="chip">Si te sobra tiempo</span><span class="chip">15 min</span><span class="chip"><span class="dots" title="Importancia media"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span> tema media</span></span></header><p class="por">Ejercicio propio, basado en la clase de Huffman. Huffman está en el temario, aunque todavía no ha salido en un certamen.</p><p>Hay n archivos con sus tamaños. Unir dos archivos de tamaños a y b cuesta a + b y produce un archivo de tamaño a + b. Hallar el costo mínimo de dejar todo en un solo archivo.</p><p><b>Entrada.</b> n (1 ≤ n ≤ 10<sup>5</sup>). Luego n tamaños (entre 1 y 10<sup>9</sup>).</p><p><b>Salida.</b> El costo mínimo.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="P3-ej1">Copiar</button></div><pre class="io" id="P3-ej1">4
+60 25 10 5</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">155</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 2</span><button class="mini-b copiar" data-de="P3-ej2">Copiar</button></div><pre class="io" id="P3-ej2">5
+30 25 20 15 10</pre></div><div><div class="cab"><span>Salida 2</span></div><pre class="io">225</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>Se fusiona de a dos y se paga la suma. Es exactamente la construcción del árbol de Huffman.</p></li><li class="pista" data-nombre="El criterio" hidden><b>Pista 2 · El criterio</b><p>Lo que se une temprano se vuelve a pagar en cada unión posterior. ¿Qué archivos te conviene unir primero?</p></li><li class="pista" data-nombre="La estructura" hidden><b>Pista 3 · La estructura</b><p>Necesitas sacar los dos menores una y otra vez, e insertar la suma. Es un min-heap.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 4 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): n y los n tamanos.
+ * Return: 0
+ * Que hace: une siempre los dos archivos mas chicos.
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    <span class="k">int</span> n;
+    cin &gt;&gt; n;
+
+    priority_queue&lt;<span class="k">long</span> <span class="k">long</span>, vector&lt;<span class="k">long</span> <span class="k">long</span>&gt;, <span class="hueco">1</span>&gt; h;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++){
+        <span class="k">long</span> <span class="k">long</span> x;
+        cin &gt;&gt; x;
+        h.push(x);
+    }
+
+    <span class="k">long</span> <span class="k">long</span> total = 0;
+    <span class="k">while</span> (<span class="hueco">2</span>){
+        <span class="k">long</span> <span class="k">long</span> a = h.top(); h.pop();
+        <span class="k">long</span> <span class="k">long</span> b = h.top(); h.pop();
+        total += <span class="hueco">3</span>;
+        h.push(<span class="hueco">4</span>);
+    }
+
+    cout &lt;&lt; total &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 5 · Qué va en cada hueco</b><ol><li>Lo que convierte a <code>priority_queue</code> en min-heap.</li><li>Mientras quede más de un archivo.</li><li>Lo que cuesta esta unión.</li><li>El archivo nuevo.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>Con n = 1 no se une nada y el costo es 0.</li><li><code>long long</code>.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Un solo archivo.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="P3-c1">Copiar</button></div><pre class="io" id="P3-c1">1
+5</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">Una unión.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="P3-c2">Copiar</button></div><pre class="io" id="P3-c2">2
+3 4</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">7</pre></div></div></div><div class="caso"><p class="nota">Sumas grandes.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="P3-c3">Copiar</button></div><pre class="io" id="P3-c3">3
+1000000000 1000000000 1000000000</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">5000000000</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Si cada unión paga la suma, une siempre los dos más chicos.</p><p><b>Para comparar:</b> <code>soluciones/practica/unirArchivos.cpp</code> y la plantilla de Huffman, pág. 13 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article></section><section class="dia" id="d14" data-fecha="2026-11-14"><h2>Sábado 14 de noviembre · Simulacro 1</h2><div class="dmeta"><span class="chip foco">Foco</span><span class="chip">hasta 3 h</span></div><p>Elige 2 de 5 y resuélvelos con el PDF. Abre pistas solo si llevas 30 minutos sin avanzar.</p><div class="simbox"><b>Primero elige tú, leyendo el PDF:</b> <strong>C2_2025_01.pdf</strong><table><thead><tr><th></th><th>Problema</th><th>De qué trata</th></tr></thead><tbody><tr><td><b>A</b></td><td>Flujos Parametrizados</td><td>Agrupar nodos por un valor decimal e imprimir con formato.</td></tr><tr><td><b>B</b></td><td>Red de la Resistencia</td><td>Conectar zonas al menor costo, sin ciclos.</td></tr><tr><td><b>C</b></td><td>Roberto El Mago</td><td>Par de criaturas con más transformaciones de x pasos.</td></tr><tr><td><b>D</b></td><td>Construyendo Antenas</td><td>Antenas en ciudades en línea, sin adyacentes.</td></tr><tr><td><b>E</b></td><td>ParenTalk</td><td>Subcadena balanceada más larga.</td></tr></tbody></table><details class="pl"><summary>¿Cuáles habría elegido yo?</summary><p>B y D salen casi directo de una plantilla, y por eso son los que aparecen abajo. A es más de formato que de algoritmo. C y E piden una idea propia.</p></details></div><article class="ej" id="e-C25D" data-id="C25·D" data-dia="d14" data-titulo="Construyendo Antenas"><header class="eh"><span class="eid">C25·D</span><h3>Construyendo Antenas</h3><span class="dmeta"><span class="chip foco">Indispensable</span><span class="chip sim">S1</span><span class="chip">20 min</span><span class="chip"><span class="dots" title="Importancia muy alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span> tema muy alta</span></span></header><p class="por">C2 2025-1 · D. Es MWIS tal cual.</p><p>n ciudades en línea, cada una con su población. No se puede construir antenas en ciudades adyacentes, y una antena cubre solo su ciudad. Maximizar la población cubierta.</p><p><b>Entrada.</b> n (1 ≤ n ≤ 10<sup>5</sup>). Luego n poblaciones (entre 1 y 10<sup>7</sup>).</p><p><b>Salida.</b> La máxima población cubierta.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="C25D-ej1">Copiar</button></div><pre class="io" id="C25D-ej1">10
+1 5 10 1 5 10 50 10 1 1</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">67</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>Elegir elementos en línea sin dos seguidos. Tomar siempre el mayor falla: prueba con 1, 4, 5, 4.</p></li><li class="pista" data-nombre="Qué guardar" hidden><b>Pista 2 · Qué guardar</b><p>A[i] es el mejor valor usando solo las primeras i ciudades.</p></li><li class="pista" data-nombre="La última decisión" hidden><b>Pista 3 · La última decisión</b><p>La ciudad i no se usa, o se usa. Si se usa, ¿qué ciudad queda prohibida y qué subproblema queda?</p></li><li class="pista" data-nombre="Casos base" hidden><b>Pista 4 · Casos base</b><p>¿Cuánto vale A[0]? ¿Y A[1]?</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 5 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="c">/*
+ * mwis
+ * Inputs: p -&gt; poblaciones, en orden.
+ * Return: maxima suma sin elegir adyacentes.
+ * Que hace: A[i] es el optimo de las primeras i ciudades.
+ */</span>
+<span class="k">long</span> <span class="k">long</span> mwis(<span class="k">const</span> vector&lt;<span class="k">long</span> <span class="k">long</span>&gt;&amp; p){
+    <span class="k">int</span> n = p.size();
+    vector&lt;<span class="k">long</span> <span class="k">long</span>&gt; A(n + 1, 0);
+
+    A[1] = <span class="hueco">1</span>;
+    <span class="k">for</span> (<span class="k">int</span> i = 2; i &lt;= n; i++)
+        A[i] = max(<span class="hueco">2</span>, <span class="hueco">3</span>);
+    <span class="k">return</span> <span class="hueco">4</span>;
+}
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): n y las poblaciones.
+ * Return: 0
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    <span class="k">int</span> n;
+    cin &gt;&gt; n;
+
+    vector&lt;<span class="k">long</span> <span class="k">long</span>&gt; p(n);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) cin &gt;&gt; p[i];
+
+    cout &lt;&lt; mwis(p) &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 6 · Qué va en cada hueco</b><ol><li>Con una sola ciudad, se toma.</li><li>No usar la ciudad i.</li><li>Usar la ciudad i.</li><li>La respuesta.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>La suma llega a 5 × 10<sup>11</sup>: <code>long long</code>.</li><li>La ciudad número i está en <code>p[i - 1]</code>.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Una ciudad.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="C25D-c1">Copiar</button></div><pre class="io" id="C25D-c1">1
+5</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">5</pre></div></div></div><div class="caso"><p class="nota">Dos ciudades.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="C25D-c2">Copiar</button></div><pre class="io" id="C25D-c2">2
+3 9</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">9</pre></div></div></div><div class="caso"><p class="nota">El voraz falla aquí.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="C25D-c3">Copiar</button></div><pre class="io" id="C25D-c3">4
+1 4 5 4</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">8</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>No adyacentes en una línea: MWIS, con dos casos para el último elemento.</p><p><b>Para comparar:</b> Ficha C25·D, pág. 47 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article><article class="ej" id="e-C25B" data-id="C25·B" data-dia="d14" data-titulo="Red de la Resistencia"><header class="eh"><span class="eid">C25·B</span><h3>Red de la Resistencia</h3><span class="dmeta"><span class="chip foco">Indispensable</span><span class="chip sim">S1</span><span class="chip">25 min</span><span class="chip"><span class="dots" title="Importancia alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> tema alta</span></span></header><p class="por">C2 2025-1 · B. Kruskal directo. Si hiciste el del viernes 13, intenta escribir Union-Find sin abrir pistas.</p><p>N zonas y M rutas con costo en baterías. Restaurar rutas para que todas las zonas queden conectadas, sin ciclos y con la menor cantidad total de baterías.</p><p><b>Entrada.</b> N y M (N ≤ 10<sup>5</sup>, M ≤ 2 × 10<sup>5</sup>). Luego M líneas con u, v y b (1 ≤ b ≤ 10<sup>4</sup>).</p><p><b>Salida.</b> La cantidad mínima de baterías.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="C25B-ej1">Copiar</button></div><pre class="io" id="C25B-ej1">4 5
+1 2 3
+1 3 5
+2 3 4
+3 4 2
+1 4 10</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">9</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>Conectar todo, sin ciclos y al menor costo.</p></li><li class="pista" data-nombre="El algoritmo" hidden><b>Pista 2 · El algoritmo</b><p>Árbol de expansión mínima. La entrada es una lista de aristas, así que Kruskal queda natural.</p></li><li class="pista" data-nombre="Cómo decidir" hidden><b>Pista 3 · Cómo decidir</b><p>Se revisan las aristas de menor a mayor. Una arista entra si sus extremos están en componentes distintas.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 4 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">struct</span> Arista { <span class="k">int</span> u, v; <span class="k">long</span> <span class="k">long</span> c; };
+
+<span class="c">/*
+ * buscar
+ * Inputs: p -&gt; padres; x -&gt; vertice.
+ * Return: raiz del conjunto de x.
+ */</span>
+<span class="k">int</span> buscar(vector&lt;<span class="k">int</span>&gt;&amp; p, <span class="k">int</span> x){
+    <span class="k">if</span> (p[x] != x) p[x] = <span class="hueco">1</span>;
+    <span class="k">return</span> p[x];
+}
+
+<span class="c">/*
+ * unir
+ * Inputs: p, tam -&gt; Union-Find; a, b -&gt; vertices.
+ * Return: true si estaban separados y se unieron.
+ */</span>
+<span class="k">bool</span> unir(vector&lt;<span class="k">int</span>&gt;&amp; p, vector&lt;<span class="k">int</span>&gt;&amp; tam, <span class="k">int</span> a, <span class="k">int</span> b){
+    a = buscar(p, a);
+    b = buscar(p, b);
+    <span class="k">if</span> (a == b) <span class="k">return</span> <span class="hueco">2</span>;
+    <span class="k">if</span> (<span class="hueco">3</span>) swap(a, b);
+    p[b] = a;
+    tam[a] += tam[b];
+    <span class="k">return</span> <span class="k">true</span>;
+}
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): N, M y las M rutas.
+ * Return: 0
+ * Que hace: Kruskal.
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    <span class="k">int</span> n, m;
+    cin &gt;&gt; n &gt;&gt; m;
+
+    vector&lt;Arista&gt; e(m);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) cin &gt;&gt; e[i].u &gt;&gt; e[i].v &gt;&gt; e[i].c;
+
+    sort(e.begin(), e.end(), [](<span class="k">const</span> Arista&amp; a, <span class="k">const</span> Arista&amp; b){ <span class="k">return</span> <span class="hueco">4</span>; });
+
+    vector&lt;<span class="k">int</span>&gt; p(n + 1), tam(n + 1, 1);
+    iota(p.begin(), p.end(), 0);
+
+    <span class="k">long</span> <span class="k">long</span> total = 0;
+    <span class="k">for</span> (<span class="k">const</span> Arista&amp; x : e)
+        <span class="k">if</span> (<span class="hueco">5</span>) total += x.c;
+
+    cout &lt;&lt; total &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 5 · Qué va en cada hueco</b><ol><li>La raíz de su padre.</li><li>Qué retorna si ya estaban en el mismo conjunto.</li><li>Cuándo hay que intercambiar para colgar el chico del grande.</li><li>Orden de las aristas.</li><li>Intentar unir los extremos de la arista.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>Puede haber aristas repetidas: Union-Find las descarta solo.</li><li>Con M = 0 y N = 1 la respuesta es 0.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Sin aristas.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="C25B-c1">Copiar</button></div><pre class="io" id="C25B-c1">1 0</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">Arista repetida.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="C25B-c2">Copiar</button></div><pre class="io" id="C25B-c2">3 4
+1 2 7
+1 2 3
+2 3 4
+1 3 9</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">7</pre></div></div></div><div class="caso"><p class="nota">Una sola arista.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="C25B-c3">Copiar</button></div><pre class="io" id="C25B-c3">2 1
+1 2 10000</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">10000</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Conectar todo sin ciclos al mínimo: Kruskal.</p><p><b>Para comparar:</b> Ficha C25·B, pág. 44 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article></section><section class="dia" id="d16" data-fecha="2026-11-16"><h2>Lunes 16 de noviembre</h2><div class="dmeta"><span class="chip">También</span><span class="chip">35 min</span></div><p>Si en el simulacro fallaste algo, corrígelo primero con su ficha de la guía.</p><article class="ej" id="e-T24D" data-id="T24·D" data-dia="d16" data-titulo="Anti-Hacking"><header class="eh"><span class="eid">T24·D</span><h3>Anti-Hacking</h3><span class="dmeta"><span class="chip foco">Indispensable</span><span class="chip">35 min</span><span class="chip"><span class="dots" title="Importancia muy alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span> tema muy alta</span></span></header><p class="por">Torneo 2024-2 · D. El backtracking salió en tres de cuatro certámenes, y este obliga a pensar cómo no contar dos veces.</p><p>Dadas n letras que pueden repetirse, contar las contraseñas <strong>distintas</strong> que usan todas las letras, tales que no haya dos letras iguales seguidas y que no empiecen con la letra menor del conjunto.</p><p><b>Entrada.</b> n (1 ≤ n ≤ 10). Luego n letras separadas por espacios.</p><p><b>Salida.</b> La cantidad de contraseñas fuertes distintas.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="T24D-ej1">Copiar</button></div><pre class="io" id="T24D-ej1">4
+b c d b</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">2</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>n ≤ 10 y el orden importa: permutaciones con backtracking. 10! son unos 3,6 millones.</p></li><li class="pista" data-nombre="El problema de los repetidos" hidden><b>Pista 2 · El problema de los repetidos</b><p>Si marcas cada posición del arreglo como usada, b c d b se generaría dos veces con las dos b intercambiadas. ¿Cómo lo evitas?</p></li><li class="pista" data-nombre="Recorrer letras, no posiciones" hidden><b>Pista 3 · Recorrer letras, no posiciones</b><p>Guarda cuántas veces queda cada letra distinta. En cada paso, prueba cada letra que todavía quede. Así no hay duplicados.</p></li><li class="pista" data-nombre="Qué recordar en la recursión" hidden><b>Pista 4 · Qué recordar en la recursión</b><p>Cuántas posiciones faltan y cuál fue la última letra. La última sirve para las dos reglas: no repetir, y saber si estás en la primera posición.</p></li><li class="pista" data-nombre="Elegir, verificar, explorar, deshacer" hidden><b>Pista 5 · Elegir, verificar, explorar, deshacer</b><p>Antes de elegir, verifica. Elegir es descontar la letra. Deshacer es devolverla. El caso base es no tener posiciones por llenar: ahí se cuenta una contraseña.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 6 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="c">/*
+ * contar
+ * Inputs: cuantas -&gt; cuantas veces queda cada letra distinta, de menor a mayor
+ *         (la posicion 0 es la letra menor); faltan -&gt; posiciones por llenar;
+ *         ultima -&gt; indice de la letra anterior (-1 en la primera posicion).
+ * Return: cuantas contrasenas fuertes se pueden completar desde aqui.
+ * Que hace: backtracking por letras distintas.
+ */</span>
+<span class="k">long</span> <span class="k">long</span> contar(vector&lt;<span class="k">int</span>&gt;&amp; cuantas, <span class="k">int</span> faltan, <span class="k">int</span> ultima){
+    <span class="k">if</span> (<span class="hueco">1</span>) <span class="k">return</span> <span class="hueco">2</span>;
+
+    <span class="k">long</span> <span class="k">long</span> total = 0;
+    <span class="k">for</span> (<span class="k">int</span> c = 0; c &lt; (<span class="k">int</span>)cuantas.size(); c++){
+        <span class="k">if</span> (cuantas[c] == 0 || <span class="hueco">3</span>) <span class="k">continue</span>;
+        <span class="k">if</span> (<span class="hueco">4</span>) <span class="k">continue</span>;
+
+        <span class="hueco">5</span>;
+        total += contar(cuantas, <span class="hueco">6</span>, <span class="hueco">7</span>);
+        <span class="hueco">8</span>;
+    }
+    <span class="k">return</span> total;
+}
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): n y las n letras.
+ * Return: 0
+ * Que hace: cuenta cada letra con un map, que ya las deja ordenadas.
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    <span class="k">int</span> n;
+    cin &gt;&gt; n;
+
+    map&lt;<span class="k">char</span>, <span class="k">int</span>&gt; frecuencia;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++){
+        <span class="k">char</span> c;
+        cin &gt;&gt; c;
+        frecuencia[c]++;
+    }
+
+    vector&lt;<span class="k">int</span>&gt; cuantas;
+    <span class="k">for</span> (<span class="k">auto</span>&amp; par : frecuencia) cuantas.push_back(par.second);
+
+    cout &lt;&lt; contar(cuantas, n, -1) &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 7 · Qué va en cada hueco</b><ol><li>Cuándo la contraseña está completa.</li><li>Qué cuenta una contraseña completa.</li><li>La misma letra que la anterior.</li><li>Estar en la primera posición y probar la letra menor.</li><li>Elegir.</li><li>Cuántas faltan después de elegir.</li><li>Cuál es ahora la última letra.</li><li>Deshacer.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>La menor es la del conjunto dado, no la letra <code>a</code>.</li><li>Un solo tipo de letra da 0.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">La única letra es la menor.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24D-c1">Copiar</button></div><pre class="io" id="T24D-c1">1
+a</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">Sin repetidos.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24D-c2">Copiar</button></div><pre class="io" id="T24D-c2">3
+a b c</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">4</pre></div></div></div><div class="caso"><p class="nota">Iguales seguidas.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24D-c3">Copiar</button></div><pre class="io" id="T24D-c3">2
+a a</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">Varios repetidos.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T24D-c4">Copiar</button></div><pre class="io" id="T24D-c4">5
+a a b b c</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">7</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Para contar permutaciones distintas con repetidos, recorre las letras y no las posiciones.</p><p><b>Para comparar:</b> Ficha T24·D, pág. 25 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article><article class="ej opcional" id="e-L3H" data-id="L3·H" data-dia="d16" data-titulo="Dobra"><header class="eh"><span class="eid">L3·H</span><h3>Dobra</h3><span class="dmeta"><span class="chip">Si te sobra tiempo</span><span class="chip">30 min</span><span class="chip"><span class="dots" title="Importancia alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> tema alta</span></span></header><p class="por">Listado 3 · H. Muestra cómo achicar un backtracking agrupando opciones equivalentes.</p><p>Una palabra de mayúsculas con a lo más 10 guiones bajos (largo hasta 100). Contar las formas de reemplazar cada guion por una mayúscula, de modo que no haya 3 vocales seguidas, ni 3 consonantes seguidas, y aparezca al menos una L.</p><p><b>Entrada.</b> Una línea con la palabra.</p><p><b>Salida.</b> La cantidad de palabras agradables.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="L3H-ej1">Copiar</button></div><pre class="io" id="L3H-ej1">L_V</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">5</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 2</span><button class="mini-b copiar" data-de="L3H-ej2">Copiar</button></div><pre class="io" id="L3H-ej2">V__K</pre></div><div><div class="cab"><span>Salida 2</span></div><pre class="io">10</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 3</span><button class="mini-b copiar" data-de="L3H-ej3">Copiar</button></div><pre class="io" id="L3H-ej3">JA_BU_K_A</pre></div><div><div class="cab"><span>Salida 3</span></div><pre class="io">485</pre></div></div><ol class="pistas"><li class="pista" data-nombre="El problema del tamaño" hidden><b>Pista 1 · El problema del tamaño</b><p>Probar 26 letras en 10 huecos es 26<sup>10</sup>. ¿De verdad importan las 26? ¿Qué le interesa a la regla de cada letra?</p></li><li class="pista" data-nombre="Tres clases" hidden><b>Pista 2 · Tres clases</b><p>A la regla solo le importa si la letra es vocal, si es L, o si es otra consonante. Basta probar un representante de cada clase.</p></li><li class="pista" data-nombre="Multiplicar" hidden><b>Pista 3 · Multiplicar</b><p>El resultado de la rama se multiplica por cuántas letras representa su clase. Cuenta cuántas letras hay en cada una.</p></li><li class="pista" data-nombre="Dónde podar" hidden><b>Pista 4 · Dónde podar</b><p>Una letra nueva solo puede formar un trío malo con las dos anteriores: revisa esa ventana y corta si se rompe. Las letras dadas también se verifican.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 5 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="c">/*
+ * esVocal
+ * Inputs: c -&gt; letra mayuscula.
+ * Return: true si es vocal.
+ */</span>
+<span class="k">bool</span> esVocal(<span class="k">char</span> c){
+    <span class="k">return</span> string(<span class="s">"AEIOU"</span>).find(c) != string::npos;
+}
+
+<span class="c">/*
+ * rompeRegla
+ * Inputs: palabra -&gt; llena hasta i; i -&gt; ultima posicion llena.
+ * Return: true si las posiciones i-2, i-1, i son tres del mismo tipo.
+ */</span>
+<span class="k">bool</span> rompeRegla(<span class="k">const</span> string&amp; palabra, <span class="k">int</span> i){
+    <span class="k">if</span> (i &lt; 2) <span class="k">return</span> <span class="k">false</span>;
+    <span class="k">bool</span> a = esVocal(palabra[i - 2]), b = esVocal(palabra[i - 1]), c = esVocal(palabra[i]);
+    <span class="k">return</span> a == b &amp;&amp; b == c;
+}
+
+<span class="c">/*
+ * contar
+ * Inputs: palabra -&gt; se modifica y se restaura; i -&gt; posicion a decidir;
+ *         tieneL -&gt; si ya aparecio una L.
+ * Return: cuantas palabras validas salen desde la posicion i.
+ * Que hace: backtracking con tres representantes por hueco.
+ */</span>
+<span class="k">long</span> <span class="k">long</span> contar(string&amp; palabra, <span class="k">int</span> i, <span class="k">bool</span> tieneL){
+    <span class="k">if</span> (i == (<span class="k">int</span>)palabra.size()) <span class="k">return</span> <span class="hueco">1</span>;
+
+    <span class="k">if</span> (palabra[i] != <span class="s">'_'</span>){
+        <span class="k">if</span> (<span class="hueco">2</span>) <span class="k">return</span> 0;
+        <span class="k">return</span> contar(palabra, i + 1, <span class="hueco">3</span>);
+    }
+
+    <span class="k">const</span> <span class="k">char</span> representante[3] = {<span class="s">'A'</span>, <span class="s">'L'</span>, <span class="s">'B'</span>};
+    <span class="k">const</span> <span class="k">long</span> <span class="k">long</span> formas[3] = {<span class="hueco">4</span>, <span class="hueco">5</span>, <span class="hueco">6</span>};
+
+    <span class="k">long</span> <span class="k">long</span> total = 0;
+    <span class="k">for</span> (<span class="k">int</span> k = 0; k &lt; 3; k++){
+        palabra[i] = representante[k];
+        <span class="k">if</span> (!rompeRegla(palabra, i))
+            total += <span class="hueco">7</span> * contar(palabra, i + 1, tieneL || representante[k] == <span class="s">'L'</span>);
+    }
+    <span class="hueco">8</span>;
+    <span class="k">return</span> total;
+}
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): la palabra.
+ * Return: 0
+ */</span>
+<span class="k">int</span> main(){
+    string palabra;
+    cin &gt;&gt; palabra;
+    cout &lt;&lt; contar(palabra, 0, <span class="k">false</span>) &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 6 · Qué va en cada hueco</b><ol><li>La palabra solo cuenta si tiene una L.</li><li>Una letra dada también puede romper la regla.</li><li>Si esta letra dada es L, ya apareció.</li><li>Cuántas vocales hay.</li><li>Cuántas L hay.</li><li>Cuántas otras consonantes hay.</li><li>Cuántas letras representa este caso.</li><li>Deshacer: devolver el guion.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>La respuesta llega a 20<sup>10</sup>: <code>long long</code>.</li><li>Vocales + L + otras consonantes deben sumar 26.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Sin huecos, con L.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="L3H-c1">Copiar</button></div><pre class="io" id="L3H-c1">L</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">1</pre></div></div></div><div class="caso"><p class="nota">Sin L.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="L3H-c2">Copiar</button></div><pre class="io" id="L3H-c2">A</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">Tres huecos.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="L3H-c3">Copiar</button></div><pre class="io" id="L3H-c3">___</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">690</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Si muchas opciones se comportan igual, prueba una por clase y multiplica.</p><p><b>Para comparar:</b> Ficha L3·H, pág. 26 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article></section><section class="dia" id="d19" data-fecha="2026-11-19"><h2>Jueves 19 de noviembre</h2><div class="dmeta"><span class="chip foco">Foco</span><span class="chip">1 h 15</span></div><p>Caminos mínimos. Después sigue con el Listado 5, si ya lo tienes.</p><article class="ej" id="e-P4" data-id="P4" data-dia="d19" data-titulo="Bellman-Ford recuperando el ciclo"><header class="eh"><span class="eid">P4</span><h3>Bellman-Ford recuperando el ciclo</h3><span class="dmeta"><span class="chip foco">Indispensable</span><span class="chip">45 min</span><span class="chip"><span class="dots" title="Importancia muy alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span> tema muy alta</span></span></header><p class="por">Ejercicio propio, tema de la ayudantía del 14 de noviembre. Bellman-Ford salió casi idéntico en los dos últimos certámenes, y la ayudantía pide recuperar el ciclo.</p><p>Grafo dirigido con pesos que pueden ser negativos. Desde el vértice 1: si existe un ciclo negativo alcanzable, imprime <code>CICLO</code> y, en la línea siguiente, sus vértices en orden con el primero repetido al final. Si no, imprime la distancia mínima a cada vértice 1..n, con <code>INF</code> si no se alcanza.</p><p><b>Entrada.</b> n y m (n ≤ 500, m ≤ 2000). Luego m líneas con u, v y w (−1000 ≤ w ≤ 1000).</p><p><b>Salida.</b> Lo descrito arriba. Si hay ciclo, cualquier ciclo negativo alcanzable sirve.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="P4-ej1">Copiar</button></div><pre class="io" id="P4-ej1">5 6
+1 2 4
+1 5 2
+5 2 -1
+2 3 4
+5 4 2
+4 3 2</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">0 1 5 4 2</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 2</span><button class="mini-b copiar" data-de="P4-ej2">Copiar</button></div><pre class="io" id="P4-ej2">4 4
+1 2 1
+2 3 -3
+3 2 1
+3 4 5</pre></div><div><div class="cab"><span>Salida 2</span></div><pre class="io">CICLO
+2 3 2</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 3</span><button class="mini-b copiar" data-de="P4-ej3">Copiar</button></div><pre class="io" id="P4-ej3">3 2
+2 3 -1
+3 2 -1</pre></div><div><div class="cab"><span>Salida 3</span></div><pre class="io">0 INF INF</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>Una fuente, pesos negativos, ciclos negativos: Bellman-Ford. n · m = 10<sup>6</sup> cabe.</p></li><li class="pista" data-nombre="Qué guardar" hidden><b>Pista 2 · Qué guardar</b><p>Además de la distancia a cada vértice, para reconstruir necesitas saber de dónde llegó la última mejora a cada uno.</p></li><li class="pista" data-nombre="Cuántas pasadas" hidden><b>Pista 3 · Cuántas pasadas</b><p>Relaja todas las aristas varias veces. Un camino simple tiene a lo más n − 1 aristas. ¿Qué significa que la pasada n todavía mejore algo?</p></li><li class="pista" data-nombre="Vértices no alcanzables" hidden><b>Pista 4 · Vértices no alcanzables</b><p>No relajes desde un vértice que sigue en infinito: además de sumarle a infinito, un ciclo que no se alcanza desde 1 no debe contar.</p></li><li class="pista" data-nombre="Caer dentro del ciclo" hidden><b>Pista 5 · Caer dentro del ciclo</b><p>El vértice mejorado en la pasada n puede estar colgando del ciclo, no dentro de él. Retroceder por los padres n veces garantiza terminar dentro.</p></li><li class="pista" data-nombre="Dar la vuelta" hidden><b>Pista 6 · Dar la vuelta</b><p>Desde ese vértice sigue a los padres hasta volver a él. Los padres apuntan hacia atrás, así que al final hay que invertir.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 7 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">long</span> <span class="k">long</span> INF = LLONG_MAX / 2;
+
+<span class="k">struct</span> Arista { <span class="k">int</span> u, v; <span class="k">long</span> <span class="k">long</span> w; };
+
+<span class="c">/*
+ * bellmanFord
+ * Inputs: n -&gt; vertices 1..n; aristas -&gt; lista dirigida; s -&gt; fuente;
+ *         dist -&gt; donde se dejan las distancias.
+ * Return: un ciclo negativo alcanzable, con el primero repetido al final;
+ *         vacio si no existe.
+ * Que hace: relaja n veces guardando los padres.
+ */</span>
+vector&lt;<span class="k">int</span>&gt; bellmanFord(<span class="k">int</span> n, <span class="k">const</span> vector&lt;Arista&gt;&amp; aristas, <span class="k">int</span> s, vector&lt;<span class="k">long</span> <span class="k">long</span>&gt;&amp; dist){
+    dist.assign(n + 1, INF);
+    vector&lt;<span class="k">int</span>&gt; padre(n + 1, -1);
+    dist[s] = <span class="hueco">1</span>;
+
+    <span class="k">int</span> x = -1;
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt;= <span class="hueco">2</span>; i++){
+        x = -1;
+        <span class="k">for</span> (<span class="k">const</span> Arista&amp; e : aristas){
+            <span class="k">if</span> (<span class="hueco">3</span>){
+                dist[e.v] = <span class="hueco">4</span>;
+                padre[e.v] = <span class="hueco">5</span>;
+                x = e.v;
+            }
+        }
+        <span class="k">if</span> (<span class="hueco">6</span>) <span class="k">return</span> {};
+    }
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; <span class="hueco">7</span>; i++) x = padre[x];
+
+    vector&lt;<span class="k">int</span>&gt; ciclo = {x};
+    <span class="k">for</span> (<span class="k">int</span> v = padre[x]; <span class="hueco">8</span>; v = padre[v]) ciclo.push_back(v);
+    ciclo.push_back(x);
+    <span class="hueco">9</span>;
+    <span class="k">return</span> ciclo;
+}
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): n, m y las m aristas.
+ * Return: 0
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    <span class="k">int</span> n, m;
+    cin &gt;&gt; n &gt;&gt; m;
+
+    vector&lt;Arista&gt; aristas(m);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++) cin &gt;&gt; aristas[i].u &gt;&gt; aristas[i].v &gt;&gt; aristas[i].w;
+
+    vector&lt;<span class="k">long</span> <span class="k">long</span>&gt; dist;
+    vector&lt;<span class="k">int</span>&gt; ciclo = bellmanFord(n, aristas, 1, dist);
+
+    <span class="k">if</span> (!ciclo.empty()){
+        cout &lt;&lt; <span class="s">"CICLO\n"</span>;
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; (<span class="k">int</span>)ciclo.size(); i++) cout &lt;&lt; ciclo[i] &lt;&lt; (i + 1 &lt; (<span class="k">int</span>)ciclo.size() ? <span class="s">" "</span> : <span class="s">"\n"</span>);
+        <span class="k">return</span> 0;
+    }
+
+    <span class="k">for</span> (<span class="k">int</span> v = 1; v &lt;= n; v++){
+        <span class="k">if</span> (dist[v] == INF) cout &lt;&lt; <span class="s">"INF"</span>;
+        <span class="k">else</span> cout &lt;&lt; dist[v];
+        cout &lt;&lt; (v &lt; n ? <span class="s">" "</span> : <span class="s">"\n"</span>);
+    }
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 8 · Qué va en cada hueco</b><ol><li>La distancia a la fuente.</li><li>Cuántas pasadas se hacen.</li><li>Hay desde dónde partir, y por ahí se mejora.</li><li>La nueva distancia.</li><li>Quién produjo la mejora.</li><li>En una pasada sin cambios ya se puede terminar.</li><li>Cuántas veces retroceder.</li><li>Seguir hasta volver al vértice de partida.</li><li>Los padres entregan el ciclo al revés.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>Si relajas desde <code>INF</code>, un ciclo no alcanzable se detecta por error.</li><li>Comprueba a mano que el ciclo que imprimes suma negativo.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Un vértice, sin aristas.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="P4-c1">Copiar</button></div><pre class="io" id="P4-c1">1 0</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">Lazo negativo en la fuente.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="P4-c2">Copiar</button></div><pre class="io" id="P4-c2">2 1
+1 1 -1</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">CICLO
+1 1</pre></div></div></div><div class="caso"><p class="nota">Pesos negativos sin ciclo.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="P4-c3">Copiar</button></div><pre class="io" id="P4-c3">3 3
+1 2 -5
+2 3 -5
+1 3 100</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0 -5 -10</pre></div></div></div><div class="caso"><p class="nota">Ciclo de suma 0 y otro positivo: no hay ciclo negativo.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="P4-c4">Copiar</button></div><pre class="io" id="P4-c4">4 5
+1 2 2
+2 3 -1
+3 4 -1
+4 2 1
+3 1 7</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">CICLO
+4 2 3 4</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Bellman-Ford cabe en diez líneas. Lo único nuevo para recuperar el ciclo es el arreglo de padres.</p><p><b>Para comparar:</b> <code>soluciones/practica/bellmanFordConCiclo.cpp</code> y la plantilla de Bellman-Ford, pág. 19 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article><article class="ej" id="e-T25I" data-id="T25·I" data-dia="d19" data-titulo="Alquimia"><header class="eh"><span class="eid">T25·I</span><h3>Alquimia</h3><span class="dmeta"><span class="chip foco">Indispensable</span><span class="chip">30 min</span><span class="chip"><span class="dots" title="Importancia alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> tema alta</span></span></header><p class="por">Torneo 2025-2 · I. Floyd-Warshall está en el temario y este es el único ejercicio de certamen que lo usa.</p><p>Dos cadenas S y T del mismo largo. Hay K transmutaciones directas entre letras, cada una con su costo, y se pueden encadenar. Convertir cada S<sub>i</sub> en T<sub>i</sub>, minimizando el costo total.</p><p><b>Entrada.</b> Una línea con S y T (minúsculas, largo hasta 10<sup>4</sup>). K (0 ≤ K ≤ 26<sup>2</sup>). Luego K líneas con a, b y c (1 ≤ c ≤ 10<sup>6</sup>).</p><p><b>Salida.</b> El costo total mínimo, o −1 si es imposible.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="T25I-ej1">Copiar</button></div><pre class="io" id="T25I-ej1">abc xyz
+6
+a x 5
+b y 3
+c z 2
+a y 10
+y z 1
+x z 100</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">10</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>«Encadenar» es buscar caminos mínimos. ¿Cuántos vértices tiene el grafo? ¿Cuántos pares consultas?</p></li><li class="pista" data-nombre="El algoritmo" hidden><b>Pista 2 · El algoritmo</b><p>26 vértices y muchas consultas: conviene calcular todos los pares una sola vez, con Floyd-Warshall.</p></li><li class="pista" data-nombre="Antes de correr" hidden><b>Pista 3 · Antes de correr</b><p>¿Cuánto vale <code>d[i][i]</code>? ¿Qué pones donde no hay arista? ¿Qué haces si una arista viene repetida?</p></li><li class="pista" data-nombre="El triple ciclo" hidden><b>Pista 4 · El triple ciclo</b><p>El ciclo externo decide qué vértice se permite como intermedio. Dentro, compara el camino actual con el que pasa por ese vértice.</p></li><li class="pista" data-nombre="La respuesta" hidden><b>Pista 5 · La respuesta</b><p>Recorre las posiciones sumando <code>d[S_i][T_i]</code>. Si alguna sigue en infinito, la respuesta es −1.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 6 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">long</span> <span class="k">long</span> INF = LLONG_MAX / 2;
+
+<span class="c">/*
+ * floyd
+ * Inputs: d -&gt; matriz con costos directos, 0 en la diagonal e INF si no hay arista.
+ * Return: nada; deja en d la distancia minima entre todo par.
+ * Que hace: k es el vertice que se permite como intermedio.
+ */</span>
+<span class="k">void</span> floyd(vector&lt;vector&lt;<span class="k">long</span> <span class="k">long</span>&gt;&gt;&amp; d){
+    <span class="k">int</span> n = d.size();
+    <span class="k">for</span> (<span class="k">int</span> k = 0; k &lt; n; k++)
+        <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+            <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; n; j++)
+                <span class="k">if</span> (<span class="hueco">1</span>)
+                    d[i][j] = min(d[i][j], <span class="hueco">2</span>);
+}
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): S, T, K y las K transmutaciones.
+ * Return: 0
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    string s, t;
+    <span class="k">int</span> k;
+    cin &gt;&gt; s &gt;&gt; t &gt;&gt; k;
+
+    vector&lt;vector&lt;<span class="k">long</span> <span class="k">long</span>&gt;&gt; d(26, vector&lt;<span class="k">long</span> <span class="k">long</span>&gt;(26, INF));
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; 26; i++) d[i][i] = <span class="hueco">3</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; k; i++){
+        <span class="k">char</span> a, b;
+        <span class="k">long</span> <span class="k">long</span> c;
+        cin &gt;&gt; a &gt;&gt; b &gt;&gt; c;
+        d[a - <span class="s">'a'</span>][b - <span class="s">'a'</span>] = <span class="hueco">4</span>;
+    }
+
+    floyd(d);
+
+    <span class="k">long</span> <span class="k">long</span> total = 0;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; (<span class="k">int</span>)s.size(); i++){
+        <span class="k">long</span> <span class="k">long</span> costo = <span class="hueco">5</span>;
+        <span class="k">if</span> (<span class="hueco">6</span>){
+            cout &lt;&lt; -1 &lt;&lt; <span class="s">"\n"</span>;
+            <span class="k">return</span> 0;
+        }
+        total += costo;
+    }
+
+    cout &lt;&lt; total &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 7 · Qué va en cada hueco</b><ol><li>Existe el camino de i a k y el de k a j.</li><li>Pasar por k.</li><li>Costo de quedarse en la misma letra.</li><li>Quedarse con la opción más barata si la arista se repite.</li><li>Costo de convertir la letra de S en la de T.</li><li>No hay forma de convertirla.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>El ciclo de k va afuera.</li><li>Si S<sub>i</sub> = T<sub>i</sub> el costo es 0.</li><li>La suma llega a 2,5 × 10<sup>11</sup>: <code>long long</code>.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Misma letra, sin transmutaciones.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T25I-c1">Copiar</button></div><pre class="io" id="T25I-c1">a a
+0</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">Imposible.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T25I-c2">Copiar</button></div><pre class="io" id="T25I-c2">a b
+0</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">-1</pre></div></div></div><div class="caso"><p class="nota">Encadenar.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T25I-c3">Copiar</button></div><pre class="io" id="T25I-c3">a c
+2
+a b 3
+b c 4</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">7</pre></div></div></div><div class="caso"><p class="nota">Arista repetida.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T25I-c4">Copiar</button></div><pre class="io" id="T25I-c4">a b
+2
+a b 5
+a b 3</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">3</pre></div></div></div><div class="caso"><p class="nota">Dos posiciones.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T25I-c5">Copiar</button></div><pre class="io" id="T25I-c5">ab ba
+2
+a b 1
+b a 1</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">2</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Encadenar sobre pocos elementos: calcula todos los pares una vez y después solo consulta.</p><p><b>Para comparar:</b> Ficha T25·I, pág. 56 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article></section><section class="dia" id="d21" data-fecha="2026-11-21"><h2>Sábado 21 de noviembre · Simulacro 2</h2><div class="dmeta"><span class="chip">También</span><span class="chip">2 h</span></div><p>El foco es Física, así que limítate a dos problemas. Hoy también es la ayudantía de repaso.</p><div class="simbox"><b>Primero elige tú, leyendo el PDF:</b> <strong>C2_2025_02.pdf</strong><table><thead><tr><th></th><th>Problema</th><th>De qué trata</th></tr></thead><tbody><tr><td><b>A</b></td><td>Slimes</td><td>Sus ejemplos no calzan con el enunciado: mejor no lo elijas.</td></tr><tr><td><b>B</b></td><td>Programación de Hechizos</td><td>Hechizos de dos tipos, con costo por cambiar.</td></tr><tr><td><b>C</b></td><td>Log Pose</td><td>Tiempos mínimos entre islas, con tiempos negativos.</td></tr><tr><td><b>D</b></td><td>Torneo de Tenis de Mesa</td><td>Mínimo de grupos con diferencia acotada.</td></tr><tr><td><b>E</b></td><td>Championship</td><td>Sus ejemplos no calzan con el enunciado: mejor no lo elijas.</td></tr><tr><td><b>F</b></td><td>Huevito Rey</td><td>Grilla con una casilla obligatoria.</td></tr></tbody></table><details class="pl"><summary>¿Cuáles habría elegido yo?</summary><p>C y D son los más rápidos. Para aprender más elegiría B y F, que son los que aparecen abajo. A y E mejor no, porque sus ejemplos están malos.</p></details></div><article class="ej" id="e-T25B" data-id="T25·B" data-dia="d21" data-titulo="Programación de Hechizos"><header class="eh"><span class="eid">T25·B</span><h3>Programación de Hechizos</h3><span class="dmeta"><span class="chip foco">Indispensable</span><span class="chip sim">S2</span><span class="chip">35 min</span><span class="chip"><span class="dots" title="Importancia muy alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span> tema muy alta</span></span></header><p class="por">Torneo 2025-2 · B. Es el criterio del lunes 9 con un giro, y fue escrito por la profesora.</p><p>n hechizos con tiempo p, peso w y tipo C o D. Cambiar de un tipo al otro toma S segundos, y una vez hecho el cambio hay que seguir en el nuevo tipo hasta terminar. Minimizar la suma de w<sub>i</sub> · T<sub>i</sub>, donde T<sub>i</sub> es el instante en que termina el hechizo.</p><p><b>Entrada.</b> n y S (n ≤ 10<sup>5</sup>, S ≤ 10<sup>4</sup>). Luego n líneas con p, w y el tipo.</p><p><b>Salida.</b> El costo mínimo.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="T25B-ej1">Copiar</button></div><pre class="io" id="T25B-ej1">4 5
+1 10 C
+1 1 D
+1 10 C
+1 1 D</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">47</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 2</span><button class="mini-b copiar" data-de="T25B-ej2">Copiar</button></div><pre class="io" id="T25B-ej2">4 5
+3 4 C
+2 2 D
+1 3 C
+4 1 D</pre></div><div><div class="cab"><span>Salida 2</span></div><pre class="io">56</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 3</span><button class="mini-b copiar" data-de="T25B-ej3">Copiar</button></div><pre class="io" id="T25B-ej3">5 10
+8 3 D
+2 5 C
+3 2 C
+6 4 D
+1 1 C</pre></div><div><div class="cab"><span>Salida 3</span></div><pre class="io">203</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 4</span><button class="mini-b copiar" data-de="T25B-ej4">Copiar</button></div><pre class="io" id="T25B-ej4">5 7
+5 10 D
+2 1 D
+3 4 C
+1 2 C
+4 3 D</pre></div><div><div class="cab"><span>Salida 4</span></div><pre class="io">214</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>Duración, peso y suma ponderada. Lo nuevo es el cambio de tipo.</p></li><li class="pista" data-nombre="Qué forma tiene la solución" hidden><b>Pista 2 · Qué forma tiene la solución</b><p>¿Cuántas veces se puede cambiar de tipo? ¿Cómo queda entonces el orden?</p></li><li class="pista" data-nombre="Cuántos casos hay" hidden><b>Pista 3 · Cuántos casos hay</b><p>Todos los de un tipo y después todos los del otro. Hay solo dos órdenes de bloques: calcula ambos y quédate con el menor.</p></li><li class="pista" data-nombre="Dentro de cada bloque" hidden><b>Pista 4 · Dentro de cada bloque</b><p>El argumento de intercambio compara dos hechizos adyacentes del mismo tipo, y no afecta a los demás. Vale el mismo criterio del lunes 9.</p></li><li class="pista" data-nombre="Calcular un orden" hidden><b>Pista 5 · Calcular un orden</b><p>Una función que recorre un bloque desde un tiempo inicial y lo deja actualizado. El segundo bloque parte en el final del primero más S.</p></li><li class="pista" data-nombre="El caso borde" hidden><b>Pista 6 · El caso borde</b><p>¿Qué pasa si un tipo no aparece en la entrada?</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 7 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">struct</span> Hechizo { <span class="k">long</span> <span class="k">long</span> p, w; };
+
+<span class="c">/*
+ * antes
+ * Inputs: a, b -&gt; dos hechizos.
+ * Return: true si a va antes que b.
+ */</span>
+<span class="k">bool</span> antes(<span class="k">const</span> Hechizo&amp; a, <span class="k">const</span> Hechizo&amp; b){
+    <span class="k">return</span> <span class="hueco">1</span>;
+}
+
+<span class="c">/*
+ * costoBloque
+ * Inputs: v -&gt; hechizos ya ordenados; t -&gt; tiempo al empezar (termina actualizado).
+ * Return: suma de w * T del bloque.
+ */</span>
+<span class="k">long</span> <span class="k">long</span> costoBloque(<span class="k">const</span> vector&lt;Hechizo&gt;&amp; v, <span class="k">long</span> <span class="k">long</span>&amp; t){
+    <span class="k">long</span> <span class="k">long</span> costo = 0;
+    <span class="k">for</span> (<span class="k">const</span> Hechizo&amp; h : v){
+        t += h.p;
+        costo += <span class="hueco">2</span>;
+    }
+    <span class="k">return</span> costo;
+}
+
+<span class="c">/*
+ * costoOrden
+ * Inputs: primero, segundo -&gt; bloques en ese orden; s -&gt; recalibracion.
+ * Return: costo total de ejecutarlos en ese orden.
+ */</span>
+<span class="k">long</span> <span class="k">long</span> costoOrden(<span class="k">const</span> vector&lt;Hechizo&gt;&amp; primero, <span class="k">const</span> vector&lt;Hechizo&gt;&amp; segundo, <span class="k">long</span> <span class="k">long</span> s){
+    <span class="k">long</span> <span class="k">long</span> t = 0;
+    <span class="k">long</span> <span class="k">long</span> costo = costoBloque(primero, t);
+    <span class="k">if</span> (<span class="hueco">3</span>) t += s;
+    <span class="k">return</span> costo + <span class="hueco">4</span>;
+}
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): n, S y los n hechizos.
+ * Return: 0
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    <span class="k">int</span> n;
+    <span class="k">long</span> <span class="k">long</span> s;
+    cin &gt;&gt; n &gt;&gt; s;
+
+    vector&lt;Hechizo&gt; c, d;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++){
+        <span class="k">long</span> <span class="k">long</span> p, w;
+        <span class="k">char</span> m;
+        cin &gt;&gt; p &gt;&gt; w &gt;&gt; m;
+        <span class="k">if</span> (m == <span class="s">'C'</span>) c.push_back({p, w});
+        <span class="k">else</span> d.push_back({p, w});
+    }
+
+    sort(c.begin(), c.end(), antes);
+    sort(d.begin(), d.end(), antes);
+
+    cout &lt;&lt; <span class="hueco">5</span> &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 8 · Qué va en cada hueco</b><ol><li>El criterio sin divisiones.</li><li>Lo que aporta este hechizo.</li><li>Cuándo hay cambio de tipo de verdad.</li><li>El costo del segundo bloque, desde el tiempo actual.</li><li>Los dos órdenes posibles.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>Si solo hay un tipo, no se cobra S.</li><li><code>long long</code> en tiempo y costo.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Un solo hechizo: no hay cambio.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T25B-c1">Copiar</button></div><pre class="io" id="T25B-c1">1 100
+5 2 C</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">10</pre></div></div></div><div class="caso"><p class="nota">Un solo tipo.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T25B-c2">Copiar</button></div><pre class="io" id="T25B-c2">2 100
+1 1 D
+1 1 D</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">3</pre></div></div></div><div class="caso"><p class="nota">Conviene partir por el pesado.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T25B-c3">Copiar</button></div><pre class="io" id="T25B-c3">2 1
+1 1 C
+1 100 D</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">103</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Una restricción nueva suele partir el problema en pocos casos: resuelves cada uno con la plantilla y tomas el mejor.</p><p><b>Para comparar:</b> Ficha T25·B, pág. 42 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article><article class="ej" id="e-T25F" data-id="T25·F" data-dia="d21" data-titulo="Huevito Rey"><header class="eh"><span class="eid">T25·F</span><h3>Huevito Rey</h3><span class="dmeta"><span class="chip foco">Indispensable</span><span class="chip sim">S2</span><span class="chip">30 min</span><span class="chip"><span class="dots" title="Importancia media"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span> tema media</span></span></header><p class="por">Torneo 2025-2 · F. Es el único ejercicio de PD en grilla de los certámenes.</p><p>Grilla de n × m con huevos (<code>0</code>) y casillas vacías (<code>.</code>). Partir en (1, 1), moverse solo abajo o a la derecha, y pasar obligatoriamente por la casilla (x, y), donde x es la <strong>columna</strong> e y la <strong>fila</strong>. Maximizar los huevos.</p><p><b>Entrada.</b> n y m (hasta 1000). x e y. Luego n líneas de m caracteres.</p><p><b>Salida.</b> La cantidad máxima de huevos.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="T25F-ej1">Copiar</button></div><pre class="io" id="T25F-ej1">5 5
+1 5
+00000
+0...0
+0...0
+0...0
+0....</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">5</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>Solo abajo o a la derecha: PD en grilla.</p></li><li class="pista" data-nombre="La casilla obligatoria" hidden><b>Pista 2 · La casilla obligatoria</b><p>Un camino que pasa por ella se puede cortar en dos pedazos. ¿Dependen uno del otro?</p></li><li class="pista" data-nombre="Un tramo" hidden><b>Pista 3 · Un tramo</b><p>Escribe una función que dé el máximo entre dos casillas. A[i][j] vale el huevo de esa casilla más lo mejor entre venir de arriba o de la izquierda.</p></li><li class="pista" data-nombre="Hasta dónde sigue" hidden><b>Pista 4 · Hasta dónde sigue</b><p>El segundo tramo llega hasta la esquina (n, m). Los huevos nunca restan, así que seguir no empeora.</p></li><li class="pista" data-nombre="Contar una vez" hidden><b>Pista 5 · Contar una vez</b><p>La casilla obligatoria queda en los dos tramos. Si tenía huevo, se contó dos veces.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 6 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="c">/*
+ * mejorCamino
+ * Inputs: g -&gt; grilla; (f0, c0) -&gt; partida; (f1, c1) -&gt; llegada.
+ * Return: maximo de huevos entre ambas, contando los dos extremos.
+ * Que hace: PD en el rectangulo entre las dos casillas.
+ */</span>
+<span class="k">int</span> mejorCamino(<span class="k">const</span> vector&lt;string&gt;&amp; g, <span class="k">int</span> f0, <span class="k">int</span> c0, <span class="k">int</span> f1, <span class="k">int</span> c1){
+    <span class="k">int</span> filas = f1 - f0 + 1, cols = c1 - c0 + 1;
+    vector&lt;vector&lt;<span class="k">int</span>&gt;&gt; A(filas, vector&lt;<span class="k">int</span>&gt;(cols, 0));
+
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; filas; i++){
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; cols; j++){
+            <span class="k">int</span> previo = 0;
+            <span class="k">if</span> (<span class="hueco">1</span>) previo = max(previo, <span class="hueco">2</span>);
+            <span class="k">if</span> (<span class="hueco">3</span>) previo = max(previo, <span class="hueco">4</span>);
+            A[i][j] = <span class="hueco">5</span>;
+        }
+    }
+    <span class="k">return</span> A[filas - 1][cols - 1];
+}
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): n, m, x, y y la grilla.
+ * Return: 0
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    <span class="k">int</span> n, m, x, y;
+    cin &gt;&gt; n &gt;&gt; m &gt;&gt; x &gt;&gt; y;
+    <span class="k">if</span> (y &gt; n || x &gt; m) swap(x, y);
+
+    vector&lt;string&gt; g(n);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) cin &gt;&gt; g[i];
+
+    <span class="k">int</span> f = <span class="hueco">6</span>, c = <span class="hueco">7</span>;
+    <span class="k">int</span> total = mejorCamino(g, 0, 0, f, c) + <span class="hueco">8</span>;
+    <span class="k">if</span> (<span class="hueco">9</span>) total--;
+
+    cout &lt;&lt; total &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 7 · Qué va en cada hueco</b><ol><li>Existe la casilla de arriba.</li><li>Venir de arriba.</li><li>Existe la casilla de la izquierda.</li><li>Venir de la izquierda.</li><li>Lo mejor anterior más el huevo de aquí.</li><li>La fila, en base 0.</li><li>La columna, en base 0.</li><li>El tramo desde la casilla obligatoria hasta la esquina.</li><li>La casilla obligatoria tenía huevo.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>x es columna e y es fila: en el ejemplo, al revés daría 8.</li><li>Se resta solo si la casilla tenía huevo.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Una casilla con huevo.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T25F-c1">Copiar</button></div><pre class="io" id="T25F-c1">1 1
+1 1
+0</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">1</pre></div></div></div><div class="caso"><p class="nota">Una casilla vacía.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T25F-c2">Copiar</button></div><pre class="io" id="T25F-c2">1 1
+1 1
+.</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">Obligatoria a la derecha.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="T25F-c3">Copiar</button></div><pre class="io" id="T25F-c3">2 3
+3 1
+0.0
+..0</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">3</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Un punto obligatorio divide el camino en dos problemas independientes.</p><p><b>Para comparar:</b> Ficha T25·F, pág. 52 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article></section><section class="dia" id="d25" data-fecha="2026-11-25"><h2>Miércoles 25 de noviembre</h2><div class="dmeta"><span class="chip">Después de Física</span><span class="chip">30 min</span></div><p>Imprime la guía. Después escribe en papel, de memoria, cada pieza. Da vuelta la tarjeta solo cuando la tengas escrita.</p><div class="tarjeta"><b>1. Esqueleto con lectura rápida</b><p>Las dos líneas que van al inicio de <code>main</code>.</p><details class="pl"><summary>Dar vuelta</summary><pre class="code"><code>ios::sync_with_stdio(<span class="k">false</span>);
+cin.tie(<span class="k">nullptr</span>);</code></pre></details></div><div class="tarjeta"><b>2. Min-heap</b><p>La declaración de una cola de prioridad que entrega el menor <code>long long</code>.</p><details class="pl"><summary>Dar vuelta</summary><pre class="code"><code>priority_queue&lt;<span class="k">long</span> <span class="k">long</span>, vector&lt;<span class="k">long</span> <span class="k">long</span>&gt;, greater&lt;<span class="k">long</span> <span class="k">long</span>&gt;&gt; h;</code></pre></details></div><div class="tarjeta"><b>3. Comparador GreedyRatio</b><p>Tareas con largo <code>l</code> y peso <code>w</code>: true si <code>a</code> va antes.</p><details class="pl"><summary>Dar vuelta</summary><pre class="code"><code><span class="k">return</span> a.w * b.l &gt; b.w * a.l;</code></pre></details></div><div class="tarjeta"><b>4. Union-Find</b><p>El cuerpo de <code>buscar</code> y los pasos de unir por tamaño.</p><details class="pl"><summary>Dar vuelta</summary><pre class="code"><code><span class="k">if</span> (p[x] != x) p[x] = buscar(p, p[x]);
+<span class="k">return</span> p[x];
+
+a = buscar(p, a);
+b = buscar(p, b);
+<span class="k">if</span> (a == b) <span class="k">return</span> <span class="k">false</span>;
+<span class="k">if</span> (tam[a] &lt; tam[b]) swap(a, b);
+p[b] = a;
+tam[a] += tam[b];
+<span class="k">return</span> <span class="k">true</span>;</code></pre></details></div><div class="tarjeta"><b>5. MWIS</b><p>Casos base y recurrencia.</p><details class="pl"><summary>Dar vuelta</summary><pre class="code"><code>A[0] = 0;
+A[1] = w[0];
+<span class="k">for</span> (<span class="k">int</span> i = 2; i &lt;= n; i++)
+    A[i] = max(A[i - 1], A[i - 2] + w[i - 1]);</code></pre></details></div><div class="tarjeta"><b>6. Mochila en una fila</b><p>Los dos ciclos.</p><details class="pl"><summary>Dar vuelta</summary><pre class="code"><code><span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+    <span class="k">for</span> (<span class="k">int</span> c = C; c &gt;= s[i]; c--)
+        A[c] = max(A[c], A[c - s[i]] + v[i]);</code></pre></details></div><div class="tarjeta"><b>7. Alineamiento</b><p>Casos base y las tres opciones de la recurrencia.</p><details class="pl"><summary>Dar vuelta</summary><pre class="code"><code>A[i][0] = i * gap;
+A[0][j] = j * gap;
+
+A[i][j] = min({A[i - 1][j - 1] + costo(x[i - 1], y[j - 1]),
+               A[i - 1][j] + gap,
+               A[i][j - 1] + gap});</code></pre></details></div><div class="tarjeta"><b>8. Bellman-Ford</b><p>El ciclo completo, con la detección de ciclo negativo.</p><details class="pl"><summary>Dar vuelta</summary><pre class="code"><code><span class="k">for</span> (<span class="k">int</span> i = 1; i &lt;= n; i++){
+    <span class="k">bool</span> cambio = <span class="k">false</span>;
+    <span class="k">for</span> (<span class="k">const</span> Arista&amp; e : aristas){
+        <span class="k">if</span> (dist[e.u] != INF &amp;&amp; dist[e.u] + e.w &lt; dist[e.v]){
+            dist[e.v] = dist[e.u] + e.w;
+            cambio = <span class="k">true</span>;
+        }
+    }
+    <span class="k">if</span> (!cambio) <span class="k">return</span> <span class="k">false</span>;
+}
+<span class="k">return</span> <span class="k">true</span>;</code></pre></details></div><div class="tarjeta"><b>9. Floyd-Warshall</b><p>Los tres ciclos, en el orden correcto.</p><details class="pl"><summary>Dar vuelta</summary><pre class="code"><code><span class="k">for</span> (<span class="k">int</span> k = 0; k &lt; n; k++)
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++)
+        <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; n; j++)
+            <span class="k">if</span> (d[i][k] != INF &amp;&amp; d[k][j] != INF)
+                d[i][j] = min(d[i][j], d[i][k] + d[k][j]);</code></pre></details></div><div class="tarjeta"><b>10. Backtracking</b><p>La diferencia entre el ciclo de combinaciones y el de permutaciones.</p><details class="pl"><summary>Dar vuelta</summary><pre class="code"><code><span class="k">for</span> (<span class="k">int</span> i = inicio; i &lt; n; i++){
+    actual.push_back(c[i]);
+    generar(c, actual, i + 1, k);
+    actual.pop_back();
+}
+
+<span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++){
+    <span class="k">if</span> (usado[i]) <span class="k">continue</span>;
+    usado[i] = <span class="k">true</span>;
+    actual.push_back(a[i]);
+    permutar(a, actual, usado);
+    actual.pop_back();
+    usado[i] = <span class="k">false</span>;
+}</code></pre></details></div></section><section class="dia" id="d26" data-fecha="2026-11-26"><h2>Jueves 26 de noviembre · Simulacro 3</h2><div class="dmeta"><span class="chip foco">Foco</span><span class="chip">hasta 3 h</span></div><p>Este es el ensayo general, con el mismo formato del certamen. Ahora sí, usa las plantillas impresas (Parte I de la guía), sin abrir las fichas S3. Hoy también es el control en clases.</p><div class="simbox"><b>Primero elige tú, leyendo el PDF:</b> <strong>C2_2026_01.pdf</strong><table><thead><tr><th></th><th>Problema</th><th>De qué trata</th></tr></thead><tbody><tr><td><b>A</b></td><td>Jaime vs Bastián</td><td>Juego por turnos con frascos de canicas.</td></tr><tr><td><b>B</b></td><td>La Guardia de la Noche</td><td>Contar escuadrones de exactamente K.</td></tr><tr><td><b>C</b></td><td>La Cadena de los Rumores</td><td>Variación mínima, con valores negativos.</td></tr><tr><td><b>D</b></td><td>El Registro Oficial</td><td>Comparar dos registros de eventos.</td></tr><tr><td><b>E</b></td><td>El Mandaloriano</td><td>Ordenar misiones de dos líderes. Su ejemplo 2 está malo: el correcto es 109.</td></tr></tbody></table><details class="pl"><summary>¿Cuáles habría elegido yo?</summary><p>En el certamen real elegiría C y E, que salen casi directo de una plantilla. Para aprender, B y D son los que aparecen abajo.</p></details></div><article class="ej" id="e-C26B" data-id="C26·B" data-dia="d26" data-titulo="La Guardia de la Noche"><header class="eh"><span class="eid">C26·B</span><h3>La Guardia de la Noche</h3><span class="dmeta"><span class="chip foco">Indispensable</span><span class="chip sim">S3</span><span class="chip">35 min</span><span class="chip"><span class="dots" title="Importancia muy alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span> tema muy alta</span></span></header><p class="por">C2 2026-1 · B. Backtracking de combinaciones con poda, tal como en las clases 13 y 14.</p><p>M voluntarios con nombre, campus, arma y facción (Stark, Lannister o Neutral). Solo sirven los de campus CasaCentral, SanJoaquin, Vitacura, VinaDelMar o Concepcion, con arma Vidriagon o AceroValyrio. Contar los escuadrones de exactamente K voluntarios útiles que no mezclen Stark con Lannister. Los Neutral van con cualquiera.</p><p><b>Entrada.</b> M y K (hasta 25). Luego M líneas con los cuatro textos.</p><p><b>Salida.</b> La cantidad de escuadrones, 0 si no hay.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="C26B-ej1">Copiar</button></div><pre class="io" id="C26B-ej1">6 2
+JonNieve Stark AceroValyrio Stark
+SansanoA CasaCentral Vidriagon Stark
+SansanoB SanJoaquin AceroValyrio Lannister
+SansanoC Vitacura Vidriagon Neutral
+SansanoD VinaDelMar AceroComun Stark
+SansanoE Concepcion Vidriagon Stark</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">4</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 2</span><button class="mini-b copiar" data-de="C26B-ej2">Copiar</button></div><pre class="io" id="C26B-ej2">6 3
+AryaStark CasaCentral Vidriagon Stark
+SansanoA Vitacura AceroValyrio Lannister
+SansanoB Concepcion AceroValyrio Lannister
+SansanoC SanJoaquin Vidriagon Neutral
+JaimeLannister Lannister AceroValyrio Lannister
+Tyrion Lannister Ninguno Neutral</pre></div><div><div class="cab"><span>Salida 2</span></div><pre class="io">1</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>«De cuántas maneras elegir exactamente K», no importa el orden, M ≤ 25. El peor caso, C(25,12), son unos 5,2 millones: combinaciones con backtracking.</p></li><li class="pista" data-nombre="Primero filtra" hidden><b>Pista 2 · Primero filtra</b><p>Deja solo a los útiles y guarda lo único que importa de cada uno. ¿Qué dato necesitas?</p></li><li class="pista" data-nombre="Qué recordar en la recursión" hidden><b>Pista 3 · Qué recordar en la recursión</b><p>Desde qué índice se puede elegir, cuántos faltan y si ya entró alguien de cada facción enfrentada.</p></li><li class="pista" data-nombre="Elegir sin repetir" hidden><b>Pista 4 · Elegir sin repetir</b><p>El ciclo parte en <code>inicio</code> y la llamada sigue desde <code>i + 1</code>, así {1,3} no aparece también como {3,1}.</p></li><li class="pista" data-nombre="Dónde podar" hidden><b>Pista 5 · Dónde podar</b><p>Si los que quedan no alcanzan para completar, se corta. Si la elección junta Stark con Lannister, se salta esa rama.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 6 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="c">/*
+ * generar
+ * Inputs: f -&gt; faccion de cada util (0 neutral, 1 Stark, 2 Lannister);
+ *         inicio -&gt; primer indice disponible; faltan -&gt; cuantos faltan;
+ *         stark, lannister -&gt; si ya entro alguien de esa faccion.
+ * Return: escuadrones validos que se pueden completar desde aqui.
+ * Que hace: backtracking de combinaciones con poda.
+ */</span>
+<span class="k">long</span> <span class="k">long</span> generar(<span class="k">const</span> vector&lt;<span class="k">int</span>&gt;&amp; f, <span class="k">int</span> inicio, <span class="k">int</span> faltan, <span class="k">bool</span> stark, <span class="k">bool</span> lannister){
+    <span class="k">if</span> (<span class="hueco">1</span>) <span class="k">return</span> 1;
+
+    <span class="k">long</span> <span class="k">long</span> total = 0;
+    <span class="k">int</span> n = f.size();
+    <span class="k">for</span> (<span class="k">int</span> i = inicio; i &lt; n &amp;&amp; <span class="hueco">2</span>; i++){
+        <span class="k">bool</span> s = stark || f[i] == 1;
+        <span class="k">bool</span> l = lannister || f[i] == 2;
+        <span class="k">if</span> (<span class="hueco">3</span>) <span class="k">continue</span>;
+        total += generar(f, <span class="hueco">4</span>, <span class="hueco">5</span>, s, l);
+    }
+    <span class="k">return</span> total;
+}
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): M, K y los M voluntarios.
+ * Return: 0
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    <span class="k">const</span> set&lt;string&gt; campus = {<span class="s">"CasaCentral"</span>, <span class="s">"SanJoaquin"</span>, <span class="s">"Vitacura"</span>, <span class="s">"VinaDelMar"</span>, <span class="s">"Concepcion"</span>};
+    <span class="k">const</span> set&lt;string&gt; armas = {<span class="s">"Vidriagon"</span>, <span class="s">"AceroValyrio"</span>};
+
+    <span class="k">int</span> m, k;
+    cin &gt;&gt; m &gt;&gt; k;
+
+    vector&lt;<span class="k">int</span>&gt; f;
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; m; i++){
+        string nombre, c, a, fa;
+        cin &gt;&gt; nombre &gt;&gt; c &gt;&gt; a &gt;&gt; fa;
+        <span class="k">if</span> (<span class="hueco">6</span>)
+            f.push_back(fa == <span class="s">"Stark"</span> ? 1 : (fa == <span class="s">"Lannister"</span> ? 2 : 0));
+    }
+
+    cout &lt;&lt; generar(f, 0, <span class="hueco">7</span>, <span class="k">false</span>, <span class="k">false</span>) &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 7 · Qué va en cada hueco</b><ol><li>El escuadrón está completo.</li><li>Quedan suficientes voluntarios para completar.</li><li>La elección mezcla las dos facciones.</li><li>Desde dónde se sigue eligiendo.</li><li>Cuántos faltan después de elegir.</li><li>Cumple campus y arma.</li><li>Cuántos hay que elegir al partir.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>«Stark» o «Lannister» como campus no son válidos.</li><li>Si K supera a los útiles, la respuesta es 0.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Uno que sirve.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="C26B-c1">Copiar</button></div><pre class="io" id="C26B-c1">1 1
+A CasaCentral Vidriagon Neutral</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">1</pre></div></div></div><div class="caso"><p class="nota">Facciones enfrentadas.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="C26B-c2">Copiar</button></div><pre class="io" id="C26B-c2">2 2
+A CasaCentral Vidriagon Stark
+B Vitacura AceroValyrio Lannister</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">K mayor que los útiles.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="C26B-c3">Copiar</button></div><pre class="io" id="C26B-c3">3 5
+A CasaCentral Vidriagon Stark
+B Vitacura AceroValyrio Stark
+C Concepcion Vidriagon Neutral</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Filtra primero. Después guarda en la recursión solo lo que la restricción necesita.</p><p><b>Para comparar:</b> Ficha C26·B, pág. 24 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article><article class="ej" id="e-C26D" data-id="C26·D" data-dia="d26" data-titulo="El Registro Oficial"><header class="eh"><span class="eid">C26·D</span><h3>El Registro Oficial</h3><span class="dmeta"><span class="chip foco">Indispensable</span><span class="chip sim">S3</span><span class="chip">30 min</span><span class="chip"><span class="dots" title="Importancia alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> tema alta</span></span></header><p class="por">C2 2026-1 · D. Alineamiento con costos propios, como la distancia de edición del miércoles 11.</p><p>Dos registros de eventos, con códigos GOL, FAL, COR, AMA, ROJ, PEN o UNK. Ignorar un evento de cualquiera de los dos cuesta 2. Emparejar uno con otro cuesta 0 si los códigos son iguales, 1 si alguno es UNK y 5 si son distintos. Hallar el costo mínimo de combinarlos.</p><p><b>Entrada.</b> n y m (hasta 10<sup>3</sup>). Luego n códigos y después m códigos.</p><p><b>Salida.</b> El costo mínimo.</p><div class="muestras"><div><div class="cab"><span>Entrada 1</span><button class="mini-b copiar" data-de="C26D-ej1">Copiar</button></div><pre class="io" id="C26D-ej1">6 5
+GOL FAL COR UNK PEN ROJ
+GOL COR AMA PEN ROJ</pre></div><div><div class="cab"><span>Salida 1</span></div><pre class="io">3</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 2</span><button class="mini-b copiar" data-de="C26D-ej2">Copiar</button></div><pre class="io" id="C26D-ej2">5 5
+GOL UNK PEN AMA ROJ
+GOL FAL PEN AMA ROJ</pre></div><div><div class="cab"><span>Salida 2</span></div><pre class="io">1</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 3</span><button class="mini-b copiar" data-de="C26D-ej3">Copiar</button></div><pre class="io" id="C26D-ej3">4 3
+GOL FAL PEN ROJ
+GOL PEN ROJ</pre></div><div><div class="cab"><span>Salida 3</span></div><pre class="io">2</pre></div></div><div class="muestras"><div><div class="cab"><span>Entrada 4</span><button class="mini-b copiar" data-de="C26D-ej4">Copiar</button></div><pre class="io" id="C26D-ej4">3 3
+GOL FAL COR
+ROJ AMA PEN</pre></div><div><div class="cab"><span>Salida 4</span></div><pre class="io">12</pre></div></div><ol class="pistas"><li class="pista" data-nombre="Qué familia es" hidden><b>Pista 1 · Qué familia es</b><p>Dos secuencias en orden, con ignorar y emparejar. Ya lo hiciste con letras.</p></li><li class="pista" data-nombre="Qué cambia" hidden><b>Pista 2 · Qué cambia</b><p>La tabla es la misma. Solo cambian el costo del espacio y el de enfrentar dos elementos.</p></li><li class="pista" data-nombre="Función de costo" hidden><b>Pista 3 · Función de costo</b><p>Escribe aparte una función que reciba dos códigos. ¿En qué orden revisas las condiciones? Piensa en qué pasa si los dos son UNK.</p></li><li class="pista" data-nombre="Casos base y llenado" hidden><b>Pista 4 · Casos base y llenado</b><p>Igual que en la distancia de edición, pero cada elemento ignorado vale 2.</p></li><li class="pista" data-nombre="Plantilla con huecos" hidden><b>Pista 5 · Plantilla con huecos</b><p>Lo más parecido a tener el formulario al lado. Copia la estructura en tu editor y completa cada hueco.</p><pre class="code"><code><span class="p">#include &lt;bits/stdc++.h&gt;</span>
+<span class="k">using</span> <span class="k">namespace</span> std;
+
+<span class="k">const</span> <span class="k">int</span> GAP = 2;
+
+<span class="c">/*
+ * costoPareja
+ * Inputs: a, b -&gt; dos codigos.
+ * Return: el costo de enfrentarlos.
+ */</span>
+<span class="k">int</span> costoPareja(<span class="k">const</span> string&amp; a, <span class="k">const</span> string&amp; b){
+    <span class="k">if</span> (<span class="hueco">1</span>) <span class="k">return</span> 0;
+    <span class="k">if</span> (<span class="hueco">2</span>) <span class="k">return</span> 1;
+    <span class="k">return</span> 5;
+}
+
+<span class="c">/*
+ * costoMinimo
+ * Inputs: x, y -&gt; los dos registros.
+ * Return: costo minimo de alinearlos.
+ * Que hace: tabla de prefijos.
+ */</span>
+<span class="k">int</span> costoMinimo(<span class="k">const</span> vector&lt;string&gt;&amp; x, <span class="k">const</span> vector&lt;string&gt;&amp; y){
+    <span class="k">int</span> n = x.size(), m = y.size();
+    vector&lt;vector&lt;<span class="k">int</span>&gt;&gt; A(n + 1, vector&lt;<span class="k">int</span>&gt;(m + 1, 0));
+
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt;= n; i++) A[i][0] = <span class="hueco">3</span>;
+    <span class="k">for</span> (<span class="k">int</span> j = 1; j &lt;= m; j++) A[0][j] = <span class="hueco">4</span>;
+
+    <span class="k">for</span> (<span class="k">int</span> i = 1; i &lt;= n; i++)
+        <span class="k">for</span> (<span class="k">int</span> j = 1; j &lt;= m; j++)
+            A[i][j] = min({<span class="hueco">5</span>,
+                           <span class="hueco">6</span>,
+                           <span class="hueco">7</span>});
+    <span class="k">return</span> A[n][m];
+}
+
+<span class="c">/*
+ * main
+ * Inputs (stdin): n, m y los dos registros.
+ * Return: 0
+ */</span>
+<span class="k">int</span> main(){
+    ios::sync_with_stdio(<span class="k">false</span>);
+    cin.tie(<span class="k">nullptr</span>);
+
+    <span class="k">int</span> n, m;
+    cin &gt;&gt; n &gt;&gt; m;
+
+    vector&lt;string&gt; x(n), y(m);
+    <span class="k">for</span> (<span class="k">int</span> i = 0; i &lt; n; i++) cin &gt;&gt; x[i];
+    <span class="k">for</span> (<span class="k">int</span> j = 0; j &lt; m; j++) cin &gt;&gt; y[j];
+
+    cout &lt;&lt; costoMinimo(x, y) &lt;&lt; <span class="s">"\n"</span>;
+    <span class="k">return</span> 0;
+}</code></pre></li><li class="pista" data-nombre="Qué va en cada hueco" hidden><b>Pista 6 · Qué va en cada hueco</b><ol><li>Son el mismo código.</li><li>Alguno es comodín.</li><li>Ignorar los i eventos.</li><li>Ignorar los j eventos.</li><li>Emparejar los dos últimos.</li><li>Ignorar el último de x.</li><li>Ignorar el último de y.</li></ol></li></ol><div class="acciones"><button class="b-sig"></button><button class="b-esc" hidden>Esconder pistas</button><span class="usadas"></span></div><details class="pl"><summary>Antes de enviar: revisa</summary><ul><li>Primero la igualdad: dos UNK son iguales y cuestan 0.</li><li>Emparejar distintos cuesta 5 y nunca conviene, porque ignorar ambos cuesta 4. La tabla lo resuelve sola.</li></ul></details><details class="pl"><summary>Casos para probar tu código</summary><div class="caso"><p class="nota">Dos comodines.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="C26D-c1">Copiar</button></div><pre class="io" id="C26D-c1">1 1
+UNK
+UNK</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">0</pre></div></div></div><div class="caso"><p class="nota">Un comodín.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="C26D-c2">Copiar</button></div><pre class="io" id="C26D-c2">1 1
+UNK
+GOL</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">1</pre></div></div></div><div class="caso"><p class="nota">Ignorar uno.</p><div class="muestras"><div><div class="cab"><span>Entrada</span><button class="mini-b copiar" data-de="C26D-c3">Copiar</button></div><pre class="io" id="C26D-c3">1 2
+GOL
+FAL GOL</pre></div><div><div class="cab"><span>Salida esperada</span></div><pre class="io">2</pre></div></div></div></details><details class="pl"><summary>Al terminar: qué te llevas</summary><p>Cambiar los costos no cambia la tabla: solo cambia la función de costo.</p><p><b>Para comparar:</b> Ficha C26·D, pág. 51 de la guía.</p></details><label class="marca"><input type="checkbox"> Lo resolví</label></article></section><section class="dia" id="d27" data-fecha="2026-11-27"><h2>Viernes 27 de noviembre · Repaso final</h2><div class="dmeta"><span class="chip foco">Foco</span><span class="chip">1 h</span></div><p>Vuelve a hacer, sin pistas, los ejercicios que más te costaron. La lista se arma sola con lo que marcaste en esta página. Revisa también las erratas y los errores frecuentes de la guía.</p><ul id="lista-repaso"></ul></section><section class="dia" id="d28" data-fecha="2026-11-28"><h2>Sábado 28 de noviembre · Certamen</h2><div class="dmeta"><span class="chip sim">Certamen</span><span class="chip">9:00 a 14:00</span></div><p>Nada nuevo hoy. Lleva la guía impresa. Lee los 5 problemas en los primeros 20 minutos y elige los 2 que tengan plantilla directa.</p></section></main>
+</div>
+<script>(function(){
+  var raiz = document.documentElement;
+  var CLAVE = 'practica-c2-algoco-v1';
+  var CLAVE_TEMA = 'tema-c2-algoco';
+  var estado = {};
+
+  try {
+    var t = localStorage.getItem(CLAVE_TEMA);
+    if (t) raiz.setAttribute('data-theme', t);
+    var g = localStorage.getItem(CLAVE);
+    if (g) estado = JSON.parse(g) || {};
+  } catch (e) { estado = {}; }
+
+  function guardar(){
+    try { localStorage.setItem(CLAVE, JSON.stringify(estado)); } catch (e) {}
+  }
+  function de(id){
+    if (!estado[id]) estado[id] = {p: 0, h: false};
+    return estado[id];
+  }
+
+  var tema = document.getElementById('tema');
+  if (tema) tema.addEventListener('click', function(){
+    var oscuro = raiz.getAttribute('data-theme') === 'dark' ||
+      (!raiz.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var nuevo = oscuro ? 'light' : 'dark';
+    raiz.setAttribute('data-theme', nuevo);
+    try { localStorage.setItem(CLAVE_TEMA, nuevo); } catch (e) {}
+  });
+
+  var tarjetas = Array.prototype.slice.call(document.querySelectorAll('.ej'));
+
+  function pintarTarjeta(c){
+    var id = c.getAttribute('data-id');
+    var e = de(id);
+    var pistas = c.querySelectorAll('.pista');
+    var sig = c.querySelector('.b-sig');
+    var esc = c.querySelector('.b-esc');
+    var usadas = c.querySelector('.usadas');
+    var marca = c.querySelector('.marca input');
+    for (var i = 0; i < pistas.length; i++) pistas[i].hidden = i >= e.p;
+    if (e.p < pistas.length){
+      sig.hidden = false;
+      sig.textContent = 'Ver pista ' + (e.p + 1) + ' de ' + pistas.length + ': ' + pistas[e.p].getAttribute('data-nombre');
+    } else {
+      sig.hidden = true;
+    }
+    esc.hidden = e.p === 0;
+    usadas.textContent = e.p === 0 ? 'Sin pistas por ahora' : 'Pistas abiertas: ' + e.p + ' de ' + pistas.length;
+    marca.checked = !!e.h;
+    c.classList.toggle('hecho', !!e.h);
+  }
+
+  function resumen(){
+    var total = 0, hechos = 0, porDia = {};
+    tarjetas.forEach(function(c){
+      var dia = c.getAttribute('data-dia');
+      var opc = c.classList.contains('opcional');
+      if (!porDia[dia]) porDia[dia] = {t: 0, h: 0};
+      if (!opc){
+        total++;
+        porDia[dia].t++;
+        if (de(c.getAttribute('data-id')).h){ hechos++; porDia[dia].h++; }
+      }
+    });
+    Object.keys(porDia).forEach(function(d){
+      var s = document.querySelector('.cuenta[data-dia="' + d + '"]');
+      if (s) s.textContent = porDia[d].h + '/' + porDia[d].t;
+    });
+    var barra = document.getElementById('barra');
+    var txt = document.getElementById('ptxt');
+    if (barra) barra.style.width = (total ? 100 * hechos / total : 0) + '%';
+    if (txt) txt.textContent = hechos + ' de ' + total + ' indispensables resueltos';
+    listaRepaso();
+  }
+
+  function listaRepaso(){
+    var ul = document.getElementById('lista-repaso');
+    if (!ul) return;
+    var filas = [];
+    tarjetas.forEach(function(c){
+      var id = c.getAttribute('data-id');
+      var e = de(id);
+      var total = c.querySelectorAll('.pista').length;
+      var opc = c.classList.contains('opcional');
+      var motivo = null, peso = 0;
+      if (!e.h && !opc){ motivo = 'Todavía no lo marcas como resuelto'; peso = 2; }
+      else if (e.h && e.p >= total - 1){ motivo = 'Llegaste a la plantilla con huecos'; peso = 1; }
+      else if (e.h && e.p >= 4){ motivo = 'Abriste ' + e.p + ' pistas'; peso = 1; }
+      if (motivo) filas.push({id: id, c: c, motivo: motivo, peso: peso});
+    });
+    filas.sort(function(a, b){ return b.peso - a.peso; });
+    ul.innerHTML = '';
+    if (!filas.length){
+      var li = document.createElement('li');
+      li.className = 'vacio';
+      li.textContent = 'Nada pendiente: resolviste todo con pocas pistas.';
+      ul.appendChild(li);
+      return;
+    }
+    filas.forEach(function(f){
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.href = '#' + f.c.id;
+      a.textContent = f.id + ' · ' + f.c.getAttribute('data-titulo');
+      li.appendChild(a);
+      li.appendChild(document.createTextNode(': ' + f.motivo + '.'));
+      ul.appendChild(li);
+    });
+  }
+
+  tarjetas.forEach(function(c){
+    var id = c.getAttribute('data-id');
+    c.querySelector('.b-sig').addEventListener('click', function(){
+      var total = c.querySelectorAll('.pista').length;
+      var e = de(id);
+      if (e.p < total) e.p++;
+      guardar();
+      pintarTarjeta(c);
+      resumen();
+      var abierta = c.querySelectorAll('.pista')[e.p - 1];
+      if (abierta && abierta.scrollIntoView) abierta.scrollIntoView({block: 'nearest'});
+    });
+    c.querySelector('.b-esc').addEventListener('click', function(){
+      de(id).p = 0;
+      guardar();
+      pintarTarjeta(c);
+      resumen();
+    });
+    c.querySelector('.marca input').addEventListener('change', function(ev){
+      de(id).h = ev.target.checked;
+      guardar();
+      pintarTarjeta(c);
+      resumen();
+    });
+    pintarTarjeta(c);
+  });
+
+  var todas = document.getElementById('esconder-todas');
+  if (todas) todas.addEventListener('click', function(){
+    tarjetas.forEach(function(c){
+      de(c.getAttribute('data-id')).p = 0;
+      pintarTarjeta(c);
+    });
+    guardar();
+    resumen();
+  });
+
+  function copiar(texto, boton){
+    function listo(){
+      var previo = boton.textContent;
+      boton.textContent = 'Copiado';
+      setTimeout(function(){ boton.textContent = previo; }, 900);
+    }
+    function respaldo(){
+      var ta = document.createElement('textarea');
+      ta.value = texto;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); listo(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(texto).then(listo, respaldo);
+    } else {
+      respaldo();
+    }
+  }
+  document.addEventListener('click', function(ev){
+    var b = ev.target;
+    if (b && b.classList && b.classList.contains('copiar')){
+      var pre = document.getElementById(b.getAttribute('data-de'));
+      if (pre) copiar(pre.textContent, b);
+    }
+  });
+
+  var hoy = new Date();
+  function dos(n){ return (n < 10 ? '0' : '') + n; }
+  var hoyTxt = hoy.getFullYear() + '-' + dos(hoy.getMonth() + 1) + '-' + dos(hoy.getDate());
+  var dias = Array.prototype.slice.call(document.querySelectorAll('.dia[data-fecha]'));
+  var destino = null;
+  for (var i = 0; i < dias.length; i++){
+    if (dias[i].getAttribute('data-fecha') >= hoyTxt){ destino = dias[i]; break; }
+  }
+  var irHoy = document.getElementById('ir-hoy');
+  if (destino){
+    var esHoy = destino.getAttribute('data-fecha') === hoyTxt;
+    var enlaceDia = document.querySelector('#menu a[href="#' + destino.id + '"]');
+    if (enlaceDia){
+      enlaceDia.classList.add('hoy');
+      var p = document.createElement('span');
+      p.className = 'pillhoy';
+      p.textContent = esHoy ? 'Hoy' : 'Próxima';
+      enlaceDia.querySelector('span').appendChild(p);
+    }
+    if (irHoy){
+      irHoy.textContent = esHoy ? 'Ir a hoy' : 'Ir a la próxima sesión';
+      irHoy.addEventListener('click', function(){ destino.scrollIntoView(); });
+    }
+  } else if (irHoy) {
+    irHoy.hidden = true;
+  }
+
+  var enlaces = Array.prototype.slice.call(document.querySelectorAll('#menu a'));
+  var secciones = enlaces.map(function(a){ return document.getElementById(a.getAttribute('href').slice(1)); });
+  var barraLat = document.querySelector('.sidebar');
+  var actual = -1;
+  function marcar(){
+    var y = window.scrollY + 70;
+    var idx = 0;
+    for (var i = 0; i < secciones.length; i++){
+      if (secciones[i] && secciones[i].offsetTop <= y) idx = i;
+    }
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) idx = secciones.length - 1;
+    if (idx === actual) return;
+    actual = idx;
+    enlaces.forEach(function(a, i){ a.classList.toggle('active', i === idx); });
+    if (window.innerWidth > 900 && barraLat){
+      var r = enlaces[idx].getBoundingClientRect();
+      var s = barraLat.getBoundingClientRect();
+      if (r.top < s.top || r.bottom > s.bottom) barraLat.scrollTop += r.top - s.top - barraLat.clientHeight / 2;
+    }
+  }
+  window.addEventListener('scroll', marcar, {passive: true});
+  window.addEventListener('resize', marcar);
+  window.addEventListener('load', marcar);
+  marcar();
+  resumen();
+})();
+</script>
+</body>
+</html>

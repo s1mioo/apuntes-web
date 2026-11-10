@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control 2 IMAFI · IVA y Proceso Contable</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#0e7a5f; --brand-soft:#e3f4ee;
+    --accent:#3a5bd9; --accent-soft:#eaefff;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --ok:#0e7a5f; --no:#c0392b;
+    --code:#f0f1f4;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:288px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#4fd1ab; --brand-soft:#16302a;
+    --accent:#8aa2ff; --accent-soft:#20263a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --ok:#4fd1ab; --no:#ff8a80;
+    --code:#232733;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#4fd1ab; --brand-soft:#16302a;
+      --accent:#8aa2ff; --accent-soft:#20263a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --ok:#4fd1ab; --no:#ff8a80;
+      --code:#232733;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;
+  }
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{
+    width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;
+  }
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(16px,4vw,64px) 120px; max-width:1000px; margin:0 auto}
+
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;flex:0 0 auto}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:6px 10px;border-radius:7px;
+    font-size:13.5px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+
+  h2{font-size:26px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20px;margin:30px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:20px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:46px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.formula{border-left-color:var(--brand);background:var(--brand-soft)}
+  .box.formula .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)}
+  .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+  .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)}
+  .box.ana .bt{color:var(--ana)}
+
+  .fx{display:block;text-align:center;font-size:17px;margin:14px 0;padding:10px 12px;
+    background:var(--panel);border:1px solid var(--line);border-radius:9px;
+    font-variant-numeric:tabular-nums}
+  .fx b{color:var(--brand)}
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 5px}
+  .frac .top{border-bottom:1.5px solid currentColor;padding:0 6px;font-size:.9em}
+  .frac .bot{padding:0 6px;font-size:.9em}
+
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex .body{padding:6px 18px 16px}
+
+  .enun{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--panel);
+    box-shadow:var(--shadow);margin:16px 0}
+  .enun .et{font-weight:700;font-size:12.5px;color:var(--muted);text-transform:uppercase;
+    letter-spacing:.05em;margin-bottom:4px}
+
+  .step{margin:14px 0}
+  .step .n{display:inline-block;background:var(--ex);color:#fff;border-radius:6px;font-size:11px;
+    font-weight:700;padding:1px 7px;margin-right:6px}
+
+  .tablewrap{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:10px}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:460px;background:var(--panel)}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-size:12.5px;text-transform:uppercase;letter-spacing:.03em}
+  tr:last-child td{border-bottom:0}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  tr.tot td{font-weight:700;border-top:2px solid var(--line);background:var(--code)}
+  .vf{font-weight:700}
+  .vf.v{color:var(--ok)}
+  .vf.f{color:var(--no)}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin:16px 0}
+  .card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--panel);box-shadow:var(--shadow)}
+  .card .num{font-size:12px;font-weight:700;color:var(--brand)}
+  .card h4{margin:2px 0 4px;color:var(--ink)}
+  .card p{margin:0;font-size:13.5px;color:var(--muted)}
+
+  .menuToggle{display:none}
+  @media (max-width:900px){
+    .sidebar{position:fixed;z-index:40;left:0;top:0;transform:translateX(-102%);transition:transform .22s;
+      box-shadow:var(--shadow)}
+    .sidebar.open{transform:none}
+    .menuToggle{display:inline-flex;position:fixed;z-index:50;top:12px;left:12px}
+    .content{padding-top:64px}
+    .scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:35}
+    .scrim.on{display:block}
+  }
+  .backtop{position:fixed;right:18px;bottom:18px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+  .backtop.on{opacity:1;pointer-events:auto}
+  @media print{
+    .sidebar,.menuToggle,.backtop,.toolbar{display:none}
+    details.ex{break-inside:avoid}
+    details.ex[open]>summary{background:#eee}
+    body{font-size:11pt}
+  }
+</style>
+</head>
+<body>
+
+<button class="btn menuToggle" id="menuToggle">&#9776; Índice</button>
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="dot">C2</div>
+      <div>
+        <h1>Control 2 · IVA y proceso contable</h1>
+        <small>IMAFI · ICN-270 · 2026-2 · USM</small>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="themeBtn">Tema</button>
+      <button class="btn" id="openAll">Abrir todo</button>
+      <button class="btn" id="printBtn">Imprimir</button>
+    </div>
+
+    <nav id="nav">
+      <div class="grp">Antes de partir</div>
+      <a href="#intro">Qué entra en el control</a>
+      <a href="#mapa">El mapa completo</a>
+
+      <div class="grp">Resumen</div>
+      <a href="#s1">1 · Naturaleza de las cuentas</a>
+      <a href="#s2">2 · IVA</a>
+      <a href="#s3">3 · Principio de devengado</a>
+      <a href="#s4">4 · EBIT y EBITDA</a>
+      <a href="#s5">5 · ERI vs ESF</a>
+
+      <div class="grp">Método</div>
+      <a href="#receta">La receta de 8 pasos</a>
+      <a href="#errores">Errores que cuestan puntos</a>
+
+      <div class="grp">Ejercicios</div>
+      <a href="#e1">E1 · V o F (ayudantía)</a>
+      <a href="#e2">E2 · Ferretería Los Andes</a>
+      <a href="#e3">E3 · Comercial Pacífico</a>
+      <a href="#e4">E4 · Caso con remanente</a>
+      <a href="#e5">E5 · Andes del Sur</a>
+      <a href="#e6">E6 · EBIT y EBITDA</a>
+      <a href="#e7">E7 · Clasificar cuentas</a>
+      <a href="#e8">E8 · Remanente arrastrado</a>
+      <a href="#e9">E9 · V o F nuevos</a>
+
+      <div class="grp">Cierre</div>
+      <a href="#formulario">Formulario de 1 hoja</a>
+      <a href="#checklist">Checklist final</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+
+  <!-- ============ INTRO ============ -->
+  <section id="intro">
+    <h2>Control 2 · IVA y proceso contable</h2>
+    <p class="lead">Resumen y ejercicios de la <strong>Ayudantía 4</strong> (Francisco Álvarez), acotado a lo que entra: IVA, devengado, naturaleza de las cuentas, EBIT/EBITDA y la diferencia entre los dos estados financieros.</p>
+
+    <div class="box tip">
+      <div class="bt">Qué entra y qué no</div>
+      <ul style="margin:6px 0 0">
+        <li><strong>Entra:</strong> IVA (crédito fiscal, débito fiscal, liquidación y remanente), principio de devengado, naturaleza de las cuentas, EBIT y EBITDA, y diferencias entre Estado de Resultados y Estado de Situación Financiera.</li>
+        <li><strong>No entra:</strong> el Ejercicio 3 de la ayudantía (Libro Diario y Libro Mayor completo, con traspaso y saldos). Igual verás asientos sueltos acá, porque son parte de los ejercicios 2 y 4.</li>
+        <li><strong>Lo más importante:</strong> los <strong>ejercicios 2 y 4</strong> de la ayudantía. Son el mismo ejercicio con otros números, y el ayudante dijo que el control será prácticamente así. Están resueltos completos más abajo (<a class="inl" href="#e2">E2</a> y <a class="inl" href="#e3">E3</a>), y después hay dos casos nuevos con la misma estructura para que practiques a ciegas.</li>
+      </ul>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">Si tienes poco tiempo, este es el orden</div>
+      Lee la <a class="inl" href="#receta">receta de 8 pasos</a>, resuelve el <a class="inl" href="#e4">E4</a> y el <a class="inl" href="#e5">E5</a> con hoja y lápiz sin mirar la solución, y después revisa. Si te salen esos dos, el control lo tienes. El resumen de arriba es para cuando algo no te calce.
+    </div>
+  </section>
+
+  <!-- ============ MAPA ============ -->
+  <section id="mapa">
+    <h2>El mapa completo</h2>
+    <p>Los cinco temas del control no son cinco cosas sueltas: son las cinco preguntas que uno se hace frente a cualquier operación de una empresa.</p>
+
+    <div class="cards">
+      <div class="card"><div class="num">PREGUNTA 1</div><h4>¿Dónde anoto esto?</h4><p>Naturaleza de las cuentas: si va al Debe o al Haber y a qué grupo pertenece.</p></div>
+      <div class="card"><div class="num">PREGUNTA 2</div><h4>¿Lleva IVA?</h4><p>Si la operación está afecta, genera crédito fiscal (compras) o débito fiscal (ventas).</p></div>
+      <div class="card"><div class="num">PREGUNTA 3</div><h4>¿Cuándo lo reconozco?</h4><p>Devengado: cuando se genera el hecho, no cuando entra o sale la plata.</p></div>
+      <div class="card"><div class="num">PREGUNTA 4</div><h4>¿Cuánto gané?</h4><p>Estado de Resultados, y dentro de él las medidas EBITDA, EBIT y utilidad neta.</p></div>
+      <div class="card"><div class="num">PREGUNTA 5</div><h4>¿Cómo estoy parado?</h4><p>Estado de Situación Financiera: activos, pasivos y patrimonio en un momento dado.</p></div>
+    </div>
+
+    <div class="box formula">
+      <div class="bt">Las dos igualdades que sostienen todo</div>
+      <span class="fx"><b>Activo = Pasivo + Patrimonio</b></span>
+      <span class="fx"><b>Ingresos − Costos − Gastos = Resultado</b></span>
+      La primera es el Estado de Situación Financiera. La segunda es el Estado de Resultados. Y se conectan porque el resultado del período entra al patrimonio.
+    </div>
+  </section>
+
+  <!-- ============ S1 NATURALEZA ============ -->
+  <section id="s1">
+    <h2>1 · Naturaleza de las cuentas</h2>
+    <p class="lead">Qué significa que una cuenta sea deudora o acreedora, y por qué no hay que aprendérselo de memoria.</p>
+
+    <h3>La tabla que hay que saber sí o sí</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Grupo</th><th>Naturaleza</th><th>Aumenta en</th><th>Disminuye en</th><th>Ejemplos</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Activo</strong></td><td>Deudora</td><td>Debe</td><td>Haber</td><td>Caja, Banco, Clientes, Existencias, IVA Crédito Fiscal</td></tr>
+          <tr><td><strong>Pasivo</strong></td><td>Acreedora</td><td>Haber</td><td>Debe</td><td>Proveedores, IVA Débito Fiscal, Préstamos</td></tr>
+          <tr><td><strong>Patrimonio</strong></td><td>Acreedora</td><td>Haber</td><td>Debe</td><td>Capital, Utilidades acumuladas</td></tr>
+          <tr><td><strong>Ingresos</strong></td><td>Acreedora</td><td>Haber</td><td>Debe</td><td>Ventas, Ingreso por venta de activo fijo</td></tr>
+          <tr><td><strong>Gastos y costos</strong></td><td>Deudora</td><td>Debe</td><td>Haber</td><td>Remuneraciones, Publicidad, Costo de ventas</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>El truco para no memorizarla</h3>
+    <p>Partimos de la ecuación contable e incorporamos el resultado dentro del patrimonio:</p>
+    <span class="fx">Activo = Pasivo + Patrimonio + (Ingresos − Gastos)</span>
+    <p>Ahora pasamos los gastos al otro lado, para que no quede nada restando:</p>
+    <span class="fx"><b>Activo + Gastos = Pasivo + Patrimonio + Ingresos</b></span>
+
+    <div class="box formula">
+      <div class="bt">La regla en una línea</div>
+      Todo lo que queda a la <strong>izquierda</strong> de esa igualdad es de naturaleza <strong>deudora</strong> y aumenta al <strong>Debe</strong>. Todo lo que queda a la <strong>derecha</strong> es de naturaleza <strong>acreedora</strong> y aumenta al <strong>Haber</strong>. Con eso reconstruyes la tabla completa en diez segundos en la hoja del control.
+    </div>
+
+    <div class="box ana">
+      <div class="bt">Analogía: Debe y Haber no son "bueno" y "malo"</div>
+      Debe y Haber son simplemente <strong>izquierda y derecha</strong>, como los dos lados de una balanza. No significan deuda ni posesión, aunque el nombre engañe. Cada operación se anota poniendo peso en los dos lados, y la balanza siempre tiene que quedar nivelada: <strong>Total Debe = Total Haber</strong>. Si no cuadra, algo se te quedó fuera.
+    </div>
+
+    <h3>Saldo de una cuenta</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Situación</th><th>Saldo</th><th>Qué cuentas suelen quedar así</th></tr></thead>
+        <tbody>
+          <tr><td>Debe &gt; Haber</td><td><strong>Deudor</strong></td><td>Activos, gastos y costos</td></tr>
+          <tr><td>Haber &gt; Debe</td><td><strong>Acreedor</strong></td><td>Pasivos, patrimonio e ingresos</td></tr>
+          <tr><td>Debe = Haber</td><td><strong>Cero</strong> (saldada)</td><td>Cualquiera, por ejemplo un cliente que ya pagó todo</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box warn">
+      <div class="bt">Ojo con esto</div>
+      El saldo de una cuenta es el <strong>saldo inicial más los movimientos del período</strong>, no solo los movimientos del mes. Esa fue la trampa de la afirmación 10 del V o F de la ayudantía.
+    </div>
+
+    <h3>Las cuentas que más aparecen en estos ejercicios</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Cuenta</th><th>Grupo</th><th>Naturaleza</th><th>Qué representa</th></tr></thead>
+        <tbody>
+          <tr><td>Caja / Banco</td><td>Activo</td><td>Deudora</td><td>Plata disponible</td></tr>
+          <tr><td>Clientes</td><td>Activo</td><td>Deudora</td><td>Lo que me deben por ventas a crédito</td></tr>
+          <tr><td>Existencias (mercaderías)</td><td>Activo</td><td>Deudora</td><td>Mercadería comprada para vender</td></tr>
+          <tr><td>IVA Crédito Fiscal</td><td>Activo</td><td>Deudora</td><td>IVA que pagué en compras y que el Fisco me reconoce</td></tr>
+          <tr><td>Proveedores</td><td>Pasivo</td><td>Acreedora</td><td>Lo que debo por compras a crédito</td></tr>
+          <tr><td>IVA Débito Fiscal</td><td>Pasivo</td><td>Acreedora</td><td>IVA que cobré en ventas y que le debo al Fisco</td></tr>
+          <tr><td>Capital</td><td>Patrimonio</td><td>Acreedora</td><td>Lo que aportaron los dueños</td></tr>
+          <tr><td>Ventas</td><td>Ingreso</td><td>Acreedora</td><td>Ingresos del giro, netos de IVA</td></tr>
+          <tr><td>Gastos (remuneraciones, publicidad…)</td><td>Gasto</td><td>Deudora</td><td>Consumos del período, netos de IVA</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ S2 IVA ============ -->
+  <section id="s2">
+    <h2>2 · IVA</h2>
+    <p class="lead">Crédito fiscal, débito fiscal, liquidación y remanente. Es el tema con más peso del control.</p>
+
+    <div class="box ana">
+      <div class="bt">Analogía: la empresa es cajera del Fisco, no dueña del IVA</div>
+      Cuando una empresa vende a $11.900 con IVA incluido, de ahí <strong>$10.000 son suyos</strong> y <strong>$1.900 son del Fisco</strong>: los cobró por cuenta de él y se los tiene que pasar. Por eso el IVA de las ventas es un <strong>pasivo</strong> (débito fiscal): plata ajena que está en su caja. Y cuando compra, ella también paga IVA a su proveedor; ese IVA no lo pierde, el Fisco se lo reconoce como un <strong>activo</strong> (crédito fiscal), como un vale para descontar. A fin de mes cruza el vale contra la deuda y paga la diferencia.
+    </div>
+
+    <h3>Neto, IVA y bruto</h3>
+    <div class="box formula">
+      <div class="bt">Las tres fórmulas (tasa 19 %)</div>
+      <span class="fx">Bruto = Neto × 1,19</span>
+      <span class="fx">Neto = <span class="frac"><span class="top">Bruto</span><span class="bot">1,19</span></span></span>
+      <span class="fx">IVA = Neto × 0,19 &nbsp;&nbsp;=&nbsp;&nbsp; Bruto − Neto</span>
+    </div>
+
+    <p>Lo primero que hay que hacer frente a cualquier monto es preguntarse <strong>qué me están dando</strong>:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Si el enunciado dice…</th><th>El monto es…</th><th>Qué haces</th></tr></thead>
+        <tbody>
+          <tr><td>"IVA incluido", "valor bruto", "total factura"</td><td>Bruto</td><td>Divides por 1,19 para llegar al neto</td></tr>
+          <tr><td>"netos", "más IVA", "valor neto"</td><td>Neto</td><td>Multiplicas por 0,19 para sacar el IVA</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box warn">
+      <div class="bt">El error más caro de todo el control</div>
+      Multiplicar un monto <strong>bruto</strong> por 0,19. Si el valor ya trae el IVA adentro, el 19 % se calcula sobre el neto, no sobre el total. De $11.900 brutos el IVA es $1.900, no $2.261. Si quieres sacar el IVA directo desde el bruto en una sola operación: <strong>IVA = Bruto × 0,19 / 1,19</strong>, es decir bruto × 0,159664.
+    </div>
+
+    <div class="box tip">
+      <div class="bt">Truco de cálculo mental</div>
+      Los ejercicios del ayudante siempre usan números que dividen exacto por 1,19. Si ves $23.800.000, piensa "23.800 / 119 = 200, entonces el neto es 20.000.000". Si te queda un número feo con muchos decimales, casi seguro que el monto era neto y no bruto.
+    </div>
+
+    <h3>Crédito fiscal y débito fiscal</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th></th><th>IVA Crédito Fiscal</th><th>IVA Débito Fiscal</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Nace en</strong></td><td>Compras y gastos afectos, con factura</td><td>Ventas afectas</td></tr>
+          <tr><td><strong>Clasificación</strong></td><td>Activo</td><td>Pasivo</td></tr>
+          <tr><td><strong>Naturaleza</strong></td><td>Deudora</td><td>Acreedora</td></tr>
+          <tr><td><strong>Aumenta al</strong></td><td>Debe</td><td>Haber</td></tr>
+          <tr><td><strong>Idea</strong></td><td>El Fisco me lo debe a mí</td><td>Yo se lo debo al Fisco</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Qué operaciones generan IVA y cuáles no</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Operación</th><th>¿Genera IVA?</th><th>Detalle</th></tr></thead>
+        <tbody>
+          <tr><td>Venta de mercaderías del giro</td><td><span class="vf v">Sí</span></td><td>Débito fiscal</td></tr>
+          <tr><td>Compra de mercaderías</td><td><span class="vf v">Sí</span></td><td>Crédito fiscal</td></tr>
+          <tr><td>Gastos del giro con factura (publicidad, arriendo afecto, luz, internet)</td><td><span class="vf v">Sí</span></td><td>Crédito fiscal</td></tr>
+          <tr><td>Venta de un activo fijo (vehículo, máquina, computador)</td><td><span class="vf v">Sí</span>*</td><td>Débito fiscal, pero <strong>no es ingreso del giro</strong></td></tr>
+          <tr><td>Pago de remuneraciones</td><td><span class="vf f">No</span></td><td>No es una venta ni una compra afecta</td></tr>
+          <tr><td>Cobro a clientes de ventas anteriores</td><td><span class="vf f">No</span></td><td>El IVA ya se reconoció cuando se hizo la venta</td></tr>
+          <tr><td>Pago a proveedores de compras anteriores</td><td><span class="vf f">No</span></td><td>El crédito ya se reconoció al comprar</td></tr>
+          <tr><td>Aporte de capital de los dueños</td><td><span class="vf f">No</span></td><td>No es una operación de venta</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:14px;color:var(--muted)">* En estos ejercicios el enunciado siempre dice expresamente "considere la operación afecta a IVA". Si lo dice, la tratas como afecta y listo.</p>
+
+    <div class="box warn">
+      <div class="bt">La trampa favorita del ayudante</div>
+      La <strong>venta de un activo fijo</strong> aparece en los dos ejercicios importantes (el vehículo en el E2, el computador en el E3). Sí genera <strong>débito fiscal</strong>, así que entra en la letra b) y en la liquidación, pero <strong>no</strong> entra en la letra a), porque la empresa no se dedica a vender vehículos ni computadores. Ahí se pierde medio puntaje.
+    </div>
+
+    <h3>Liquidación mensual</h3>
+    <div class="box formula">
+      <div class="bt">La liquidación</div>
+      <span class="fx"><b>IVA a pagar = IVA Débito Fiscal − IVA Crédito Fiscal</b></span>
+      <ul style="margin:6px 0 0">
+        <li>Si <strong>DF &gt; CF</strong> → hay <strong>IVA por pagar</strong>. Es un <strong>pasivo</strong>: vendiste más de lo que compraste y le debes la diferencia al Fisco.</li>
+        <li>Si <strong>CF &gt; DF</strong> → queda un <strong>remanente de crédito fiscal</strong> a favor de la empresa. Es un <strong>activo</strong> y se arrastra al mes siguiente para descontarlo ahí. El Fisco no te devuelve plata.</li>
+      </ul>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">Analogía del remanente</div>
+      El remanente es como el saldo a favor de una tarjeta de regalo: no te lo pagan en efectivo, queda anotado y lo usas la próxima vez que compres. Si este mes compraste mucho más de lo que vendiste (por ejemplo, te abasteciste para la temporada alta), no pagas IVA y además te llevas un vale para el mes siguiente.
+    </div>
+    <p style="font-size:14px;color:var(--muted)">Corrección (30 sep): el remanente se arrastra en UTM, no en pesos. Así lo resuelve el profe en la lámina 142, que viene de un certamen anterior. El método está en Material C1/3-IVA.html.</p>
+
+    <h3>Cómo se ve en el asiento</h3>
+    <p>Una venta de $11.900.000 con IVA incluido, toda al contado:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+        <tbody>
+          <tr><td>Caja</td><td class="num">11.900.000</td><td class="num"></td></tr>
+          <tr><td>Ventas</td><td class="num"></td><td class="num">10.000.000</td></tr>
+          <tr><td>IVA Débito Fiscal</td><td class="num"></td><td class="num">1.900.000</td></tr>
+          <tr class="tot"><td>Totales</td><td class="num">11.900.000</td><td class="num">11.900.000</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box tip">
+      <div class="bt">La regla de oro del asiento con IVA</div>
+      El <strong>monto bruto</strong> siempre va en la cuenta de <strong>plata o de deuda</strong> (Caja, Banco, Clientes, Proveedores), porque eso es lo que realmente se mueve. El <strong>neto</strong> va en Ventas, Existencias o Gastos. Y el <strong>IVA</strong> va en su propia cuenta. Neto + IVA = bruto, y por eso el asiento cuadra solo.
+    </div>
+  </section>
+
+  <!-- ============ S3 DEVENGADO ============ -->
+  <section id="s3">
+    <h2>3 · Principio de devengado</h2>
+    <p class="lead">El concepto que explica las letras e) de los dos ejercicios importantes.</p>
+
+    <div class="box formula">
+      <div class="bt">Definición</div>
+      Los ingresos y los gastos se reconocen <strong>cuando se generan</strong> (cuando ocurre el hecho económico), <strong>independientemente de cuándo se cobran o se pagan</strong>.
+    </div>
+
+    <div class="box ana">
+      <div class="bt">Analogía: la nota del certamen y el acta</div>
+      Tú te ganaste la nota el día que diste el certamen, no el día que el profesor la subió al sistema. El trabajo ya estaba hecho; lo otro es trámite. Con las ventas pasa igual: el ingreso nace el día que entregas la mercadería y emites la factura, aunque el cliente te pague 30 días después. El pago posterior es solo el trámite de cobrar algo que ya era tuyo.
+    </div>
+
+    <h3>Devengado versus caja</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th></th><th>Base devengada (la que usa la contabilidad)</th><th>Base caja</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Reconozco el ingreso</strong></td><td>Cuando hago la venta</td><td>Cuando me pagan</td></tr>
+          <tr><td><strong>Reconozco el gasto</strong></td><td>Cuando consumo el servicio</td><td>Cuando pago</td></tr>
+          <tr><td><strong>Para qué sirve</strong></td><td>Medir el desempeño real del período</td><td>Ver el movimiento de plata</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Los cuatro casos típicos</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Situación</th><th>¿Hay ingreso o gasto?</th><th>Qué se registra</th></tr></thead>
+        <tbody>
+          <tr><td>Vendo a crédito a 30 días</td><td><span class="vf v">Sí, el 100 %</span></td><td>Ingreso completo + un derecho en Clientes</td></tr>
+          <tr><td>Cobro una venta a crédito de un mes anterior</td><td><span class="vf f">No</span></td><td>Solo un cambio de activos: Caja sube, Clientes baja</td></tr>
+          <tr><td>Un cliente me paga por adelantado algo que aún no entrego</td><td><span class="vf f">No todavía</span></td><td>Es un pasivo (anticipo), no un ingreso</td></tr>
+          <tr><td>Uso un servicio este mes y lo pago el próximo</td><td><span class="vf v">Sí, el gasto es de este mes</span></td><td>Gasto + una obligación por pagar</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box formula">
+      <div class="bt">Las dos frases que te sirven para responder en el control</div>
+      <p style="margin:6px 0"><strong>Venta cobrada solo en parte:</strong> "El ingreso se reconoce íntegro al momento de la venta, porque ahí se genera el hecho económico. La forma de pago no altera el monto del ingreso: la parte no cobrada queda registrada como un derecho por cobrar en Clientes, que es un activo."</p>
+      <p style="margin:6px 0"><strong>Cobro de una venta anterior:</strong> "No hay un nuevo ingreso ni un nuevo débito fiscal, porque la venta ya fue reconocida en el período en que ocurrió. El único efecto es un cambio dentro del activo: aumenta Caja y disminuye Clientes."</p>
+    </div>
+
+    <div class="box warn">
+      <div class="bt">Consecuencia que siempre preguntan</div>
+      Por el devengado, <strong>utilidad no es lo mismo que plata en caja</strong>. Una empresa puede tener una utilidad enorme y estar sin efectivo, porque todo lo vendió a crédito. Esa es también la razón de fondo por la que el EBITDA no es el flujo de caja.
+    </div>
+  </section>
+
+  <!-- ============ S4 EBIT EBITDA ============ -->
+  <section id="s4">
+    <h2>4 · EBIT y EBITDA</h2>
+    <p class="lead">Dos formas de medir cuánto gana el negocio antes de que se metan los bancos, el Fisco y la contabilidad de los activos.</p>
+
+    <h3>La cascada del Estado de Resultados</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Línea</th><th>Qué es</th></tr></thead>
+        <tbody>
+          <tr><td>Ingresos por ventas</td><td>Ventas del giro, <strong>netas de IVA</strong></td></tr>
+          <tr><td>− Costo de ventas</td><td>Lo que costó la mercadería vendida</td></tr>
+          <tr><td><strong>= Margen bruto</strong></td><td>Lo que deja el producto antes de los gastos de operar</td></tr>
+          <tr><td>− Gastos de administración y ventas</td><td>Sueldos, arriendo, publicidad, luz…</td></tr>
+          <tr><td><strong>= EBITDA</strong></td><td>Resultado operacional antes de depreciación y amortización</td></tr>
+          <tr><td>− Depreciación − Amortización</td><td>Desgaste de los activos fijos e intangibles</td></tr>
+          <tr><td><strong>= EBIT</strong> (resultado operacional)</td><td>Lo que gana el negocio en sí</td></tr>
+          <tr><td>− Gastos financieros (intereses)</td><td>Lo que se llevan los bancos</td></tr>
+          <tr><td><strong>= UAI o EBT</strong></td><td>Utilidad antes de impuesto</td></tr>
+          <tr><td>− Impuesto a la renta</td><td>Lo que se lleva el Fisco</td></tr>
+          <tr><td><strong>= Utilidad neta</strong></td><td>Lo que queda para los dueños</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box formula">
+      <div class="bt">Las definiciones y la fórmula</div>
+      <p style="margin:6px 0"><strong>EBIT</strong> (<em>Earnings Before Interest and Taxes</em>): resultado antes de intereses e impuestos.</p>
+      <p style="margin:6px 0"><strong>EBITDA</strong> (<em>…and Depreciation and Amortization</em>): resultado antes de intereses, impuestos, depreciación y amortización.</p>
+      <span class="fx"><b>EBITDA = EBIT + Depreciación + Amortización</b></span>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">Analogía: cuánto gana el local versus cuánto le queda al dueño</div>
+      Imagina un local de sándwiches. El <strong>EBITDA</strong> es lo que deja el local operando: ventas menos ingredientes, sueldos y arriendo. El <strong>EBIT</strong> le resta además el desgaste del horno y de la máquina (que no se pagan este mes, pero se están gastando). Después vienen los intereses del crédito con que compró el horno, y al final el impuesto. Lo que sobra al final es la <strong>utilidad neta</strong>. El EBITDA sirve para comparar dos locales aunque uno haya arrendado el horno y el otro lo haya comprado a crédito.
+    </div>
+
+    <h3>Cuándo EBIT y EBITDA son iguales</h3>
+    <div class="box tip">
+      <div class="bt">Regla directa</div>
+      Si la empresa <strong>no tiene activos depreciables ni amortizables</strong>, entonces depreciación = 0 y amortización = 0, y por lo tanto <strong>EBITDA = EBIT</strong>. Esta es exactamente la afirmación 5 del V o F, y es <strong>verdadera</strong>.
+    </div>
+
+    <h3>El punto que más se pregunta: EBITDA ≠ flujo de caja</h3>
+    <div class="box warn">
+      <div class="bt">Por qué no son lo mismo</div>
+      Es cierto que el EBITDA suma de vuelta la depreciación y la amortización, que no son salidas de plata. Pero <strong>no</strong> es el flujo de caja del período, por tres razones:
+      <ol style="margin:6px 0 0">
+        <li>No considera el <strong>capital de trabajo</strong>: si vendiste todo a crédito, el EBITDA es alto y la caja sigue vacía.</li>
+        <li>No considera las <strong>inversiones en activos</strong> (Capex): comprar una máquina saca plata real y no aparece en el EBITDA.</li>
+        <li>No considera <strong>cuándo</strong> se cobran y se pagan las partidas, porque se construye con criterio devengado.</li>
+      </ol>
+      Por eso la afirmación 4 del V o F es <strong>falsa</strong>: la definición está bien, la conclusión ("siempre coincide con el flujo de caja") está mal.
+    </div>
+
+    <h3>Para qué se usa cada uno</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th></th><th>EBIT</th><th>EBITDA</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Incluye depreciación</strong></td><td>Sí, la resta</td><td>No</td></tr>
+          <tr><td><strong>Mide</strong></td><td>El resultado operacional contable</td><td>La capacidad de generar resultado de la operación pura</td></tr>
+          <tr><td><strong>Sirve para</strong></td><td>Ver la rentabilidad real considerando el desgaste de los activos</td><td>Comparar empresas con distinta deuda, impuestos o política de depreciación</td></tr>
+          <tr><td><strong>Su debilidad</strong></td><td>La depreciación depende de criterios contables</td><td>Ignora que los activos hay que reponerlos algún día</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ S5 ERI vs ESF ============ -->
+  <section id="s5">
+    <h2>5 · Estado de Resultados vs Estado de Situación Financiera</h2>
+    <p class="lead">Son dos informes distintos que responden dos preguntas distintas. Confundirlos es la pregunta 8 del V o F.</p>
+
+    <div class="box ana">
+      <div class="bt">Analogía: la foto y la película</div>
+      El <strong>Estado de Situación Financiera</strong> (el balance) es una <strong>foto</strong>: muestra cómo está la empresa <em>en un instante</em>, el 31 de diciembre por ejemplo. Qué tiene, qué debe y qué es de los dueños. El <strong>Estado de Resultados</strong> es una <strong>película</strong>: muestra lo que pasó <em>durante</em> un período completo, del 1 de enero al 31 de diciembre. Cuánto vendió, cuánto gastó y cuánto ganó en ese lapso. Preguntar "cuál es el activo del mes de octubre" no tiene sentido, igual que no tiene sentido preguntar "cuál fue la venta al 31 de octubre a las 23:59".
+    </div>
+
+    <h3>Comparación directa</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th></th><th>Estado de Situación Financiera</th><th>Estado de Resultados</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Otro nombre</strong></td><td>Balance</td><td>ERI, Estado de Resultados Integral</td></tr>
+          <tr><td><strong>Responde</strong></td><td>¿Cómo estoy parado hoy?</td><td>¿Cómo me fue en el período?</td></tr>
+          <tr><td><strong>Referencia temporal</strong></td><td>Un <strong>momento</strong> (a una fecha)</td><td>Un <strong>período</strong> (entre dos fechas)</td></tr>
+          <tr><td><strong>Ecuación</strong></td><td>Activo = Pasivo + Patrimonio</td><td>Ingresos − Costos − Gastos = Resultado</td></tr>
+          <tr><td><strong>Cuentas que contiene</strong></td><td>Activo, Pasivo y Patrimonio</td><td>Ingresos, Costos y Gastos</td></tr>
+          <tr><td><strong>Tipo de cuenta</strong></td><td>Permanentes: el saldo pasa al período siguiente</td><td>Transitorias: se cierran al final del período y parten de cero</td></tr>
+          <tr><td><strong>Ejemplos</strong></td><td>Caja, Clientes, Existencias, IVA CF, Proveedores, IVA DF, Capital</td><td>Ventas, Costo de ventas, Remuneraciones, Depreciación del ejercicio</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Cómo se conectan</h3>
+    <div class="box formula">
+      <div class="bt">El nexo entre los dos</div>
+      La <strong>utilidad del ejercicio</strong> se calcula en el Estado de Resultados y después se incorpora al <strong>patrimonio</strong> del Estado de Situación Financiera. Por eso no son informes independientes: la película termina y su resultado se guarda dentro de la foto siguiente.
+      <span class="fx">Patrimonio final = Patrimonio inicial + Utilidad del ejercicio − Retiros o dividendos</span>
+    </div>
+
+    <div class="box warn">
+      <div class="bt">Los dos errores que preguntan</div>
+      <ul style="margin:6px 0 0">
+        <li>Decir que son el mismo informe porque ambos muestran la utilidad. <strong>Falso:</strong> el ERI la <em>calcula</em>, el ESF solo la <em>presenta</em> dentro del patrimonio.</li>
+        <li>Decir que la UAI basta para conocer la situación financiera. <strong>Falso:</strong> la UAI es una línea de un estado de flujo del período, y no dice nada de los activos, pasivos ni patrimonio. Para la situación financiera se necesita el ESF.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ RECETA ============ -->
+  <section id="receta">
+    <h2>La receta de 8 pasos</h2>
+    <p class="lead">El método con el que la pauta resuelve cada operación. Si lo aplicas mecánicamente, no te equivocas.</p>
+
+    <div class="step"><span class="n">1</span><strong>Identifica la operación.</strong> ¿Es venta del giro, compra, gasto, venta de activo fijo, pago de sueldos o cobro de una deuda anterior?</div>
+    <div class="step"><span class="n">2</span><strong>¿Está afecta a IVA?</strong> Si es venta o compra afecta, sí. Si son remuneraciones, cobros o pagos de deudas anteriores, no.</div>
+    <div class="step"><span class="n">3</span><strong>¿El monto es neto o bruto?</strong> Busca las palabras "IVA incluido" (bruto) o "netos / más IVA" (neto).</div>
+    <div class="step"><span class="n">4</span><strong>Calcula el neto y el IVA.</strong> Dividiendo por 1,19 o multiplicando por 0,19, según el paso anterior.</div>
+    <div class="step"><span class="n">5</span><strong>Clasifica el IVA.</strong> Si es venta → débito fiscal. Si es compra o gasto → crédito fiscal.</div>
+    <div class="step"><span class="n">6</span><strong>Distribuye el pago o el cobro.</strong> Los porcentajes de contado y crédito se aplican <strong>sobre el monto bruto</strong>, que es la plata que realmente se mueve.</div>
+    <div class="step"><span class="n">7</span><strong>Identifica las cuentas.</strong> Para cada una: clasificación, naturaleza, si aumenta o disminuye, y si va al Debe o al Haber.</div>
+    <div class="step"><span class="n">8</span><strong>Arma el asiento y verifica.</strong> Total Debe = Total Haber. Si no cuadra, revisa el paso 6.</div>
+
+    <div class="box tip">
+      <div class="bt">Y al final, la liquidación</div>
+      Cuando ya tienes todas las operaciones analizadas, sumas todos los débitos fiscales, sumas todos los créditos fiscales, restas y concluyes si hay IVA por pagar o remanente. Ese es siempre el cierre del ejercicio.
+    </div>
+
+    <div class="box warn">
+      <div class="bt">Sobre el paso 6, que es donde más se falla</div>
+      El porcentaje de contado se aplica al <strong>bruto</strong>, no al neto. Si vendes $17.850.000 IVA incluido y cobras el 40 %, a Caja entran $7.140.000, no el 40 % de $15.000.000. La razón es simple: el cliente te paga el total de la factura, con IVA y todo.
+    </div>
+  </section>
+
+  <!-- ============ ERRORES ============ -->
+  <section id="errores">
+    <h2>Errores que cuestan puntos</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Error</th><th>Lo correcto</th></tr></thead>
+        <tbody>
+          <tr><td>Multiplicar un monto bruto por 0,19</td><td>Si es bruto, se divide por 1,19 y recién ahí se saca el IVA</td></tr>
+          <tr><td>Dividir por 0,19 en vez de 1,19</td><td>El divisor es 1,19 (el 1 es el valor del bien, el 0,19 es el impuesto)</td></tr>
+          <tr><td>Incluir la venta del activo fijo en los ingresos del giro</td><td>Genera débito fiscal, pero va en una cuenta de ingreso aparte</td></tr>
+          <tr><td>Registrar el cobro a clientes como una venta nueva</td><td>Solo mueve Caja contra Clientes, sin ingreso ni IVA</td></tr>
+          <tr><td>Generar IVA crédito fiscal con las remuneraciones</td><td>Las remuneraciones no están afectas a IVA</td></tr>
+          <tr><td>Aplicar el porcentaje de contado sobre el neto</td><td>Se aplica sobre el bruto</td></tr>
+          <tr><td>Registrar el monto bruto en la cuenta Ventas o Existencias</td><td>Esas cuentas van netas; el bruto va en Caja, Clientes o Proveedores</td></tr>
+          <tr><td>Decir que si CF &gt; DF hay que pagar la diferencia</td><td>Al revés: queda un remanente a favor de la empresa</td></tr>
+          <tr><td>Reconocer solo la parte cobrada de una venta a crédito</td><td>Por devengado se reconoce el ingreso completo</td></tr>
+          <tr><td>Inventar un costo de ventas que el enunciado no da</td><td>Si no entregan el costo de la mercadería, ese asiento no se registra</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ EJERCICIOS ============ -->
+  <section id="ejercicios-head">
+    <h2>Ejercicios</h2>
+    <p class="lead">Los de la ayudantía resueltos, más cinco nuevos para practicar. Las soluciones están plegadas: intenta primero.</p>
+    <div class="box tip">
+      <div class="bt">Cómo aprovecharlos</div>
+      El <a class="inl" href="#e2">E2</a> y el <a class="inl" href="#e3">E3</a> son los de la ayudantía, léelos como modelo. El <a class="inl" href="#e4">E4</a> y el <a class="inl" href="#e5">E5</a> son nuevos, con la misma estructura y números distintos: resuélvelos en papel antes de abrir la solución. El <a class="inl" href="#e4">E4</a> es el único que termina en remanente, y por eso vale doble.
+    </div>
+  </section>
+
+  <!-- ===== E1 ===== -->
+  <section id="e1">
+    <h3>E1 · Verdadero o falso <span class="pill">Ayudantía 4</span></h3>
+    <div class="enun">
+      <div class="et">Enunciado</div>
+      <ol>
+        <li>El Libro Diario registra las transacciones de una empresa en orden cronológico mediante asientos contables.</li>
+        <li>Las cuentas de Pasivo son de naturaleza acreedora, por lo que aumentan al Haber y disminuyen al Debe.</li>
+        <li>El IVA Crédito Fiscal se origina principalmente en las compras y gastos afectos a IVA que realiza la empresa.</li>
+        <li>El EBITDA corresponde al resultado de la empresa antes de intereses, impuestos, depreciación y amortización, por lo que siempre coincide con el flujo de caja generado por el negocio en el período.</li>
+        <li>Si una empresa no posee activos depreciables ni amortizables, entonces su EBIT y su EBITDA serán iguales.</li>
+        <li>La Utilidad Antes de Impuesto (UAI) de una empresa es suficiente por sí sola para determinar su situación financiera, ya que refleja el total de sus activos y pasivos.</li>
+        <li>El principio de devengado establece que los ingresos deben reconocerse en el período en que se cobran, independientemente de cuándo se generó la venta.</li>
+        <li>El Estado de Situación Financiera y el Estado de Resultados son el mismo informe, ya que ambos muestran la Utilidad del ejercicio.</li>
+        <li>Si el IVA Crédito Fiscal de un período es mayor que el IVA Débito Fiscal, la empresa debe pagar la diferencia al Fisco.</li>
+        <li>El saldo que muestra una cuenta en el Libro Mayor depende únicamente de los movimientos registrados durante el mes, sin considerar el saldo inicial que la cuenta pudiera tener.</li>
+      </ol>
+    </div>
+
+    <details class="ex">
+      <summary>Ver solución <span class="tag">10 afirmaciones</span></summary>
+      <div class="body">
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>#</th><th>Resp.</th><th>Justificación</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><span class="vf v">V</span></td><td>Es la definición exacta de Libro Diario: registro cronológico de todas las operaciones, mediante asientos, en el orden en que ocurren.</td></tr>
+              <tr><td>2</td><td><span class="vf v">V</span></td><td>El pasivo es de naturaleza acreedora: sus aumentos van al Haber y sus disminuciones al Debe.</td></tr>
+              <tr><td>3</td><td><span class="vf v">V</span></td><td>El IVA crédito fiscal es una cuenta de activo (deudora) que nace cuando la empresa compra bienes o contrata servicios afectos a IVA.</td></tr>
+              <tr><td>4</td><td><span class="vf f">F</span></td><td>La definición está bien, la conclusión no. El EBITDA es una medida contable: no considera capital de trabajo, ni inversiones (Capex), ni el momento real de cobro y pago. <strong>EBITDA ≠ flujo de caja.</strong></td></tr>
+              <tr><td>5</td><td><span class="vf v">V</span></td><td>Como EBITDA = EBIT + D + A, si D = 0 y A = 0, entonces EBITDA = EBIT.</td></tr>
+              <tr><td>6</td><td><span class="vf f">F</span></td><td>La UAI es un resultado del Estado de Resultados, una cuenta de flujo. No informa sobre activos, pasivos ni patrimonio; eso requiere el Estado de Situación Financiera.</td></tr>
+              <tr><td>7</td><td><span class="vf f">F</span></td><td>Es al revés: los ingresos y gastos se reconocen cuando se generan (se devengan), independientemente de cuándo se cobran o pagan.</td></tr>
+              <tr><td>8</td><td><span class="vf f">F</span></td><td>Son informes distintos: el ESF muestra Activo = Pasivo + Patrimonio en un momento dado; el ERI muestra ingresos, costos y gastos de un período para determinar el resultado.</td></tr>
+              <tr><td>9</td><td><span class="vf f">F</span></td><td>Es al revés: si CF &gt; DF se genera un remanente de crédito fiscal a favor de la empresa. Solo hay IVA por pagar cuando DF &gt; CF.</td></tr>
+              <tr><td>10</td><td><span class="vf f">F</span></td><td>El saldo es el saldo inicial más o menos los movimientos del Debe y del Haber del período. No se ignora el saldo inicial.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="box tip">
+          <div class="bt">Patrón que se repite en los V o F</div>
+          Varias afirmaciones parten con una definición correcta y terminan con una conclusión falsa (la 4 y la 6 son así). Lee siempre la frase completa, sobre todo lo que viene después del "por lo que" o del "ya que": ahí está la trampa.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== E2 ===== -->
+  <section id="e2">
+    <h3>E2 · Ferretería Los Andes Ltda. <span class="pill w">Clave</span></h3>
+    <div class="enun">
+      <div class="et">Enunciado · Ejercicio 2 de la ayudantía</div>
+      <p>Durante octubre de 2026, la empresa "Ferretería Los Andes Ltda." realiza las siguientes operaciones:</p>
+      <ol>
+        <li>Vende mercaderías mediante factura por $23.800.000 IVA incluido. Cobra 50 % al contado y deja el saldo a crédito a 30 días.</li>
+        <li>Compra mercaderías mediante factura por $8.000.000 netos, pagando 25 % al contado y el saldo a crédito.</li>
+        <li>Paga servicios de publicidad utilizados en el giro por $595.000 IVA incluido, al contado y con factura.</li>
+        <li>Vende un vehículo usado antes en el reparto de mercaderías, en $1.190.000 IVA incluido, cobrado al contado. Considere la operación afecta a IVA y suponga valor libro cero.</li>
+        <li>Paga remuneraciones del mes por $3.500.000.</li>
+        <li>Cobra a clientes $4.000.000 correspondientes a ventas a crédito de meses anteriores.</li>
+      </ol>
+      <p>IVA de 19 %. Se pide: a) ingresos por ventas del giro netos de IVA; b) IVA débito fiscal total; c) IVA crédito fiscal total; d) liquidación del IVA; e) por qué se reconoce toda la venta de la operación 1 aunque se haya cobrado el 50 %; f) cuentas de la operación 2 con clasificación, naturaleza y si aumentan al Debe o al Haber.</p>
+    </div>
+
+    <details class="ex">
+      <summary>Ver solución completa <span class="tag">6 operaciones + 6 preguntas</span></summary>
+      <div class="body">
+
+        <h4>Operación 1 · Venta de mercaderías</h4>
+        <p>Venta del giro, afecta a IVA. El monto viene <strong>bruto</strong> ("IVA incluido"):</p>
+        <span class="fx">Neto = <span class="frac"><span class="top">23.800.000</span><span class="bot">1,19</span></span> = <b>20.000.000</b> &nbsp;·&nbsp; IVA DF = 20.000.000 × 0,19 = <b>3.800.000</b></span>
+        <p>Cobro: 50 % de $23.800.000 = $11.900.000 a Caja, y $11.900.000 quedan en Clientes.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Caja</td><td class="num">11.900.000</td><td class="num"></td></tr>
+            <tr><td>Clientes</td><td class="num">11.900.000</td><td class="num"></td></tr>
+            <tr><td>Ventas</td><td class="num"></td><td class="num">20.000.000</td></tr>
+            <tr><td>IVA Débito Fiscal</td><td class="num"></td><td class="num">3.800.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">23.800.000</td><td class="num">23.800.000</td></tr>
+          </tbody>
+        </table></div>
+        <p style="font-size:14.5px;color:var(--muted)">El enunciado no entrega el costo de la mercadería vendida, así que <strong>no</strong> se registra el segundo asiento de Costo de ventas contra Existencias. No hay que inventar ese valor.</p>
+
+        <h4>Operación 2 · Compra de mercaderías</h4>
+        <p>Compra afecta a IVA. El monto viene <strong>neto</strong>:</p>
+        <span class="fx">IVA CF = 8.000.000 × 0,19 = <b>1.520.000</b> &nbsp;·&nbsp; Bruto = 8.000.000 + 1.520.000 = <b>9.520.000</b></span>
+        <p>Pago: 25 % de $9.520.000 = $2.380.000 de Caja; 75 % = $7.140.000 quedan en Proveedores.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Existencias</td><td class="num">8.000.000</td><td class="num"></td></tr>
+            <tr><td>IVA Crédito Fiscal</td><td class="num">1.520.000</td><td class="num"></td></tr>
+            <tr><td>Caja</td><td class="num"></td><td class="num">2.380.000</td></tr>
+            <tr><td>Proveedores</td><td class="num"></td><td class="num">7.140.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">9.520.000</td><td class="num">9.520.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operación 3 · Publicidad</h4>
+        <p>Gasto del giro con factura, afecto a IVA. Monto bruto:</p>
+        <span class="fx">Neto = <span class="frac"><span class="top">595.000</span><span class="bot">1,19</span></span> = <b>500.000</b> &nbsp;·&nbsp; IVA CF = <b>95.000</b></span>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Gastos (Publicidad)</td><td class="num">500.000</td><td class="num"></td></tr>
+            <tr><td>IVA Crédito Fiscal</td><td class="num">95.000</td><td class="num"></td></tr>
+            <tr><td>Caja</td><td class="num"></td><td class="num">595.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">595.000</td><td class="num">595.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operación 4 · Venta del vehículo</h4>
+        <p>Es un <strong>activo fijo</strong>, no mercadería del giro. El enunciado dice que se considera afecta a IVA:</p>
+        <span class="fx">Neto = <span class="frac"><span class="top">1.190.000</span><span class="bot">1,19</span></span> = <b>1.000.000</b> &nbsp;·&nbsp; IVA DF = <b>190.000</b></span>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Caja</td><td class="num">1.190.000</td><td class="num"></td></tr>
+            <tr><td>Ingreso por venta de activo fijo</td><td class="num"></td><td class="num">1.000.000</td></tr>
+            <tr><td>IVA Débito Fiscal</td><td class="num"></td><td class="num">190.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">1.190.000</td><td class="num">1.190.000</td></tr>
+          </tbody>
+        </table></div>
+        <div class="box warn"><div class="bt">Clave</div>Este ingreso <strong>no</strong> es parte de los ingresos por ventas del giro de la letra a). Como el valor libro es cero, tampoco hay un costo que dar de baja.</div>
+
+        <h4>Operación 5 · Remuneraciones</h4>
+        <p>No está afecta a IVA: no genera crédito ni débito fiscal.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Gastos (Remuneraciones)</td><td class="num">3.500.000</td><td class="num"></td></tr>
+            <tr><td>Caja</td><td class="num"></td><td class="num">3.500.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">3.500.000</td><td class="num">3.500.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operación 6 · Cobro a clientes</h4>
+        <p>No es una venta nueva: la venta ya se reconoció en su momento. No genera IVA ni ingreso.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Caja</td><td class="num">4.000.000</td><td class="num"></td></tr>
+            <tr><td>Clientes</td><td class="num"></td><td class="num">4.000.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">4.000.000</td><td class="num">4.000.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <hr>
+        <h4>Respuestas</h4>
+        <p><strong>a) Ingresos por ventas del giro, netos de IVA.</strong> Solo la operación 1, porque la 4 es venta de un activo fijo y la 6 es un cobro.</p>
+        <span class="fx">Ingresos por ventas del giro = <b>$20.000.000</b></span>
+
+        <p><strong>b) IVA débito fiscal total.</strong> Operaciones 1 y 4:</p>
+        <span class="fx">3.800.000 + 190.000 = <b>$3.990.000</b></span>
+
+        <p><strong>c) IVA crédito fiscal total.</strong> Operaciones 2 y 3:</p>
+        <span class="fx">1.520.000 + 95.000 = <b>$1.615.000</b></span>
+
+        <p><strong>d) Liquidación.</strong></p>
+        <span class="fx">3.990.000 − 1.615.000 = <b>$2.375.000</b></span>
+        <p>Como DF &gt; CF, la empresa presenta <strong>IVA por pagar de $2.375.000</strong>.</p>
+
+        <p><strong>e) Por qué se reconoce toda la venta.</strong> Por el principio de devengado: el ingreso se reconoce por su valor neto total ($20.000.000) en el momento en que se genera la venta, es decir cuando se entrega la mercadería y se emite la factura, con independencia de la forma de pago pactada. Que se haya cobrado solo el 50 % al contado no modifica el ingreso reconocido: la parte no cobrada queda registrada como un derecho por cobrar en Clientes, que es un activo, pero el ingreso ya se generó íntegramente en el período.</p>
+
+        <p><strong>f) Cuentas de la operación 2.</strong></p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th>Clasificación</th><th>Naturaleza</th><th>Movimiento</th></tr></thead>
+          <tbody>
+            <tr><td>Existencias</td><td>Activo</td><td>Deudora</td><td>Aumenta al Debe</td></tr>
+            <tr><td>IVA Crédito Fiscal</td><td>Activo</td><td>Deudora</td><td>Aumenta al Debe</td></tr>
+            <tr><td>Caja</td><td>Activo</td><td>Deudora</td><td>Disminuye al Haber</td></tr>
+            <tr><td>Proveedores</td><td>Pasivo</td><td>Acreedora</td><td>Aumenta al Haber</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== E3 ===== -->
+  <section id="e3">
+    <h3>E3 · Comercial Pacífico SpA <span class="pill w">Clave</span></h3>
+    <div class="enun">
+      <div class="et">Enunciado · Ejercicio 4 de la ayudantía</div>
+      <p>Durante octubre de 2026, la empresa "Comercial Pacífico SpA" realiza las siguientes operaciones:</p>
+      <ol>
+        <li>Vende mercaderías mediante factura por $17.850.000 IVA incluido. Cobra el 40 % al contado y deja el 60 % restante a crédito con clientes.</li>
+        <li>Compra mercaderías mediante factura por $6.000.000 netos más IVA, pagando el 30 % al contado y dejando el saldo pendiente con proveedores.</li>
+        <li>Paga servicios de electricidad e internet utilizados en el giro por $952.000 IVA incluido, al contado y con factura.</li>
+        <li>Vende un equipo computacional usado antes por el área administrativa en $1.428.000 IVA incluido, cobrando todo al contado. Considere la operación afecta a IVA y valor libro cero.</li>
+        <li>Paga remuneraciones del mes por $3.000.000.</li>
+        <li>Cobra a clientes $2.500.000 de ventas a crédito del mes anterior.</li>
+      </ol>
+      <p>IVA de 19 %. Se pide: a) ingresos por ventas del giro netos de IVA; b) IVA débito fiscal total; c) IVA crédito fiscal total; d) liquidación; e) por qué el cobro de $2.500.000 no es un nuevo ingreso ni genera débito fiscal; f) para la operación 2, las cuentas con clasificación, naturaleza, si aumenta o disminuye y si va al Debe o al Haber, más el asiento contable.</p>
+    </div>
+
+    <details class="ex">
+      <summary>Ver solución completa <span class="tag">6 operaciones + 6 preguntas</span></summary>
+      <div class="body">
+
+        <h4>Operación 1 · Venta de mercaderías</h4>
+        <span class="fx">Neto = <span class="frac"><span class="top">17.850.000</span><span class="bot">1,19</span></span> = <b>15.000.000</b> &nbsp;·&nbsp; IVA DF = 15.000.000 × 0,19 = <b>2.850.000</b></span>
+        <p>Cobro: 40 % de 17.850.000 = $7.140.000 a Caja; 60 % = $10.710.000 a Clientes.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Caja</td><td class="num">7.140.000</td><td class="num"></td></tr>
+            <tr><td>Clientes</td><td class="num">10.710.000</td><td class="num"></td></tr>
+            <tr><td>Ventas</td><td class="num"></td><td class="num">15.000.000</td></tr>
+            <tr><td>IVA Débito Fiscal</td><td class="num"></td><td class="num">2.850.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">17.850.000</td><td class="num">17.850.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operación 2 · Compra de mercaderías</h4>
+        <span class="fx">IVA CF = 6.000.000 × 0,19 = <b>1.140.000</b> &nbsp;·&nbsp; Bruto = <b>7.140.000</b></span>
+        <p>Pago: 30 % de 7.140.000 = $2.142.000 de Caja; 70 % = $4.998.000 a Proveedores.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Existencias</td><td class="num">6.000.000</td><td class="num"></td></tr>
+            <tr><td>IVA Crédito Fiscal</td><td class="num">1.140.000</td><td class="num"></td></tr>
+            <tr><td>Caja</td><td class="num"></td><td class="num">2.142.000</td></tr>
+            <tr><td>Proveedores</td><td class="num"></td><td class="num">4.998.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">7.140.000</td><td class="num">7.140.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operación 3 · Electricidad e internet</h4>
+        <span class="fx">Neto = <span class="frac"><span class="top">952.000</span><span class="bot">1,19</span></span> = <b>800.000</b> &nbsp;·&nbsp; IVA CF = 952.000 − 800.000 = <b>152.000</b></span>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Gastos de electricidad e internet</td><td class="num">800.000</td><td class="num"></td></tr>
+            <tr><td>IVA Crédito Fiscal</td><td class="num">152.000</td><td class="num"></td></tr>
+            <tr><td>Caja</td><td class="num"></td><td class="num">952.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">952.000</td><td class="num">952.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operación 4 · Venta del equipo computacional</h4>
+        <span class="fx">Neto = <span class="frac"><span class="top">1.428.000</span><span class="bot">1,19</span></span> = <b>1.200.000</b> &nbsp;·&nbsp; IVA DF = <b>228.000</b></span>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Caja</td><td class="num">1.428.000</td><td class="num"></td></tr>
+            <tr><td>Ingreso por venta de activo fijo</td><td class="num"></td><td class="num">1.200.000</td></tr>
+            <tr><td>IVA Débito Fiscal</td><td class="num"></td><td class="num">228.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">1.428.000</td><td class="num">1.428.000</td></tr>
+          </tbody>
+        </table></div>
+        <div class="box warn"><div class="bt">Importante</div>Genera ingreso y débito fiscal, pero <strong>no</strong> es ingreso por ventas del giro: la empresa no se dedica a vender equipos computacionales.</div>
+
+        <h4>Operación 5 · Remuneraciones</h4>
+        <p>No generan IVA. IVA = $0.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Gastos por remuneraciones</td><td class="num">3.000.000</td><td class="num"></td></tr>
+            <tr><td>Caja</td><td class="num"></td><td class="num">3.000.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">3.000.000</td><td class="num">3.000.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operación 6 · Cobro a clientes</h4>
+        <p>No hay venta nueva. Solo sube Caja y baja Clientes.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Caja</td><td class="num">2.500.000</td><td class="num"></td></tr>
+            <tr><td>Clientes</td><td class="num"></td><td class="num">2.500.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">2.500.000</td><td class="num">2.500.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <hr>
+        <h4>Respuestas</h4>
+        <p><strong>a)</strong> Solo la operación 1 es venta del giro. La 4 es venta de activo fijo y la 6 es un cobro de una venta anterior.</p>
+        <span class="fx">Ingresos por ventas del giro = <b>$15.000.000</b></span>
+        <p><strong>b)</strong> Operaciones 1 y 4:</p>
+        <span class="fx">2.850.000 + 228.000 = <b>$3.078.000</b></span>
+        <p><strong>c)</strong> Operaciones 2 y 3 (las remuneraciones no generan):</p>
+        <span class="fx">1.140.000 + 152.000 = <b>$1.292.000</b></span>
+        <p><strong>d)</strong> Liquidación:</p>
+        <span class="fx">3.078.000 − 1.292.000 = <b>$1.786.000</b></span>
+        <p>Como DF &gt; CF, hay una obligación con el Fisco: <strong>IVA por pagar de $1.786.000</strong>.</p>
+        <p><strong>e)</strong> Los $2.500.000 no son un ingreso nuevo porque corresponden al cobro de una venta realizada y ya reconocida contablemente el mes anterior. Por el principio de devengado, el ingreso se reconoce cuando se genera la venta y nace el derecho a cobrar, no cuando después se recibe el dinero. Cobrar una cuenta pendiente no es realizar una nueva venta: el único efecto es que aumenta Caja y disminuye Clientes, y no se vuelve a reconocer ni Ventas ni IVA débito fiscal.</p>
+        <p><strong>f)</strong> Operación 2, compra de $6.000.000 netos, IVA $1.140.000, bruto $7.140.000, con 30 % al contado ($2.142.000) y 70 % a crédito ($4.998.000):</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th>Clasificación</th><th>Naturaleza</th><th>Efecto</th><th>Registro</th></tr></thead>
+          <tbody>
+            <tr><td>Existencias</td><td>Activo</td><td>Deudora</td><td>Aumenta</td><td>Debe</td></tr>
+            <tr><td>IVA Crédito Fiscal</td><td>Activo</td><td>Deudora</td><td>Aumenta</td><td>Debe</td></tr>
+            <tr><td>Caja</td><td>Activo</td><td>Deudora</td><td>Disminuye</td><td>Haber</td></tr>
+            <tr><td>Proveedores</td><td>Pasivo</td><td>Acreedora</td><td>Aumenta</td><td>Haber</td></tr>
+          </tbody>
+        </table></div>
+        <p>Y el asiento es el mismo de la operación 2 de más arriba, con totales de $7.140.000 en el Debe y en el Haber.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== E4 ===== -->
+  <section id="e4">
+    <h3>E4 · Comercial Aconcagua SpA <span class="pill e">Nuevo</span> <span class="pill w">Termina en remanente</span></h3>
+    <div class="enun">
+      <div class="et">Enunciado · para resolver sin mirar</div>
+      <p>Durante noviembre de 2026, la empresa "Comercial Aconcagua SpA" realiza las siguientes operaciones:</p>
+      <ol>
+        <li>Vende mercaderías mediante factura por $9.520.000 IVA incluido. Cobra el 25 % al contado y deja el 75 % a crédito con clientes.</li>
+        <li>Compra mercaderías mediante factura por $11.000.000 netos más IVA, pagando el 40 % al contado y dejando el saldo pendiente con proveedores. Se está abasteciendo para la temporada alta.</li>
+        <li>Paga el arriendo del local, afecto a IVA y respaldado con factura, por $1.190.000 IVA incluido, al contado.</li>
+        <li>Paga remuneraciones del mes por $2.800.000.</li>
+        <li>Cobra a clientes $1.500.000 correspondientes a ventas a crédito de meses anteriores.</li>
+      </ol>
+      <p>IVA de 19 %. Se pide:</p>
+      <ol type="a">
+        <li>Ingresos por ventas del giro, netos de IVA.</li>
+        <li>IVA débito fiscal total del período.</li>
+        <li>IVA crédito fiscal total del período.</li>
+        <li>Liquidación del IVA, indicando si hay IVA por pagar o remanente de crédito fiscal, y su monto.</li>
+        <li>Explique qué significa el resultado de la liquidación y qué pasa con ese monto el mes siguiente.</li>
+        <li>Para la operación 1, identifique las cuentas con su clasificación, naturaleza, si aumenta o disminuye y si va al Debe o al Haber. Construya el asiento.</li>
+      </ol>
+    </div>
+
+    <details class="ex">
+      <summary>Ver solución completa <span class="tag">el caso del remanente</span></summary>
+      <div class="body">
+
+        <h4>Operación 1 · Venta de mercaderías</h4>
+        <p>Monto bruto ("IVA incluido"):</p>
+        <span class="fx">Neto = <span class="frac"><span class="top">9.520.000</span><span class="bot">1,19</span></span> = <b>8.000.000</b> &nbsp;·&nbsp; IVA DF = 8.000.000 × 0,19 = <b>1.520.000</b></span>
+        <p>Cobro: 25 % de 9.520.000 = $2.380.000 a Caja; 75 % = $7.140.000 a Clientes.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Caja</td><td class="num">2.380.000</td><td class="num"></td></tr>
+            <tr><td>Clientes</td><td class="num">7.140.000</td><td class="num"></td></tr>
+            <tr><td>Ventas</td><td class="num"></td><td class="num">8.000.000</td></tr>
+            <tr><td>IVA Débito Fiscal</td><td class="num"></td><td class="num">1.520.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">9.520.000</td><td class="num">9.520.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operación 2 · Compra de mercaderías</h4>
+        <p>Monto neto ("netos más IVA"):</p>
+        <span class="fx">IVA CF = 11.000.000 × 0,19 = <b>2.090.000</b> &nbsp;·&nbsp; Bruto = 11.000.000 + 2.090.000 = <b>13.090.000</b></span>
+        <p>Pago: 40 % de 13.090.000 = $5.236.000 de Caja; 60 % = $7.854.000 a Proveedores.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Existencias</td><td class="num">11.000.000</td><td class="num"></td></tr>
+            <tr><td>IVA Crédito Fiscal</td><td class="num">2.090.000</td><td class="num"></td></tr>
+            <tr><td>Caja</td><td class="num"></td><td class="num">5.236.000</td></tr>
+            <tr><td>Proveedores</td><td class="num"></td><td class="num">7.854.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">13.090.000</td><td class="num">13.090.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operación 3 · Arriendo del local</h4>
+        <span class="fx">Neto = <span class="frac"><span class="top">1.190.000</span><span class="bot">1,19</span></span> = <b>1.000.000</b> &nbsp;·&nbsp; IVA CF = <b>190.000</b></span>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Gastos de arriendo</td><td class="num">1.000.000</td><td class="num"></td></tr>
+            <tr><td>IVA Crédito Fiscal</td><td class="num">190.000</td><td class="num"></td></tr>
+            <tr><td>Caja</td><td class="num"></td><td class="num">1.190.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">1.190.000</td><td class="num">1.190.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operación 4 · Remuneraciones</h4>
+        <p>No afecta a IVA.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Gastos por remuneraciones</td><td class="num">2.800.000</td><td class="num"></td></tr>
+            <tr><td>Caja</td><td class="num"></td><td class="num">2.800.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">2.800.000</td><td class="num">2.800.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operación 5 · Cobro a clientes</h4>
+        <p>No es venta nueva, no genera ingreso ni IVA.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Caja</td><td class="num">1.500.000</td><td class="num"></td></tr>
+            <tr><td>Clientes</td><td class="num"></td><td class="num">1.500.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">1.500.000</td><td class="num">1.500.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <hr>
+        <h4>Respuestas</h4>
+        <p><strong>a)</strong> Solo la operación 1 es venta del giro:</p>
+        <span class="fx">Ingresos por ventas del giro = <b>$8.000.000</b></span>
+        <p><strong>b)</strong> Solo la operación 1 genera débito fiscal (acá no hay venta de activo fijo):</p>
+        <span class="fx">IVA DF = <b>$1.520.000</b></span>
+        <p><strong>c)</strong> Operaciones 2 y 3:</p>
+        <span class="fx">2.090.000 + 190.000 = <b>$2.280.000</b></span>
+        <p><strong>d)</strong> Liquidación:</p>
+        <span class="fx">1.520.000 − 2.280.000 = <b>−$760.000</b></span>
+        <p>Como <strong>CF &gt; DF</strong>, no hay IVA por pagar. La empresa presenta un <strong>remanente de crédito fiscal de $760.000</strong>.</p>
+        <p><strong>e)</strong> El resultado significa que durante noviembre la empresa soportó más IVA en sus compras y gastos que el que recargó en sus ventas, porque se abasteció para la temporada alta. Ese exceso no se pierde ni se lo devuelven en efectivo: queda como un <strong>activo</strong> a favor de la empresa y se <strong>arrastra al período siguiente</strong>, donde se suma al crédito fiscal de diciembre y reduce el IVA que habrá que pagar ese mes.</p>
+        <p><strong>f)</strong> Cuentas de la operación 1:</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th>Clasificación</th><th>Naturaleza</th><th>Efecto</th><th>Registro</th></tr></thead>
+          <tbody>
+            <tr><td>Caja</td><td>Activo</td><td>Deudora</td><td>Aumenta</td><td>Debe</td></tr>
+            <tr><td>Clientes</td><td>Activo</td><td>Deudora</td><td>Aumenta</td><td>Debe</td></tr>
+            <tr><td>Ventas</td><td>Ingreso</td><td>Acreedora</td><td>Aumenta</td><td>Haber</td></tr>
+            <tr><td>IVA Débito Fiscal</td><td>Pasivo</td><td>Acreedora</td><td>Aumenta</td><td>Haber</td></tr>
+          </tbody>
+        </table></div>
+        <p>El asiento es el de la operación 1, con totales de $9.520.000 en el Debe y en el Haber.</p>
+
+        <div class="box tip">
+          <div class="bt">Chequeo rápido</div>
+          Si te dio un número negativo en la letra d), no lo escribas como "IVA por pagar de −$760.000". Se responde al revés: "remanente de crédito fiscal de $760.000". El signo se traduce a palabras.
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== E5 ===== -->
+  <section id="e5">
+    <h3>E5 · Distribuidora Andes del Sur Ltda. <span class="pill e">Nuevo</span></h3>
+    <div class="enun">
+      <div class="et">Enunciado · para resolver sin mirar</div>
+      <p>Durante noviembre de 2026, la empresa "Distribuidora Andes del Sur Ltda." realiza las siguientes operaciones:</p>
+      <ol>
+        <li>Vende mercaderías mediante factura por $26.180.000 IVA incluido. Cobra el 35 % al contado y deja el resto a crédito con clientes.</li>
+        <li>Compra mercaderías mediante factura por $9.000.000 netos más IVA, pagando el 20 % al contado y dejando el saldo pendiente con proveedores.</li>
+        <li>Paga servicios de transporte utilizados en el giro por $2.380.000 IVA incluido, al contado y con factura.</li>
+        <li>Vende una máquina usada antes en la bodega, en $2.975.000 IVA incluido, cobrando todo al contado. Considere la operación afecta a IVA y suponga que su valor libro es cero.</li>
+        <li>Paga remuneraciones del mes por $4.200.000.</li>
+        <li>Cobra a clientes $3.100.000 correspondientes a ventas a crédito del mes anterior.</li>
+      </ol>
+      <p>IVA de 19 %. Se pide:</p>
+      <ol type="a">
+        <li>Ingresos por ventas del giro, netos de IVA.</li>
+        <li>IVA débito fiscal total del período.</li>
+        <li>IVA crédito fiscal total del período.</li>
+        <li>Liquidación del IVA, indicando si hay IVA por pagar o remanente, y su monto.</li>
+        <li>Explique por qué la operación 4 genera IVA débito fiscal pero no se incluye en la respuesta de la letra a).</li>
+        <li>Para la operación 3, identifique las cuentas con clasificación, naturaleza y registro, y construya el asiento.</li>
+      </ol>
+    </div>
+
+    <details class="ex">
+      <summary>Ver solución completa <span class="tag">el más parecido al control</span></summary>
+      <div class="body">
+
+        <h4>Operación 1 · Venta de mercaderías</h4>
+        <span class="fx">Neto = <span class="frac"><span class="top">26.180.000</span><span class="bot">1,19</span></span> = <b>22.000.000</b> &nbsp;·&nbsp; IVA DF = 22.000.000 × 0,19 = <b>4.180.000</b></span>
+        <p>Cobro: 35 % de 26.180.000 = $9.163.000 a Caja; 65 % = $17.017.000 a Clientes.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Caja</td><td class="num">9.163.000</td><td class="num"></td></tr>
+            <tr><td>Clientes</td><td class="num">17.017.000</td><td class="num"></td></tr>
+            <tr><td>Ventas</td><td class="num"></td><td class="num">22.000.000</td></tr>
+            <tr><td>IVA Débito Fiscal</td><td class="num"></td><td class="num">4.180.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">26.180.000</td><td class="num">26.180.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operación 2 · Compra de mercaderías</h4>
+        <span class="fx">IVA CF = 9.000.000 × 0,19 = <b>1.710.000</b> &nbsp;·&nbsp; Bruto = <b>10.710.000</b></span>
+        <p>Pago: 20 % de 10.710.000 = $2.142.000 de Caja; 80 % = $8.568.000 a Proveedores.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Existencias</td><td class="num">9.000.000</td><td class="num"></td></tr>
+            <tr><td>IVA Crédito Fiscal</td><td class="num">1.710.000</td><td class="num"></td></tr>
+            <tr><td>Caja</td><td class="num"></td><td class="num">2.142.000</td></tr>
+            <tr><td>Proveedores</td><td class="num"></td><td class="num">8.568.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">10.710.000</td><td class="num">10.710.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operación 3 · Servicios de transporte</h4>
+        <span class="fx">Neto = <span class="frac"><span class="top">2.380.000</span><span class="bot">1,19</span></span> = <b>2.000.000</b> &nbsp;·&nbsp; IVA CF = <b>380.000</b></span>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Gastos de transporte</td><td class="num">2.000.000</td><td class="num"></td></tr>
+            <tr><td>IVA Crédito Fiscal</td><td class="num">380.000</td><td class="num"></td></tr>
+            <tr><td>Caja</td><td class="num"></td><td class="num">2.380.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">2.380.000</td><td class="num">2.380.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operación 4 · Venta de la máquina</h4>
+        <span class="fx">Neto = <span class="frac"><span class="top">2.975.000</span><span class="bot">1,19</span></span> = <b>2.500.000</b> &nbsp;·&nbsp; IVA DF = <b>475.000</b></span>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Caja</td><td class="num">2.975.000</td><td class="num"></td></tr>
+            <tr><td>Ingreso por venta de activo fijo</td><td class="num"></td><td class="num">2.500.000</td></tr>
+            <tr><td>IVA Débito Fiscal</td><td class="num"></td><td class="num">475.000</td></tr>
+            <tr class="tot"><td>Totales</td><td class="num">2.975.000</td><td class="num">2.975.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4>Operaciones 5 y 6 · Remuneraciones y cobro</h4>
+        <p>Ninguna genera IVA ni ingreso del giro.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Gastos por remuneraciones</td><td class="num">4.200.000</td><td class="num"></td></tr>
+            <tr><td>Caja</td><td class="num"></td><td class="num">4.200.000</td></tr>
+            <tr><td colspan="3" style="background:var(--code)"></td></tr>
+            <tr><td>Caja</td><td class="num">3.100.000</td><td class="num"></td></tr>
+            <tr><td>Clientes</td><td class="num"></td><td class="num">3.100.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <hr>
+        <h4>Respuestas</h4>
+        <p><strong>a)</strong> Solo la operación 1:</p>
+        <span class="fx">Ingresos por ventas del giro = <b>$22.000.000</b></span>
+        <p><strong>b)</strong> Operaciones 1 y 4:</p>
+        <span class="fx">4.180.000 + 475.000 = <b>$4.655.000</b></span>
+        <p><strong>c)</strong> Operaciones 2 y 3:</p>
+        <span class="fx">1.710.000 + 380.000 = <b>$2.090.000</b></span>
+        <p><strong>d)</strong> Liquidación:</p>
+        <span class="fx">4.655.000 − 2.090.000 = <b>$2.565.000</b></span>
+        <p>Como DF &gt; CF, hay <strong>IVA por pagar de $2.565.000</strong>.</p>
+        <p><strong>e)</strong> La operación 4 es la venta de un <strong>activo fijo</strong>: una máquina que la empresa usaba en su bodega, no mercadería que compre para revender. Como el enunciado señala que la operación está afecta a IVA, sí genera débito fiscal por $475.000 y por eso entra en la letra b) y en la liquidación. Pero el ingreso que produce no forma parte de los ingresos por ventas del giro, porque el giro de la empresa es distribuir mercaderías, no vender maquinaria. Por eso se registra en una cuenta de ingreso separada ("Ingreso por venta de activo fijo") y queda fuera de la letra a).</p>
+        <p><strong>f)</strong> Cuentas de la operación 3:</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th>Clasificación</th><th>Naturaleza</th><th>Efecto</th><th>Registro</th></tr></thead>
+          <tbody>
+            <tr><td>Gastos de transporte</td><td>Gasto</td><td>Deudora</td><td>Aumenta</td><td>Debe</td></tr>
+            <tr><td>IVA Crédito Fiscal</td><td>Activo</td><td>Deudora</td><td>Aumenta</td><td>Debe</td></tr>
+            <tr><td>Caja</td><td>Activo</td><td>Deudora</td><td>Disminuye</td><td>Haber</td></tr>
+          </tbody>
+        </table></div>
+        <p>El asiento es el de la operación 3, con totales de $2.380.000 en el Debe y en el Haber.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== E6 ===== -->
+  <section id="e6">
+    <h3>E6 · EBIT y EBITDA <span class="pill e">Nuevo</span></h3>
+    <div class="enun">
+      <div class="et">Enunciado</div>
+      <p>La empresa "Textil Valparaíso SpA" presenta la siguiente información del año 2026:</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Partida</th><th class="num">Monto</th></tr></thead>
+        <tbody>
+          <tr><td>Ingresos por ventas</td><td class="num">120.000.000</td></tr>
+          <tr><td>Costo de ventas</td><td class="num">62.000.000</td></tr>
+          <tr><td>Gastos de administración y ventas (sin depreciación)</td><td class="num">24.000.000</td></tr>
+          <tr><td>Depreciación del ejercicio</td><td class="num">8.000.000</td></tr>
+          <tr><td>Amortización de intangibles</td><td class="num">2.000.000</td></tr>
+          <tr><td>Gastos financieros (intereses)</td><td class="num">5.000.000</td></tr>
+          <tr><td>Tasa de impuesto a la renta</td><td class="num">27 %</td></tr>
+        </tbody>
+      </table></div>
+      <p>Se pide: a) construir el Estado de Resultados hasta la utilidad neta; b) determinar EBIT y EBITDA; c) verificar la relación entre ambos; d) explicar qué pasaría con el EBIT y el EBITDA si la empresa arrendara toda su maquinaria en vez de comprarla; e) indicar si el EBITDA equivale al efectivo generado en el año.</p>
+    </div>
+
+    <details class="ex">
+      <summary>Ver solución completa <span class="tag">la cascada completa</span></summary>
+      <div class="body">
+        <p><strong>a) Estado de Resultados</strong></p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Línea</th><th class="num">Monto</th></tr></thead>
+          <tbody>
+            <tr><td>Ingresos por ventas</td><td class="num">120.000.000</td></tr>
+            <tr><td>(−) Costo de ventas</td><td class="num">(62.000.000)</td></tr>
+            <tr class="tot"><td>= Margen bruto</td><td class="num">58.000.000</td></tr>
+            <tr><td>(−) Gastos de administración y ventas</td><td class="num">(24.000.000)</td></tr>
+            <tr class="tot"><td>= EBITDA</td><td class="num">34.000.000</td></tr>
+            <tr><td>(−) Depreciación</td><td class="num">(8.000.000)</td></tr>
+            <tr><td>(−) Amortización</td><td class="num">(2.000.000)</td></tr>
+            <tr class="tot"><td>= EBIT</td><td class="num">24.000.000</td></tr>
+            <tr><td>(−) Gastos financieros</td><td class="num">(5.000.000)</td></tr>
+            <tr class="tot"><td>= UAI</td><td class="num">19.000.000</td></tr>
+            <tr><td>(−) Impuesto (27 % de 19.000.000)</td><td class="num">(5.130.000)</td></tr>
+            <tr class="tot"><td>= Utilidad neta</td><td class="num">13.870.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <p><strong>b) EBIT y EBITDA</strong></p>
+        <span class="fx">EBIT = 58.000.000 − 24.000.000 − 8.000.000 − 2.000.000 = <b>$24.000.000</b></span>
+        <span class="fx">EBITDA = 58.000.000 − 24.000.000 = <b>$34.000.000</b></span>
+
+        <p><strong>c) Verificación</strong></p>
+        <span class="fx">EBITDA = EBIT + D + A = 24.000.000 + 8.000.000 + 2.000.000 = <b>34.000.000</b> ✓</span>
+        <p>Si además te piden el margen EBITDA: 34.000.000 / 120.000.000 = <strong>28,3 %</strong>.</p>
+
+        <p><strong>d) Si arrendara la maquinaria en vez de comprarla.</strong> No habría activos que depreciar, así que la depreciación sería cero y el arriendo pasaría a ser un gasto de operación más. El <strong>EBITDA bajaría</strong>, porque el arriendo se resta antes de llegar a él, mientras que la depreciación se restaba después. El <strong>EBIT</strong>, en cambio, quedaría en un nivel comparable, porque de una u otra forma el costo de usar la máquina termina restado. Este es justamente el motivo por el que el EBITDA se usa para comparar empresas: neutraliza la decisión de comprar o arrendar, y también la política de depreciación de cada una.</p>
+
+        <p><strong>e) ¿El EBITDA es el efectivo generado?</strong> No. Los $34.000.000 no son plata en caja. El EBITDA se construye con criterio devengado, así que incluye ventas que quizá todavía no se cobran, y además no descuenta las inversiones en activos ni considera los cambios en el capital de trabajo. Es una medida de resultado operacional, no un flujo de caja.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== E7 ===== -->
+  <section id="e7">
+    <h3>E7 · Clasificar cuentas <span class="pill e">Nuevo</span></h3>
+    <div class="enun">
+      <div class="et">Enunciado</div>
+      <p>Para cada una de las siguientes cuentas, indique: clasificación (activo, pasivo, patrimonio, ingreso o gasto), naturaleza (deudora o acreedora), si aumenta al Debe o al Haber, y en qué estado financiero se presenta (Estado de Situación Financiera o Estado de Resultados).</p>
+      <p>Caja · Clientes · Existencias · IVA Crédito Fiscal · Proveedores · IVA Débito Fiscal · Préstamo bancario de largo plazo · Capital · Ventas · Ingreso por venta de activo fijo · Costo de ventas · Gastos por remuneraciones · Depreciación del ejercicio · Depreciación acumulada · Utilidad del ejercicio</p>
+    </div>
+
+    <details class="ex">
+      <summary>Ver solución <span class="tag">15 cuentas</span></summary>
+      <div class="body">
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th>Clasificación</th><th>Naturaleza</th><th>Aumenta al</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td>Caja</td><td>Activo</td><td>Deudora</td><td>Debe</td><td>ESF</td></tr>
+            <tr><td>Clientes</td><td>Activo</td><td>Deudora</td><td>Debe</td><td>ESF</td></tr>
+            <tr><td>Existencias</td><td>Activo</td><td>Deudora</td><td>Debe</td><td>ESF</td></tr>
+            <tr><td>IVA Crédito Fiscal</td><td>Activo</td><td>Deudora</td><td>Debe</td><td>ESF</td></tr>
+            <tr><td>Proveedores</td><td>Pasivo</td><td>Acreedora</td><td>Haber</td><td>ESF</td></tr>
+            <tr><td>IVA Débito Fiscal</td><td>Pasivo</td><td>Acreedora</td><td>Haber</td><td>ESF</td></tr>
+            <tr><td>Préstamo bancario de largo plazo</td><td>Pasivo (no corriente)</td><td>Acreedora</td><td>Haber</td><td>ESF</td></tr>
+            <tr><td>Capital</td><td>Patrimonio</td><td>Acreedora</td><td>Haber</td><td>ESF</td></tr>
+            <tr><td>Ventas</td><td>Ingreso (del giro)</td><td>Acreedora</td><td>Haber</td><td>ERI</td></tr>
+            <tr><td>Ingreso por venta de activo fijo</td><td>Ingreso (fuera del giro)</td><td>Acreedora</td><td>Haber</td><td>ERI</td></tr>
+            <tr><td>Costo de ventas</td><td>Costo</td><td>Deudora</td><td>Debe</td><td>ERI</td></tr>
+            <tr><td>Gastos por remuneraciones</td><td>Gasto</td><td>Deudora</td><td>Debe</td><td>ERI</td></tr>
+            <tr><td>Depreciación del ejercicio</td><td>Gasto</td><td>Deudora</td><td>Debe</td><td>ERI</td></tr>
+            <tr><td>Depreciación acumulada</td><td>Activo (cuenta correctora)</td><td>Acreedora</td><td>Haber</td><td>ESF, restando al activo fijo</td></tr>
+            <tr><td>Utilidad del ejercicio</td><td>Patrimonio (resultado)</td><td>Acreedora</td><td>Haber</td><td>Se determina en el ERI y se presenta en el patrimonio del ESF</td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="box tip">
+          <div class="bt">Las dos filas que hay que mirar dos veces</div>
+          <ul style="margin:6px 0 0">
+            <li><strong>Depreciación del ejercicio</strong> y <strong>depreciación acumulada</strong> no son lo mismo. La primera es el gasto del período y va al Estado de Resultados. La segunda es el total acumulado desde que se compró el activo, es una cuenta correctora de activo (por eso su naturaleza es acreedora, al revés que el resto de los activos) y va en el ESF restando al valor del activo fijo.</li>
+            <li><strong>Utilidad del ejercicio</strong> es el punto donde se tocan los dos estados: se calcula en el ERI y aparece dentro del patrimonio del ESF.</li>
+          </ul>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== E8 ===== -->
+  <section id="e8">
+    <h3>E8 · Remanente arrastrado de un mes a otro <span class="pill e">Nuevo</span></h3>
+    <div class="enun">
+      <div class="et">Enunciado</div>
+      <p>La empresa "Insumos del Maule Ltda." presenta la siguiente información de IVA en tres meses consecutivos:</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Mes</th><th class="num">IVA Débito Fiscal</th><th class="num">IVA Crédito Fiscal del mes</th></tr></thead>
+        <tbody>
+          <tr><td>Septiembre</td><td class="num">3.000.000</td><td class="num">4.200.000</td></tr>
+          <tr><td>Octubre</td><td class="num">5.500.000</td><td class="num">3.100.000</td></tr>
+          <tr><td>Noviembre</td><td class="num">2.000.000</td><td class="num">2.300.000</td></tr>
+        </tbody>
+      </table></div>
+      <p>En septiembre la empresa no traía remanente de meses anteriores. Se pide determinar, mes a mes, si hay IVA por pagar o remanente, y cuánto se arrastra al mes siguiente.</p>
+    </div>
+
+    <details class="ex">
+      <summary>Ver solución <span class="tag">3 meses</span></summary>
+      <div class="body">
+        <p><strong>Septiembre.</strong> No hay remanente previo:</p>
+        <span class="fx">3.000.000 − 4.200.000 = −1.200.000 → <b>Remanente de $1.200.000</b></span>
+        <p>No se paga IVA y los $1.200.000 se arrastran a octubre.</p>
+
+        <p><strong>Octubre.</strong> El crédito disponible es el del mes más el remanente que viene de septiembre:</p>
+        <span class="fx">CF total = 3.100.000 + 1.200.000 = <b>4.300.000</b></span>
+        <span class="fx">5.500.000 − 4.300.000 = <b>$1.200.000</b> de IVA por pagar</span>
+        <p>Se usa todo el remanente y además queda una deuda con el Fisco de $1.200.000. A noviembre no se arrastra nada.</p>
+
+        <p><strong>Noviembre.</strong> Sin remanente previo:</p>
+        <span class="fx">2.000.000 − 2.300.000 = −300.000 → <b>Remanente de $300.000</b></span>
+        <p>Se arrastra a diciembre.</p>
+
+        <div class="tablewrap"><table>
+          <thead><tr><th>Mes</th><th class="num">DF</th><th class="num">CF del mes</th><th class="num">Remanente previo</th><th class="num">CF total</th><th>Resultado</th><th class="num">Arrastra</th></tr></thead>
+          <tbody>
+            <tr><td>Septiembre</td><td class="num">3.000.000</td><td class="num">4.200.000</td><td class="num">0</td><td class="num">4.200.000</td><td>Remanente 1.200.000</td><td class="num">1.200.000</td></tr>
+            <tr><td>Octubre</td><td class="num">5.500.000</td><td class="num">3.100.000</td><td class="num">1.200.000</td><td class="num">4.300.000</td><td>Por pagar 1.200.000</td><td class="num">0</td></tr>
+            <tr><td>Noviembre</td><td class="num">2.000.000</td><td class="num">2.300.000</td><td class="num">0</td><td class="num">2.300.000</td><td>Remanente 300.000</td><td class="num">300.000</td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="box tip">
+          <div class="bt">La idea de fondo</div>
+          El remanente nunca se paga ni se devuelve: se acumula del lado del crédito fiscal hasta que algún mes las ventas lo consuman. Ojo: los montos de esta tabla están en pesos para simplificar; en el certamen el remanente se pasa por UTM (lámina 142, ver Material C1/3-IVA.html).
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== E9 ===== -->
+  <section id="e9">
+    <h3>E9 · Verdadero o falso, ronda 2 <span class="pill e">Nuevo</span></h3>
+    <div class="enun">
+      <div class="et">Enunciado</div>
+      <ol>
+        <li>El IVA débito fiscal es una cuenta de activo, porque representa dinero que la empresa recibió de sus clientes.</li>
+        <li>Si una factura señala $11.900.000 IVA incluido, el IVA de la operación es $2.261.000.</li>
+        <li>Una empresa que vende toda su producción a crédito puede tener utilidad positiva y al mismo tiempo no tener efectivo disponible.</li>
+        <li>El pago de remuneraciones aumenta el IVA crédito fiscal, porque es un gasto necesario para producir la renta.</li>
+        <li>El EBIT siempre es mayor o igual que el EBITDA.</li>
+        <li>Las cuentas de ingresos y gastos son transitorias: se cierran al final del período, mientras que las de activo, pasivo y patrimonio pasan sus saldos al período siguiente.</li>
+        <li>Cuando una empresa vende un activo fijo afecto a IVA, ese monto se suma a los ingresos por ventas del giro del período.</li>
+        <li>Si en un período el IVA débito fiscal es de $4.000.000 y el crédito fiscal de $4.000.000, la empresa no paga IVA y tampoco genera remanente.</li>
+        <li>Por el principio de devengado, un anticipo recibido de un cliente por una mercadería que aún no se entrega se reconoce de inmediato como ingreso.</li>
+        <li>En un asiento contable puede ocurrir que el total del Debe sea distinto del total del Haber, siempre que la diferencia corresponda al IVA.</li>
+      </ol>
+    </div>
+
+    <details class="ex">
+      <summary>Ver solución <span class="tag">10 afirmaciones</span></summary>
+      <div class="body">
+        <div class="tablewrap"><table>
+          <thead><tr><th>#</th><th>Resp.</th><th>Justificación</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><span class="vf f">F</span></td><td>Es un <strong>pasivo</strong>. La empresa recibió esa plata, sí, pero no es suya: la cobró por cuenta del Fisco y se la tiene que enterar. Por eso su naturaleza es acreedora.</td></tr>
+            <tr><td>2</td><td><span class="vf f">F</span></td><td>Error clásico de multiplicar el bruto por 0,19. El neto es 11.900.000 / 1,19 = 10.000.000 y el IVA es $1.900.000.</td></tr>
+            <tr><td>3</td><td><span class="vf v">V</span></td><td>Consecuencia directa del devengado: el ingreso se reconoce al vender, aunque la plata llegue después. Utilidad y caja no son lo mismo.</td></tr>
+            <tr><td>4</td><td><span class="vf f">F</span></td><td>Las remuneraciones no están afectas a IVA, así que no generan crédito fiscal. Que sea un gasto necesario es otra cosa, y tiene que ver con el impuesto a la renta, no con el IVA.</td></tr>
+            <tr><td>5</td><td><span class="vf f">F</span></td><td>Es al revés: EBITDA = EBIT + D + A, y como D y A nunca son negativas, el <strong>EBITDA es mayor o igual</strong> que el EBIT. Son iguales solo si no hay depreciación ni amortización.</td></tr>
+            <tr><td>6</td><td><span class="vf v">V</span></td><td>Las cuentas de resultado son transitorias y parten de cero cada período; las de balance son permanentes.</td></tr>
+            <tr><td>7</td><td><span class="vf f">F</span></td><td>Genera débito fiscal y un ingreso, pero no un ingreso <strong>del giro</strong>: se registra en una cuenta aparte, porque la empresa no se dedica a vender sus activos fijos.</td></tr>
+            <tr><td>8</td><td><span class="vf v">V</span></td><td>DF − CF = 0, así que no hay nada que pagar ni nada que arrastrar.</td></tr>
+            <tr><td>9</td><td><span class="vf f">F</span></td><td>No hay ingreso todavía, porque el hecho económico (la entrega) no ha ocurrido. El anticipo se registra como un <strong>pasivo</strong>, una obligación de entregar la mercadería.</td></tr>
+            <tr><td>10</td><td><span class="vf f">F</span></td><td>Nunca. La partida doble exige Total Debe = Total Haber siempre. El IVA no descuadra el asiento: precisamente por eso tiene su propia cuenta, de manera que neto + IVA = bruto.</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ FORMULARIO ============ -->
+  <section id="formulario">
+    <h2>Formulario de una hoja</h2>
+    <p class="lead">Todo lo que necesitas tener en la cabeza al entrar al control.</p>
+
+    <div class="box formula">
+      <div class="bt">IVA</div>
+      <span class="fx">Bruto = Neto × 1,19 &nbsp;·&nbsp; Neto = <span class="frac"><span class="top">Bruto</span><span class="bot">1,19</span></span> &nbsp;·&nbsp; IVA = Neto × 0,19 = Bruto − Neto</span>
+      <span class="fx">IVA a pagar = IVA Débito Fiscal − IVA Crédito Fiscal</span>
+      DF &gt; CF → IVA por pagar (pasivo). &nbsp; CF &gt; DF → remanente de crédito fiscal (activo, se arrastra).
+    </div>
+
+    <div class="box formula">
+      <div class="bt">Estados financieros</div>
+      <span class="fx">Activo = Pasivo + Patrimonio</span>
+      <span class="fx">Ingresos − Costos − Gastos = Resultado</span>
+      <span class="fx">Activo + Gastos = Pasivo + Patrimonio + Ingresos</span>
+      Izquierda de la última igualdad: deudoras, aumentan al Debe. Derecha: acreedoras, aumentan al Haber.
+    </div>
+
+    <div class="box formula">
+      <div class="bt">Resultado</div>
+      <span class="fx">EBITDA = EBIT + Depreciación + Amortización</span>
+      <span class="fx">Ventas − Costo de ventas − Gastos = EBITDA → −D −A = EBIT → −Intereses = UAI → −Impuesto = Utilidad neta</span>
+    </div>
+
+    <div class="box formula">
+      <div class="bt">Definiciones que piden textuales</div>
+      <ul style="margin:6px 0 0">
+        <li><strong>Devengado:</strong> los ingresos y gastos se reconocen cuando se generan, independientemente de cuándo se cobran o pagan.</li>
+        <li><strong>IVA crédito fiscal:</strong> el IVA soportado en compras y gastos afectos. Activo, naturaleza deudora, aumenta al Debe.</li>
+        <li><strong>IVA débito fiscal:</strong> el IVA recargado en las ventas afectas. Pasivo, naturaleza acreedora, aumenta al Haber.</li>
+        <li><strong>EBIT:</strong> resultado antes de intereses e impuestos.</li>
+        <li><strong>EBITDA:</strong> resultado antes de intereses, impuestos, depreciación y amortización.</li>
+        <li><strong>Saldo deudor:</strong> Debe &gt; Haber. <strong>Saldo acreedor:</strong> Haber &gt; Debe.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ CHECKLIST ============ -->
+  <section id="checklist">
+    <h2>Checklist final</h2>
+    <p>Antes de entregar, revisa esto en el ejercicio integrador:</p>
+    <ol>
+      <li>¿Dividí por 1,19 todos los montos que decían "IVA incluido"?</li>
+      <li>¿Multipliqué por 0,19 todos los que decían "netos"?</li>
+      <li>¿Dejé la venta de activo fijo fuera de los ingresos del giro, pero dentro del débito fiscal?</li>
+      <li>¿Las remuneraciones quedaron sin IVA?</li>
+      <li>¿El cobro a clientes quedó sin ingreso y sin IVA?</li>
+      <li>¿Apliqué los porcentajes de contado y crédito sobre el monto bruto?</li>
+      <li>¿Cada asiento cuadra, Debe = Haber?</li>
+      <li>¿Concluí la liquidación en palabras, diciendo si es IVA por pagar o remanente, con el monto?</li>
+      <li>¿Las preguntas conceptuales las respondí nombrando el principio de devengado explícitamente?</li>
+      <li>¿En la tabla de cuentas puse las cuatro columnas que piden: clasificación, naturaleza, efecto y registro?</li>
+    </ol>
+
+    <div class="box tip">
+      <div class="bt">Última cosa</div>
+      En las preguntas de explicar, no basta con decir "porque sí se reconoce". Nombra el principio ("por el principio de devengado…") y describe el efecto contable concreto ("aumenta Caja y disminuye Clientes, sin afectar Ventas ni IVA débito fiscal"). Esas dos partes son las que dan el puntaje.
+    </div>
+
+    <hr>
+    <p style="color:var(--muted);font-size:14px">Basado en la Ayudantía 4 de IMAFI y su pauta (Francisco Álvarez G.), ICN-270, USM, segundo semestre 2026. Los ejercicios E4 a E9 son nuevos, construidos con la misma estructura de los ejercicios 2 y 4 de la ayudantía.</p>
+  </section>
+
+  </main>
+</div>
+
+<button class="btn backtop" id="backtop">↑ Arriba</button>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  try{
+    var saved=localStorage.getItem('imafi-c2-theme');
+    if(saved){root.setAttribute('data-theme',saved);}
+  }catch(e){}
+
+  var themeBtn=document.getElementById('themeBtn');
+  themeBtn.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    if(!cur){
+      cur=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+    }
+    var next=cur==='dark'?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{localStorage.setItem('imafi-c2-theme',next);}catch(e){}
+  });
+
+  document.getElementById('printBtn').addEventListener('click',function(){
+    document.querySelectorAll('details.ex').forEach(function(d){d.open=true;});
+    window.print();
+  });
+
+  var openAll=document.getElementById('openAll');
+  openAll.addEventListener('click',function(){
+    var ds=document.querySelectorAll('details.ex');
+    var anyClosed=Array.prototype.some.call(ds,function(d){return !d.open;});
+    ds.forEach(function(d){d.open=anyClosed;});
+    openAll.textContent=anyClosed?'Cerrar todo':'Abrir todo';
+  });
+
+  var sidebar=document.getElementById('sidebar');
+  var scrim=document.getElementById('scrim');
+  document.getElementById('menuToggle').addEventListener('click',function(){
+    sidebar.classList.add('open');scrim.classList.add('on');
+  });
+  scrim.addEventListener('click',function(){
+    sidebar.classList.remove('open');scrim.classList.remove('on');
+  });
+  sidebar.querySelectorAll('nav a').forEach(function(a){
+    a.addEventListener('click',function(){
+      sidebar.classList.remove('open');scrim.classList.remove('on');
+    });
+  });
+
+  var links=Array.prototype.slice.call(document.querySelectorAll('nav a'));
+  var sections=links.map(function(a){return document.querySelector(a.getAttribute('href'));}).filter(Boolean);
+  var backtop=document.getElementById('backtop');
+  backtop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+
+  function onScroll(){
+    backtop.classList.toggle('on',window.scrollY>600);
+    var pos=window.scrollY+140,active=null;
+    sections.forEach(function(s){if(s.offsetTop<=pos){active=s.id;}});
+    links.forEach(function(a){
+      a.classList.toggle('active',a.getAttribute('href')==='#'+active);
+    });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+})();
+</script>
+</body>
+</html>

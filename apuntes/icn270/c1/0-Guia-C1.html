@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IMAFI C1 · Guía del certamen</title>
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+  --line:#e6e6ea; --brand:#0e7a5f; --brand-soft:#e3f4ee;
+  --accent:#3a5bd9; --accent-soft:#eaefff;
+  --warn:#c2410c; --warn-soft:#fdecdf;
+  --ex:#7c3aed; --ex-soft:#f1eafe;
+  --ana:#b4306e; --ana-soft:#fce8f1;
+  --cert:#a16207; --cert-soft:#fdf5d8;
+  --ok:#0e7a5f; --ok-soft:#dff3ea; --no:#c0392b; --no-soft:#fbe4e1;
+  --code:#f0f1f4;
+  --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+  --sidew:292px;
+}
+:root[data-theme="dark"]{
+  --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+  --line:#2a2e39; --brand:#4fd1ab; --brand-soft:#16302a;
+  --accent:#8aa2ff; --accent-soft:#20263a;
+  --warn:#f5a15f; --warn-soft:#3a2413;
+  --ex:#c4a6ff; --ex-soft:#271c3d;
+  --ana:#ff9ec4; --ana-soft:#3a1a2a;
+  --cert:#f2c94c; --cert-soft:#332a10;
+  --ok:#4fd1ab; --ok-soft:#153129; --no:#ff8a80; --no-soft:#3a1c1a;
+  --code:#232733;
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#4fd1ab; --brand-soft:#16302a;
+    --accent:#8aa2ff; --accent-soft:#20263a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --cert:#f2c94c; --cert-soft:#332a10;
+    --ok:#4fd1ab; --ok-soft:#153129; --no:#ff8a80; --no-soft:#3a1c1a;
+    --code:#232733;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.62;font-size:16.5px;-webkit-font-smoothing:antialiased}
+.layout{display:flex;align-items:flex-start}
+.sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--panel);border-right:1px solid var(--line);padding:22px 16px 60px}
+.content{flex:1 1 auto;min-width:0;padding:38px clamp(16px,4vw,64px) 120px;max-width:1020px;margin:0 auto}
+.brand{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.brand .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+  display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;flex:0 0 auto}
+.brand h1{font-size:15px;margin:0;line-height:1.2}
+.brand small{color:var(--muted);font-size:12px;display:block}
+nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 8px 6px;font-weight:700}
+nav a{display:block;color:var(--ink);text-decoration:none;padding:6px 10px;border-radius:7px;font-size:13.5px;opacity:.85}
+nav a:hover{background:var(--brand-soft);opacity:1}
+nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+nav a.page{display:flex;gap:8px;align-items:baseline}
+nav a.page .pn{font-size:11px;font-weight:700;color:var(--muted);min-width:14px}
+nav a.page.cur{background:var(--brand);color:#fff;opacity:1;font-weight:600}
+nav a.page.cur .pn{color:#fff}
+.toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:7px 10px;
+  font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;font-family:inherit}
+.btn:hover{background:var(--brand-soft)}
+.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn.primary:hover{filter:brightness(1.08)}
+h2{font-size:26px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+h3{font-size:20px;margin:30px 0 6px;scroll-margin-top:20px}
+h4{font-size:16px;margin:20px 0 4px;color:var(--brand)}
+p{margin:10px 0}
+.lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+.pagehead{margin-bottom:10px}
+.pagehead .kicker{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.pagehead h1{font-size:32px;margin:4px 0 6px;letter-spacing:-.015em;line-height:1.15}
+section{border-top:1px solid var(--line);padding-top:34px;margin-top:46px}
+section:first-of-type{border-top:0;margin-top:10px}
+a{color:var(--brand)}
+ul,ol{margin:10px 0;padding-left:22px}
+li{margin:5px 0}
+code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;font-family:"SF Mono",Menlo,Consolas,monospace}
+hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--brand-soft);
+  color:var(--brand);margin-right:6px;vertical-align:middle;white-space:nowrap}
+.pill.a{background:var(--accent-soft);color:var(--accent)}
+.pill.w{background:var(--warn-soft);color:var(--warn)}
+.pill.e{background:var(--ex-soft);color:var(--ex)}
+.pill.c{background:var(--cert-soft);color:var(--cert)}
+.pill.hi{background:var(--no-soft);color:var(--no)}
+.box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;margin:16px 0;
+  background:var(--panel);box-shadow:var(--shadow)}
+.box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px}
+.box.formula{border-left-color:var(--brand);background:var(--brand-soft)} .box.formula .bt{color:var(--brand)}
+.box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+.box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+.box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+.box.cert{border-left-color:var(--cert);background:var(--cert-soft)} .box.cert .bt{color:var(--cert)}
+.box > :last-child{margin-bottom:0}
+.fx{display:block;text-align:center;font-size:17px;margin:14px 0;padding:10px 12px;background:var(--panel);
+  border:1px solid var(--line);border-radius:9px;font-variant-numeric:tabular-nums;overflow-x:auto}
+.fx b{color:var(--brand)}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 5px}
+.frac .top{border-bottom:1.5px solid currentColor;padding:0 6px;font-size:.9em}
+.frac .bot{padding:0 6px;font-size:.9em}
+details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;margin:16px 0;
+  background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;background:var(--ex-soft);color:var(--ex);flex-wrap:wrap;
+  display:flex;gap:10px;align-items:center}
+details.ex>summary::-webkit-details-marker{display:none}
+details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);padding:1px 8px;border-radius:999px;
+  border:1px solid var(--line);margin-left:auto}
+details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+details.ex[open]>summary::before{transform:rotate(90deg)}
+details.ex .body{padding:6px 18px 16px}
+.enun{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--panel);box-shadow:var(--shadow);margin:16px 0}
+.enun .et{font-weight:700;font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.step{margin:14px 0}
+.step .n{display:inline-block;background:var(--ex);color:#fff;border-radius:6px;font-size:11px;font-weight:700;padding:1px 7px;margin-right:6px}
+.tablewrap{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:420px;background:var(--panel)}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--brand-soft);color:var(--brand);font-size:12.5px;text-transform:uppercase;letter-spacing:.03em}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.tot td{font-weight:700;border-top:2px solid var(--line);background:var(--code)}
+tr.sub td{font-weight:600;background:var(--code)}
+td.ind{padding-left:28px}
+.vf{font-weight:700} .vf.v{color:var(--ok)} .vf.f{color:var(--no)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0}
+.card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--panel);box-shadow:var(--shadow)}
+.card .num{font-size:12px;font-weight:700;color:var(--brand)}
+.card h4{margin:2px 0 4px;color:var(--ink)}
+.card p{margin:0;font-size:13.8px;color:var(--muted)}
+a.card{text-decoration:none;color:inherit;display:block}
+a.card:hover{border-color:var(--brand)}
+.videos{margin:18px 0}
+.video{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px 14px;
+  margin:8px 0;background:var(--panel)}
+.video .vi{flex:0 0 auto;width:30px;height:30px;border-radius:8px;background:var(--no);color:#fff;display:grid;place-items:center;
+  font-size:13px;margin-top:2px}
+.video a{font-weight:600;text-decoration:none}
+.video a:hover{text-decoration:underline}
+.video .meta{font-size:12.5px;color:var(--muted)}
+.video .why{font-size:14px;margin-top:2px}
+.tsec{font-size:12px;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.tacc{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  max-width:420px;margin:12px 0;background:var(--panel);font-variant-numeric:tabular-nums}
+.tacc .h{grid-column:1/3;text-align:center;font-weight:700;padding:6px;border-bottom:2px solid var(--ink)}
+.tacc .d,.tacc .c{padding:6px 12px;min-height:30px}
+.tacc .d{border-right:2px solid var(--ink);text-align:right}
+.tacc .lab{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.plan{counter-reset:d}
+.day{border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0;background:var(--panel);box-shadow:var(--shadow)}
+.day h4{margin:0 0 4px;color:var(--ink)}
+.day .when{font-size:12px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.06em}
+/* quiz */
+.qz-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0;padding:12px 14px;border:1px solid var(--line);
+  border-radius:10px;background:var(--panel);position:sticky;top:0;z-index:5;box-shadow:var(--shadow)}
+.qz-bar select{font-family:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.qz-score{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums}
+.qz{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0;background:var(--panel);box-shadow:var(--shadow)}
+.qz .qh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+.qz .qn{font-weight:800;color:var(--muted);font-size:13px}
+.qz .qt{font-weight:600;margin:0 0 8px}
+.qz .opt{display:flex;gap:10px;width:100%;text-align:left;border:1px solid var(--line);border-radius:9px;padding:9px 12px;margin:6px 0;
+  background:var(--panel);color:var(--ink);cursor:pointer;font-family:inherit;font-size:15px;line-height:1.45}
+.qz .opt:hover{border-color:var(--accent)}
+.qz .opt .l{font-weight:700;color:var(--muted);flex:0 0 auto}
+.qz .opt.ok{background:var(--ok-soft);border-color:var(--ok)}
+.qz .opt.ok .l{color:var(--ok)}
+.qz .opt.bad{background:var(--no-soft);border-color:var(--no)}
+.qz .opt.bad .l{color:var(--no)}
+.qz.done .opt{cursor:default}
+.qz .exp{display:none;margin-top:10px;padding:10px 12px;border-radius:9px;background:var(--code);font-size:14.5px}
+.qz.done .exp{display:block}
+.qz .src{font-size:12px;color:var(--muted);margin-top:4px}
+.menuToggle{display:none}
+@media (max-width:900px){
+  .sidebar{position:fixed;z-index:40;left:0;top:0;transform:translateX(-102%);transition:transform .22s;box-shadow:var(--shadow)}
+  .sidebar.open{transform:none}
+  .menuToggle{display:inline-flex;position:fixed;z-index:50;top:12px;left:12px}
+  .content{padding-top:64px}
+  .scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:35}
+  .scrim.on{display:block}
+  .qz-bar{top:52px}
+}
+.backtop{position:fixed;right:18px;bottom:18px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.backtop.on{opacity:1;pointer-events:auto}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:60px;border-top:1px solid var(--line);padding-top:20px;flex-wrap:wrap}
+.pager a{text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--panel);max-width:48%}
+.pager a small{display:block;color:var(--muted);font-size:12px}
+@media print{
+  .sidebar,.menuToggle,.backtop,.toolbar,.qz-bar,.pager{display:none}
+  details.ex{break-inside:avoid} details.ex:not([open]) .body{display:block}
+  body{font-size:11pt;background:#fff;color:#000}
+}
+</style>
+</head>
+<body>
+<button class="btn menuToggle" id="menuToggle">&#9776; Índice</button>
+<div class="scrim" id="scrim"></div>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="dot">C1</div><div><h1>IMAFI · Certamen 1</h1><small>ICN-270 · lunes 5 oct, 09:40, M-202</small></div></div>
+  <div class="toolbar">
+    <button class="btn" id="themeBtn">Claro / oscuro</button>
+    <button class="btn" id="printBtn">Imprimir</button>
+    
+  </div>
+  <nav>
+    <div class="grp">Páginas</div>
+    <a class="page cur" href="0-Guia-C1.html"><span class="pn">0</span><span>Guía del certamen</span></a><a class="page" href="1-Fundamentos-y-proceso-contable.html"><span class="pn">1</span><span>Fundamentos y proceso contable</span></a><a class="page" href="2-Estados-financieros.html"><span class="pn">2</span><span>Estados financieros</span></a><a class="page" href="3-IVA.html"><span class="pn">3</span><span>IVA</span></a><a class="page" href="4-Depreciacion-y-amortizacion.html"><span class="pn">4</span><span>Depreciación y amortización</span></a><a class="page" href="5-Ratios-liquidez-y-endeudamiento.html"><span class="pn">5</span><span>Ratios de liquidez y endeudamiento</span></a><a class="page" href="6-Banco-de-preguntas.html"><span class="pn">6</span><span>Banco de preguntas y simulacro</span></a>
+    <div class="grp">En esta página</div><a class="sec" href="#formato">Qué entra y cómo es</a><a class="sec" href="#mapa">Mapa: qué estudiar para qué</a><a class="sec" href="#plan">Plan hasta el lunes</a><a class="sec" href="#chuleta">Chuleta de fórmulas</a><a class="sec" href="#errores">Errores típicos</a><a class="sec" href="#durante">Durante el certamen</a><a class="sec" href="#videos">Todos los videos</a><a class="sec" href="#fuentes">Fuentes y correcciones</a>
+  </nav>
+</aside>
+<main class="content">
+<header class="pagehead"><div class="kicker">IMAFI · Certamen 1 · Página 0</div><h1>Guía del certamen</h1><p class="lead">Formato, plan hasta el lunes, chuleta y errores típicos</p></header>
+<section id="formato" data-nav="Qué entra y cómo es">
+<h2>Qué entra y cómo es el certamen</h2>
+<div class="cards">
+<div class="card"><div class="num">Cuándo</div><h4>Lunes 5 de octubre, 09:40</h4><p>Sala M-202, presencial. Vale 35 % de la nota del ramo (lámina 5).</p></div>
+<div class="card"><div class="num">Formato</div><h4>40 + 30 + 30 = 100 pts</h4><p>Selección múltiple de 40 puntos y dos desarrollos de 30. Uno de los desarrollos probablemente sale de la Ayudantía 5.</p></div>
+<div class="card"><div class="num">Materia</div><h4>Láminas 1 a 201</h4><p>De la Primera Diapo, desde los conceptos hasta los ratios de liquidez (la pregunta de la lámina 201). Más endeudamiento, porque está en la Ayudantía 5.</p></div>
+</div>
+<p>En la práctica, la materia son las ayudantías 1 a 5 y todo lo que muestran las láminas hasta liquidez: contabilidad básica, estados financieros, EBITDA, IVA, depreciación y amortización, sociedades y ratios de liquidez y endeudamiento. Nada de matemática financiera (valor del dinero, VAN, TIR): eso empieza después.</p>
+<div class="box cert"><div class="bt">La única pista directa del profe sobre la selección múltiple</div>
+<p>La lámina 123 trae dos preguntas de ejemplo: “¿Cuál de estas cuentas no corresponde a una cuenta de patrimonio?” (respuesta: impuesto a la renta por pagar) y “Activo 25 millones, pasivos exigibles 15, resultado del ejercicio 7: ¿el capital es?” (respuesta: 3 millones, no 10). Cuatro alternativas, una conceptual y una de cálculo corto con trampa. El banco de la página 6 está hecho con ese estilo.</p></div>
+<p>Y la lámina 142 es literalmente una pregunta de un certamen anterior (“Caso 2, 8 puntos”, remanente de IVA con UTM). Está resuelta en la página 3.</p>
+</section>
+
+<section id="mapa" data-nav="Mapa: qué estudiar para qué">
+<h2>Mapa: qué estudiar para cada parte del certamen</h2>
+<p>Ordenado por lo que más rinde en puntaje. La probabilidad es mi estimación a partir de lo que se ha evaluado en ayudantías y controles; no es información del profe.</p>
+<div class="tablewrap"><table>
+<tr><th>Tema</th><th>Selección múltiple (40)</th><th>Desarrollo (2 × 30)</th><th>Página</th></tr>
+<tr><td><b>Ratios de liquidez y endeudamiento</b></td><td>Efectos (“¿qué pasa si…?”), relaciones, definiciones</td><td><span class="pill hi">alta</span> Ayudantía 5: calcular e interpretar</td><td><a href="5-Ratios-liquidez-y-endeudamiento.html">5</a></td></tr>
+<tr><td><b>Estado de Resultados, EBITDA, EBIT, EBT</b></td><td>Estructura, operacional vs no operacional, 27 %, devengado</td><td><span class="pill hi">alta</span> EERR completo con incógnitas</td><td><a href="2-Estados-financieros.html#eerr">2</a></td></tr>
+<tr><td><b>Depreciación y amortización</b></td><td>Normas, variables, acumulada vs ejercicio, intangibles</td><td><span class="pill hi">alta</span> junto con el EERR (Ayudantía 3)</td><td><a href="4-Depreciacion-y-amortizacion.html">4</a></td></tr>
+<tr><td><b>IVA y remanente en UTM</b></td><td>CF activo / DF pasivo, boletas, conversiones</td><td><span class="pill w">media</span> integrador o remanente (lámina 142)</td><td><a href="3-IVA.html">3</a></td></tr>
+<tr><td><b>Ecuación contable, partida doble, naturaleza de cuentas</b></td><td><span class="pill hi">mucha</span> y es la base de todo lo demás</td><td><span class="pill a">media-baja</span> asientos, reconstrucción</td><td><a href="1-Fundamentos-y-proceso-contable.html">1</a></td></tr>
+<tr><td><b>Cuentas del balance</b> (corriente/no corriente, PPE, intangibles, otros activos, patrimonio)</td><td><span class="pill hi">mucha</span> (lámina 123)</td><td>Clasificar antes de calcular ratios</td><td><a href="2-Estados-financieros.html#activos">2</a></td></tr>
+<tr><td>Conceptos (economía, empresa, persona natural/jurídica, función/objetivo)</td><td>Media</td><td>—</td><td><a href="1-Fundamentos-y-proceso-contable.html#conceptos">1</a></td></tr>
+<tr><td>Diario, mayor, ciclo contable, cierre, 8 columnas</td><td>Media</td><td><span class="pill a">baja</span></td><td><a href="1-Fundamentos-y-proceso-contable.html#libros">1</a></td></tr>
+<tr><td>Tipos de sociedad</td><td>Media (preguntas directas)</td><td>—</td><td><a href="2-Estados-financieros.html#sociedades">2</a></td></tr>
+</table></div>
+</section>
+
+<section id="plan" data-nav="Plan hasta el lunes">
+<h2>Plan de aquí al lunes</h2>
+<p>Cuatro días y medio. La idea es ir de lo que más pesa a lo que menos, y dejar el domingo para simular el certamen. Las horas son orientativas.</p>
+<div class="plan">
+<div class="day"><div class="when">Miércoles 30 · noche · 2 h</div><h4>Lo más probable primero: ratios</h4>
+<ul><li>Lee la <a href="5-Ratios-liquidez-y-endeudamiento.html">página 5</a> completa.</li>
+<li>Haz en papel los ejercicios 2, 3 y 4 de la Ayudantía 5 sin mirar la pauta; después compara con la página 5, fijándote sobre todo en cómo redacta la interpretación.</li>
+<li>Autoevaluación de la página 5. Videos: los dos de liquidez.</li></ul></div>
+<div class="day"><div class="when">Jueves 1 · 3 h</div><h4>La base: contabilidad y estados financieros</h4>
+<ul><li><a href="1-Fundamentos-y-proceso-contable.html">Página 1</a>: ecuación, partida doble, naturaleza de cuentas, diario y mayor.</li>
+<li><a href="2-Estados-financieros.html">Página 2</a>: cuentas del balance, EERR, EBITDA, sociedades.</li>
+<li>Ejercicios NORTE y ALFA en papel. Autoevaluaciones de ambas páginas.</li></ul></div>
+<div class="day"><div class="when">Viernes 2 · 3 h</div><h4>IVA y depreciación</h4>
+<ul><li><a href="3-IVA.html">Página 3</a>, con cuidado en el remanente en UTM (cambió respecto de lo que estudiaste para el Control 2).</li>
+<li><a href="4-Depreciacion-y-amortizacion.html">Página 4</a>.</li>
+<li>Ejercicios: Comercial Pacífico, Retornos Ltda., PUERTO y CORDILLERA.</li></ul></div>
+<div class="day"><div class="when">Sábado 3 · 3 h</div><h4>Volumen de selección múltiple y ratios difíciles</h4>
+<ul><li>Banco completo de la <a href="6-Banco-de-preguntas.html#sm">página 6</a>, tema por tema. Después “Solo las que fallé”.</li>
+<li>Ratios N1 a N4 de la página 5 y el integrador Queltehue de la página 6.</li>
+<li>Relee las tablas de cuentas del balance y de sociedades de la página 2.</li></ul></div>
+<div class="day"><div class="when">Domingo 4 · 3 h</div><h4>Simulacro</h4>
+<ul><li><a href="6-Banco-de-preguntas.html#simulacro">Simulacro completo</a> con reloj: 20 preguntas al azar y los dos desarrollos.</li>
+<li>Corrige, vuelve a los temas donde fallaste y repasa la chuleta de abajo.</li>
+<li>Duerme temprano: el certamen es a las 9:40.</li></ul></div>
+<div class="day"><div class="when">Lunes 5 · mañana · 30 min</div><h4>Solo repaso</h4>
+<ul><li>La chuleta y la lista de errores típicos de esta página. Nada nuevo.</li>
+<li>Lleva calculadora.</li></ul></div>
+</div>
+</section>
+
+<section id="chuleta" data-nav="Chuleta de fórmulas">
+<h2>Chuleta de fórmulas</h2>
+<div class="two">
+<div class="box formula"><div class="bt">Ecuación y patrimonio</div>
+<p>Activo = Pasivo + Patrimonio<br>Patrimonio = Capital + Resultados (del ejercicio y acumulados) − Retiros<br>Capital = Activo − Pasivo exigible − Resultado del ejercicio<br>Capital enterado = Capital social − Cuentas obligadas</p></div>
+<div class="box formula"><div class="bt">Naturaleza de las cuentas</div>
+<p>Deudoras (suben en el Debe): activos, gastos y costos<br>Acreedoras (suben en el Haber): pasivos, patrimonio e ingresos<br>¿Qué se recibe? → Debe. ¿Qué se entrega? → Haber</p></div>
+<div class="box formula"><div class="bt">Estado de Resultados</div>
+<p>Utilidad bruta = Ingresos − Costo de ventas<br>Resultado operacional = UB − Gastos de administración y ventas<br>RAI = Operacional ± No operacional<br>Impuesto = RAI × 27 % (0 si RAI ≤ 0)<br>Utilidad neta = RAI − Impuesto</p></div>
+<div class="box formula"><div class="bt">EBITDA / EBIT / EBT</div>
+<p>EBITDA = Ingresos − Costos y gastos operacionales sin D&amp;A<br>EBIT = EBITDA − Depreciación − Amortización<br>EBT = EBIT − Intereses<br>EBITDA = Utilidad neta + Impuestos + Intereses + D + A</p></div>
+<div class="box formula"><div class="bt">IVA (19 %)</div>
+<p>IVA = Neto × 0,19 · Bruto = Neto × 1,19 · Neto = Bruto / 1,19<br>CF = activo · DF = pasivo<br>DF &gt; CF → IVA por pagar · CF &gt; DF → remanente<br>Remanente: ÷ UTM del mes en que se declara; × UTM del mes en que se usa</p></div>
+<div class="box formula"><div class="bt">Depreciación y amortización</div>
+<p>Dep. anual = (Costo − Valor residual) / Vida útil<br>Primer año = anual × meses de uso / 12<br>Valor libro = Costo − Depreciación acumulada<br>Amortización = Costo del intangible / Vida útil<br>Asiento: Debe Gasto depreciación / Haber Depreciación acumulada</p></div>
+<div class="box formula"><div class="bt">Liquidez</div>
+<p>CT = AC − PC (en $)<br>RC = AC / PC (veces; referencia 2 a 1)<br>PA = (AC − Existencias) / PC (veces; ideal ≥ 1)<br>Acidísima = (Caja + Bancos) / PC<br>Siempre PA ≤ RC · CT = 0 ⇔ RC = 1</p></div>
+<div class="box formula"><div class="bt">Endeudamiento</div>
+<p>D/A = Pasivo total / Activo total (%; &lt; 60 %)<br>D/P = Pasivo total / Patrimonio (1 = mitad y mitad)<br>D/A + Patrimonio/Activo = 100 %<br>D/P = (D/A) / (1 − D/A)</p></div>
+</div>
+</section>
+
+<section id="errores" data-nav="Errores típicos">
+<h2>Errores típicos (repásalos el lunes)</h2>
+<ol>
+<li>Responder el <b>patrimonio</b> cuando piden el <b>capital</b> (hay que restar el resultado del ejercicio).</li>
+<li>Aplicar el 19 % sobre un monto que <b>ya trae IVA</b>.</li>
+<li>Calcular los porcentajes de contado y crédito sobre el <b>neto</b> en vez del bruto.</li>
+<li>Sumar la venta de un activo fijo a los <b>ingresos del giro</b>, o tratar un cobro a clientes como ingreso.</li>
+<li>Arrastrar el remanente en pesos en vez de pasarlo por <b>UTM</b>, o usar la UTM del mes equivocado.</li>
+<li>Olvidar restar el <b>valor residual</b> en la depreciación, o no prorratear los meses del primer año.</li>
+<li>Confundir <b>depreciación acumulada</b> (balance) con <b>depreciación del ejercicio</b> (gasto).</li>
+<li>Decir que el EBIT no descuenta la depreciación (es el EBITDA el que no la descuenta).</li>
+<li>Calcular impuesto sobre una pérdida (es cero).</li>
+<li>Olvidar el <b>pasivo no corriente</b> en la deuda total, o meter el patrimonio en ella.</li>
+<li>Invertir la relación: la prueba ácida es <b>menor o igual</b> que la razón circulante.</li>
+<li>Sumar la provisión de incobrables o la depreciación acumulada en vez de <b>restarlas</b>.</li>
+<li>Dejar el impuesto por pagar, el IVA por pagar o el anticipo de clientes fuera del <b>pasivo corriente</b>.</li>
+<li>Dar los ratios sin <b>interpretación</b>. En el desarrollo, cada número necesita su frase.</li>
+<li>Poner la depreciación en el EERR con signo positivo o usar Caja en su asiento.</li>
+</ol>
+</section>
+
+<section id="durante" data-nav="Durante el certamen">
+<h2>Durante el certamen</h2>
+<ul>
+<li><b>Empieza por lo que dominas.</b> Si el desarrollo de ratios es como la Ayudantía 5, hazlo primero: son puntos seguros y te calma.</li>
+<li><b>Escribe la fórmula antes de reemplazar.</b> Si te equivocas en una suma, la fórmula correcta igual suele tener puntaje.</li>
+<li><b>Unidades siempre:</b> CT en pesos, RC y PA en veces, D/A y D/P en porcentaje.</li>
+<li><b>Interpretación con estructura:</b> dato → qué significa (“por cada $1…”) → comparación con la referencia (1, 2 a 1, 60 %) → conclusión.</li>
+<li><b>Verifica cuadres:</b> que el balance cuadre, que Debe = Haber en cada asiento, que el valor libro no baje del residual.</li>
+<li>En la selección múltiple, si dudas entre dos, busca la palabra absoluta (“siempre”, “sin excepción”) o el paso intermedio disfrazado de respuesta.</li>
+</ul>
+</section>
+
+<section id="videos" data-nav="Todos los videos">
+<h2>Todos los videos, por página</h2>
+<p>Cada página termina con sus videos. Acá están juntos. Revisé el audio de cada uno (se transcribió) para confirmar que explica lo que dice el título y con qué nivel. Si tienes poco tiempo, ve solo los marcados como prioridad.</p>
+<div class="videos"><h3>1 · Fundamentos y proceso contable</h3><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=asXQmjNiLbA" target="_blank" rel="noopener">La ecuación contable o ecuación patrimonial, explicación para principiantes</a> <span class="pill hi">prioridad</span><div class="meta">Felipe Delgado · 5:22 · español</div><div class="why">A = P + Pat con el ejemplo de un terreno de 100 millones financiado mitad con préstamo y mitad con aportes (min 2:00). Es la misma idea de “de dónde salió la plata” de la lámina 81.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=ujPIRhqDazI" target="_blank" rel="noopener">La naturaleza de las cuentas en contabilidad</a> <span class="pill hi">prioridad</span><div class="meta">Felipe Delgado · 10:41 · español</div><div class="why">Cuenta T, debe y haber como simples lados de la cuenta, saldos, y desde el min 3:47 la naturaleza de cada grupo de cuentas. Es la tabla de la lámina 46 explicada con calma.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=aUjOLYMJEiM" target="_blank" rel="noopener">El principio de partida doble explicado fácil y rápido con ejemplos</a> <div class="meta">Felipe Delgado · 7:50 · español</div><div class="why">No hay débito sin crédito; asiento simple (dos cuentas) y compuesto (más de dos), con ejemplos. Complementa los tres principios de la lámina 36.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=SCw71-zsyBo" target="_blank" rel="noopener">Libro diario y mayor</a> <div class="meta">Economía desde Casa · 5:18 · español de España (euros)</div><div class="why">Registra operaciones en el diario y las pasa al mayor. Da otra forma útil de leer el asiento: el debe es el destino de los recursos y el haber, su origen.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=n_MmFGABOo8" target="_blank" rel="noopener">Video 1er ejercicio balance 8 columnas</a> <div class="meta">Sede Vallenar, Universidad de Atacama · 13:30 · español de Chile</div><div class="why">Una clase universitaria chilena que traspasa todas las cuentas del mayor al balance de 8 columnas (incluidas IVA crédito y débito) y hace la cuadratura final de activos/pasivos y pérdidas/ganancias.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=Zoz6tKKTChM" target="_blank" rel="noopener">Cómo leer un balance de 8 columnas</a> <div class="meta">Nataly Silva Contabilidades · 19:19 · español de Chile</div><div class="why">Opcional. Clasifica cuenta por cuenta de un balance real en activo, pasivo, pérdida o ganancia según su saldo. Trae cuentas tributarias chilenas (PPM, retenciones) que no están en el curso: sáltatelas.</div></div></div><h3>2 · Estados financieros</h3><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=7yF6yqa7xWk" target="_blank" rel="noopener">Qué son los activos corrientes y no corrientes</a> <div class="meta">Felipe Delgado · 3:17 · español</div><div class="why">Corto y directo: qué es corriente (menos de un año), por qué el inventario es el corriente menos líquido y ejemplos de no corrientes.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=BDNRUeiwjCU" target="_blank" rel="noopener">Cuentas de balance general: activo, pasivo y capital contable</a> <div class="meta">Futuros Contadores · 8:06 · español de México</div><div class="why">Recorre las cuentas de activo, pasivo y capital con ejemplos, como las láminas 87 a 122. Usa nombres mexicanos (“capital contable”, “rentas pagadas por anticipado”).</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=t5eoOA8Z9O4" target="_blank" rel="noopener">Estado de resultados paso a paso fácil y rápido</a> <span class="pill hi">prioridad</span><div class="meta">Felipe Delgado · 6:35 · español</div><div class="why">Arma la cascada completa: ventas, utilidad bruta, operacional, no operacional, antes de impuesto y neta. Menciona códigos de cuentas colombianos; la estructura es la misma de la lámina 125.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=N9fiWNdveyk" target="_blank" rel="noopener">EBIT vs EBITDA en estados financieros, caso práctico en Excel</a> <span class="pill hi">prioridad</span><div class="meta">ISEN Empresas · 4:30 · español</div><div class="why">Calcula los dos sobre el mismo estado de resultados y muestra que la única diferencia es la depreciación y amortización. Justo lo que piden los ejercicios NORTE y CORDILLERA.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=vSmTy8tp9mQ" target="_blank" rel="noopener">Cómo calcular el EBITDA</a> <div class="meta">Felipe Delgado · 3:09 · español</div><div class="why">EBITDA = utilidad operativa + depreciación + amortización, con un ejemplo corto. Ojo: dice que el EBITDA es “la utilidad que se convierte en efectivo”; para el certamen, EBITDA no es flujo de caja (V/F 4 de la Ayudantía 4).</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=9pn0DWpIfJQ" target="_blank" rel="noopener">¿Cuál es el principio de devengado?</a> <div class="meta">Finanzas a la Par (Tu Ayudante) · 3:28 · español</div><div class="why">Devengado con el ejemplo de una venta que se cobra a 30, 60 o 120 días: el ingreso se reconoce al vender. Es la idea de la Ayudantía 2.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=JFh49pH3QbI" target="_blank" rel="noopener">Tipos de sociedades en Chile</a> <div class="meta">Fran Fuentes · 14:31 · español de Chile</div><div class="why">Sociedad anónima (abierta, especial, cerrada), limitada, SpA, EIRL, colectiva y en comandita, con quién responde por qué. Cubre la lámina 162 completa.</div></div></div><h3>3 · IVA</h3><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=Al5FuSmnK64" target="_blank" rel="noopener">Aprende cómo funciona el IVA en Chile y en qué consiste el débito y crédito fiscal</a> <span class="pill hi">prioridad</span><div class="meta">Defensor del Contribuyente · 4:03 · español de Chile</div><div class="why">La idea del IVA como impuesto al valor agregado, el débito y el crédito fiscal, que solo las compras con factura del giro dan crédito, y la declaración mensual en el F29.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=z9QLgI8FZrQ" target="_blank" rel="noopener">Ajuste de IVA en el libro diario: 5 ejemplos de asientos contables</a> <span class="pill hi">prioridad</span><div class="meta">Nataly Silva Contabilidades · 6:51 · español de Chile</div><div class="why">El asiento de liquidación en cinco casos: IVA por pagar (débito mayor), remanente (crédito mayor) y variantes. Es el asiento de la sección “Liquidación mensual”.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=TE4_GDrhsfg" target="_blank" rel="noopener">¿Cómo se calcula la variación del remanente de crédito fiscal?</a> <span class="pill hi">prioridad</span><div class="meta">Nataly Silva Contabilidades · 2:59 · español de Chile</div><div class="why">Confirma la regla de la lámina 142 (min 1:10): el remanente se divide por la UTM del mes en que se declara el impuesto y se multiplica por la UTM del mes siguiente. Lo verifica con un F29 real.</div></div></div><h3>4 · Depreciación y amortización</h3><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=ssMQjlml-Sg" target="_blank" rel="noopener">Depreciación línea recta con valor de salvamento (valor residual)</a> <span class="pill hi">prioridad</span><div class="meta">Felipe Delgado · 4:57 · español</div><div class="why">(Costo − valor residual) / vida útil con un mueble de 8 millones, residual de 1 millón y 10 años. Es exactamente la fórmula de los ejercicios de la Ayudantía 3.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=goCl358yevA" target="_blank" rel="noopener">Registro contable de la depreciación de activos fijos</a> <div class="meta">Felipe Delgado · 4:27 · español</div><div class="why">El asiento: gasto por depreciación al debe y depreciación acumulada al haber. Usa códigos de cuentas colombianos; las cuentas son las mismas.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=RrSN5Wo3iIY" target="_blank" rel="noopener">¿Qué es la depreciación acumulada?</a> <span class="pill hi">prioridad</span><div class="meta">Finanzas a la Par (Tu Ayudante) · 8:48 · español</div><div class="why">La depreciación acumulada como contracuenta de activo que no se cierra cada año y sigue creciendo hasta que el activo se deprecia por completo o se vende. La diferencia con la del ejercicio, bien explicada.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=VpeG-s5ms94" target="_blank" rel="noopener">¿Qué es la depreciación? Métodos de depreciación</a> <div class="meta">Economía desde Casa · 4:46 · español de España</div><div class="why">Causas de la depreciación (desgaste, obsolescencia) y dos métodos: lineal y acelerado, que el primer año deprecia el doble del lineal (la idea del saldo decreciente de la lámina 169). Ojo: en España a la depreciación le dicen “amortización”.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=qLC2PX_QSZA" target="_blank" rel="noopener">¿Cómo se amortiza un activo intangible?</a> <div class="meta">Contable Tip · 7:25 · español</div><div class="why">Amortización lineal de una patente y su registro. Refuerza por qué un intangible se amortiza en vez de ir completo a gasto.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=QIpIPrWE5n0" target="_blank" rel="noopener">Deterioro del valor de los activos (NIC 36)</a> <div class="meta">Victor Sanchez · 8:24 · español</div><div class="why">Valor en libros contra valor recuperable, y valor en uso como el valor presente de lo que dará usar el activo. Es la lámina 158 con ejemplos.</div></div></div><h3>5 · Ratios de liquidez y endeudamiento</h3><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=HgZjdFYEQ1I" target="_blank" rel="noopener">Razones de liquidez: razón circulante, prueba ácida y capital neto de trabajo</a> <span class="pill hi">prioridad</span><div class="meta">Finanzas 24x7 · 6:18 · español</div><div class="why">Los tres indicadores de la Ayudantía 5 y cómo leer una razón mayor, igual o menor que 1.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=nVM-pe6HgZM" target="_blank" rel="noopener">¿Cuál es la diferencia entre la razón corriente y la ácida?</a> <span class="pill hi">prioridad</span><div class="meta">Finanzas a la Par (Tu Ayudante) · 5:45 · español</div><div class="why">Las dos razones sobre la misma empresa, con un caso que queda bajo 1 (0,7 y 0,3) y cómo se interpreta “por cada peso de pasivo” (min 3:12). Buen modelo de redacción.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=xLHy57zVRQI" target="_blank" rel="noopener">Ejercicio de prueba ácida con interpretación</a> <div class="meta">Felipe Delgado · 4:17 · español</div><div class="why">Por qué se sacan los inventarios y un ejercicio completo con su interpretación.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=DmIcWQGvDiQ" target="_blank" rel="noopener">Ejercicio de índice de endeudamiento: cómo calcular e interpretar</a> <span class="pill hi">prioridad</span><div class="meta">Felipe Delgado · 3:06 · español</div><div class="why">Pasivo total / activo total = 45,68 % y qué significa. Es la razón deuda/activos de la Ayudantía 5.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=1-nz5RckuJ8" target="_blank" rel="noopener">Razones de endeudamiento / apalancamiento</a> <div class="meta">Finanzas 24x7 · 8:27 · español</div><div class="why">Deuda sobre activos y, desde el min 3:59, deuda sobre patrimonio (apalancamiento). Muestra también indicadores que no entran, como la concentración de deuda.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=UQfdqQY9VVc" target="_blank" rel="noopener">Interpretación de los ratios de liquidez bien explicado</a> <div class="meta">Dr. Edilberto Mejía Díaz · 7:23 · español</div><div class="why">Insiste en mirar el giro del negocio antes de interpretar (comercial, industrial, servicios), que es lo mismo que dice el ayudante de comparar con la industria.</div></div></div></div>
+</section>
+
+<section id="fuentes" data-nav="Fuentes y correcciones">
+<h2>Fuentes y correcciones</h2>
+<p>Material usado: “Primera Diapo.pdf” (láminas 1–201 como materia, 202–213 solo para endeudamiento), Ayudantías 1 a 5 con sus pautas, “Resumen ratios.pdf”, la grabación del ayudante, el enunciado de la Guía de 30 preguntas del caso Carozzi, y los ejercicios de la Ayudantía 3, que no tenían pauta y resolví yo.</p>
+<div class="box warn"><div class="bt">Cosas que corrijo o aclaro respecto de otros materiales</div>
+<ul>
+<li><b>Remanente de IVA:</b> en el resumen del Control 2 dije que se arrastraba en pesos. La lámina 142 (certamen anterior) lo pasa por UTM. Vale lo de la página 3.</li>
+<li><b>Lámina 79:</b> abona “Bancos” para un gasto que quedó pendiente de pago; lo correcto es una cuenta de pasivo (gastos por pagar).</li>
+<li><b>Lámina 141:</b> dice que las ventas quedan afectas a IVA “crédito” fiscal; es débito fiscal.</li>
+<li><b>Lámina 196:</b> con los montos de la lámina 199, la liquidez de Polpaico cae 8,3 %, no 7,3 %.</li>
+<li><b>Grabación del ayudante:</b> en el V/F 4 dice la relación al revés (lo correcto: prueba ácida ≤ razón circulante).</li>
+</ul></div>
+</section>
+
+<div class="pager"><span></span><a href="1-Fundamentos-y-proceso-contable.html" style="text-align:right"><small>Siguiente</small>1 · Fundamentos y proceso contable</a></div>
+</main>
+</div>
+<button class="btn backtop" id="backtop">&#8593; Arriba</button>
+<script>
+(function(){
+  var root=document.documentElement;
+  function setTheme(t){ if(t){root.setAttribute('data-theme',t);} try{localStorage.setItem('imafi-c1-theme',t||'');}catch(e){} }
+  try{var st=localStorage.getItem('imafi-c1-theme'); if(st) root.setAttribute('data-theme',st);}catch(e){}
+  var tb=document.getElementById('themeBtn');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    if(!cur){cur=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+    setTheme(cur==='dark'?'light':'dark');
+  });
+  var pb=document.getElementById('printBtn'); if(pb) pb.addEventListener('click',function(){
+    document.querySelectorAll('details').forEach(function(d){d.setAttribute('open','');}); window.print();});
+  var ob=document.getElementById('openAll'); if(ob) ob.addEventListener('click',function(){
+    var ds=document.querySelectorAll('details.ex'); var anyClosed=[].some.call(ds,function(d){return !d.open;});
+    ds.forEach(function(d){d.open=anyClosed;}); ob.textContent=anyClosed?'Cerrar soluciones':'Abrir soluciones';});
+  var sb=document.getElementById('sidebar'), sc=document.getElementById('scrim'), mt=document.getElementById('menuToggle');
+  function closeM(){sb.classList.remove('open');sc.classList.remove('on');}
+  if(mt) mt.addEventListener('click',function(){sb.classList.toggle('open');sc.classList.toggle('on');});
+  if(sc) sc.addEventListener('click',closeM);
+  document.querySelectorAll('nav a.sec').forEach(function(a){a.addEventListener('click',closeM);});
+  var bt=document.getElementById('backtop');
+  window.addEventListener('scroll',function(){ if(bt) bt.classList.toggle('on',window.scrollY>900); });
+  if(bt) bt.addEventListener('click',function(){window.scrollTo({top:0});});
+  var links=[].slice.call(document.querySelectorAll('nav a.sec'));
+  var secs=links.map(function(a){return document.getElementById(a.getAttribute('href').slice(1));}).filter(Boolean);
+  if('IntersectionObserver' in window && secs.length){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting){
+      links.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id);});}});},
+      {rootMargin:'-20% 0px -70% 0px'});
+    secs.forEach(function(s){io.observe(s);});
+  }
+})();
+</script>
+
+</body>
+</html>

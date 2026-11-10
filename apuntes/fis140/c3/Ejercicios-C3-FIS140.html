@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ejercicios C3 FIS140</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Serif:wght@500;600&display=swap">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], tags: 'none' },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+<style>
+  /* Diseño: índice lateral fijo + una columna de lectura de unos 70 caracteres.
+     Una sola tinta de acento (azul índigo, cercano a la línea H-gamma de 434 nm) y neutros.
+     El único color fuerte es la tira con las cuatro líneas de Balmer del hidrógeno. */
+  :root{
+    --bg:#f6f7f9; --surface:#ffffff; --ink:#1b2130; --muted:#586174; --line:#e1e4ea;
+    --accent:#3445b4; --accent-soft:#eceefa; --warn:#94550f; --warn-soft:#fbf3e7; --code:#eef0f4;
+    --strip:#0f1117; --h-delta:#8a4fd6; --h-gamma:#5b5cf0; --h-beta:#1fa8d4; --h-alpha:#e2463f;
+    --f-display:"IBM Plex Serif", Georgia, "Times New Roman", serif;
+    --f-body:"IBM Plex Sans", "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+    --f-mono:"IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+    --sidew:276px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#12151c; --surface:#181c25; --ink:#e5e8ef; --muted:#9aa2b4; --line:#2a2f3b;
+      --accent:#a3afff; --accent-soft:#1f2541; --warn:#e6ad66; --warn-soft:#2a2116; --code:#222734;
+      --strip:#0b0d12; color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#12151c; --surface:#181c25; --ink:#e5e8ef; --muted:#9aa2b4; --line:#2a2f3b;
+    --accent:#a3afff; --accent-soft:#1f2541; --warn:#e6ad66; --warn-soft:#2a2116; --code:#222734;
+    --strip:#0b0d12; color-scheme:dark;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.66;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:var(--accent)}
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+  .layout{display:flex;align-items:flex-start}
+  .sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;overflow-y:auto;
+    background:var(--surface);border-right:1px solid var(--line);padding:22px 14px 60px}
+  .content{flex:1 1 auto;min-width:0;padding:40px clamp(16px,4.5vw,64px) 140px}
+  .col{max-width:760px;margin:0 auto}
+
+  .brand .kicker{font-family:var(--f-mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+  .brand h1{font-family:var(--f-display);font-weight:600;font-size:20px;line-height:1.25;margin:4px 0 2px;text-wrap:balance}
+  .brand p{margin:0;color:var(--muted);font-size:13px}
+  .spectrum{margin:14px 0 4px}
+  .spectrum .bar{position:relative;height:12px;border-radius:3px;background:var(--strip)}
+  .spectrum .bar i{position:absolute;top:0;bottom:0;width:2px}
+  .spectrum .lbl{position:relative;height:14px;font-family:var(--f-mono);font-size:9.5px;color:var(--muted)}
+  .spectrum .lbl span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+  .spectrum small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+
+  .toolbar{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 6px}
+  .btn{font:500 12.5px/1 var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);
+    border-radius:6px;padding:7px 10px;cursor:pointer}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+
+  nav .grp{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:18px 8px 4px}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:6px;font-size:13.5px;line-height:1.35;opacity:.86}
+  nav a:hover{background:var(--accent-soft);opacity:1}
+  nav a.sub{padding-left:20px;font-size:13px;opacity:.74}
+  nav a.active{background:var(--accent-soft);color:var(--accent);font-weight:600;opacity:1}
+  nav .xlink{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+
+  h2{font-family:var(--f-display);font-weight:600;font-size:29px;line-height:1.2;margin:0 0 8px;letter-spacing:-.005em;text-wrap:balance;scroll-margin-top:24px}
+  h3{font-family:var(--f-display);font-weight:600;font-size:21px;line-height:1.3;margin:38px 0 6px;text-wrap:balance;scroll-margin-top:24px}
+  h4{font-size:16px;font-weight:600;margin:24px 0 4px;scroll-margin-top:24px}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  strong{font-weight:600}
+  .eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+  .lead{font-size:18px;color:var(--muted);margin:4px 0 14px}
+  .muted{color:var(--muted)}
+  section{border-top:1px solid var(--line);padding-top:38px;margin-top:52px}
+  section.first{border-top:0;margin-top:0;padding-top:0}
+  code,.mono{font-family:var(--f-mono);font-size:.88em}
+  code{background:var(--code);border-radius:4px;padding:1px 5px}
+  .num{font-variant-numeric:tabular-nums}
+
+  /* Lista de fórmulas: la fórmula a la izquierda y cuándo se usa a la derecha */
+  .fl{margin:14px 0;border-top:1px solid var(--line)}
+  .fl .r{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;align-items:center;padding:10px 2px;border-bottom:1px solid var(--line)}
+  .fl .r .f{min-width:0;overflow-x:auto;overflow-y:hidden}
+  .fl .r .w{color:var(--muted);font-size:14.5px;min-width:0}
+
+  .note{border-left:3px solid var(--line);padding:2px 0 2px 14px;margin:16px 0}
+  .note .t,.warn .t{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+  .warn{border-left:3px solid var(--warn);background:var(--warn-soft);padding:10px 14px;margin:18px 0;border-radius:0 6px 6px 0}
+  .warn .t{color:var(--warn)}
+  .warn ul{margin:4px 0}
+
+  .tablewrap{overflow-x:auto;margin:16px 0}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:560px}
+  th,td{padding:9px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+  th{font-family:var(--f-mono);font-weight:500;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);border-bottom:1.5px solid var(--ink)}
+  tr.hl td{background:var(--accent-soft)}
+  table.small{min-width:0;font-size:14px}
+
+  .tag{display:inline-block;font-family:var(--f-mono);font-size:11px;line-height:1.5;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 6px;vertical-align:2px;white-space:nowrap}
+  .tag.ac{color:var(--accent);border-color:var(--accent)}
+
+  .videos{list-style:none;padding:0;margin:8px 0}
+  .videos li{padding:6px 0;border-bottom:1px dashed var(--line);margin:0}
+  .videos li:last-child{border-bottom:0}
+  .videos a{text-decoration:none;font-weight:500}
+  .videos a:hover{text-decoration:underline}
+  .videos .meta{font-family:var(--f-mono);font-size:11.5px;color:var(--muted);white-space:nowrap}
+  .videos .why{display:block;font-size:13.5px;color:var(--muted)}
+  .vbox{margin:24px 0 4px}
+  .vbox > .t{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+  .ans{color:var(--accent);font-weight:600}
+  mjx-container[display="true"]{overflow-x:auto;overflow-y:hidden;max-width:100%;padding:2px 0}
+
+  /* Ejercicios */
+  .ex{border-top:1px solid var(--line);padding:20px 0 6px;scroll-margin-top:20px}
+  .ex .hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
+  .ex .id{font-family:var(--f-mono);font-weight:500;font-size:13px;color:var(--accent);min-width:2.6em}
+  .ex .hd h4{margin:0;font-size:17px;flex:1 1 240px;min-width:0}
+  .ex .enun{margin:8px 0 4px}
+  .ex .enun ol{margin:6px 0}
+  details.sol{margin:8px 0 6px}
+  details.sol > summary{display:inline-block;cursor:pointer;list-style:none;font:500 13px/1 var(--f-body);color:var(--accent);
+    border:1px solid var(--accent);border-radius:6px;padding:7px 11px;user-select:none}
+  details.sol > summary::-webkit-details-marker{display:none}
+  details.sol[open] > summary{background:var(--accent-soft)}
+  details.sol .body{margin-top:10px;padding:0 12px 0 14px;border-left:2px solid var(--accent-soft)}
+  .step{margin:12px 0;padding:2px 14px 2px 0}
+  .step > b:first-child{font-family:var(--f-mono);font-weight:500;font-size:12px;color:var(--muted);margin-right:6px}
+
+  .recall{padding-left:28px}
+  .recall li{margin:12px 0}
+  .recall li > p{margin:0 0 4px}
+  .plan td:first-child{white-space:nowrap;font-family:var(--f-mono);font-size:13px}
+
+  /* Etiquetas de prioridad */
+  .prio{margin:0 0 18px;font-size:14.5px;color:var(--muted)}
+  .prio strong{color:var(--ink)}
+  .lv{display:inline-block;font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+    padding:1px 7px;border-radius:4px;border:1px solid var(--line);color:var(--ink);margin-right:8px;vertical-align:1px;white-space:nowrap}
+  .lv.p3{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lv.p1{color:var(--muted);border-style:dashed}
+  td .lv{margin-right:0}
+  nav a.sub{display:flex;align-items:baseline;gap:6px}
+  nav a .nt{flex:1 1 auto;min-width:0}
+  .pd{display:inline-flex;gap:3px;align-items:center;color:var(--muted);vertical-align:1px}
+  .pd i{display:inline-block;width:6px;height:6px;border-radius:50%;border:1px solid currentColor;box-sizing:border-box}
+  .pd i.on{background:currentColor}
+  .pd.p3{color:var(--accent)}
+  nav a .pd{flex:0 0 auto}
+
+  /* Móvil */
+  .menuToggle{display:none}
+  .scrim{display:none}
+  @media (max-width:920px){
+    .sidebar{position:fixed;z-index:40;left:0;top:0;transform:translateX(-102%);transition:transform .2s ease;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .sidebar.open{transform:none}
+    .menuToggle{display:inline-block;position:fixed;z-index:50;top:calc(10px + env(safe-area-inset-top,0px));left:10px}
+    .scrim.on{display:block;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:35}
+    .content{padding-top:62px}
+    .fl .r{grid-template-columns:1fr;gap:2px}
+    .step{overflow-x:auto}
+  }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.sidebar{transition:none}}
+  @media print{
+    .sidebar,.menuToggle,.scrim,.toolbar{display:none!important}
+    .content{padding:0}
+    body{font-size:12.5px;background:#fff;color:#000}
+    details.sol > summary{display:none}
+    details.sol .body{border-left:0;padding-left:0}
+    .ex{break-inside:avoid}
+  }
+
+  /* Los encabezados van en mayúsculas, pero las fórmulas no: una lambda no puede volverse Λ */
+  th mjx-container{text-transform:none}
+
+  /* Figuras del C3: usan las variables del tema para funcionar en claro y oscuro */
+  .fig{margin:22px 0}
+  .fig svg{display:block;width:100%;height:auto;max-width:640px;margin:0 auto}
+  .fig svg[aria-label^="Movimiento"]{max-width:400px}
+  .fig figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;text-align:center}
+  .diag text{font-family:var(--f-mono);font-size:12px;fill:var(--ink)}
+  .diag text.mt{fill:var(--muted)}
+  .diag text.ac{fill:var(--accent);font-weight:500}
+  .diag .l{stroke:var(--ink);stroke-width:1.6;fill:none}
+  .diag .lm{stroke:var(--muted);stroke-width:1;fill:none}
+  .diag .lm2{stroke:var(--muted);stroke-width:1.4;stroke-dasharray:6 4;fill:none}
+  .diag .lg{stroke:var(--line);stroke-width:1;fill:none}
+  .diag .la{stroke:var(--accent);stroke-width:2;fill:none}
+  .diag .da{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:5 4;fill:none}
+  .diag .fa{fill:var(--accent)}
+  .diag .fs{fill:var(--accent-soft)}
+  .diag .fb{fill:var(--line)}
+
+  /* Página de ejercicios clave */
+  .ex .why{margin:6px 0 2px;font-size:14px;color:var(--muted)}
+  .ex .chk{display:inline-flex;align-items:center;gap:4px;font:500 12px/1 var(--f-body);color:var(--muted);cursor:pointer;margin-left:2px;white-space:nowrap}
+  .ex .chk input{margin:0;accent-color:var(--accent)}
+  .ex.done .hd h4{opacity:.55}
+  .ex.done .id::after{content:" ✓";color:var(--accent)}
+  .prog{font-family:var(--f-mono);font-size:13px;color:var(--muted);margin:6px 0}
+  @media print{.ex .chk,.prog{display:none!important}}
+</style>
+</head>
+<body>
+<button class="btn menuToggle" id="menuToggle" type="button">Índice</button>
+<div class="scrim" id="scrim"></div>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="kicker">FIS140 · Física General IV · USM</div>
+    <h1>Ejercicios del Certamen 3</h1>
+    <p>Resueltos paso a paso. Primero en papel, después la solución.</p>
+  </div>
+  <div class="spectrum" title="Líneas de Balmer del hidrógeno, las mismas de la lámpara de descarga de la Clase 13">
+    <div class="bar"><i style="left:9.4%;background:var(--h-delta)"></i><i style="left:16.9%;background:var(--h-gamma)"></i><i style="left:33.2%;background:var(--h-beta)"></i><i style="left:86.3%;background:var(--h-alpha)"></i></div>
+    <div class="lbl"><span style="left:7.5%">410</span><span style="left:17.5%">434</span><span style="left:33.2%">486</span><span style="left:86.3%">656 nm</span></div>
+    <small>Hidrógeno, serie de Balmer: $n\to 2$</small>
+  </div>
+  <div class="toolbar">
+    <button class="btn" id="themeBtn" type="button">Cambiar tema</button>
+    <button class="btn" id="allBtn" type="button">Abrir soluciones</button>
+    <button class="btn" id="printBtn" type="button">Imprimir</button>
+  </div>
+  <nav id="nav">
+    <div class="grp">Empezar</div>
+    <a href="#e-intro">Cómo usar este archivo</a>
+    <a href="#plan">Plan día a día hasta el 25</a>
+    <a href="#apuesta">La apuesta</a>
+    <a href="#conceptual">Preguntas conceptuales</a>
+
+    <div class="grp">A · Átomos</div>
+    <a class="sub" href="#A-3d">Cuántica en 3D, pozos e hidrógeno · A1 a A18 y A30</a>
+    <a class="sub" href="#A-rx">Muchos electrones y rayos X · A19 a A29</a>
+
+    <div class="grp">B · Moléculas y sólidos</div>
+    <a class="sub" href="#B-mol">Moléculas · B1 a B5</a>
+    <a class="sub" href="#B-sol">Sólidos y semiconductores · B6 a B17</a>
+
+    <div class="grp">C · Núcleo</div>
+    <a class="sub" href="#C-dec">Decaimientos · C1 a C11</a>
+    <a class="sub" href="#C-act">Enlace y actividad · C12 a C17</a>
+
+    <div class="grp">Práctica final</div>
+    <a href="#sim1">Simulacro 1</a>
+    <a href="#sim2">Simulacro 2</a>
+    <a href="#recup">Preguntas de recuperación</a>
+    <a href="#erratas">Errores en pautas</a>
+    <div class="xlink"><a href="Clave-C3-FIS140.html">Los más probables, en orden →</a><br><a href="Resumen-C3-FIS140.html">← Volver al resumen de teoría</a></div>
+  </nav>
+</aside>
+
+<main class="content">
+<div class="col">
+
+<section id="e-intro" class="first">
+  <p class="eyebrow">Empezar aquí</p>
+  <h2>Ejercicios para el Certamen 3</h2>
+  <p class="lead">Las Ayudantías 9 y 10 completas, los problemas de doce certámenes anteriores, ejercicios nuevos donde el material era poco y dos simulacros. Todos resueltos, con los números recalculados.</p>
+  <ul>
+    <li><strong>Si tienes tiempo extra, parte por <a href="Clave-C3-FIS140.html">los más probables, en orden</a></strong>: una página aparte con 32 de estos ejercicios en tres rondas, con casillas para marcar avance.</li>
+    <li><strong>El enunciado está a la vista y la solución plegada.</strong> La idea es que lo intentes en papel antes de abrir. Si te quedas pegado más de cinco minutos, abre la solución, lee solo el primer paso y vuelve a intentar.</li>
+    <li><strong>La etiqueta de cada ejercicio dice de dónde sale</strong>: «Ay.9 P1» es la Ayudantía 9, problema 1; «2026-1 P2», el problema 2 del C3 de 2026-1; «Nuevo», uno que armé para cubrir un tipo de problema que faltaba. Los que dicen «apuesta» son los que más conviene dominar.</li>
+    <li><strong>Las ayudantías que vengan se agregan aquí</strong>, en el bloque que corresponda, y se actualiza el plan. La 10 ya está: sus problemas 2, 3 y 4 son <a href="#A25">A25</a>, <a href="#A22">A22</a> y <a href="#B2">B2</a>, que ya venían de certámenes, y el 1 es el nuevo <a href="#A30">A30</a>. Viene sin solución, así que las cuatro las resolví yo.</li>
+    <li>Revisando las pautas encontré errores, varios en la Ayudantía 9. Están corregidos en cada solución y reunidos al final, en <a href="#erratas">errores en pautas</a>.</li>
+  </ul>
+  <p>La teoría de cada tema está en <a href="Resumen-C3-FIS140.html">Resumen-C3-FIS140.html</a>. Unidades que se usan en todas partes: $hc=1240$ eV·nm, $\hbar c=197$ eV·nm, $E_0=13{,}6$ eV, $e^2/4\pi\varepsilon_0=1{,}44$ eV·nm, $m_ec^2=0{,}511$ MeV, 1 u $=931{,}5$ MeV/$c^2$, $k_B=1/12\,000$ eV/K, salvo donde el certamen original daba otro valor.</p>
+</section>
+
+<section id="plan">
+  <p class="eyebrow">Empezar aquí</p>
+  <h2>Plan día a día hasta el 25</h2>
+  <p>Está calzado con el <strong>calendario general de finales</strong> (<code>00-plan-finales-2026-2.md</code>): los días con Física como foco son 2 a 3 horas, y los que dicen «también», alrededor de una hora. Los días que no aparecen son de otros ramos. Varias sesiones parten o cierran recuperando algo de una sesión anterior, porque volver a un tema días después es lo que más rinde. Cuando un día diga «sin mirar» y te acuerdes de la respuesta, haz la variante de la <a href="#apuesta">tabla de la apuesta</a>: tu C2 no copió ningún problema, usó sus pasos con otros números.</p>
+  <div class="tablewrap">
+    <table class="plan">
+      <thead><tr><th>Día</th><th>Qué haces</th><th>Material</th></tr></thead>
+      <tbody>
+        <tr><td colspan="3"><strong>Semana 1 · bases</strong></td></tr>
+        <tr><td>mar 10<br>foco · 2,5 h</td><td><strong>Diagnóstico</strong> (estaba para el dom 8, pero la guía no existía todavía): intenta los tres problemas del C3 de 2026-1, 15 minutos cada uno, sin estudiar antes. Equivocarse ahora ayuda a fijar la materia después. Corrige y anota qué no sabías.<br>Luego lee del resumen caja 3D, hidrógeno, probabilidad radial, selección y Zeeman, y haz la <strong>Ayudantía 9</strong>.</td><td><a href="#A19">A19</a>, <a href="#B6">B6</a>, <a href="#C1">C1</a><br><a href="#A1">A1</a>, <a href="#A2">A2</a>, <a href="#A4">A4</a></td></tr>
+        <tr><td>jue 12<br>también · 1 h</td><td>El pozo con electrones de la Ayudantía 10. La esfera por encima. Hidrógeno con números cuánticos y reglas de selección. Preguntas de recuperación del bloque.</td><td><a href="#A30">A30</a>, <a href="#A3">A3</a>, <a href="#A6">A6</a>, <a href="#A7">A7</a><br><a href="#recup">R1 a R10</a></td></tr>
+        <tr><td>vie 13<br>foco · 2,5 h</td><td><strong>Rayos X y átomos con muchos electrones.</strong> Lee Pauli, $Z$ efectivo, Moseley y el conteo. Parte por el drill de configuraciones, después los cuatro problemas de rayos X de certamen y el helio. A22 y A25 son de la Ayudantía 10.</td><td><a href="#A28">A28</a>, <a href="#A21">A21</a>, <a href="#A22">A22</a>, <a href="#A19">A19</a>, <a href="#A20">A20</a>, <a href="#A23">A23</a>, <a href="#A25">A25</a></td></tr>
+        <tr><td>dom 15<br>también · 1,5 h</td><td><strong>Semiconductores.</strong> Lee bandas, Fermi-Dirac, semiconductor puro, dopaje y fotones. Antes de abrir el resumen, escribe de memoria la regla del conteo de rayos X.</td><td><a href="#B6">B6</a>, <a href="#B7">B7</a>, <a href="#B8">B8</a>, <a href="#B9">B9</a><br><a href="#recup">R11 a R18</a></td></tr>
+        <tr><td colspan="3"><strong>Semana 2 · ADS y Física primero</strong></td></tr>
+        <tr><td>lun 16<br>foco · 2,5 h</td><td><strong>Núcleo.</strong> Lee el bloque C completo y aprende la tabla de masas. Cierra rehaciendo sin mirar un problema de rayos X y uno de semiconductor.</td><td><a href="#C1">C1</a>, <a href="#C2">C2</a>, <a href="#C3">C3</a>, <a href="#C5">C5</a>, <a href="#C13">C13</a><br>Sin mirar: <a href="#A21">A21</a>, <a href="#B7">B7</a></td></tr>
+        <tr><td>mié 18<br>foco · 2,5 h</td><td><strong>Moléculas, metales y lo último que se dictó.</strong> B2 es el P4 de la Ayudantía 10. Es el cierre aproximado de materia: si llegaron ayudantías nuevas, van hoy. Después, conceptuales.</td><td><a href="#B2">B2</a>, <a href="#B4">B4</a>, <a href="#B10">B10</a>, <a href="#B14">B14</a><br><a href="#conceptual">CX1 a CX12</a></td></tr>
+        <tr><td>vie 20<br>también · 1 h</td><td>Mezcla, sin mirar y en orden aleatorio: átomo, sólido, núcleo. Conceptuales restantes.</td><td><a href="#A22">A22</a>, <a href="#B8">B8</a>, <a href="#C2">C2</a><br><a href="#conceptual">CX13 a CX24</a></td></tr>
+        <tr><td>sáb 21<br>foco · 3 h</td><td><strong>Simulacro 1 con reloj:</strong> 90 minutos, sin apuntes, solo con el formulario. Corrige con la solución y haz tu lista de errores.</td><td><a href="#sim1">Simulacro 1</a></td></tr>
+        <tr><td>dom 22<br>también · 1 h</td><td>Lee «Errores que cuestan puntos» y el formulario. Rehace lo que falló en el simulacro.</td><td><a href="Resumen-C3-FIS140.html#errores">Errores</a>, <a href="Resumen-C3-FIS140.html#formulario">Formulario</a></td></tr>
+        <tr><td>lun 23<br>también · 1 h</td><td>Dos problemas del Simulacro 2, los de tus bloques más débiles.</td><td><a href="#sim2">Simulacro 2</a></td></tr>
+        <tr><td colspan="3"><strong>Semana de certámenes</strong></td></tr>
+        <tr><td>mar 24<br>tras ADS · 1 h</td><td>Formulario y un problema por bloque, nada más. El sueño de esta noche vale más que una hora extra.</td><td><a href="#A20">A20</a>, <a href="#B10">B10</a>, <a href="#C1">C1</a></td></tr>
+        <tr><td>mié 25<br>mañana · 1 h</td><td>Preguntas de recuperación que más te cuesten y errores frecuentes. Nada nuevo. Almuerza bien. <strong>Certamen a las 16:05</strong>, inclusión 14:40.</td><td><a href="#recup">Recuperación</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted">Si llega una ayudantía nueva y descuadra algo, se mueve lo que esté marcado como «también» y no el foco del día, igual que en el calendario general. Queda el domingo 22 y el lunes 23 de colchón.</p>
+</section>
+
+<section id="apuesta">
+  <p class="eyebrow">Empezar aquí</p>
+  <h2>La apuesta</h2>
+  <p>Si no te alcanza para todo, estos son los que más conviene dominar en cada problema. Salen del cruce de los cinco C3 de Casa Central con las Ayudantías 9 y 10. La 10 repitió tres de ellos (A22, A25 y B2) y agregó A30.</p>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Problema</th><th>Dominar</th><th>Qué entrenan</th></tr></thead>
+      <tbody>
+        <tr><td>1 · Átomos</td><td><a href="#A19">A19</a> · <a href="#A20">A20</a> · <a href="#A21">A21</a> · <a href="#A22">A22</a> (= Ay.10) · <a href="#A23">A23</a> · <a href="#A25">A25</a> (= Ay.10) · <a href="#A30">A30</a> (Ay.10) · <a href="#A2">A2</a> (Ay.9)</td><td>Configuración, conteo del apantallamiento, $Z$ efectivo experimental, Moseley al revés, helio, pozo con Pauli, hidrógeno</td></tr>
+        <tr><td>2 · Sólidos</td><td><a href="#B6">B6</a> · <a href="#B7">B7</a> · <a href="#B8">B8</a> · <a href="#B10">B10</a> · <a href="#B2">B2</a> (= Ay.10)</td><td>Gap desde $\lambda$, despeje de Fermi-Dirac, dopaje, energía de Fermi, espectro molecular</td></tr>
+        <tr><td>3 · Núcleo</td><td><a href="#C1">C1</a> · <a href="#C2">C2</a> · <a href="#C3">C3</a> · <a href="#C5">C5</a> · <a href="#C13">C13</a></td><td>$Q$ con masas atómicas y nucleares, reparto de energía, ley exponencial, actividad</td></tr>
+        <tr><td>Conceptual, los tres</td><td><a href="#conceptual">CX1 a CX24</a></td><td>Afirmaciones del estilo del cuestionario que Solar mandó para el C2</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>Después de cada uno, su variante</h3>
+  <p>Tus C1 y C2 no repitieron ningún problema de las ayudantías: armaron problemas nuevos con los mismos pasos (el detalle está en <a href="Resumen-C3-FIS140.html#arman">cómo arman los certámenes</a>). Por eso, cuando resuelvas uno de la apuesta, haz también una variante, idealmente otro día.</p>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Si resolviste</th><th>Haz también</th><th>Qué cambia</th></tr></thead>
+      <tbody>
+        <tr><td><a href="#A22">A22</a> · $K\beta$ del Mo (Ay.10)</td><td><a href="#A19">A19</a>, <a href="#A21">A21</a></td><td>Otra línea ($K\gamma$, $L\alpha$), otro conteo</td></tr>
+        <tr><td><a href="#A25">A25</a> · helio (Ay.10)</td><td><a href="#A23">A23</a>, <a href="#A24">A24</a>, <a href="#A26">A26</a></td><td>$Z_{ef}$ de otro átomo, energía de interacción</td></tr>
+        <tr><td><a href="#A30">A30</a> · pozo con Pauli (Ay.10)</td><td><a href="#A14">A14</a>, <a href="#A16">A16</a>, <a href="#A18">A18</a></td><td>Caja 3D, pozo infinito, electrones y protones</td></tr>
+        <tr><td><a href="#B2">B2</a> · HCl (Ay.10)</td><td><a href="#B4">B4</a>, <a href="#B3">B3</a></td><td>Otra molécula; sacar $r_0$ y $k'$</td></tr>
+        <tr><td><a href="#B6">B6</a> · semiconductor (2026-1)</td><td><a href="#B7">B7</a>, <a href="#B8">B8</a>, <a href="#B15">B15</a></td><td>$E_F$ sin suponer, semiconductor puro, tipo p</td></tr>
+        <tr><td><a href="#C1">C1</a> · torio (2026-1)</td><td><a href="#C2">C2</a>, <a href="#C11">C11</a>, <a href="#C15">C15</a></td><td>$\beta^+$ relativista, otro $\alpha$, un $\gamma$ que se lleva parte de $Q$</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="conceptual">
+  <p class="eyebrow">Empezar aquí</p>
+  <h2>Preguntas conceptuales</h2>
+  <p>Para el C2 Solar anunció un certamen «bastante conceptual» y mandó un cuestionario de selección múltiple; estas 24 van en ese estilo por si repite la fórmula. Puede haber varias correctas. Contesta en papel antes de abrir.</p>
+  <div class="ex" id="CX1">
+    <div class="hd"><span class="id">CX1</span><h4>Números cuánticos</h4></div>
+    <div class="enun">¿Cuáles combinaciones $(n,\ell,m_\ell)$ son posibles?<ol type="a"><li>$(2,2,0)$</li><li>$(3,2,-2)$</li><li>$(1,0,0)$</li><li>$(4,1,2)$</li><li>$(3,0,0)$</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: b, c y e.</span></p>
+      <ul><li>a) $\ell$ llega hasta $n-1$: con $n=2$, $\ell\le1$.</li><li>b) Sí.</li><li>c) Sí: es el estado fundamental.</li><li>d) $|m_\ell|\le\ell$: con $\ell=1$, $m$ no puede ser 2.</li><li>e) Sí: es el $3s$.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX2">
+    <div class="hd"><span class="id">CX2</span><h4>Átomo de hidrógeno</h4></div>
+    <div class="enun">En el átomo de hidrógeno según Schrödinger:<ol type="a"><li>La energía depende solo de $n$.</li><li>El nivel $n=3$ tiene 9 estados distintos sin contar espín.</li><li>En el estado $1s$ el momento angular orbital es $\hbar$.</li><li>Las energías coinciden con las de Bohr.</li><li>Los estados $2s$ y $2p$ tienen la misma energía.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, d y e.</span></p>
+      <ul><li>a) Sí.</li><li>b) Sí: $n^2=9$.</li><li>c) No: $\ell=0$ da $L=0$. Bohr predecía $\hbar$ y se equivocaba.</li><li>d) Sí.</li><li>e) Sí, en hidrógeno. En átomos con varios electrones ya no.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX3">
+    <div class="hd"><span class="id">CX3</span><h4>Densidad radial</h4></div>
+    <div class="enun">Para el estado $1s$ del hidrógeno:<ol type="a"><li>$|\psi|^2$ es máxima en $r=0$.</li><li>$P(r)$ es máxima en $r=0$.</li><li>$P(r)$ es máxima en $r=a_0$.</li><li>El electrón orbita a la distancia $a_0$.</li><li>$P(r)=4\pi r^2|\psi|^2$.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, c y e.</span></p>
+      <ul><li>a) Sí: $\psi\propto e^{-r/a_0}$.</li><li>b) No: $P(0)=0$, porque la cáscara de radio cero no tiene volumen.</li><li>c) Sí.</li><li>d) No hay órbita: $a_0$ es solo la distancia más probable.</li><li>e) Sí, por la simetría esférica.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX4">
+    <div class="hd"><span class="id">CX4</span><h4>Reglas de selección</h4></div>
+    <div class="enun">En hidrógeno, ¿cuáles transiciones cumplen las reglas de selección?<ol type="a"><li>$3d\to2p$</li><li>$3d\to1s$</li><li>$2s\to1s$</li><li>$4f\to3d$</li><li>$3p\to1s$</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, d y e.</span></p>
+      <ul><li>a) $\Delta\ell=-1$.</li><li>b) $\Delta\ell=-2$: prohibida.</li><li>c) $\Delta\ell=0$: prohibida. Por eso el $2s$ vive mucho.</li><li>d) $\Delta\ell=-1$.</li><li>e) $\Delta\ell=-1$.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX5">
+    <div class="hd"><span class="id">CX5</span><h4>Efecto Zeeman</h4></div>
+    <div class="enun">En el efecto Zeeman normal:<ol type="a"><li>El campo separa niveles según $m_\ell$.</li><li>Un nivel con $\ell=2$ se abre en 5.</li><li>El nivel $1s$ se abre en tres.</li><li>Una línea espectral se convierte en tres.</li><li>La separación es proporcional a $B$.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, d y e.</span></p>
+      <ul><li>a) Sí.</li><li>b) Sí: $2\ell+1=5$.</li><li>c) No: $\ell=0$ solo admite $m=0$.</li><li>d) Sí: $\Delta m=0,\pm1$.</li><li>e) Sí: $\Delta E=\mu_BB$.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX6">
+    <div class="hd"><span class="id">CX6</span><h4>Exclusión de Pauli</h4></div>
+    <div class="enun">¿Cuáles afirmaciones son correctas?<ol type="a"><li>Dos electrones de un átomo no pueden tener los cuatro números cuánticos iguales.</li><li>Una subcapa $p$ admite 6 electrones.</li><li>Una capa $n$ admite $2n^2$ electrones.</li><li>El principio se aplica también a los fotones.</li><li>Dos electrones en $1s$ pueden tener el mismo espín.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b y c.</span></p>
+      <ul><li>a) Es el enunciado.</li><li>b) Sí: $2(2\ell+1)=6$.</li><li>c) Sí.</li><li>d) No: los fotones no son fermiones.</li><li>e) No: los otros tres números son iguales, así que los espines tienen que ser opuestos.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX7">
+    <div class="hd"><span class="id">CX7</span><h4>Apantallamiento</h4></div>
+    <div class="enun">En un átomo con muchos electrones:<ol type="a"><li>Los electrones externos sienten $Z_{ef}\lt Z$.</li><li>La energía sigue dependiendo solo de $n$.</li><li>Un electrón $s$ penetra más cerca del núcleo que uno $d$.</li><li>En el sodio el electrón $3s$ tiene exactamente $Z_{ef}=1$.</li><li>El apantallamiento explica que $4s$ se llene antes que $3d$.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, c y e.</span></p>
+      <ul><li>a) Sí.</li><li>b) No: también depende de $\ell$.</li><li>c) Sí, y por eso siente más carga.</li><li>d) No: con la ionización medida da 1,84.</li><li>e) Sí.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX8">
+    <div class="hd"><span class="id">CX8</span><h4>Rayos X</h4></div>
+    <div class="enun">Sobre los rayos X característicos:<ol type="a"><li>$\sqrt f$ crece linealmente con $Z-1$.</li><li>$K\alpha$ es la transición de L a K.</li><li>En un mismo elemento, $K\beta$ tiene más energía que $K\alpha$.</li><li>La línea cambia mucho si el elemento forma compuestos.</li><li>Para que haya $K\alpha$ tiene que existir antes un hueco en K.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, c y e.</span></p>
+      <ul><li>a) Sí: es la ley de Moseley.</li><li>b) Sí.</li><li>c) Sí: parte de más arriba.</li><li>d) No: las capas internas casi no se enteran del enlace, y por eso sirve como huella del elemento.</li><li>e) Sí.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX9">
+    <div class="hd"><span class="id">CX9</span><h4>Helio</h4></div>
+    <div class="enun">Sobre el átomo de helio:<ol type="a"><li>Sin interacción entre electrones la ionización sería 54,4 eV.</li><li>La ionización real es menor por la repulsión entre electrones.</li><li>La ionización del ion He⁺ es 54,4 eV.</li><li>Cada electrón del He neutro siente $Z_{ef}=2$.</li><li>En el estado $1s2s$, el electrón $2s$ siente $Z_{ef}\approx1$.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, c y e.</span></p>
+      <ul><li>a) Sí: $4\cdot13{,}6$.</li><li>b) Sí: unos 24,6 eV.</li><li>c) Sí: tiene un solo electrón.</li><li>d) No: 1,35.</li><li>e) Sí: casi no comparte espacio con el $1s$.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX10">
+    <div class="hd"><span class="id">CX10</span><h4>Moléculas</h4></div>
+    <div class="enun">Sobre una molécula diatómica:<ol type="a"><li>Los niveles de vibración están mucho más separados que los de rotación.</li><li>Los niveles de rotación están igualmente espaciados.</li><li>Con $n=0$ la energía vibracional es cero.</li><li>Para absorber luz debe cumplir $\Delta n=\pm1$ y $\Delta\ell=\pm1$.</li><li>La línea central ausente corresponde a $\Delta\ell=0$.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, d y e.</span></p>
+      <ul><li>a) Sí.</li><li>b) No: van como $\ell(\ell+1)$: 0, 2, 6, 12 por $\hbar^2/2I$. Lo igualmente espaciado son las <em>líneas</em> del espectro.</li><li>c) No: queda $\tfrac12\hbar\omega$.</li><li>d) Sí.</li><li>e) Sí.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX11">
+    <div class="hd"><span class="id">CX11</span><h4>Masa reducida</h4></div>
+    <div class="enun">Sobre la masa reducida y los isótopos:<ol type="a"><li>$m_r$ es menor que cada una de las dos masas.</li><li>Si un átomo se cambia por un isótopo más pesado, $\omega$ baja.</li><li>Con un isótopo más pesado, $I$ sube.</li><li>En HCl, $m_r$ es casi la masa del hidrógeno.</li><li>Con dos átomos iguales, $m_r=2m$.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, c y d.</span></p>
+      <ul><li>a) Sí.</li><li>b) Sí: $\omega=\sqrt{k'/m_r}$.</li><li>c) Sí: $I=m_rr_0^2$.</li><li>d) Sí: 0,97 u contra 1,008 u.</li><li>e) No: $m/2$.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX12">
+    <div class="hd"><span class="id">CX12</span><h4>Bandas</h4></div>
+    <div class="enun">¿Cuáles son correctas?<ol type="a"><li>Un metal tiene una banda parcialmente llena.</li><li>En un semiconductor, $E_g$ es del orden de 1 eV.</li><li>Un semiconductor conduce peor al calentarlo.</li><li>Un aislante tiene una brecha mayor que un semiconductor.</li><li>Un hueco se comporta como una carga positiva.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, d y e.</span></p>
+      <ul><li>a) Sí.</li><li>b) Sí.</li><li>c) No: conduce mejor, porque sube el número de portadores. Los metales son los que empeoran.</li><li>d) Sí.</li><li>e) Sí.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX13">
+    <div class="hd"><span class="id">CX13</span><h4>Fermi-Dirac</h4></div>
+    <div class="enun">Sobre la función $f(E)$:<ol type="a"><li>$f(E_F)=\tfrac12$ para cualquier $T>0$.</li><li>$f(E_F+x)+f(E_F-x)=1$.</li><li>A $T=0$, $f=1$ bajo $E_F$.</li><li>$f$ puede ser mayor que 1 en un metal denso.</li><li>Para $E-E_F\gg kT$, $f\approx e^{-(E-E_F)/kT}$.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, c y e.</span></p>
+      <ul><li>a) Sí.</li><li>b) Sí.</li><li>c) Sí.</li><li>d) No: es una probabilidad, y Pauli no deja más de un electrón por estado.</li><li>e) Sí.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX14">
+    <div class="hd"><span class="id">CX14</span><h4>Semiconductor puro</h4></div>
+    <div class="enun">En un semiconductor intrínseco:<ol type="a"><li>$E_F$ está al medio de la brecha.</li><li>$f(E_c)+f(E_v)=1$.</li><li>$f(E_c)$ aumenta con la temperatura.</li><li>$f(E_c)=\tfrac12$.</li><li>$f(E_c)$ depende solo de $E_g/kT$.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, c y e.</span></p>
+      <ul><li>a) Sí.</li><li>b) Sí: son simétricos respecto de $E_F$.</li><li>c) Sí.</li><li>d) No: $\tfrac12$ es en $E_F$.</li><li>e) Sí.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX15">
+    <div class="hd"><span class="id">CX15</span><h4>Dopaje</h4></div>
+    <div class="enun">¿Cuáles son correctas?<ol type="a"><li>Silicio con fósforo es tipo n.</li><li>Silicio con boro es tipo p.</li><li>En tipo n, $E_F$ baja hacia la banda de valencia.</li><li>$E_c-E_F\lt E_g/2$ indica tipo n.</li><li>En tipo p hay más huecos que electrones libres.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, d y e.</span></p>
+      <ul><li>a) Sí: cinco electrones de valencia.</li><li>b) Sí: tres.</li><li>c) No: sube hacia conducción.</li><li>d) Sí.</li><li>e) Sí.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX16">
+    <div class="hd"><span class="id">CX16</span><h4>Fotones y brecha</h4></div>
+    <div class="enun">Un material tiene $E_g=1{,}1$ eV. ¿Cuáles son correctas?<ol type="a"><li>Un fotón de 1000 nm puede excitar un electrón de valencia a conducción.</li><li>Uno de 1500 nm no puede.</li><li>La longitud de onda máxima es unos 1127 nm.</li><li>Aumentar la intensidad de una luz de 1500 nm logra excitar electrones.</li><li>Lo que sobra sobre $E_g$ queda como energía cinética.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, c y e.</span></p>
+      <ul><li>a) Sí: 1,24 eV.</li><li>b) Sí: 0,83 eV.</li><li>c) Sí: $1240/1{,}1$.</li><li>d) No: más intensidad son más fotones, cada uno con la misma energía.</li><li>e) Sí.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX17">
+    <div class="hd"><span class="id">CX17</span><h4>Núclidos</h4></div>
+    <div class="enun">¿Cuáles son correctas?<ol type="a"><li>Los isótopos tienen el mismo $Z$.</li><li>El radio nuclear crece como $A^{1/3}$.</li><li>La densidad nuclear crece mucho con $A$.</li><li>Los núcleos pesados estables tienen $N>Z$.</li><li>$A=Z-N$.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b y d.</span></p>
+      <ul><li>a) Sí.</li><li>b) Sí.</li><li>c) No: es casi constante.</li><li>d) Sí, para compensar la repulsión eléctrica.</li><li>e) No: $A=Z+N$.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX18">
+    <div class="hd"><span class="id">CX18</span><h4>Energía de enlace</h4></div>
+    <div class="enun">¿Cuáles son correctas?<ol type="a"><li>Un núcleo pesa menos que sus nucleones libres.</li><li>$E_B/A$ tiene su máximo cerca del hierro.</li><li>La fisión del uranio libera energía.</li><li>La fusión de hierro libera energía.</li><li>Se usa $M_H$ para que los electrones se cancelen.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, c y e.</span></p>
+      <ul><li>a) Sí.</li><li>b) Sí: unos 8,8 MeV por nucleón.</li><li>c) Sí: los fragmentos están más ligados.</li><li>d) No: ya está en la cima de la curva.</li><li>e) Sí.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX19">
+    <div class="hd"><span class="id">CX19</span><h4>Beta menos</h4></div>
+    <div class="enun">En el decaimiento $\beta^-$:<ol type="a"><li>Un neutrón se convierte en protón.</li><li>$Z$ sube en 1 y $A$ no cambia.</li><li>El espectro del electrón es continuo por el antineutrino.</li><li>El electrón siempre sale con energía $Q$.</li><li>Indica exceso de neutrones.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, c y e.</span></p>
+      <ul><li>a) Sí.</li><li>b) Sí.</li><li>c) Sí: tres cuerpos.</li><li>d) No: $Q$ es el máximo.</li><li>e) Sí.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX20">
+    <div class="hd"><span class="id">CX20</span><h4>Beta más y captura</h4></div>
+    <div class="enun">¿Cuáles son correctas?<ol type="a"><li>$\beta^+$ exige $M_X>M_Y+2m_e$ con masas atómicas.</li><li>La captura solo exige $M_X>M_Y$.</li><li>En la captura $Z$ aumenta.</li><li>La captura deja un hueco en la capa K que emite rayos X.</li><li>En la captura el neutrino sale con una energía bien definida.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, d y e.</span></p>
+      <ul><li>a) Sí.</li><li>b) Sí.</li><li>c) No: $Z-1$.</li><li>d) Sí.</li><li>e) Sí: dos cuerpos.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX21">
+    <div class="hd"><span class="id">CX21</span><h4>Ley de decaimiento</h4></div>
+    <div class="enun">¿Cuáles son correctas?<ol type="a"><li>Tras dos semividas queda un cuarto de los núcleos.</li><li>$A=\lambda N$.</li><li>$T_{1/2}=T_m\ln2$.</li><li>La semivida depende del tamaño de la muestra.</li><li>La actividad se reduce a la mitad en cada semivida.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, c y e.</span></p>
+      <ul><li>a) Sí.</li><li>b) Sí.</li><li>c) Sí.</li><li>d) No: es propia del núclido.</li><li>e) Sí: $A\propto N$.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX22">
+    <div class="hd"><span class="id">CX22</span><h4>Decaimiento alfa</h4></div>
+    <div class="enun">Para un núcleo en reposo que emite una $\alpha$:<ol type="a"><li>La $\alpha$ se lleva menos que $Q$.</li><li>El producto más liviano se lleva más energía.</li><li>$Z$ baja en 2 y $A$ en 4.</li><li>El espectro de la $\alpha$ es continuo.</li><li>Si los dos productos son iguales, cada uno lleva $Q/2$.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, c y e.</span></p>
+      <ul><li>a) Sí: el retroceso se lleva algo.</li><li>b) Sí.</li><li>c) Sí.</li><li>d) No: dos cuerpos, energía fija.</li><li>e) Sí.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX23">
+    <div class="hd"><span class="id">CX23</span><h4>Masas y valor $Q$</h4></div>
+    <div class="enun">¿Cuáles son correctas?<ol type="a"><li>Con masas atómicas, en $\beta^-$ es $Q=(M_X-M_Y)c^2$.</li><li>Con masas atómicas, en $\beta^+$ es igual que en $\beta^-$.</li><li>En $\alpha$ con masas atómicas los electrones se cancelan.</li><li>Con masas nucleares, en $\beta^-$ se resta $m_e$.</li><li>1 u equivale a 931,5 MeV/$c^2$.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, c, d y e.</span></p>
+      <ul><li>a) Sí.</li><li>b) No: en $\beta^+$ se restan $2m_e$.</li><li>c) Sí.</li><li>d) Sí.</li><li>e) Sí.</li></ul>
+    </div></details>
+  </div>
+  <div class="ex" id="CX24">
+    <div class="hd"><span class="id">CX24</span><h4>Radiación gamma</h4></div>
+    <div class="enun">¿Cuáles son correctas?<ol type="a"><li>La emisión $\gamma$ no cambia $A$ ni $Z$.</li><li>Los $\gamma$ tienen energías de keV a MeV.</li><li>Un campo magnético desvía los $\gamma$.</li><li>Suele seguir a un decaimiento $\alpha$ o $\beta$.</li><li>En tu Experiencia 7 el imán desviaba las $\beta$ del Cs-137.</li></ol></div>
+    <details class="sol"><summary>Ver respuesta</summary><div class="body">
+      <p><span class="ans">Correctas: a, b, d y e.</span></p>
+      <ul><li>a) Sí.</li><li>b) Sí.</li><li>c) No: son fotones, sin carga.</li><li>d) Sí: el núcleo hijo suele quedar excitado.</li><li>e) Sí: la tasa bajó un 26 %.</li></ul>
+    </div></details>
+  </div>
+</section>
+
+<section id="A-3d">
+  <p class="eyebrow">Bloque A · Átomos</p>
+  <h2>Cuántica en 3D, pozos e hidrógeno</h2>
+  <p>La Ayudantía 9 completa, el pozo con electrones de la Ayudantía 10 (<a href="#A30">A30</a>, al final), los problemas de San Joaquín y los de años anteriores. Para un electrón, $E_0=0{,}376\ \text{eV}/L^2$ con $L$ en nm. Teoría en el <a href="Resumen-C3-FIS140.html#a-caja">resumen</a>.</p>
+
+  <div class="ex" id="A1">
+    <div class="hd"><span class="id">A1</span><h4>Punto cuántico cúbico</h4><span class="tag">Ay.9 P1</span></div>
+    <div class="enun">Un electrón está confinado en una caja cúbica de lado $L=5{,}0$ nm, con potencial cero adentro e infinito en las paredes.
+      <ol type="a"><li>Encuentre la expresión general de los niveles $E_{n_x,n_y,n_z}$. Justifique físicamente por qué están cuantizados.</li><li>Calcule las tres energías más bajas, en eV, con sus números cuánticos. ¿Hay degeneración?</li><li>Si el electrón está en el segundo nivel más bajo, escriba su función de onda y describa su densidad de probabilidad.</li><li>El electrón absorbe un fotón y va del estado $(1,1,1)$ al primer excitado. Calcule la energía mínima del fotón, su frecuencia y su longitud de onda. ¿Es visible?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> La ecuación se separa en tres pozos. En cada eje $\psi$ debe anularse en las dos paredes, así que caben medias ondas enteras: $k_iL=n_i\pi$. Entonces <span class="ans">$E=\dfrac{\hbar^2\pi^2}{2m_eL^2}(n_x^2+n_y^2+n_z^2)$</span>, con $n_i=1,2,3,\dots$ Son las condiciones de borde las que cuantizan: solo ciertas longitudes de onda caben.</div>
+      <div class="step"><b>b)</b> $E_0=0{,}376/25=15{,}04$ meV. <span class="ans">$(1,1,1)$: $3E_0=45{,}1$ meV, sin degeneración. $(2,1,1)$ y permutaciones: $6E_0=90{,}2$ meV, triple. $(2,2,1)$ y permutaciones: $9E_0=135{,}4$ meV, triple.</span></div>
+      <div class="step"><b>c)</b> Por ejemplo $\psi_{211}=\sqrt{8/L^3}\,\sin\dfrac{2\pi x}{L}\,\sin\dfrac{\pi y}{L}\,\sin\dfrac{\pi z}{L}$. La densidad $|\psi|^2$ se anula en el plano $x=L/2$ y en las paredes, y tiene dos máximos, en $x=L/4$ y $x=3L/4$, centrados en $y$ y $z$.</div>
+      <div class="step"><b>d)</b> $\Delta E=3E_0=$ <span class="ans">45,1 meV</span>; $f=\Delta E/h=$ <span class="ans">$1{,}09\times10^{13}$ Hz</span>; $\lambda=1240/0{,}0451=$ <span class="ans">27,5 µm</span>: infrarrojo lejano, no visible.</div>
+      <div class="step"><b>Ojo</b> La pauta dice en d) «todos con energía 0,900 eV», que no calza con este $L$, y en c) «dos nodos en $x$ y uno en $y$, $z$». Lo que hay son $n-1$ planos nodales interiores: uno en $x$, ninguno en $y$ ni en $z$.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A2">
+    <div class="hd"><span class="id">A2</span><h4>Hidrógeno cuántico</h4><span class="tag">Ay.9 P2</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">
+      <ol type="a"><li>Escriba los niveles de energía del hidrógeno según Schrödinger. ¿De qué número cuántico dependen? ¿Qué degeneración tiene cada nivel?</li><li>Determine la energía de $n=2$ y cuántos estados $(\ell,m)$ le corresponden. ¿Cómo son sus formas espaciales?</li><li>Con $R_{21}(r)=\dfrac{1}{\sqrt{24a_0^3}}\,\dfrac{r}{a_0}\,e^{-r/2a_0}$: (i) describa cualitativamente $R_{21}$ y sus nodos radiales; (ii) encuentre el máximo de $P(r)=r^2|R|^2$ e interprételo.</li><li>Para la transición $n=3\to n=1$, calcule la energía, la frecuencia y la longitud de onda del fotón. ¿A qué serie pertenece?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> <span class="ans">$E_n=-13{,}6\ \text{eV}/n^2$</span>. Depende solo de $n$. Degeneración: $\sum_{\ell=0}^{n-1}(2\ell+1)=$ <span class="ans">$n^2$</span>, sin contar espín.</div>
+      <div class="step"><b>b)</b> <span class="ans">$E_2=-3{,}4$ eV y 4 estados</span>: $(0,0)$, con simetría esférica, y $(1,-1)$, $(1,0)$, $(1,+1)$, en forma de lóbulos orientados.</div>
+      <div class="step"><b>c)</b> (i) Parte de cero en $r=0$ por el factor $r$, crece, alcanza un máximo y decae por la exponencial. <span class="ans">No tiene nodos radiales</span>: $n-\ell-1=0$. (ii) $P\propto r^4e^{-r/a_0}$, y $\dfrac{dP}{dr}\propto r^3e^{-r/a_0}\Big(4-\dfrac{r}{a_0}\Big)=0$: <span class="ans">$r=4a_0=0{,}212$ nm</span>. Es la distancia más probable, no una órbita.</div>
+      <div class="step"><b>d)</b> $E_\gamma=13{,}6\,(1-\tfrac19)=$ <span class="ans">12,09 eV</span>; $f=E/h=$ <span class="ans">$2{,}92\times10^{15}$ Hz</span>; $\lambda=1240/12{,}09=$ <span class="ans">102,6 nm</span>. Termina en $n=1$: <span class="ans">serie de Lyman</span>, ultravioleta.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A3">
+    <div class="hd"><span class="id">A3</span><h4>Electrón en una esfera</h4><span class="tag">Ay.9 P3</span></div>
+    <div class="enun">Un electrón está confinado en una cavidad esférica de radio $R=2{,}0$ nm, con $V=0$ adentro e infinito afuera. Considere $\ell=0$, para el que la ecuación radial es $-\dfrac{\hbar^2}{2m_e}\dfrac{1}{r^2}\dfrac{d}{dr}\Big(r^2\dfrac{dR}{dr}\Big)=ER$.
+      <ol type="a"><li>Con $u(r)=rR(r)$, demuestre que $u''+k^2u=0$, con $k^2=2m_eE/\hbar^2$.</li><li>Escriba la solución general. ¿Qué condición debe cumplir en $r=0$? Encuentre la función de onda.</li><li>Aplique $u(R)=0$ y encuentre el $k$ del estado fundamental.</li><li>Calcule su energía.</li><li>Compárela con la de una caja cúbica de lado $L=4{,}0$ nm, $E_{\text{caja}}=3\hbar^2\pi^2/2m_eL^2$. ¿Cuál es mayor y por qué?</li><li>Con $P(r)=A^2\sin^2(kr)$, bosqueje $P(r)$ e indique dónde está su máximo, qué pasa cuando $r\to0$ y dónde están los nodos.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $R=u/r$ da $\dfrac{dR}{dr}=\dfrac{u'}{r}-\dfrac{u}{r^2}$, así que $r^2\dfrac{dR}{dr}=ru'-u$. Derivando: $\dfrac{d}{dr}(ru'-u)=ru''$. La ecuación queda $-\dfrac{\hbar^2}{2m_e}\dfrac{u''}{r}=E\dfrac ur$, es decir, <span class="ans">$u''+k^2u=0$</span>.</div>
+      <div class="step"><b>b)</b> $u=A\sin kr+B\cos kr$, de modo que $R=A\dfrac{\sin kr}{r}+B\dfrac{\cos kr}{r}$. El segundo término diverge en $r=0$, así que $B=0$: <span class="ans">$R=A\sin(kr)/r$</span>. El primero tiende a $Ak$, finito.</div>
+      <div class="step"><b>c)</b> $\sin kR=0$, luego $kR=n\pi$. Estado fundamental: <span class="ans">$k=\pi/R$</span>.</div>
+      <div class="step"><b>d)</b> $E=\dfrac{\hbar^2\pi^2}{2m_eR^2}=\dfrac{0{,}376}{4}=$ <span class="ans">0,094 eV</span>.</div>
+      <div class="step"><b>e)</b> $E_{\text{caja}}=3\cdot0{,}376/16=$ <span class="ans">0,0705 eV</span>. Es mayor la de la esfera, un 33 % sobre la caja. La razón es simple: una esfera de radio 2 cabe dentro de un cubo de lado 4, y tiene casi la mitad de su volumen (33,5 nm³ contra 64 nm³). Con menos espacio, más energía. Si se compararan a igual volumen ($R=2{,}48$ nm), la esfera tendría 0,061 eV, menos que la caja.</div>
+      <div class="step"><b>f)</b> $P=A^2\sin^2(\pi r/R)$ es un arco que sale de cero y vuelve a cero. <span class="ans">Máximo en $r=R/2=1{,}0$ nm</span>; cuando $r\to0$, $P\to0$ como $r^2$; <span class="ans">nodos en $r=0$ y $r=R$</span>.</div>
+      <div class="step"><b>Ojo</b> La pauta dice «máximo en el centro de la esfera», pero $r=R/2$ no es el centro. En el centro lo máximo es $|\psi|^2$, y ahí $P(r)$ vale cero. También atribuye la diferencia de energía a la geometría; lo que manda es el volumen.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A4">
+    <div class="hd"><span class="id">A4</span><h4>Efecto Zeeman en absorción</h4><span class="tag">Ay.9 P4</span></div>
+    <div class="enun">Un átomo de hidrógeno está en un campo $\vec B=B_z\hat k$. Se detecta absorción desde estados $n=1$, $\ell=0$ hacia estados $n=3$, $\ell=1$. Los niveles son $E_{n,m_\ell}=-\dfrac{E_0}{n^2}+\Big(\dfrac{e\hbar B_z}{2m_e}\Big)m_\ell$.
+      <ol type="a"><li>¿Cuántas y cuáles líneas de absorción se observan?</li><li>Encuentre las expresiones de las energías de los fotones.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> El estado inicial tiene $m=0$. El final, $m=-1,0,+1$, y los tres cumplen $\Delta m=0,\pm1$ con $\Delta\ell=+1$. <span class="ans">Tres líneas</span>. Sin campo serían una sola.</div>
+      <div class="step"><b>b)</b> $E_\gamma=E_{3,m}-E_{1,0}=-\dfrac{E_0}{9}+\mu_BB_z\,m+E_0$: <span class="ans">$E_\gamma=\dfrac89E_0+m\,\mu_BB_z$</span>, con $m=+1,0,-1$. La línea central coincide con la que habría sin campo.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A5">
+    <div class="hd"><span class="id">A5</span><h4>Zeeman con números</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">Se repite el experimento de <a href="#A4">A4</a> con $B=2{,}0$ T, usando $\mu_B=5{,}79\times10^{-5}$ eV/T.
+      <ol type="a"><li>¿Cuánto se separan las líneas en energía y en frecuencia?</li><li>Estime la separación en longitud de onda.</li><li>Para la transición $2p\to3d$, cuente las transiciones permitidas. ¿Cuántas líneas distintas se ven?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $\Delta E=\mu_BB=$ <span class="ans">$1{,}16\times10^{-4}$ eV</span> y $\Delta f=\Delta E/h=$ <span class="ans">$2{,}8\times10^{10}$ Hz</span>.</div>
+      <div class="step"><b>b)</b> Como $\lambda=hc/E$, $\Delta\lambda=\lambda\,\Delta E/E$: $102{,}6\cdot1{,}16\times10^{-4}/12{,}09=$ <span class="ans">$9{,}8\times10^{-4}$ nm</span>. Mil veces más chica que las diferencias entre líneas normales: por eso hace falta buena resolución.</div>
+      <div class="step"><b>c)</b> Desde $m=+1$: 2, 1, 0. Desde $m=0$: 1, 0, $-1$. Desde $m=-1$: 0, $-1$, $-2$. Son <span class="ans">9 transiciones</span>, pero la energía solo depende de $\Delta m$: <span class="ans">3 líneas</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A6">
+    <div class="hd"><span class="id">A6</span><h4>Normalizar el estado base</h4><span class="tag">2025-1 SJ P1</span></div>
+    <div class="enun">La función de onda del estado de mínima energía del hidrógeno es $\psi(r)=Ae^{-r/a}$. Se sabe que $dV=r^2\sin\theta\,dr\,d\theta\,d\phi$ y que $\displaystyle\int_0^\infty r^2e^{-\rho r}dr=\frac{2}{\rho^3}$.
+      <ol type="a"><li>¿Cuál es el significado físico del área bajo $f(r)=4\pi r^2|\psi|^2$ entre $r_1$ y $r_2$?</li><li>Determine $A$ en función de $a$.</li><li>¿A qué distancia del origen es máxima la probabilidad?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> Integrando en los ángulos, $dV=4\pi r^2dr$ es el volumen de una cáscara. El área entre $r_1$ y $r_2$ es <span class="ans">la probabilidad de encontrar el electrón entre esos dos radios</span>.</div>
+      <div class="step"><b>b)</b> $4\pi|A|^2\displaystyle\int_0^\infty r^2e^{-2r/a}dr=4\pi|A|^2\,\frac{2}{(2/a)^3}=\pi|A|^2a^3=1$, así que <span class="ans">$A=1/\sqrt{\pi a^3}$</span>.</div>
+      <div class="step"><b>c)</b> $\dfrac{d}{dr}\big(r^2e^{-2r/a}\big)=2r\Big(1-\dfrac ra\Big)e^{-2r/a}=0$: <span class="ans">$r=a$</span>. $r=0$ e $\infty$ son mínimos.</div>
+      <div class="step"><b>Extra</b> La probabilidad de estar dentro de $r\lt a$ es $1-5e^{-2}=0{,}32$: solo un tercio.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A7">
+    <div class="hd"><span class="id">A7</span><h4>Un electrón en 3d</h4><span class="tag">2025-1 SJ P2</span></div>
+    <div class="enun">Un electrón está en el estado $3d$, con $n=3$, $\ell=2$, $m_\ell=0$, con un campo magnético alineado con $z$.
+      <ol type="a"><li>Determine su momento angular orbital y el ángulo con el eje $z$.</li><li>¿A qué estados finales puede decaer según las reglas de selección? Calcule energía, frecuencia y longitud de onda de la transición al estado $\{2,1,0\}$.</li><li>Suponga que es el último electrón de un átomo neutro, en $3p$, que comparte con otros 5 electrones. ¿Cuántos protones tiene el átomo?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> <span class="ans">$L=\sqrt6\,\hbar$</span>; $L_z=0$, así que el ángulo es <span class="ans">$90°$</span>.</div>
+      <div class="step"><b>b)</b> Tiene que bajar $n$. Con $\Delta\ell=\pm1$ queda $\ell_f=1$ (o 3, que no existe para $n\le2$), así que no puede ir a $1s$ ni a $2s$. Con $m_f=-1,0,+1$: <span class="ans">$(2,1,0)$, $(2,1,-1)$ y $(2,1,1)$</span>. $E_\gamma=13{,}6\,(\tfrac14-\tfrac19)=$ <span class="ans">1,89 eV</span>; $f=$ <span class="ans">$4{,}57\times10^{14}$ Hz</span>; $\lambda=$ <span class="ans">656 nm</span>. Es la línea roja $H_\alpha$.</div>
+      <div class="step"><b>c)</b> $1s^22s^22p^63s^23p^6$ son 18 electrones: <span class="ans">$Z=18$, argón</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A8">
+    <div class="hd"><span class="id">A8</span><h4>Li²⁺: estados y selección</h4><span class="tag">2025-2 SJ P3</span></div>
+    <div class="enun">Un ion Li²⁺ ($Z=3$) tiene un electrón con $n_i=3$ y $m_i=-1$.
+      <ol type="a"><li>¿Qué valores de $\ell_i$ son compatibles?</li><li>El electrón absorbe un fotón y queda en $n_f=5$. Calcule la energía del fotón.</li><li>Con las reglas de selección, determine todos los estados finales posibles.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $\ell\le2$ y $|m|\le\ell$: <span class="ans">$\ell_i=1$ o $2$</span>.</div>
+      <div class="step"><b>b)</b> $E_n=-122{,}4/n^2$: $E_3=-13{,}6$ eV y $E_5=-4{,}896$ eV. $E_\gamma=$ <span class="ans">8,70 eV</span>, es decir $1{,}39\times10^{-18}$ J.</div>
+      <div class="step"><b>c)</b> Desde $(3,1,-1)$: $\ell_f=0,2$ y $m_f=-2,-1,0$. Quedan <span class="ans">$(5,0,0)$, $(5,2,-2)$, $(5,2,-1)$, $(5,2,0)$</span>. Desde $(3,2,-1)$: $\ell_f=1,3$. Quedan <span class="ans">$(5,1,-1)$, $(5,1,0)$, $(5,3,-2)$, $(5,3,-1)$, $(5,3,0)$</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A9">
+    <div class="hd"><span class="id">A9</span><h4>Un ion desde una línea espectral</h4><span class="tag">2025-2 SJ P2</span></div>
+    <div class="enun">Un ion con un solo electrón emite una línea en $\lambda=121{,}50$ nm al llegar a $n_f=2$. Use $\dfrac1\lambda=RZ^2\Big(\dfrac{1}{n_f^2}-\dfrac{1}{n_i^2}\Big)$, con $R=1{,}097\times10^7$ m⁻¹.
+      <ol type="a"><li>Determine $n_i$ y el ion, sabiendo que $Z$ es entero.</li><li>Con el postulado de Bohr, encuentre $r_n$ y calcule $r_1$ para ese ion.</li><li>Con $\Delta r=r$, $\Delta p=p$ y la cota de Heisenberg, obtenga $E(r)\approx\dfrac{\hbar^2}{8m_er^2}-\dfrac{Ze^2}{4\pi\varepsilon_0r}$ y el radio que la minimiza. ¿Coincide con $r_1$?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $1/(R\lambda)=0{,}750$, y necesitamos $Z^2(\tfrac14-1/n_i^2)=\tfrac34$. Con $Z=2$: $1/n_i^2=1/16$. <span class="ans">He⁺, $n_i=4$</span>. Con $Z=1$ no da positivo y con $Z=3$ o 4 no sale un $n$ entero.</div>
+      <div class="step"><b>b)</b> Fuerza centrípeta igual a Coulomb, y $m_evr=n\hbar$: <span class="ans">$r_n=n^2a_0/Z$</span>. Para He⁺, <span class="ans">$r_1=2{,}65\times10^{-11}$ m</span>.</div>
+      <div class="step"><b>c)</b> $p\sim\hbar/2r$ y $K=p^2/2m_e=\hbar^2/8m_er^2$. Haciendo $dE/dr=0$: <span class="ans">$r_{\min}=a_0/4Z$</span>, cuatro veces menor que $r_1$. El orden de magnitud está bien; el factor sale de usar la cota $\hbar/2$. Con $p\sim\hbar/r$ daría exactamente $a_0/Z$.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A10">
+    <div class="hd"><span class="id">A10</span><h4>Leer $\psi_{321\uparrow}$</h4><span class="tag">2021-2</span></div>
+    <div class="enun">Un electrón de hidrógeno está en el estado $\psi_{321\uparrow}$ (notación $\psi_{n\ell ms}$).
+      <ol type="a"><li>¿Cuál es su energía?</li><li>¿Cuánto vale $L_z$?</li><li>Si $n=3$ tiene una vida media $\tau=100$ ns, ¿con qué incerteza se conoce su energía?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $n=3$: <span class="ans">$E=-1{,}51$ eV</span>. La pauta pierde el signo.</div>
+      <div class="step"><b>b)</b> $m=1$: <span class="ans">$L_z=+\hbar$</span>. De paso, $\ell=2$ da $L=\sqrt6\,\hbar$.</div>
+      <div class="step"><b>c)</b> $\Delta E\ge\dfrac{\hbar}{2\tau}=\dfrac{6{,}58\times10^{-16}}{2\cdot10^{-7}}=$ <span class="ans">$3{,}3\times10^{-9}$ eV</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A11">
+    <div class="hd"><span class="id">A11</span><h4>He⁺: ionizar y absorber</h4><span class="tag">2022-2 P2</span></div>
+    <div class="enun">El ion He⁺ se comporta como el hidrógeno, pero con $Z=2$.
+      <ol type="a"><li>¿Cuál es la energía mínima de un fotón para convertir He⁺ en He⁺⁺?</li><li>Una muestra de He⁺ en estado fundamental recibe radiación continua entre 24 y 50 nm. Determine las longitudes de onda que absorbe.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $E_1=-4\cdot13{,}6$: <span class="ans">54,4 eV</span>.</div>
+      <div class="step"><b>b)</b> Niveles: $-54{,}4$; $-13{,}6$; $-6{,}04$; $-3{,}40$; $-2{,}18$ eV. Desde $n=1$: a $n=2$, 40,8 eV y <span class="ans">30,4 nm</span>; a $n=3$, 48,4 eV y <span class="ans">25,6 nm</span>; a $n=4$, 51,0 eV y <span class="ans">24,3 nm</span>. A $n=5$ ya serían 23,7 nm, fuera del rango.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A12">
+    <div class="hd"><span class="id">A12</span><h4>¿De qué nivel a qué nivel?</h4><span class="tag">2020-2</span></div>
+    <div class="enun">Un átomo de hidrógeno excitado emite un fotón de 0,66 eV. Halle los números cuánticos principales de los estados inicial y final.</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Solución</b> Hay que probar pares: $13{,}6\,(1/n_f^2-1/n_i^2)=0{,}66$. Con $n_f=1$ o 2 las diferencias son demasiado grandes. Con $n_f=3$: $n_i=4$ da $13{,}6\,(\tfrac19-\tfrac1{16})=0{,}661$ eV. <span class="ans">De $n=4$ a $n=3$</span>, serie de Paschen, con $\lambda=1{,}88$ µm.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A13">
+    <div class="hd"><span class="id">A13</span><h4>Contar degeneraciones</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">
+      <ol type="a"><li>En una caja cúbica, ¿cuál es la degeneración de los niveles con $n_x^2+n_y^2+n_z^2=11$, $12$ y $14$? ¿Cuántos electrones caben en cada uno?</li><li>La caja se alarga: los lados son $L$, $L$ y $2L$. Con $E_0=\hbar^2\pi^2/2mL^2$, ordene los cinco niveles más bajos y diga su degeneración.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> 11: $(3,1,1)$ y permutaciones, <span class="ans">3 estados y 6 electrones</span>. 12: solo $(2,2,2)$, <span class="ans">1 estado y 2 electrones</span>. 14: $(3,2,1)$ en todos los órdenes, <span class="ans">6 estados y 12 electrones</span>.</div>
+      <div class="step"><b>b)</b> $E/E_0=n_x^2+n_y^2+n_z^2/4$. <span class="ans">2,25: $(1,1,1)$. 3: $(1,1,2)$. 4,25: $(1,1,3)$. 5,25: $(2,1,1)$ y $(1,2,1)$, doble. 6: $(1,1,4)$, $(2,1,2)$ y $(1,2,2)$, triple.</span> Al perder simetría, la degeneración del cubo se rompe, aunque pueden aparecer coincidencias.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A14">
+    <div class="hd"><span class="id">A14</span><h4>Ocho electrones en un punto cuántico</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">Ocho electrones que no interactúan están en una caja cúbica de lado 5,0 nm, en su estado de mínima energía.
+      <ol type="a"><li>¿Qué niveles quedan ocupados? ¿Cuál es la energía total?</li><li>¿Cuál es la longitud de onda máxima que puede absorber el sistema?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> Por Pauli: 2 electrones en $3E_0$ y 6 en $6E_0$ (tres estados de a dos). Total <span class="ans">$2\cdot3E_0+6\cdot6E_0=42E_0=0{,}632$ eV</span>.</div>
+      <div class="step"><b>b)</b> El salto más barato va del último nivel lleno ($6E_0$) al primero vacío ($9E_0$): $3E_0=45{,}1$ meV, así que <span class="ans">$\lambda=27{,}5$ µm</span>. Es la idea del gas de electrones: lo que importa es lo que pasa cerca del último nivel ocupado.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A15">
+    <div class="hd"><span class="id">A15</span><h4>Dónde está el electrón en $n=2$</h4><span class="tag">2022-2 P1</span></div>
+    <div class="enun">Un electrón en un pozo infinito tiene $\psi_2(x)=\sqrt{2/L}\,\sin(2\pi x/L)$ para $0\le x\le L$.
+      <ol type="a"><li>¿Cuáles son las posiciones más probables?</li><li>¿Cambian con el tiempo? Justifique.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $|\psi_2|^2$ es máxima donde $\sin^2=1$: <span class="ans">$x=L/4$ y $x=3L/4$</span>.</div>
+      <div class="step"><b>b)</b> $\Psi=\psi\,e^{-iEt/\hbar}$ y $|e^{-iEt/\hbar}|^2=1$: <span class="ans">no cambian</span>. Por eso se llaman estados estacionarios.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A16">
+    <div class="hd"><span class="id">A16</span><h4>Pozo finito contra infinito</h4><span class="tag">2022-1 P2</span></div>
+    <div class="enun">Considere un pozo infinito y uno finito de ancho $L$, para partículas de masa $m$.
+      <ol type="a"><li>Dibuje cualitativamente $\psi$ con $n=3$ en ambos y explique las diferencias.</li><li>En el infinito con $n=3$, ¿cuál es la probabilidad de encontrar al electrón en $0\lt x\le L/2$?</li><li>¿Para qué valores de $x$ es imposible encontrarlo?</li><li>El pozo infinito, con $L=5$ Å, contiene 3 electrones que no interactúan, en $n=1$, 2 y 3. ¿Cuántos fotones como mínimo emite para llegar al estado de mínima energía? ¿Con qué energía?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> En el infinito $\psi$ es cero en los bordes. En el finito penetra en la pared con una exponencial decreciente, y la energía del estado queda algo menor, porque el electrón tiene más espacio.</div>
+      <div class="step"><b>b)</b> <span class="ans">$P=1/2$</span>, para cualquier $n$, por la simetría del pozo.</div>
+      <div class="step"><b>c)</b> En los nodos: <span class="ans">$x=0,\ L/3,\ 2L/3,\ L$</span>.</div>
+      <div class="step"><b>d)</b> El estado de mínima energía tiene dos electrones en $n=1$ y uno en $n=2$ (Pauli). Basta que el de $n=3$ caiga a $n=1$: <span class="ans">un fotón</span>, con $8E_1=8\cdot0{,}376/0{,}25=$ <span class="ans">12,0 eV</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A17">
+    <div class="hd"><span class="id">A17</span><h4>Pozo de 1,42 Å</h4><span class="tag">2021-2</span></div>
+    <div class="enun">Un electrón se mueve en una región unidimensional de largo $L=1{,}42$ Å, con $V=0$ adentro e infinito afuera.
+      <ol type="a"><li>Calcule los tres niveles más bajos.</li><li>Si cae del primer excitado al fundamental, ¿qué energía tiene el fotón?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $E_1=0{,}376/0{,}142^2=$ <span class="ans">18,6 eV</span>; $E_2=$ <span class="ans">74,6 eV</span>; $E_3=$ <span class="ans">167,8 eV</span>.</div>
+      <div class="step"><b>b)</b> $3E_1=$ <span class="ans">55,9 eV</span>. La pauta da 18,7; 74,8; 168,3 y 56,1 porque redondea $E_1$ primero.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A18">
+    <div class="hd"><span class="id">A18</span><h4>Pozo con electrones y protones</h4><span class="tag">2020-2 P1</span></div>
+    <div class="enun">Un pozo infinito de ancho $L=10{,}22$ Å contiene 4 electrones y 3 protones ($m_p=1836\,m_e$), sin interacción entre ellos. Calcule la energía mínima de un fotón para que el sistema lo absorba.</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Electrones</b> $E_1^e=0{,}376/1{,}022^2=0{,}360$ eV. Ocupan $n=1$ y $n=2$ completos, así que su salto mínimo es $2\to3$: $5E_1^e=1{,}80$ eV.</div>
+      <div class="step"><b>Protones</b> Son otra especie, y Pauli se aplica por separado. $E_1^p=E_1^e/1836=1{,}96\times10^{-4}$ eV. Dos están en $n=1$ y uno en $n=2$, así que hay un lugar libre en $n=2$: el salto mínimo es $1\to2$, $3E_1^p$.</div>
+      <div class="step"><b>Resultado</b> <span class="ans">$\Delta E=5{,}9\times10^{-4}$ eV</span>, con $\lambda\approx2{,}1$ mm. La masa grande hace que los niveles de los protones estén muy juntos.</div>
+    </div></details>
+  </div>
+  <div class="ex" id="A30">
+    <div class="hd"><span class="id">A30</span><h4>Electrones en un pozo finito</h4><span class="tag">Ay.10 P1</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">Un pozo cuántico unidimensional finito tiene ancho $L=0{,}5$ nm y profundidad $V_0=-8{,}0$ eV (afuera el potencial es cero). Sus niveles ligados son $E_1=-7{,}08$ eV, $E_2=-4{,}43$ eV y $E_3=-0{,}71$ eV. No hay interacción eléctrica entre electrones, y cada nivel aloja dos, uno con espín $\uparrow$ y otro con $\downarrow$.
+      <p><strong>Parte A.</strong> El sistema tiene 3 electrones en su configuración de mínima energía. A1) ¿Qué niveles están ocupados? A2) ¿Cuál es la energía total?</p>
+      <p><strong>Parte B.</strong> Llega un electrón libre con energía cinética 0,001 eV, pierde energía y queda atrapado. B1) ¿Qué nivel ocupa para que el sistema quede con mínima energía? B2) ¿Cuál es su nueva energía? B3) ¿Cuál es la energía total con este cuarto electrón?</p>
+      <p><strong>Parte C.</strong> Llega otro electrón, con energía cinética 1 eV. C1) ¿Puede ser capturado al perder energía? C2) ¿Cuánto valdría su energía dentro, si el sistema queda en mínima energía? C3) ¿Se absorbe o se libera energía? ¿Cuánta? C4) ¿Qué le pasa si viaja de izquierda a derecha sin perder energía? ¿Puede caer al pozo?</p></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>A1)</b> Por Pauli, dos en el nivel más bajo y el tercero en el siguiente: <span class="ans">$E_1$ lleno ($\uparrow\downarrow$) y un electrón en $E_2$</span>.</div>
+      <div class="step"><b>A2)</b> Sin interacción, la energía total es la suma: $2(-7{,}08)+(-4{,}43)=$ <span class="ans">$-18{,}59$ eV</span>.</div>
+      <div class="step"><b>B1)</b> El primer lugar libre es el de $E_2$, con el espín opuesto al del electrón que ya está ahí: <span class="ans">nivel $E_2$</span>.</div>
+      <div class="step"><b>B2)</b> <span class="ans">$-4{,}43$ eV</span>. Para llegar ahí desde $+0{,}001$ eV tiene que soltar $4{,}431$ eV, normalmente como un fotón de $1240/4{,}431=280$ nm (ultravioleta).</div>
+      <div class="step"><b>B3)</b> $2(-7{,}08)+2(-4{,}43)=$ <span class="ans">$-23{,}02$ eV</span>.</div>
+      <div class="step"><b>C1)</b> <span class="ans">Sí</span>, siempre que pierda al menos $1+0{,}71=1{,}71$ eV, por ejemplo emitiendo un fotón. Sin perder energía no puede quedar ligado: un estado ligado tiene energía negativa y él trae $+1$ eV.</div>
+      <div class="step"><b>C2)</b> Con cuatro electrones adentro, $E_1$ y $E_2$ están llenos. El nivel libre más bajo es $E_3$: <span class="ans">$-0{,}71$ eV</span>.</div>
+      <div class="step"><b>C3)</b> Pasa de $+1$ eV a $-0{,}71$ eV: <span class="ans">se liberan 1,71 eV</span>, un fotón de $1240/1{,}71=725$ nm.</div>
+      <div class="step"><b>C4)</b> Si no pierde energía, <span class="ans">pasa por encima del pozo y sigue</span>; no puede caer, por conservación de la energía. Adentro su energía cinética sube a $1+8=9$ eV, así que se mueve más rápido y su longitud de onda se acorta de $1240/\sqrt{2\cdot511\,000\cdot1}=1{,}23$ nm a $0{,}41$ nm. En los bordes hay una probabilidad de que se refleje, como en el escalón del C2, aunque su energía alcance para pasar.</div>
+      <div class="step"><b>Ojo</b> La ayudantía viene sin solución. En la parte C asumí que el sistema ya tiene los cuatro electrones de la parte B; si se partiera de los tres de la parte A, el electrón caería a $E_2$ y liberaría 5,43 eV.</div>
+    </div></details>
+  </div>
+</section>
+
+<section id="A-rx">
+  <p class="eyebrow">Bloque A · Átomos</p>
+  <h2>Muchos electrones y rayos X</h2>
+  <p>El corazón del Problema 1. Regla del conteo, con el hueco ya abierto: el nivel inicial resta los electrones de las capas más internas; el final, los de su propia capa y las internas. Teoría en el <a href="Resumen-C3-FIS140.html#a-rx2">resumen</a>.</p>
+
+  <div class="ex" id="A19">
+    <div class="hd"><span class="id">A19</span><h4>Fluorescencia de la plata: línea $K\gamma$</h4><span class="tag">2026-1 P1</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">En el análisis XRF de una muestra de plata (Ag, $Z=47$) se estudian transiciones hacia capas internas. Las capas K, L, M, N y O corresponden a $n=1,\dots,5$.
+      <ol type="a"><li>Especifique su configuración electrónica y cuántos electrones hay en cada capa.</li><li>Con el modelo en que los electrones de una capa son apantallados perfectamente solo por los de capas más internas, sin el efecto de los de la misma capa, determine la energía del fotón de la transición N → K ($K\gamma$).</li><li>Mediciones indican que, en esa transición, el electrón en N ve $Z_{ef,N}=23$. Asumiendo que el modelo sigue valiendo para K, calcule la energía real del fotón.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> <span class="ans">$1s^22s^22p^63s^23p^63d^{10}4s^24p^64d^{10}5s^1$</span>; K 2, L 8, M 18, N 18, O 1. La pauta acepta también $4d^95s^2$, con N 17 y O 2; la plata real es la primera.</div>
+      <div class="step"><b>b)</b> Hueco en K. El electrón en N ve $1+8+18=27$ electrones más internos: $Z_{ef,N}=20$. En K, como en Moseley, $Z_{ef,K}=46$.
+        $$E_\gamma=13{,}6\Big[46^2-\frac{20^2}{4^2}\Big]=13{,}6\,(2116-25)=2{,}84\times10^4\ \text{eV}.$$ <span class="ans">28,4 keV</span>.</div>
+      <div class="step"><b>c)</b> $E_\gamma=13{,}6\,\big[2116-\tfrac{529}{16}\big]=13{,}6\,(2116-33{,}1)=$ <span class="ans">28,3 keV</span>. El término de N pesa poco, así que cambiar $Z_{ef,N}$ casi no mueve el resultado.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A20">
+    <div class="hd"><span class="id">A20</span><h4>Impurezas en un cobre de El Teniente</h4><span class="tag">2025-2 P3</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">Un laboratorio analiza por XRF las impurezas de una muestra de cobre. Aparecen dos líneas $K\alpha$ con $f_1=2{,}53\times10^{18}$ Hz y $f_2=6{,}17\times10^{18}$ Hz.
+      <ol type="a"><li>Determine los elementos de las impurezas.</li><li>Detalle su estructura electrónica.</li><li>La línea $K\alpha$ del Cu ($Z=29$) tiene energía experimental de 8,048 keV. Determine el $Z_{ef}$ de un electrón de la capa L, considerando que en K sigue siendo $Z-1$. Comente el resultado.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $Z=1+\sqrt{hf/10{,}2}$. Con $f_1$: $hf=10{,}46$ keV y $Z=33{,}03$, <span class="ans">arsénico</span>. Con $f_2$: $hf=25{,}51$ keV y $Z=51{,}01$, <span class="ans">antimonio</span>.</div>
+      <div class="step"><b>b)</b> As: <span class="ans">$1s^22s^22p^63s^23p^63d^{10}4s^24p^3$</span>. Sb: <span class="ans">$1s^22s^22p^63s^23p^63d^{10}4s^24p^64d^{10}5s^25p^3$</span>.</div>
+      <div class="step"><b>c)</b> $E=13{,}6\big[(Z-1)^2-\tfrac14Z_{ef}^2\big]$, así que $Z_{ef}=2\sqrt{28^2-8048/13{,}6}=$ <span class="ans">27,7</span>. Es muy cercano a $Z-1=28$: el efecto de los otros electrones de L es menor y Moseley funciona bien.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A21">
+    <div class="hd"><span class="id">A21</span><h4>La línea $L\alpha$ del zinc</h4><span class="tag">2025-1 P2</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">La radiación $L\alpha$ corresponde a la transición M → L.
+      <ol type="a"><li>Para el zinc ($Z=30$), escriba su configuración y cuántos electrones hay en K, L y M.</li><li>Para un átomo con $Z$ protones, encuentre $E_{L\alpha}$ en función de $Z$, considerando que solo aportan al apantallamiento los electrones internos. Evalúe en Zn.</li><li>Experimentalmente $E_{L\alpha}=1{,}01$ keV. Asumiendo un solo $Z_{ef}$ para L y M, encuéntrelo. ¿Tiene sentido?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> <span class="ans">$1s^22s^22p^63s^23p^63d^{10}4s^2$</span>; K 2, L 8, M 18 (y 2 en N).</div>
+      <div class="step"><b>b)</b> Hueco en L: quedan K 2 y L 7, nueve en total. $E_{L\alpha}=13{,}6\,(Z-9)^2\big(\tfrac14-\tfrac19\big)=$ <span class="ans">$1{,}89\,(Z-9)^2$ eV</span>. Para $Z=30$: <span class="ans">0,833 keV</span>.</div>
+      <div class="step"><b>c)</b> $Z_{ef}=\sqrt{1010/1{,}889}=$ <span class="ans">23,1</span>. Sí tiene sentido: es mayor que 21 porque los nueve electrones no tapan perfecto; el apantallamiento real equivale a unos 7.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A22">
+    <div class="hd"><span class="id">A22</span><h4>La línea $K\beta$ del molibdeno</h4><span class="tag">2024-2 P3 = Ay.10 P3</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">La radiación $K\beta$ involucra la transición M → K. Considere el Mo ($Z=42$), con una $K\beta$ medida de $\lambda=0{,}60$ Å.
+      <ol type="a"><li>Detalle la estructura electrónica de las capas K y L.</li><li>Siguiendo el modelo de $K\alpha$, y suponiendo que los electrones en L apantallan perfectamente a los de M, determine la energía de $K\beta$. Desprecie el efecto entre electrones de M.</li><li>Con el valor medido, determine el $Z_{ef}$ de los electrones en M.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> K: <span class="ans">$1s^2$</span>. L: <span class="ans">$2s^22p^6$</span>.</div>
+      <div class="step"><b>b)</b> Hueco en K: el electrón en M ve 1 + 8 = 9 electrones, $Z_M=33$. Al final, en K, $Z_K=41$. $E=13{,}6\big(41^2-33^2/9\big)=$ <span class="ans">21,2 keV</span>.</div>
+      <div class="step"><b>c)</b> $E=1240/0{,}060=20{,}67$ keV. $Z_{ef}=\sqrt{\tfrac{9}{13{,}6}\,(13{,}6\cdot41^2-20\,667)}=$ <span class="ans">38,1</span>. Los nueve electrones equivalen en la práctica a solo 4.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A23">
+    <div class="hd"><span class="id">A23</span><h4>Sodio, cloro y NaCl</h4><span class="tag">2023-2 P1</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">
+      <ol type="a"><li>Indique las configuraciones electrónicas del sodio ($Z=11$) y del cloro ($Z=17$).</li><li>La ionización del sodio es 5,14 eV. Determine el $Z$ efectivo del electrón de su última capa.</li><li>La afinidad electrónica del cloro es 3,61 eV. Si en el enlace iónico los átomos quedan a $R=0{,}25$ nm, determine la energía neta liberada al formar una molécula de NaCl desde átomos neutros.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> Na: <span class="ans">$1s^22s^22p^63s^1$</span>. Cl: <span class="ans">$1s^22s^22p^63s^23p^5$</span>. La pauta escribe $3p^6$, que serían 18 electrones.</div>
+      <div class="step"><b>b)</b> $n=3$: $Z_{ef}=3\sqrt{5{,}14/13{,}6}=$ <span class="ans">1,84</span>.</div>
+      <div class="step"><b>c)</b> $U=-1{,}44/0{,}25=-5{,}76$ eV. $\Delta E=5{,}14-3{,}61-5{,}76=-4{,}23$ eV: <span class="ans">se liberan 4,23 eV</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A24">
+    <div class="hd"><span class="id">A24</span><h4>$Z$ efectivo del potasio</h4><span class="tag">2022-2 P3</span></div>
+    <div class="enun">Considere un átomo de potasio ($Z=19$) en su estado fundamental.
+      <ol type="a"><li>Indique su configuración electrónica.</li><li>Su energía de ionización es 4,34 eV. Determine el $Z$ efectivo que experimenta el electrón de la última capa.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> <span class="ans">$1s^22s^22p^63s^23p^64s^1$</span>.</div>
+      <div class="step"><b>b)</b> $n=4$: $Z_{ef}=4\sqrt{4{,}34/13{,}6}=$ <span class="ans">2,26</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A25">
+    <div class="hd"><span class="id">A25</span><h4>Átomo de helio</h4><span class="tag">2022-1 P3 = Ay.10 P2</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">El helio tiene en su estado base la configuración $1s^2$.
+      <ol type="a"><li>Despreciando la interacción entre electrones, estime su energía de ionización.</li><li>El valor experimental es 24,7 eV. Estime la carga efectiva vista por los electrones.</li><li>Estime la ionización de un helio excitado en el estado $1s\,2s$.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $E_1=-Z^2\cdot13{,}6$: <span class="ans">54,4 eV</span>.</div>
+      <div class="step"><b>b)</b> $Z_{ef}=\sqrt{24{,}7/13{,}6}=$ <span class="ans">1,35</span>.</div>
+      <div class="step"><b>c)</b> El electrón $2s$ está casi afuera del $1s$: $Z_{ef}\approx1$ y $E=13{,}6/4=$ <span class="ans">3,40 eV</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A26">
+    <div class="hd"><span class="id">A26</span><h4>Energía de interacción del helio</h4><span class="tag">2021-1 P3</span></div>
+    <div class="enun">La energía total de un electrón en He es la energía de enlace (la que tendría sin el otro electrón) más la de interacción entre ambos. La ionización medida es 24,4 eV. Calcule $E_{int}$.</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Solución</b> $E=-Z^2E_0+E_{int}$ y $E_{ion}=-E$, así que $E_{int}=4\cdot13{,}6-24{,}4=$ <span class="ans">30,0 eV</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A27">
+    <div class="hd"><span class="id">A27</span><h4>Longitud de onda para ionizar sodio</h4><span class="tag">2020-2</span></div>
+    <div class="enun">Para un átomo con $Z=11$ en estado base, considere que el último electrón ve $Z_{ef}\approx1$. Determine qué longitudes de onda pueden ionizarlo. Compare con el resultado si se usa la ionización real, 5,14 eV.</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Solución</b> Con $n=3$: $E=13{,}6/9=1{,}51$ eV, de modo que <span class="ans">$\lambda\le821$ nm</span>. Con 5,14 eV queda $\lambda\le241$ nm. La diferencia es grande porque el electrón $3s$ penetra en las capas internas: $Z_{ef}$ real es 1,84, no 1.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A28">
+    <div class="hd"><span class="id">A28</span><h4>Drill de configuraciones</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">Escriba la configuración y cuente los electrones por capa de Fe (26), Cu (29), Zn (30), As (33), Ag (47) y Sn (50).</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="tablewrap"><table class="small">
+        <thead><tr><th>Elemento</th><th>Desde $3s$</th><th>K, L, M, N, O</th></tr></thead>
+        <tbody>
+          <tr><td>Fe</td><td>$3s^23p^63d^64s^2$</td><td>2, 8, 14, 2</td></tr>
+          <tr><td>Cu</td><td>$3s^23p^63d^{10}4s^1$ (excepción)</td><td>2, 8, 18, 1</td></tr>
+          <tr><td>Zn</td><td>$3s^23p^63d^{10}4s^2$</td><td>2, 8, 18, 2</td></tr>
+          <tr><td>As</td><td>$3s^23p^63d^{10}4s^24p^3$</td><td>2, 8, 18, 5</td></tr>
+          <tr><td>Ag</td><td>$3s^23p^63d^{10}4s^24p^64d^{10}5s^1$ (excepción)</td><td>2, 8, 18, 18, 1</td></tr>
+          <tr><td>Sn</td><td>$3s^23p^63d^{10}4s^24p^64d^{10}5s^25p^2$</td><td>2, 8, 18, 18, 4</td></tr>
+        </tbody>
+      </table></div>
+      <p>Todas parten de $1s^22s^22p^6$. Comprueba que los números de la derecha sumen $Z$.</p>
+    </div></details>
+  </div>
+
+  <div class="ex" id="A29">
+    <div class="hd"><span class="id">A29</span><h4>Moseley con longitudes de onda</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">Tres muestras dan líneas $K\alpha$ de 0,1937 nm, 0,1546 nm y 0,0711 nm. Determine $Z$ en cada caso.</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Solución</b> $E=1240/\lambda$ y $Z=1+\sqrt{E/10{,}2}$. Con 0,1937 nm: $E=6{,}40$ keV y $Z=26{,}05$, <span class="ans">Fe</span>. Con 0,1546 nm: $E=8{,}02$ keV y $Z=29{,}04$, <span class="ans">Cu</span>. Con 0,0711 nm: $E=17{,}44$ keV y $Z=42{,}35$, <span class="ans">Mo</span>. El último ya se desvía: Moseley pierde precisión a $Z$ grande.</div>
+    </div></details>
+  </div>
+</section>
+
+<section id="B-mol">
+  <p class="eyebrow">Bloque B · Moléculas y sólidos</p>
+  <h2>Moléculas</h2>
+  <p>Una vez cada cinco años en Casa Central, pero si hay un cuarto problema es este. Teoría en el <a href="Resumen-C3-FIS140.html#b-rotvib">resumen</a>.</p>
+
+  <div class="ex" id="B1">
+    <div class="hd"><span class="id">B1</span><h4>Formar KCl</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">La ionización del potasio es 4,34 eV y la afinidad del cloro 3,61 eV. La distancia de enlace del KCl es 0,267 nm.
+      <ol type="a"><li>Calcule la energía neta para formar KCl desde átomos neutros.</li><li>¿A qué distancia empieza a convenir energéticamente que se transfiera el electrón?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $\Delta E=4{,}34-3{,}61-1{,}44/0{,}267=$ <span class="ans">$-4{,}66$ eV</span>: se liberan.</div>
+      <div class="step"><b>b)</b> Cuando la atracción compensa el costo: $1{,}44/R=0{,}73$, así que <span class="ans">$R=1{,}97$ nm</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B2">
+    <div class="hd"><span class="id">B2</span><h4>El espectro del HCl</h4><span class="tag">2024-2 P4 = Ay.10 P4</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">El espectro de energías de rotación y vibración de una molécula diatómica es $E=\hbar\omega\big(n+\tfrac12\big)+\ell(\ell+1)\dfrac{\hbar^2}{2I}$. La figura muestra las líneas de absorción del HCl. La línea ausente correspondería a una transición de $n=0$ a $n=1$, ambos con $\ell=0$.
+      <figure class="fig"><svg class="diag" viewBox="0 0 600 210" role="img" aria-label="Espectro de absorción del HCl con las líneas A y B a los lados de la línea ausente"><line class="lm" x1="46" y1="170" x2="584" y2="170"/><line class="lm" x1="46" y1="170" x2="46" y2="14"/><line class="lm" x1="46.0" y1="170" x2="46.0" y2="174"/><text class="mt" text-anchor="middle" x="46.0" y="187">8.0</text><line class="lm" x1="153.6" y1="170" x2="153.6" y2="174"/><text class="mt" text-anchor="middle" x="153.6" y="187">8.2</text><line class="lm" x1="261.2" y1="170" x2="261.2" y2="174"/><text class="mt" text-anchor="middle" x="261.2" y="187">8.4</text><line class="lm" x1="368.8" y1="170" x2="368.8" y2="174"/><text class="mt" text-anchor="middle" x="368.8" y="187">8.6</text><line class="lm" x1="476.4" y1="170" x2="476.4" y2="174"/><text class="mt" text-anchor="middle" x="476.4" y="187">8.8</text><line class="lm" x1="584.0" y1="170" x2="584.0" y2="174"/><text class="mt" text-anchor="middle" x="584.0" y="187">9.0</text><text class="mt" text-anchor="middle" x="315.0" y="204">Frecuencia × 10¹³ [Hz]</text><line class="l" x1="67.5" y1="170" x2="67.5" y2="110.7"/><line class="l" x1="110.6" y1="170" x2="110.6" y2="88.9"/><line class="l" x1="142.8" y1="170" x2="142.8" y2="73.3"/><line class="l" x1="180.5" y1="170" x2="180.5" y2="45.2"/><line class="l" x1="218.2" y1="170" x2="218.2" y2="29.6"/><line class="l" x1="261.2" y1="170" x2="261.2" y2="26.5"/><line class="l" x1="293.5" y1="170" x2="293.5" y2="21.8"/><line class="l" x1="325.8" y1="170" x2="325.8" y2="26.5"/><line class="la" x1="368.8" y1="170" x2="368.8" y2="42.1"/><line class="la" x1="433.4" y1="170" x2="433.4" y2="42.1"/><line class="l" x1="460.3" y1="170" x2="460.3" y2="26.5"/><line class="l" x1="492.5" y1="170" x2="492.5" y2="21.8"/><line class="l" x1="519.4" y1="170" x2="519.4" y2="26.5"/><line class="l" x1="546.3" y1="170" x2="546.3" y2="31.2"/><line class="l" x1="573.2" y1="170" x2="573.2" y2="42.1"/><text class="ac" text-anchor="middle" x="368.8" y="36.1">A</text><text class="ac" text-anchor="middle" x="433.4" y="36.1">B</text></svg><figcaption>Espectro de absorción del HCl, redibujado de la figura de 2024-2 P4. $f_A=8{,}60\times10^{13}$ Hz y $f_B=8{,}72\times10^{13}$ Hz.</figcaption></figure>
+      <ol type="a"><li>Con las reglas $\Delta n=\pm1$, $\Delta\ell=\pm1$, identifique los números cuánticos de los estados de las transiciones A y B.</li><li>Estime las energías de las transiciones A y B.</li><li>Determine $\omega$. Justifique.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> B es la de mayor energía: <span class="ans">$(n,\ell)=(0,0)\to(1,1)$</span>. A: <span class="ans">$(0,1)\to(1,0)$</span>.</div>
+      <div class="step"><b>b)</b> $E=hf$: <span class="ans">$E_A=0{,}3556$ eV y $E_B=0{,}3606$ eV</span>.</div>
+      <div class="step"><b>c)</b> Con $E_{n,\ell}$: $E_A=\hbar\omega-\hbar^2/I$ y $E_B=\hbar\omega+\hbar^2/I$. Sumando, $\hbar\omega=(E_A+E_B)/2=0{,}358$ eV, y $\omega=0{,}358/6{,}58\times10^{-16}=$ <span class="ans">$5{,}44\times10^{14}$ rad/s</span>.</div>
+      <div class="step"><b>Ojo</b> La pauta escribe $\omega=(E_A+E_B)/2\cdot\hbar$; es dividido por $\hbar$, como de hecho hace al evaluar.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B3">
+    <div class="hd"><span class="id">B3</span><h4>Sacar la distancia del enlace</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">Con los datos de <a href="#B2">B2</a>, y masas $m_H=1{,}008$ u y $m_{Cl}=35{,}0$ u, encuentre $\hbar^2/I$, la distancia de enlace $r_0$ y la constante de fuerza $k'$.</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Rotación</b> $\hbar^2/I=(E_B-E_A)/2=$ <span class="ans">$2{,}48\times10^{-3}$ eV</span>.</div>
+      <div class="step"><b>Distancia</b> $m_r=0{,}980$ u $=913$ MeV/$c^2$. Como $\hbar^2/I=(\hbar c)^2/(m_rc^2\,r_0^2)$: $r_0=\sqrt{197^2/(9{,}13\times10^8\cdot2{,}48\times10^{-3})}=$ <span class="ans">0,131 nm</span>. El valor real es 0,127 nm: nada mal leyendo un gráfico.</div>
+      <div class="step"><b>Resorte</b> $k'=m_r\omega^2=1{,}63\times10^{-27}\cdot(5{,}44\times10^{14})^2=$ <span class="ans">$\approx480$ N/m</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B4">
+    <div class="hd"><span class="id">B4</span><h4>Molécula de átomos iguales</h4><span class="tag">2025-1 SJ P3</span></div>
+    <div class="enun">Una molécula diatómica tiene dos átomos idénticos de masa $m=2{,}2\times10^{-28}$ kg, a una distancia de equilibrio $r_0=3{,}0$ nm, y vibra con $\omega=2{,}5\times10^{12}$ rad/s.
+      <ol type="a"><li>Calcule el momento de inercia.</li><li>Calcule $E_n/E_\ell$ para $(n,\ell)=(1,1)$. ¿Qué modo predomina?</li><li>La molécula está en $(5,3)$. Determine los posibles estados finales que emiten un fotón y sus longitudes de onda.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $m_r=m/2$, así que $I=\tfrac12mr_0^2=$ <span class="ans">$9{,}9\times10^{-46}$ kg·m²</span>.</div>
+      <div class="step"><b>b)</b> $E_V=\tfrac32\hbar\omega$ y $E_R=\hbar^2/I$. El cociente es $\dfrac{3I\omega}{2\hbar}=$ <span class="ans">35</span>: predomina la vibración.</div>
+      <div class="step"><b>c)</b> Emisión: $\Delta n=-1$ y $\Delta\ell=\pm1$, de modo que <span class="ans">$(4,2)$ y $(4,4)$</span>. Con $\hbar^2/I=1{,}12\times10^{-23}$ J: $E_A=\hbar\omega+3\hbar^2/I=2{,}97\times10^{-22}$ J, <span class="ans">$\lambda_A=0{,}668$ mm</span>. $E_B=\hbar\omega-4\hbar^2/I=2{,}19\times10^{-22}$ J, <span class="ans">$\lambda_B=0{,}909$ mm</span>.</div>
+      <div class="step"><b>Ojo</b> La pauta usa $\hbar=1{,}01\times10^{-34}$ y $h=6{,}7\times10^{-34}$ J·s, y escribe $c=3\times10^9$. Por eso llega a 37, 0,709 mm y 0,950 mm. Con los valores correctos da lo de arriba.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B5">
+    <div class="hd"><span class="id">B5</span><h4>Rotación pura del CO</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">En el CO, $m_C=1{,}993\times10^{-26}$ kg, $m_O=2{,}656\times10^{-26}$ kg y $r_0=0{,}1128$ nm. Calcule el momento de inercia y la longitud de onda de la transición rotacional $\ell=1\to0$.</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Solución</b> $m_r=1{,}139\times10^{-26}$ kg e $I=m_rr_0^2=$ <span class="ans">$1{,}45\times10^{-46}$ kg·m²</span>. La diferencia es $E_1-E_0=\hbar^2/I=4{,}80\times10^{-4}$ eV, y $\lambda=$ <span class="ans">2,59 mm</span>: microondas.</div>
+    </div></details>
+  </div>
+</section>
+
+<section id="B-sol">
+  <p class="eyebrow">Bloque B · Moléculas y sólidos</p>
+  <h2>Sólidos y semiconductores</h2>
+  <p>Cinco de cinco en Casa Central. A 300 K, $kT=0{,}025$ eV; $E-E_F=kT\ln(1/f-1)$. Teoría en el <a href="Resumen-C3-FIS140.html#b-fd">resumen</a>.</p>
+
+  <div class="ex" id="B6">
+    <div class="hd"><span class="id">B6</span><h4>Gap, ocupación y dopaje</h4><span class="tag">2026-1 P2</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">Un semiconductor a $T=300$ K tiene una probabilidad de ocupación $P_c$ en el fondo de su banda de conducción. La brecha es $E_g=1$ eV.
+      <ol type="a"><li>Calcule la longitud de onda del fotón emitido por el salto de un electrón desde el fondo de conducción a la cima de valencia. ¿Es UV, visible o IR?</li><li>Calcule $P_c$ para que $E_F$ quede justo a la mitad de la brecha.</li><li>Si $P_c=2{,}513\times10^{-6}$, calcule $\Delta E=E_c-E_F$. ¿Está $E_F$ en el medio? Si no, ¿qué tipo de dopaje tendría? Justifique.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $\lambda=1240/1=$ <span class="ans">1240 nm</span>, infrarrojo.</div>
+      <div class="step"><b>b)</b> $P_c=1/(e^{0{,}5/kT}+1)$. Con $k_B=1/12\,000$: <span class="ans">$2{,}1\times10^{-9}$</span>. La pauta usa $8{,}617\times10^{-5}$ eV/K y da $3{,}98\times10^{-9}$.</div>
+      <div class="step"><b>c)</b> $\Delta E=kT\ln(1/P_c-1)=0{,}025\cdot12{,}89=$ <span class="ans">0,32 eV</span> (0,33 eV con el $k_B$ de la pauta). Es menor que $E_g/2=0{,}5$ eV: $E_F$ está más cerca de conducción, <span class="ans">tipo n</span>. Hay más electrones en conducción de los que tendría un material puro, y eso solo lo logran impurezas donadoras.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B7">
+    <div class="hd"><span class="id">B7</span><h4>Nivel de Fermi sin suponer nada</h4><span class="tag">2025-1 P1</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">Un semiconductor a $T=420$ K tiene $P_c=1{,}0\times10^{-8}$ en el fondo de la banda de conducción. Emite luz de 1127 nm por recombinación banda a banda. Use $k_B=8{,}617\times10^{-5}$ eV/K.
+      <ol type="a"><li>Calcule $E_g$.</li><li>Calcule $E_F-E_v$. No suponga que $E_F$ está al medio.</li><li>Si la probabilidad se duplica, determine la nueva temperatura.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $E_g=1240/1127=$ <span class="ans">1,10 eV</span>.</div>
+      <div class="step"><b>b)</b> $kT=0{,}0362$ eV y $\ln(10^8-1)=18{,}42$: $E_c-E_F=0{,}667$ eV. Entonces $E_F-E_v=1{,}10-0{,}667=$ <span class="ans">0,43 eV</span>. $E_F$ está más cerca de valencia, lo que correspondería a tipo p.</div>
+      <div class="step"><b>c)</b> Con $E_c-E_F$ fijo, $T_2=420\cdot\dfrac{\ln(10^8-1)}{\ln(5\times10^7-1)}=420\cdot\dfrac{18{,}42}{17{,}73}=$ <span class="ans">436 K</span>. La pauta da 438,8 K porque arrastra $0{,}67$ redondeado.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B8">
+    <div class="hd"><span class="id">B8</span><h4>Brecha desde la probabilidad</h4><span class="tag">2024-2 P2</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">En un semiconductor puro, un estado en el fondo de la banda de conducción, a 300 K, tiene probabilidad $P=2{,}8\times10^{-10}$ de estar ocupado.
+      <ol type="a"><li>Calcule $E_g$.</li><li>Calcule esa probabilidad a $T=600$ K.</li><li>Calcule la energía mínima de un fotón que lleve a la banda de conducción un electrón que está 2,0 eV bajo la cima de valencia. Haga un esquema.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $E_g=2kT\ln(1/P-1)=2\cdot0{,}025\cdot22{,}0=$ <span class="ans">1,10 eV</span>.</div>
+      <div class="step"><b>b)</b> $kT=0{,}05$ eV: $P=1/(e^{11}+1)=$ <span class="ans">$1{,}7\times10^{-5}$</span>.</div>
+      <div class="step"><b>c)</b> $E=E_g+2{,}0=$ <span class="ans">3,1 eV</span>. Esquema: $E_c$ arriba, $E_v$ 1,10 eV más abajo y $E_i$ otros 2,0 eV más abajo, con la flecha desde $E_i$ hasta $E_c$.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B9">
+    <div class="hd"><span class="id">B9</span><h4>Las dos ocupaciones suman uno</h4><span class="tag">2023-2 P2</span></div>
+    <div class="enun">En un semiconductor puro, $E_F$ está justo en el medio de la brecha $E_G$.
+      <ol type="a"><li>Encuentre, en función de $E_G$ y $k_BT$, la probabilidad de ocupación del fondo de la banda de conducción.</li><li>Lo mismo para la cima de la banda de valencia.</li><li>Verifique que la suma de ambas es 1.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $E_c-E_F=E_G/2$: <span class="ans">$f(E_c)=\dfrac{1}{e^{E_G/2k_BT}+1}$</span>.</div>
+      <div class="step"><b>b)</b> $E_v-E_F=-E_G/2$: <span class="ans">$f(E_v)=\dfrac{1}{e^{-E_G/2k_BT}+1}$</span>.</div>
+      <div class="step"><b>c)</b> Con $x=E_G/2k_BT$: $\dfrac{1}{e^{-x}+1}=\dfrac{e^x}{1+e^x}$, así que la suma es $\dfrac{e^x+1}{e^x+1}=$ <span class="ans">1</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B10">
+    <div class="hd"><span class="id">B10</span><h4>Un metal y un semiconductor</h4><span class="tag">2025-2 P2</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">Considere $T=300$ K como temperatura de referencia.
+      <ol type="a"><li>Determine $E_F$ de un metal con $n=8{,}5\times10^{28}$ m⁻³.</li><li>Calcule la probabilidad de ocupación en niveles 0,10 eV bajo $E_F$ y 0,10 eV sobre $E_F$.</li><li>Un semiconductor tiene $E_g=1{,}1$ eV. Determine la energía cinética final de un electrón que, desde el borde superior de valencia, absorbe un fotón de 1,0 µm.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $n=85$ nm⁻³: $E_F=0{,}365\cdot85^{2/3}=$ <span class="ans">7,05 eV</span>.</div>
+      <div class="step"><b>b)</b> $\Delta E/kT=4$ con $k_B=1/12\,000$: <span class="ans">$f=0{,}982$ bajo $E_F$ y $0{,}018$ sobre $E_F$</span>. La pauta usa 0,02585 eV y da 0,9795 y 0,0205. Dan uno al sumar, como debe ser.</div>
+      <div class="step"><b>c)</b> $E_\gamma=1240/1000=1{,}24$ eV. $K=1{,}24-1{,}1=$ <span class="ans">0,14 eV</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B11">
+    <div class="hd"><span class="id">B11</span><h4>Longitud de onda máxima</h4><span class="tag">2021-1 P1</span></div>
+    <div class="enun">Un semiconductor tiene brecha de 2,7 eV. ¿Cuál es la máxima longitud de onda con la que se pueden excitar electrones de valencia a conducción?</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Solución</b> $\lambda_{\max}=1240/2{,}7=$ <span class="ans">459 nm</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B12">
+    <div class="hd"><span class="id">B12</span><h4>Energía de Fermi desde la densidad</h4><span class="tag">2021-1 P4</span></div>
+    <div class="enun">Un material tiene masa molar 40 g/mol, 2 electrones de valencia por átomo y densidad 1,24 g/cm³. Calcule su energía de Fermi.</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Solución</b> $n=2\cdot6{,}02\times10^{23}\cdot1{,}24/40=3{,}73\times10^{22}$ cm⁻³ $=37{,}3$ nm⁻³. $E_F=0{,}365\cdot37{,}3^{2/3}=$ <span class="ans">4,07 eV</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B13">
+    <div class="hd"><span class="id">B13</span><h4>Electrones en un pozo largo</h4><span class="tag">2021-1 P2</span></div>
+    <div class="enun">En un pozo infinito unidimensional de longitud $d$ hay $N=1{,}6\times10^9$ electrones por metro. Todos los niveles más bajos están llenos. Determine la energía del electrón más energético.</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Solución</b> Cada nivel admite 2 electrones, así que el último es $n=Nd/2$. Reemplazando en $E_n=n^2\pi^2\hbar^2/2m_ed^2$, la $d$ se cancela: $E=\dfrac{N^2\pi^2(\hbar c)^2}{8\,m_ec^2}$. Con $N=1{,}6$ nm⁻¹: <span class="ans">0,24 eV</span>. La pauta da 0,247 eV porque usa $\hbar c\approx200$ eV·nm. El resultado no depende de $d$: es la energía de Fermi en una dimensión.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B14">
+    <div class="hd"><span class="id">B14</span><h4>El gas de electrones del cobre</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">El cobre tiene densidad 8,96 g/cm³, masa molar 63,5 g/mol y aporta un electrón libre por átomo.
+      <ol type="a"><li>Calcule $n$ y $E_F$.</li><li>¿A qué rapidez se mueve un electrón con energía $E_F$?</li><li>Compare $E_F$ con $kT$ a 300 K. ¿Qué implica?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $n=8{,}96\cdot6{,}02\times10^{23}/63{,}5=$ <span class="ans">$8{,}49\times10^{22}$ cm⁻³</span> y $E_F=0{,}365\cdot84{,}9^{2/3}=$ <span class="ans">7,05 eV</span>.</div>
+      <div class="step"><b>b)</b> $v=c\sqrt{2E_F/m_ec^2}=$ <span class="ans">$1{,}6\times10^6$ m/s</span>, aun a temperatura ambiente.</div>
+      <div class="step"><b>c)</b> $E_F/kT\approx280$. La distribución es casi un escalón: solo una franja de unos $kT$ alrededor de $E_F$ se entera de la temperatura.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B15">
+    <div class="hd"><span class="id">B15</span><h4>Silicio tipo p</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">En un silicio dopado con $E_g=1{,}12$ eV a 300 K, el nivel de Fermi está 0,20 eV sobre la cima de valencia.
+      <ol type="a"><li>¿Es tipo n o p?</li><li>Calcule la ocupación del fondo de conducción y compárela con el caso puro.</li><li>Calcule la probabilidad de que la cima de valencia tenga un hueco.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $E_c-E_F=0{,}92>E_g/2=0{,}56$: <span class="ans">tipo p</span>.</div>
+      <div class="step"><b>b)</b> $f(E_c)=e^{-0{,}92/0{,}025}=$ <span class="ans">$1{,}0\times10^{-16}$</span>, contra $1{,}9\times10^{-10}$ del caso puro.</div>
+      <div class="step"><b>c)</b> $f(E_v)=1/(e^{-8}+1)=0{,}99966$, así que la probabilidad de hueco es <span class="ans">$3{,}4\times10^{-4}$</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B16">
+    <div class="hd"><span class="id">B16</span><h4>¿A qué temperatura?</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">Un semiconductor puro tiene $E_g=1{,}10$ eV. ¿A qué temperatura la ocupación del fondo de conducción llega a $10^{-6}$?</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Solución</b> $kT=\dfrac{E_g/2}{\ln(10^6-1)}=\dfrac{0{,}55}{13{,}8}=0{,}0398$ eV, es decir, $T=0{,}0398\cdot12\,000=$ <span class="ans">478 K</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="B17">
+    <div class="hd"><span class="id">B17</span><h4>LED y transparencia</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">
+      <ol type="a"><li>¿Qué brecha necesita un LED rojo de 620 nm?</li><li>Con Si (1,12 eV), GaAs (1,42 eV) y GaN (3,4 eV), diga cuál es transparente a la luz visible y por qué.</li><li>Calcule la longitud de onda máxima que absorbe cada uno.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> <span class="ans">$E_g=1240/620=2{,}0$ eV</span>.</div>
+      <div class="step"><b>b)</b> <span class="ans">GaN</span>: el visible llega hasta 3,10 eV, por debajo de su brecha, y esos fotones no se pueden absorber. Si y GaAs absorben todo el visible.</div>
+      <div class="step"><b>c)</b> Si: <span class="ans">1107 nm</span>. GaAs: <span class="ans">873 nm</span>. GaN: <span class="ans">365 nm</span>.</div>
+    </div></details>
+  </div>
+</section>
+
+<section id="C-dec">
+  <p class="eyebrow">Bloque C · Núcleo</p>
+  <h2>Decaimientos</h2>
+  <p>Cinco de cinco en Casa Central. Lee siempre si las masas son atómicas o nucleares. Teoría en el <a href="Resumen-C3-FIS140.html#c-masas">resumen</a>.</p>
+
+  <div class="ex" id="C1">
+    <div class="hd"><span class="id">C1</span><h4>La serie del torio</h4><span class="tag">2026-1 P3</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">Los dos primeros pasos de la serie del torio son $^{232}_{90}\text{Th}\to{}^{228}_{88}\text{Ra}+{}^4_2\text{He}$ y $^{228}_{88}\text{Ra}\to{}^{228}_{89}\text{Ac}+e^-+\bar\nu_e$. Masas atómicas: $m(^{232}\text{Th})=232{,}0380536$ u, $m(^{228}\text{Ra})=228{,}031064$ u, $m(^{228}\text{Ac})=228{,}031021$ u, $m_\alpha=4{,}002603$ u. Semivida del Th-232: $1{,}40\times10^{10}$ años.
+      <ol type="a"><li>En el decaimiento del Ra-228, el antineutrino se lleva el 40 % de la energía disponible en un evento. Determine la energía cinética del electrón. Desprecie el retroceso.</li><li>Calcule la energía cinética (clásica) de la $\alpha$ emitida por el Th-232 en reposo.</li><li>Una roca se formó hace $1{,}0\times10^9$ años con 1,0 kg de Th-232 y sin Ra-228. Determine la masa actual de Th-232.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> Con masas atómicas, $Q_\beta=(228{,}031064-228{,}031021)\cdot931{,}5=0{,}0401$ MeV. $K_e=0{,}60\,Q=$ <span class="ans">24 keV</span>.</div>
+      <div class="step"><b>b)</b> $Q_\alpha=0{,}0043866\cdot931{,}5=4{,}086$ MeV. Momentum igual y opuesto: $K_\alpha=Q\,\dfrac{228{,}03}{232{,}03}=$ <span class="ans">4,02 MeV</span>. La pauta da 4,01.</div>
+      <div class="step"><b>c)</b> $m=e^{-\ln2\cdot(1{,}0\times10^9/1{,}40\times10^{10})}=$ <span class="ans">0,952 kg</span>. Se escribe en masa directamente, porque $m\propto N$.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C2">
+    <div class="hd"><span class="id">C2</span><h4>Positrón del carbono-11</h4><span class="tag">2025-2 P1</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">Un isótopo $^{11}_6\text{C}$, inicialmente en reposo, decae emitiendo un positrón. Masas <strong>atómicas</strong>: $M(^{11}_6\text{C})=11{,}011431$ u, $M(^{12}_6\text{C})=12{,}000000$ u, $M(^{11}_5\text{B})=11{,}00931$ u, $M(^{12}_5\text{B})=12{,}01435$ u, $M(^{11}_4\text{Be})=11{,}00931$ u, con $m_{\beta^+}c^2=0{,}511$ MeV.
+      <ol type="a"><li>Determine el número de protones y neutrones del núcleo resultante.</li><li>Calcule la energía total liberada, en MeV.</li><li>Calcule la energía cinética del positrón si este y el neutrino salen en direcciones contrarias con el núcleo resultante en reposo. Pista: ¡cuidado con los electrones!</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $^{11}_6\text{C}\to{}^{11}_5\text{B}+\beta^++\nu_e$. <span class="ans">$Z=5$, $N=6$</span>.</div>
+      <div class="step"><b>b)</b> Con masas nucleares, $Q/c^2=m_C-m_B-m_e$. Pasando a atómicas: $M_C-M_B-2m_e$. $Q=0{,}002121\cdot931{,}5-1{,}022=$ <span class="ans">0,954 MeV</span>.</div>
+      <div class="step"><b>c)</b> Momentum total cero: $pc=E_\nu$. Conservación: $Q=K+pc$, con $(pc)^2=K^2+2Km_ec^2$. Reemplazando $pc=Q-K$: $Q^2-2QK=2Km_ec^2$, y entonces $K=\dfrac{Q^2}{2(Q+m_ec^2)}=\dfrac{0{,}954^2}{2\cdot1{,}465}=$ <span class="ans">0,31 MeV</span>. El neutrino se lleva $pc=0{,}64$ MeV.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C3">
+    <div class="hd"><span class="id">C3</span><h4>Berilio-8: enlace y $\alpha$</h4><span class="tag">2025-1 P3</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">El núcleo más liviano que decae por emisión $\alpha$ es $^8_4\text{Be}$, con masa atómica $M_{Be}=8{,}0053051$ u. Datos: $M(^4_2\text{He})=4{,}002602$ u, $M_{prot}=1{,}007276$ u, $M_{neut}=1{,}008665$ u, $M_{el}=5{,}485\times10^{-4}$ u.
+      <ol type="a"><li>Calcule la energía de enlace del núcleo, en MeV.</li><li>Escriba la ecuación del decaimiento.</li><li>Calcule la energía cinética de una $\alpha$ emitida.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $E_B=[4(m_p+m_n+m_e)-M_{Be}]c^2=0{,}06065\cdot931{,}5=$ <span class="ans">56,5 MeV</span>.</div>
+      <div class="step"><b>b)</b> <span class="ans">$^8_4\text{Be}\to{}^4_2\text{He}+{}^4_2\text{He}$</span>.</div>
+      <div class="step"><b>c)</b> $Q=(8{,}0053051-2\cdot4{,}002602)\cdot931{,}5=94{,}2$ keV. Productos iguales: <span class="ans">$K=47{,}1$ keV</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C4">
+    <div class="hd"><span class="id">C4</span><h4>Berilio-8, otra vez</h4><span class="tag">2024-2 P1</span></div>
+    <div class="enun">Un núcleo de $^8_4\text{Be}$ en reposo decae por $\alpha$. Datos: $M(^8_4\text{Be})=8{,}005305$ u, $M(^4_2\text{He})=4{,}002603$ u.
+      <ol type="a"><li>Escriba la ecuación del decaimiento.</li><li>Calcule la energía total liberada, en eV.</li><li>Calcule la energía cinética esperada de una $\alpha$.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> <span class="ans">$^8_4\text{Be}\to2\,{}^4_2\text{He}$</span>.</div>
+      <div class="step"><b>b)</b> $9{,}9\times10^{-5}\cdot931{,}5$ MeV $=$ <span class="ans">92,2 keV</span>. La pauta escribe «0,0922 [eV]», pero son MeV.</div>
+      <div class="step"><b>c)</b> <span class="ans">$K=46{,}1$ keV</span>. Contra <a href="#C3">C3</a> dan 2 keV de diferencia en $Q$ solo por el último decimal de la masa del He: así de sensibles son estas restas.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C5">
+    <div class="hd"><span class="id">C5</span><h4>Tecnecio-98 con masas nucleares</h4><span class="tag">2023-2 P3</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">El isótopo $^{98}_{43}\text{Tc}$ decae por $\beta^-$ a un isótopo de rutenio.
+      <ol type="a"><li>Determine $Z$ y $A$ del Ru resultante y escriba la ecuación.</li><li>¿Tiene exceso o le faltan neutrones para ser estable? Explique.</li><li>Determine la energía cinética liberada. Masas de <strong>núcleos solos</strong>, en MeV/$c^2$: $^{98}$Tc 91 178,02; $^{94}$Ru 87 455,39; $^{97}$Ru 90 246,33; $^{98}$Ru 91 175,71; $^{99}$Ru 92 107,81.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> <span class="ans">$^{98}_{43}\text{Tc}\to{}^{98}_{44}\text{Ru}+\beta^-+\bar\nu_e$</span>; $Z=44$, $A=98$.</div>
+      <div class="step"><b>b)</b> <span class="ans">Exceso de neutrones</span>: en $\beta^-$ un neutrón pasa a protón, y así disminuye $N$.</div>
+      <div class="step"><b>c)</b> Con masas nucleares hay que sumar el electrón: $E_k=91\,178{,}02-91\,175{,}71-0{,}51=$ <span class="ans">1,8 MeV</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C6">
+    <div class="hd"><span class="id">C6</span><h4>Tc-98 y Tc-97</h4><span class="tag">2022-2 P4</span></div>
+    <div class="enun">
+      <ol type="a"><li>El $^{98}_{43}\text{Tc}$ decae por $\beta^-$ a rutenio. Determine $Z$ y $A$ del hijo.</li><li>El $^{97}_{43}\text{Tc}$ es inestable por captura electrónica. El núcleo final es un isótopo del molibdeno. Determine $Z$ y $A$.</li><li>¿El Tc-98 tiene exceso o le faltan neutrones?</li><li>¿Y el Tc-97?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> <span class="ans">$^{98}_{44}\text{Ru}$</span>.</div>
+      <div class="step"><b>b)</b> Captura: $Z-1$, $A$ igual: <span class="ans">$^{97}_{42}\text{Mo}$</span>.</div>
+      <div class="step"><b>c)</b> <span class="ans">Exceso</span>.</div>
+      <div class="step"><b>d)</b> <span class="ans">Le faltan</span>: un protón se convierte en neutrón.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C7">
+    <div class="hd"><span class="id">C7</span><h4>Torio con masas en GeV</h4><span class="tag">2021-2</span></div>
+    <div class="enun">El $^{232}_{90}\text{Th}$ decae por $\alpha$ a radio. Masas: 216,142 GeV/$c^2$, 212,410 GeV/$c^2$ y $m_\alpha=3{,}727$ GeV/$c^2$.
+      <ol type="a"><li>Determine $Z$ y $A$ del radio.</li><li>Calcule la energía liberada en MeV.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> <span class="ans">$Z=88$, $A=228$</span>.</div>
+      <div class="step"><b>b)</b> $216{,}142-212{,}410-3{,}727=0{,}005$ GeV $=$ <span class="ans">5 MeV</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C8">
+    <div class="hd"><span class="id">C8</span><h4>Clasificar decaimientos</h4><span class="tag">2020-2</span></div>
+    <div class="enun">Diga qué tipo de decaimiento es cada uno: Pa-224 → Ac-220; Ra-229 → Ac-229; W-171 → Ta-171; Ra-219 → Rn-215; Lu-182 → Hf-182; Re-171 → W-171; Rn-215 → Po-211; Nd-153 → Pm-153; Hg-189 → Au-189; U-223 → Th-219; Nd-150 → Sm-150; Re-173 → W-173.</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>$\alpha$</b> ($A-4$, $Z-2$): <span class="ans">Pa-224, Ra-219, Rn-215, U-223</span>.</div>
+      <div class="step"><b>$\beta^-$</b> ($A$ igual, $Z+1$): <span class="ans">Ra-229, Lu-182, Nd-153</span>. Y Nd-150 → Sm-150 son <span class="ans">dos $\beta^-$</span>: $Z$ sube 2, de 60 a 62.</div>
+      <div class="step"><b>$\beta^+$ o captura</b> ($A$ igual, $Z-1$): <span class="ans">W-171, Re-171, Hg-189, Re-173</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C9">
+    <div class="hd"><span class="id">C9</span><h4>Berilio-7 solo puede capturar</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">Masas atómicas: $M(^7_4\text{Be})=7{,}016929$ u, $M(^7_3\text{Li})=7{,}016003$ u.
+      <ol type="a"><li>Calcule $Q$ para la captura electrónica.</li><li>¿Es posible $\beta^+$? Justifique.</li><li>¿Con qué energía sale el neutrino?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $Q=(M_{Be}-M_{Li})\,c^2=0{,}000926\cdot931{,}5=$ <span class="ans">0,863 MeV</span>.</div>
+      <div class="step"><b>b)</b> $\beta^+$ exige $M_X-M_Y>2m_e$, o sea $0{,}863>1{,}022$. <span class="ans">No es posible</span>.</div>
+      <div class="step"><b>c)</b> Dos cuerpos, y el retroceso es despreciable: el neutrino lleva <span class="ans">0,863 MeV</span>, un único valor.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C10">
+    <div class="hd"><span class="id">C10</span><h4>El neutrón libre</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">Con las masas del formulario, $m_nc^2=939{,}57$ MeV, $m_pc^2=938{,}27$ MeV y $m_ec^2=0{,}51$ MeV: escriba el decaimiento del neutrón y calcule $Q$. ¿Puede decaer un protón libre?</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Solución</b> $n\to p+e^-+\bar\nu_e$ y $Q=939{,}57-938{,}27-0{,}51=$ <span class="ans">0,79 MeV</span>. El protón libre <span class="ans">no</span> puede: sería $Q=938{,}27-939{,}57-0{,}51\lt0$. Dentro de un núcleo sí, porque la energía viene del cambio del núcleo completo.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C11">
+    <div class="hd"><span class="id">C11</span><h4>Retroceso del radón</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">Masas atómicas: $M(^{226}\text{Ra})=226{,}025403$ u, $M(^{222}\text{Rn})=222{,}017571$ u, $M(^4\text{He})=4{,}002603$ u. Calcule $Q$, la energía de la $\alpha$ y el retroceso.</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Solución</b> $Q=0{,}005229\cdot931{,}5=$ <span class="ans">4,87 MeV</span>. $K_\alpha=4{,}87\cdot222{,}0/226{,}0=$ <span class="ans">4,78 MeV</span> y $K_{Rn}=$ <span class="ans">0,086 MeV</span>. La $\alpha$ se lleva el 98 %.</div>
+    </div></details>
+  </div>
+</section>
+
+<section id="C-act">
+  <p class="eyebrow">Bloque C · Núcleo</p>
+  <h2>Enlace, actividad y reacciones</h2>
+  <p>Para $T_{1/2}$ en años y $\lambda$ en s⁻¹, usa 1 año $=3{,}156\times10^7$ s. Teoría en el <a href="Resumen-C3-FIS140.html#c-ley">resumen</a>.</p>
+
+  <div class="ex" id="C12">
+    <div class="hd"><span class="id">C12</span><h4>Energía de enlace: helio y hierro</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">Datos: $M_H=1{,}007825$ u, $m_n=1{,}008665$ u, $M(^4\text{He})=4{,}002603$ u, $M(^{56}\text{Fe})=55{,}934937$ u. Calcule la energía de enlace total y por nucleón de ambos. ¿Qué dice esto sobre fusión y fisión?</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>He-4</b> $E_B=(2M_H+2m_n-M)\,c^2=$ <span class="ans">28,3 MeV</span>, es decir <span class="ans">7,07 MeV/nucleón</span>.</div>
+      <div class="step"><b>Fe-56</b> $E_B=(26M_H+30m_n-M)\,c^2=$ <span class="ans">492 MeV</span>, es decir <span class="ans">8,79 MeV/nucleón</span>.</div>
+      <div class="step"><b>Conclusión</b> Pasar de núcleos livianos hacia el hierro (fusión) o de pesados hacia el hierro (fisión) aumenta la energía de enlace por nucleón, y esa diferencia se libera.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C13">
+    <div class="hd"><span class="id">C13</span><h4>De dónde sale el curio</h4><span class="tag">Nuevo</span><span class="tag ac">apuesta</span></div>
+    <div class="enun">Calcule la actividad de 1,00 g de Ra-226 ($T_{1/2}=1600$ años, $M=226$ g/mol), en Bq y en Ci. ¿Por qué no sorprende el resultado?</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Solución</b> $\lambda=\ln2/(1600\cdot3{,}156\times10^7)=1{,}37\times10^{-11}$ s⁻¹. $N=6{,}02\times10^{23}/226=2{,}66\times10^{21}$. $A=\lambda N=$ <span class="ans">$3{,}66\times10^{10}$ Bq $\approx0{,}99$ Ci</span>. El curio se definió históricamente como la actividad de un gramo de radio.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C14">
+    <div class="hd"><span class="id">C14</span><h4>Datación con carbono-14</h4><span class="tag">2020-2, con números</span></div>
+    <div class="enun">Antes de 1900, la actividad del carbono era de 0,255 Bq por gramo. Una muestra arqueológica con 2,0 g de carbono registra 1100 decaimientos en una hora. Con $T_{1/2}=5730$ años, ¿qué edad tiene?</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Solución</b> $A_0=0{,}255\cdot2{,}0=0{,}510$ Bq y $A=1100/3600=0{,}306$ Bq. $t=\dfrac{5730}{\ln2}\,\ln\dfrac{0{,}510}{0{,}306}=$ <span class="ans">$\approx4{,}2\times10^3$ años</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C15">
+    <div class="hd"><span class="id">C15</span><h4>Cobalto-60 y sus gammas</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">El $^{60}_{27}\text{Co}$ ($T_{1/2}=5{,}27$ años) decae por $\beta^-$ a $^{60}_{28}\text{Ni}$, que queda excitado y emite dos $\gamma$ de 1,173 y 1,332 MeV. Masas atómicas: $M(\text{Co})=59{,}933822$ u, $M(\text{Ni})=59{,}930791$ u.
+      <ol type="a"><li>Calcule $Q$.</li><li>Calcule la energía cinética máxima del electrón.</li><li>Calcule la actividad de 1,0 µg en Bq y en Ci.</li><li>¿En cuánto tiempo cae al 10 %?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $Q=0{,}003031\cdot931{,}5=$ <span class="ans">2,82 MeV</span>.</div>
+      <div class="step"><b>b)</b> $K_{\max}=2{,}82-1{,}173-1{,}332=$ <span class="ans">0,32 MeV</span>.</div>
+      <div class="step"><b>c)</b> $\lambda=4{,}17\times10^{-9}$ s⁻¹ y $N=1{,}0\times10^{16}$: <span class="ans">$A=4{,}2\times10^7$ Bq $=1{,}1$ mCi</span>.</div>
+      <div class="step"><b>d)</b> $t=T_{1/2}\log_2 10=3{,}32\cdot5{,}27=$ <span class="ans">17,5 años</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C16">
+    <div class="hd"><span class="id">C16</span><h4>Fusión deuterio-tritio</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">Para $^2\text{H}+{}^3\text{H}\to{}^4\text{He}+n$, con masas atómicas 2,014102 u, 3,016049 u y 4,002603 u, y $m_n=1{,}008665$ u: calcule $Q$ y cuánta energía lleva cada producto si los reactivos están casi en reposo.</div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>Solución</b> $Q=0{,}018883\cdot931{,}5=$ <span class="ans">17,6 MeV</span>. Con momentum igual y opuesto: $K_n=Q\cdot\dfrac{4{,}0}{5{,}0}=$ <span class="ans">14,0 MeV</span> y $K_{\text{He}}=$ <span class="ans">3,5 MeV</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="C17">
+    <div class="hd"><span class="id">C17</span><h4>Drill de semividas</h4><span class="tag">Nuevo</span></div>
+    <div class="enun">Sin calculadora cuando se pueda:
+      <ol type="a"><li>¿Qué fracción queda tras 3 y tras 5 semividas?</li><li>¿Cuántas semividas se necesitan para que quede el 1 %?</li><li>Si $T_{1/2}=10$ días, ¿cuánto vale $T_m$?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> <span class="ans">1/8 y 1/32</span>.</div>
+      <div class="step"><b>b)</b> $\log_2100=$ <span class="ans">6,64</span>.</div>
+      <div class="step"><b>c)</b> $T_m=T_{1/2}/\ln2=$ <span class="ans">14,4 días</span>.</div>
+    </div></details>
+  </div>
+</section>
+
+<section id="sim1">
+  <p class="eyebrow">Práctica final</p>
+  <h2>Simulacro 1</h2>
+  <p>Problemas nuevos con la misma forma de los certámenes de Casa Central. <strong>90 minutos, sin apuntes, solo con la tabla de formulario del resumen.</strong> Corrige al final con la solución y anota cada error en tu lista.</p>
+
+  <div class="ex" id="S1-1">
+    <div class="hd"><span class="id">S1·1</span><h4>Una moneda bajo rayos X</h4><span class="tag">34 pts</span></div>
+    <div class="enun">Una moneda antigua se analiza por fluorescencia de rayos X. Aparecen dos líneas $K\alpha$, de $\lambda_1=0{,}1668$ nm y $\lambda_2=0{,}0506$ nm.
+      <ol type="a"><li>Determine los dos elementos, usando la ley de Moseley.</li><li>Escriba su configuración electrónica y cuántos electrones tiene cada capa.</li><li>Para el elemento más liviano, determine la energía de la línea $K\beta$ con el modelo de apantallamiento perfecto.</li><li>Suponga que la línea $K\beta$ de ese elemento se midiera en 8,90 keV (valor inventado para el ejercicio). Encuentre el $Z_{ef}$ de los electrones en M, considerando que en K sigue siendo $Z-1$, y comente.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $E_1=1240/0{,}1668=7434$ eV y $Z=1+\sqrt{7434/10{,}2}=28{,}0$: <span class="ans">níquel</span>. $E_2=24\,506$ eV y $Z=50{,}0$: <span class="ans">estaño</span>.</div>
+      <div class="step"><b>b)</b> Ni: <span class="ans">$1s^22s^22p^63s^23p^63d^84s^2$</span>; K 2, L 8, M 16, N 2. Sn: <span class="ans">$1s^22s^22p^63s^23p^63d^{10}4s^24p^64d^{10}5s^25p^2$</span>; K 2, L 8, M 18, N 18, O 4.</div>
+      <div class="step"><b>c)</b> Hueco en K: en M hay $Z-9=19$; en K, $Z-1=27$. $E=13{,}6\,(27^2-19^2/9)=$ <span class="ans">9,37 keV</span>.</div>
+      <div class="step"><b>d)</b> $Z_{ef}=\sqrt{\tfrac{9}{13{,}6}(13{,}6\cdot729-8900)}=$ <span class="ans">25,9</span>, mayor que 19: los nueve electrones internos apantallan bastante menos de lo que supone el modelo.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="S1-2">
+    <div class="hd"><span class="id">S1·2</span><h4>Un semiconductor de 1,40 eV</h4><span class="tag">33 pts</span></div>
+    <div class="enun">Un semiconductor tiene una brecha $E_g=1{,}40$ eV a $T=300$ K. Use $k_B=1/12\,000$ eV/K.
+      <ol type="a"><li>Calcule la longitud de onda emitida por recombinación banda a banda. ¿En qué región está?</li><li>Si fuera puro, ¿cuál sería la ocupación del fondo de la banda de conducción?</li><li>Una muestra dopada tiene $P_c=1{,}0\times10^{-9}$. Calcule $E_c-E_F$ y $E_F-E_v$. ¿De qué tipo es? Justifique.</li><li>Con $E_c-E_F$ constante, ¿a qué temperatura $P_c$ llega a $1{,}0\times10^{-7}$?</li><li>Un fotón de 620 nm excita un electrón desde la cima de valencia. ¿Con qué energía cinética queda?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $\lambda=1240/1{,}40=$ <span class="ans">886 nm</span>, infrarrojo cercano.</div>
+      <div class="step"><b>b)</b> $P=1/(e^{0{,}70/0{,}025}+1)=e^{-28}=$ <span class="ans">$6{,}9\times10^{-13}$</span>.</div>
+      <div class="step"><b>c)</b> $E_c-E_F=0{,}025\cdot\ln(10^9-1)=$ <span class="ans">0,518 eV</span>, y $E_F-E_v=1{,}40-0{,}518=$ <span class="ans">0,882 eV</span>. Como $0{,}518\lt0{,}70$, $E_F$ está más cerca de conducción: <span class="ans">tipo n</span>.</div>
+      <div class="step"><b>d)</b> $T_2=300\cdot\dfrac{\ln(10^9-1)}{\ln(10^7-1)}=300\cdot\dfrac{20{,}72}{16{,}12}=$ <span class="ans">386 K</span>.</div>
+      <div class="step"><b>e)</b> $E_\gamma=2{,}00$ eV y $K=2{,}00-1{,}40=$ <span class="ans">0,60 eV</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="S1-3">
+    <div class="hd"><span class="id">S1·3</span><h4>Yodo médico y polonio</h4><span class="tag">33 pts</span></div>
+    <div class="enun">Masas atómicas: $M(^{131}\text{I})=130{,}906125$ u, $M(^{131}\text{Xe})=130{,}905082$ u, $M(^{210}\text{Po})=209{,}982874$ u, $M(^{206}\text{Pb})=205{,}974465$ u, $M(^4\text{He})=4{,}002603$ u. El $^{131}_{53}$I, usado en medicina nuclear, tiene $T_{1/2}=8{,}02$ días.
+      <ol type="a"><li>El I-131 decae por $\beta^-$. Escriba la ecuación. ¿Tiene exceso o falta de neutrones?</li><li>Calcule $Q$.</li><li>En la mayoría de los decaimientos el Xe queda excitado y emite un $\gamma$ de 0,364 MeV. ¿Cuál es la energía cinética máxima del electrón en ese caso?</li><li>Calcule la actividad de 1,0 µg de I-131, y en cuánto tiempo baja al 1 %.</li><li>El $^{210}_{84}$Po decae por $\alpha$. Calcule la energía cinética de la $\alpha$.</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> <span class="ans">$^{131}_{53}\text{I}\to{}^{131}_{54}\text{Xe}+\beta^-+\bar\nu_e$</span>. <span class="ans">Exceso de neutrones</span>.</div>
+      <div class="step"><b>b)</b> Con masas atómicas: $Q=0{,}001043\cdot931{,}5=$ <span class="ans">0,972 MeV</span>.</div>
+      <div class="step"><b>c)</b> $K_{\max}=0{,}972-0{,}364=$ <span class="ans">0,61 MeV</span>.</div>
+      <div class="step"><b>d)</b> $\lambda=\ln2/(8{,}02\cdot86\,400)=1{,}00\times10^{-6}$ s⁻¹; $N=\dfrac{10^{-6}\cdot6{,}02\times10^{23}}{131}=4{,}6\times10^{15}$; <span class="ans">$A=4{,}6\times10^9$ Bq</span> (0,12 Ci). Para bajar al 1 %: $6{,}64\,T_{1/2}=$ <span class="ans">53 días</span>.</div>
+      <div class="step"><b>e)</b> $Q=0{,}005806\cdot931{,}5=5{,}41$ MeV. $K_\alpha=5{,}41\cdot205{,}97/209{,}98=$ <span class="ans">5,31 MeV</span>.</div>
+    </div></details>
+  </div>
+</section>
+
+<section id="sim2">
+  <p class="eyebrow">Práctica final</p>
+  <h2>Simulacro 2</h2>
+  <p>Otros 90 minutos, ahora con lo menos probable de cada bloque: caja 3D e hidrógeno, metal y molécula, uranio y carbono-14. Sirve para no llevarte una sorpresa si las últimas ayudantías apuntan para ese lado.</p>
+
+  <div class="ex" id="S2-1">
+    <div class="hd"><span class="id">S2·1</span><h4>Punto cuántico e hidrógeno</h4><span class="tag">34 pts</span></div>
+    <div class="enun">
+      <ol type="a"><li>Un electrón está en una caja cúbica de lado 2,0 nm. Calcule sus tres niveles más bajos y su degeneración.</li><li>En la misma caja hay ocho electrones sin interacción, en su estado de mínima energía. ¿Cuál es la longitud de onda máxima que el sistema puede absorber?</li><li>Un electrón de hidrógeno está en un estado $4f$ con $m_\ell=3$. Calcule $L$, $L_z$ y el ángulo entre $\vec L$ y el eje $z$.</li><li>¿A qué estados con $n=3$ puede decaer emitiendo un fotón? ¿Con qué energía?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $E_0=0{,}376/4=0{,}094$ eV. <span class="ans">0,282 eV (1 estado); 0,564 eV (3); 0,846 eV (3)</span>.</div>
+      <div class="step"><b>b)</b> Quedan llenos el primer nivel (2) y el segundo (6). El salto mínimo va al tercero: $3E_0=0{,}282$ eV, así que <span class="ans">$\lambda=4{,}4$ µm</span>.</div>
+      <div class="step"><b>c)</b> $\ell=3$: <span class="ans">$L=\sqrt{12}\,\hbar=3{,}46\hbar$</span>; <span class="ans">$L_z=3\hbar$</span>; $\cos\theta=3/\sqrt{12}$, <span class="ans">$\theta=30°$</span>.</div>
+      <div class="step"><b>d)</b> $\ell_f=2$ (con $\ell_f=4$ no se puede en $n=3$). $m_f$ podría ser 2, 3 o 4, pero $|m_f|\le2$: el único estado es <span class="ans">$(3,2,2)$</span>, con $E_\gamma=13{,}6\,(\tfrac19-\tfrac1{16})=$ <span class="ans">0,661 eV</span>.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="S2-2">
+    <div class="hd"><span class="id">S2·2</span><h4>Aluminio y una molécula</h4><span class="tag">33 pts</span></div>
+    <div class="enun">
+      <ol type="a"><li>El aluminio tiene densidad 2,70 g/cm³, masa molar 27,0 g/mol y 3 electrones libres por átomo. Calcule $E_F$.</li><li>A 300 K, calcule la ocupación de estados 0,05 eV bajo y 0,05 eV sobre $E_F$.</li><li>Una molécula diatómica muestra, en absorción, líneas contiguas al hueco central en $f_A=6{,}40\times10^{13}$ Hz y $f_B=6{,}52\times10^{13}$ Hz. Determine $\omega$ y $\hbar^2/I$.</li><li>¿Por qué no hay línea en el centro del espectro?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> $n=3\cdot2{,}70\cdot6{,}02\times10^{23}/27{,}0=1{,}81\times10^{23}$ cm⁻³ $=181$ nm⁻³. $E_F=0{,}365\cdot181^{2/3}=$ <span class="ans">11,7 eV</span>.</div>
+      <div class="step"><b>b)</b> $\Delta E=2kT$: <span class="ans">$f=0{,}881$ bajo $E_F$ y $0{,}119$ sobre $E_F$</span>.</div>
+      <div class="step"><b>c)</b> $E_A=0{,}2646$ eV y $E_B=0{,}2696$ eV. $\hbar\omega=0{,}2671$ eV: <span class="ans">$\omega=4{,}06\times10^{14}$ rad/s</span>; <span class="ans">$\hbar^2/I=2{,}5\times10^{-3}$ eV</span>.</div>
+      <div class="step"><b>d)</b> Esa línea sería la transición con $\Delta\ell=0$, prohibida por la regla $\Delta\ell=\pm1$.</div>
+    </div></details>
+  </div>
+
+  <div class="ex" id="S2-3">
+    <div class="hd"><span class="id">S2·3</span><h4>Uranio-238 y carbono-14</h4><span class="tag">33 pts</span></div>
+    <div class="enun">Masas atómicas: $M(^{238}\text{U})=238{,}050788$ u, $M(^{234}\text{Th})=234{,}043601$ u, $M(^4\text{He})=4{,}002603$ u, $M(^{14}\text{C})=14{,}003242$ u, $M(^{14}\text{N})=14{,}003074$ u.
+      <ol type="a"><li>Escriba el decaimiento $\alpha$ del $^{238}_{92}$U y calcule $Q$ y la energía cinética de la $\alpha$.</li><li>Con $T_{1/2}=4{,}47\times10^9$ años, calcule la actividad de 1,0 g de U-238.</li><li>Escriba el decaimiento $\beta^-$ del $^{14}_6$C y calcule $Q$.</li><li>Un hueso tiene el 30 % de la actividad de C-14 que tenía al morir ($T_{1/2}=5730$ años). ¿Qué edad tiene?</li></ol></div>
+    <details class="sol"><summary>Ver solución</summary><div class="body">
+      <div class="step"><b>a)</b> <span class="ans">$^{238}_{92}\text{U}\to{}^{234}_{90}\text{Th}+\alpha$</span>. $Q=0{,}004584\cdot931{,}5=$ <span class="ans">4,27 MeV</span>. $K_\alpha=4{,}27\cdot234{,}04/238{,}05=$ <span class="ans">4,20 MeV</span>.</div>
+      <div class="step"><b>b)</b> $\lambda=4{,}91\times10^{-18}$ s⁻¹ y $N=2{,}53\times10^{21}$: <span class="ans">$A=1{,}24\times10^4$ Bq</span>.</div>
+      <div class="step"><b>c)</b> <span class="ans">$^{14}_6\text{C}\to{}^{14}_7\text{N}+\beta^-+\bar\nu_e$</span>; $Q=0{,}000168\cdot931{,}5=$ <span class="ans">0,156 MeV</span>.</div>
+      <div class="step"><b>d)</b> $t=5730\,\log_2(1/0{,}30)=$ <span class="ans">$\approx9{,}95\times10^3$ años</span>.</div>
+    </div></details>
+  </div>
+</section>
+
+<section id="recup">
+  <p class="eyebrow">Práctica final</p>
+  <h2>Preguntas de recuperación</h2>
+  <p>Contesta en voz alta o en papel antes de abrir. Son para hacerlas en distintos días: las que falles, repítelas a los dos o tres días. R1 a R10 son de hidrógeno y caja; R11 a R18, de rayos X; R19 a R30, de moléculas y sólidos; R31 a R40, de núcleo.</p>
+  <ol class="recall">
+    <li><p>Energía de un electrón en una caja cúbica y valor de $E_0$.</p><details class="sol"><summary>Respuesta</summary><div class="body">$E=E_0(n_x^2+n_y^2+n_z^2)$ con $E_0=0{,}376\ \text{eV}/L^2$, $L$ en nm.</div></details></li>
+    <li><p>Degeneración del estado $(3,2,1)$ y por qué.</p><details class="sol"><summary>Respuesta</summary><div class="body">6. Las permutaciones dan la misma energía por la simetría del cubo.</div></details></li>
+    <li><p>Rangos de $\ell$ y $m_\ell$ para un $n$ dado.</p><details class="sol"><summary>Respuesta</summary><div class="body">$\ell=0,\dots,n-1$; $m_\ell=-\ell,\dots,+\ell$.</div></details></li>
+    <li><p>Niveles del hidrógeno y degeneración.</p><details class="sol"><summary>Respuesta</summary><div class="body">$E_n=-13{,}6/n^2$ eV; $n^2$ estados, o $2n^2$ con espín.</div></details></li>
+    <li><p>Definición de $P(r)$ y radio más probable de $1s$ y $2p$.</p><details class="sol"><summary>Respuesta</summary><div class="body">$P(r)=r^2|R|^2$ (o $4\pi r^2|\psi|^2$). $a_0$ para $1s$ y $4a_0$ para $2p$.</div></details></li>
+    <li><p>$L$ y valores de $L_z$ para $\ell=2$.</p><details class="sol"><summary>Respuesta</summary><div class="body">$L=\sqrt6\,\hbar$; $L_z=-2\hbar,\dots,+2\hbar$.</div></details></li>
+    <li><p>Reglas de selección atómicas.</p><details class="sol"><summary>Respuesta</summary><div class="body">$\Delta\ell=\pm1$, $\Delta m_\ell=0,\pm1$.</div></details></li>
+    <li><p>¿Por qué un electrón en $3d$ no puede caer directo a $1s$?</p><details class="sol"><summary>Respuesta</summary><div class="body">Sería $\Delta\ell=-2$. Tiene que pasar por un estado $p$.</div></details></li>
+    <li><p>¿En cuántas líneas se abre una línea con campo magnético y cuál es su separación?</p><details class="sol"><summary>Respuesta</summary><div class="body">Tres, separadas por $\mu_BB$.</div></details></li>
+    <li><p>Series de Lyman, Balmer y Paschen.</p><details class="sol"><summary>Respuesta</summary><div class="body">Terminan en $n=1$ (UV), $n=2$ (visible) y $n=3$ (IR).</div></details></li>
+    <li><p>Capacidad de las subcapas s, p, d, f y de las capas K, L, M, N.</p><details class="sol"><summary>Respuesta</summary><div class="body">2, 6, 10, 14; y 2, 8, 18, 32.</div></details></li>
+    <li><p>Orden de llenado hasta $5p$.</p><details class="sol"><summary>Respuesta</summary><div class="body">1s, 2s, 2p, 3s, 3p, 4s, 3d, 4p, 5s, 4d, 5p.</div></details></li>
+    <li><p>Configuración de Cu y de Ag.</p><details class="sol"><summary>Respuesta</summary><div class="body">$[\ldots]3d^{10}4s^1$ y $[\ldots]4d^{10}5s^1$.</div></details></li>
+    <li><p>$Z_{ef}$ desde la energía de ionización.</p><details class="sol"><summary>Respuesta</summary><div class="body">$Z_{ef}=n\sqrt{E_{ion}/13{,}6}$.</div></details></li>
+    <li><p>De dónde sale el 10,2 de Moseley.</p><details class="sol"><summary>Respuesta</summary><div class="body">$13{,}6\,(1-\tfrac14)$, con carga efectiva $Z-1$ en los dos niveles.</div></details></li>
+    <li><p>Regla del conteo para $Z_i$ y $Z_f$.</p><details class="sol"><summary>Respuesta</summary><div class="body">Con el hueco abierto: $Z_i$ resta los electrones de capas más internas; $Z_f$, los de su propia capa y las internas.</div></details></li>
+    <li><p>$Z_i$ y $Z_f$ para $K\beta$, $K\gamma$ y $L\alpha$.</p><details class="sol"><summary>Respuesta</summary><div class="body">$K\beta$: $Z-9$ y $Z-1$. $K\gamma$: $Z-27$ y $Z-1$. $L\alpha$: $Z-9$ y $Z-9$.</div></details></li>
+    <li><p>Fórmula general de la energía de una línea y por qué el $Z_{ef}$ medido suele salir mayor.</p><details class="sol"><summary>Respuesta</summary><div class="body">$E=13{,}6\,[Z_f^2/n_f^2-Z_i^2/n_i^2]$. Los electrones internos no tapan perfectamente el núcleo.</div></details></li>
+    <li><p>Balance de energía del enlace iónico.</p><details class="sol"><summary>Respuesta</summary><div class="body">$\Delta E=E_{ion}-E_{afin}-1{,}44/R$, con $R$ en nm.</div></details></li>
+    <li><p>$E_{n,\ell}$ de una molécula diatómica, $I$ y $m_r$.</p><details class="sol"><summary>Respuesta</summary><div class="body">$\hbar\omega(n+\tfrac12)+\hbar^2\ell(\ell+1)/2I$; $I=m_rr_0^2$; $m_r=m_1m_2/(m_1+m_2)$.</div></details></li>
+    <li><p>Reglas de selección moleculares y qué explica la línea ausente.</p><details class="sol"><summary>Respuesta</summary><div class="body">$\Delta n=\pm1$, $\Delta\ell=\pm1$. La línea central sería $\Delta\ell=0$.</div></details></li>
+    <li><p>Cómo sacar $\hbar\omega$ y $\hbar^2/I$ con las dos líneas vecinas al hueco.</p><details class="sol"><summary>Respuesta</summary><div class="body">$(E_A+E_B)/2$ y $(E_B-E_A)/2$.</div></details></li>
+    <li><p>Valor de $f(E_F)$ y simetría de Fermi-Dirac.</p><details class="sol"><summary>Respuesta</summary><div class="body">$\tfrac12$; $f(E_F+x)+f(E_F-x)=1$.</div></details></li>
+    <li><p>Despeje de $E-E_F$ desde la ocupación.</p><details class="sol"><summary>Respuesta</summary><div class="body">$E-E_F=kT\ln(1/f-1)$.</div></details></li>
+    <li><p>¿Cuánto vale $kT$ a 300 K y a 600 K?</p><details class="sol"><summary>Respuesta</summary><div class="body">0,025 eV y 0,050 eV.</div></details></li>
+    <li><p>Brecha desde la ocupación en un semiconductor puro.</p><details class="sol"><summary>Respuesta</summary><div class="body">$E_g=2kT\ln(1/P-1)$.</div></details></li>
+    <li><p>Fórmula de $E_F$ y atajo numérico.</p><details class="sol"><summary>Respuesta</summary><div class="body">$\tfrac{\hbar^2}{2m}(3\pi^2n)^{2/3}\approx0{,}365\,n^{2/3}$ eV con $n$ en nm⁻³.</div></details></li>
+    <li><p>¿Cómo decides si es tipo n o tipo p?</p><details class="sol"><summary>Respuesta</summary><div class="body">Si $E_c-E_F\lt E_g/2$, tipo n; si $E_c-E_F>E_g/2$, tipo p.</div></details></li>
+    <li><p>$\lambda_{\max}$ de un semiconductor con brecha $E_g$.</p><details class="sol"><summary>Respuesta</summary><div class="body">$hc/E_g=1240/E_g$ nm.</div></details></li>
+    <li><p>Fotón con energía mayor que la brecha: ¿qué pasa con lo que sobra?</p><details class="sol"><summary>Respuesta</summary><div class="body">Queda como energía cinética: $K=E_\gamma-E_g$.</div></details></li>
+    <li><p>Significado de $A$, $Z$, $N$ y el radio nuclear.</p><details class="sol"><summary>Respuesta</summary><div class="body">$A=Z+N$; $R=1{,}2\,A^{1/3}$ fm.</div></details></li>
+    <li><p>Energía de enlace con masas atómicas.</p><details class="sol"><summary>Respuesta</summary><div class="body">$E_B=[ZM_H+Nm_n-M]c^2$.</div></details></li>
+    <li><p>$Q$ del $\beta^+$ con masas atómicas y con masas nucleares.</p><details class="sol"><summary>Respuesta</summary><div class="body">$[M_X-M_Y-2m_e]c^2$ y $[m_X-m_Y-m_e]c^2$.</div></details></li>
+    <li><p>Energía cinética de la $\alpha$ con retroceso.</p><details class="sol"><summary>Respuesta</summary><div class="body">$K_\alpha=Q\,M_Y/(M_Y+M_\alpha)$.</div></details></li>
+    <li><p>¿Por qué el espectro $\beta$ es continuo y el $\alpha$ no?</p><details class="sol"><summary>Respuesta</summary><div class="body">En $\beta$ son tres cuerpos, con el neutrino compartiendo $Q$; en $\alpha$ son dos, y el reparto queda fijo.</div></details></li>
+    <li><p>$K$ del positrón si sale opuesto al neutrino con el núcleo en reposo.</p><details class="sol"><summary>Respuesta</summary><div class="body">$K=Q^2/[2(Q+m_ec^2)]$.</div></details></li>
+    <li><p>Núcleo inestable $\beta^-$: ¿exceso o falta de neutrones? ¿Y uno con $\beta^+$?</p><details class="sol"><summary>Respuesta</summary><div class="body">$\beta^-$: exceso. $\beta^+$: le faltan.</div></details></li>
+    <li><p>Relaciones entre $\lambda$, $T_{1/2}$, $T_m$ y actividad.</p><details class="sol"><summary>Respuesta</summary><div class="body">$T_{1/2}=\ln2/\lambda$; $T_m=1/\lambda$; $A=\lambda N$.</div></details></li>
+    <li><p>¿A cuántos Bq equivale 1 Ci?</p><details class="sol"><summary>Respuesta</summary><div class="body">$3{,}7\times10^{10}$ Bq.</div></details></li>
+    <li><p>¿Qué fracción queda tras 3 semividas, y cuántas semividas para el 1 %?</p><details class="sol"><summary>Respuesta</summary><div class="body">1/8 y 6,64.</div></details></li>
+  </ol>
+</section>
+
+<section id="erratas">
+  <p class="eyebrow">Práctica final</p>
+  <h2>Errores en pautas</h2>
+  <p>Al recalcular todo encontré estos errores. Ya están corregidos en cada ejercicio; la lista sirve para que no te confundas si estudias directo de las pautas. Los que son solo diferencias de constante o redondeo están marcados como tales.</p>
+  <div class="tablewrap">
+    <table class="small">
+      <thead><tr><th>Dónde</th><th>Qué dice</th><th>Lo correcto</th></tr></thead>
+      <tbody>
+        <tr><td>Ayudantía 9, encabezado</td><td>«ayudantía 10»</td><td>Es la 9</td></tr>
+        <tr><td>Ayudantía 9, P1 d)</td><td>«todos con energía 0,900 eV»</td><td>90,2 meV, como calcula en la línea siguiente</td></tr>
+        <tr><td>Ayudantía 9, P1 c)</td><td>«dos nodos en $x$, un nodo en $y$ y $z$»</td><td>Planos nodales interiores: uno en $x$ y ninguno en $y$ ni $z$</td></tr>
+        <tr><td>Ayudantía 9, P3 e)</td><td>Atribuye la diferencia a la geometría, «un 25 %»</td><td>La esfera tiene casi la mitad del volumen del cubo. Está un 33 % sobre la caja (la caja queda un 25 % bajo la esfera)</td></tr>
+        <tr><td>Ayudantía 9, P3 f)</td><td>«máximo en el centro de la esfera»</td><td>$P(r)$ tiene su máximo en $r=R/2$. En el centro lo máximo es $|\psi|^2$</td></tr>
+        <tr><td>C3 2026-1 P1 a)</td><td>Lista N 17 y O 2, y al final N 18 y O 1</td><td>Ambas se aceptan. La real es $4d^{10}5s^1$: N 18 y O 1</td></tr>
+        <tr><td>C3 2026-1 P2</td><td>Usa $k_B=8{,}617\times10^{-5}$, aunque el formulario da $1/12\,000$</td><td>Diferencia de constante: 2,1 o $4{,}0\times10^{-9}$; 0,32 o 0,33 eV</td></tr>
+        <tr><td>C3 2026-1 P3 b)</td><td>$K_\alpha=4{,}01$ MeV</td><td>4,02 MeV (redondeo)</td></tr>
+        <tr><td>C3 2026-1 P3 c)</td><td>$m(t)=m_0e^{-\lambda t}=N_0e^{\ldots}$</td><td>La segunda igualdad es con $m_0$</td></tr>
+        <tr><td>Formulario C3 2026-1</td><td>Reglas moleculares $\Delta\ell=0,\pm1$</td><td>En 2024-2 y SJ es $\Delta\ell=\pm1$, y la línea ausente solo se explica así</td></tr>
+        <tr><td>C3 2025-2 P2 b)</td><td>Usa $kT=0{,}02585$ eV</td><td>Diferencia de constante: con $1/12\,000$ da 0,982 y 0,018</td></tr>
+        <tr><td>C3 2025-1 P1 c)</td><td>$T_2=438{,}8$ K</td><td>436 K (arrastra $0{,}67$ redondeado)</td></tr>
+        <tr><td>C3 2025-1 P2 c)</td><td>Usa 1,012 keV; el enunciado dice 1,01</td><td>Sin efecto: $Z_{ef}=23{,}1$</td></tr>
+        <tr><td>C3 2024-2 P1 b)</td><td>$Q=0{,}0922185$ [eV]</td><td>0,0922 MeV $=92{,}2$ keV</td></tr>
+        <tr><td>C3 2024-2 P4 c)</td><td>$\omega=(E_A+E_B)/2\cdot\hbar$</td><td>Dividido por $\hbar$</td></tr>
+        <tr><td>C3 2023-2 P1 a)</td><td>Cloro $3s^23p^6$</td><td>$3s^23p^5$: tiene 17 electrones</td></tr>
+        <tr><td>C3 2023-2 P3 a)</td><td>$^{98}_{44}$Tc como producto</td><td>$^{98}_{44}$Ru</td></tr>
+        <tr><td>Formulario C3 2023-2</td><td>$\beta^+$ escrito con $\beta^-$</td><td>$\beta^+$</td></tr>
+        <tr><td>C3 2022-1, cuerpo negro</td><td>«12000 eV·Å» y $T\approx56$ K</td><td>$hc=12\,400$ eV·Å y $T\approx55$ K</td></tr>
+        <tr><td>C3 2021-2, hidrógeno</td><td>$E_3=1{,}51$ eV</td><td>$-1{,}51$ eV</td></tr>
+        <tr><td>C3 2021-2, cuerpo negro</td><td>$\lambda\approx251$ nm para Betelgeuse</td><td>Ese valor es el de Rigel. Betelgeuse: unos 850 nm</td></tr>
+        <tr><td>C3 2021-2, pozo</td><td>18,7; 74,8; 168,3 eV; fotón de 56,1 eV</td><td>18,6; 74,6; 167,8 eV; 55,9 eV (redondeo)</td></tr>
+        <tr><td>C3 2021-1 P2</td><td>0,247 eV</td><td>0,24 eV con el $\hbar c=197$ del formulario (la pauta usa 200)</td></tr>
+        <tr><td>C3 2020-2 P1</td><td>$E_n=\pi^2\hbar^2/2mL^2$</td><td>Falta el $n^2$</td></tr>
+        <tr><td>C3 2025-1 SJ P3</td><td>$\hbar=1{,}01\times10^{-34}$, $h=6{,}7\times10^{-34}$, $c=3\times10^9$</td><td>$1{,}055\times10^{-34}$, $6{,}63\times10^{-34}$, $3\times10^8$: el cociente da 35 y las longitudes de onda, 0,668 y 0,909 mm</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted" style="margin-top:40px">Hecho el 9 de noviembre de 2026 con el material de la carpeta Material C3. Los números se recalcularon con un script uno por uno.</p>
+</section>
+
+</div>
+</main>
+</div>
+<script>
+(function(){
+  var root = document.documentElement;
+  try { var saved = localStorage.getItem('fis140-tema'); if (saved === 'dark' || saved === 'light') root.setAttribute('data-theme', saved); } catch(e) {}
+
+  var themeBtn = document.getElementById('themeBtn');
+  if (themeBtn) themeBtn.addEventListener('click', function(){
+    var cur = root.getAttribute('data-theme');
+    if (!cur) cur = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    var next = cur === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('fis140-tema', next); } catch(e) {}
+  });
+
+  var printBtn = document.getElementById('printBtn');
+  if (printBtn) printBtn.addEventListener('click', function(){
+    document.querySelectorAll('details.sol').forEach(function(d){ d.open = true; });
+    window.print();
+  });
+
+  var allBtn = document.getElementById('allBtn');
+  if (allBtn) allBtn.addEventListener('click', function(){
+    var ds = document.querySelectorAll('details.sol');
+    var anyClosed = Array.prototype.some.call(ds, function(d){ return !d.open; });
+    ds.forEach(function(d){ d.open = anyClosed; });
+    allBtn.textContent = anyClosed ? 'Cerrar soluciones' : 'Abrir soluciones';
+  });
+
+  var sidebar = document.getElementById('sidebar'), scrim = document.getElementById('scrim'), menuBtn = document.getElementById('menuToggle');
+  function closeMenu(){ sidebar.classList.remove('open'); scrim.classList.remove('on'); }
+  if (menuBtn) menuBtn.addEventListener('click', function(){ sidebar.classList.toggle('open'); scrim.classList.toggle('on'); });
+  if (scrim) scrim.addEventListener('click', closeMenu);
+
+  var links = Array.prototype.slice.call(document.querySelectorAll('#nav a[href^="#"]'));
+  links.forEach(function(a){ a.addEventListener('click', function(){ if (window.innerWidth <= 920) closeMenu(); }); });
+  var targets = links.map(function(a){ return document.getElementById(a.getAttribute('href').slice(1)); });
+
+  var ticking = false;
+  function sync(){
+    ticking = false;
+    var y = window.scrollY + 70, idx = 0;
+    for (var i = 0; i < targets.length; i++) {
+      if (targets[i] && targets[i].getBoundingClientRect().top + window.scrollY <= y) idx = i;
+    }
+    if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 4) idx = targets.length - 1;
+    links.forEach(function(a, i){ a.classList.toggle('active', i === idx); });
+    var act = links[idx];
+    if (act && sidebar) {
+      var top = act.offsetTop, h = act.offsetHeight;
+      if (top < sidebar.scrollTop + 60 || top + h > sidebar.scrollTop + sidebar.clientHeight - 60) {
+        sidebar.scrollTop = top - sidebar.clientHeight / 2;
+      }
+    }
+  }
+  window.addEventListener('scroll', function(){ if (!ticking) { ticking = true; requestAnimationFrame(sync); } }, { passive: true });
+  window.addEventListener('load', sync);
+  sync();
+
+})();
+</script>
+</body>
+</html>

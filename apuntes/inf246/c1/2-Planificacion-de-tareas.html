@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planificación de tareas · SO C1</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T2</div>
+    <div><h1>Planificación de tareas</h1><small>Sistemas Operativos · INF-246 · Certamen 1</small></div>
+  </div>
+  <div class="pages"><a href="0-Guia-de-estudio-C1.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del miércoles 30</small></span></a><a href="1-Introduccion.html"><b>1</b><span>Introducción<br><small style="color:var(--muted)">qué es un SO</small></span></a><a href="2-Planificacion-de-tareas.html" class=cur><b>2</b><span>Planificación de tareas<br><small style="color:var(--muted)">modelos, tiempos, estados</small></span></a><a href="3-Scheduling.html"><b>3</b><span>Scheduling<br><small style="color:var(--muted)">los algoritmos</small></span></a><a href="4-Gestion-del-tiempo.html"><b>4</b><span>Gestión del tiempo<br><small style="color:var(--muted)">interrupciones y reloj</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2 y P3 del certamen</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 2</div><a href="#t2-inicio">Qué pesa y qué estudiar</a><a href="#historia">Historia: de los cables a UNIX</a><a href="#vocabulario">Programa, tarea, proceso</a><a href="#estados">Los estados de una tarea</a><a href="#tiempos">Los tiempos: las fórmulas</a><a href="#modelo-vs-algo">Modelo vs. algoritmo</a><div class="grp">Los modelos</div><a href="#batch">Batch Processing simple</a><a href="#gen2">Discos y batch mejorado</a><a href="#multi">Multiprogramación</a><a href="#ts">Tiempo compartido</a><a href="#swapping">Swapping</a><a href="#modelos-lado">Los modelos lado a lado</a><a href="#pendientes">Sincronización y óptimo</a><div class="grp">Práctica</div><a href="#t2-recetas">Recetas paso a paso</a><a href="#t2-videos">Videos del tema</a><a href="#n1">N1 · Ejemplo del repaso</a><a href="#n2">N2 · Tarea cíclica</a><a href="#a1">A1 · Diagramas de estados</a><a href="#a2">A2 · Gantt batch multiprog.</a><a href="#a3">A3 · Gantt tiempo compartido</a><a href="#a4">A4 · Ciclo L-C-E y tasas</a><a href="#a5">A5 · Respuesta en batch</a><a href="#a6">A6 · Régimen permanente</a><a href="#c1">Certamen 2024 · sección 2</a><a href="#c3">Certamen 2023 · sección 2</a><a href="#t2-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+
+<section id="t2-inicio">
+<h2>Tema 2 · Planificación de tareas</h2>
+<p class="lead">Clase <code>TasksManagement</code> (tres sesiones de agosto) más la Ayudantía 1. Historia de los computadores, los modelos de planificación (batch, multiprogramación, tiempo compartido), el swapping, y las definiciones y fórmulas de tiempos que se usan en todo el resto del ramo.</p>
+<div class="hero">
+  <div class="big">Peso en el certamen: alto</div>
+  <div class="sub">Sirve para la sección de <b>teoría</b> (modelo vs algoritmo, inanición en batch, quantum, swapping) y es la base del <b>ejercicio</b> de la sección 2 (carta Gantt, tiempos de respuesta, tasas de uso). En el repaso el profe insistió en que hay que saber calcular tiempos y tasas sin equivocarse.</div>
+</div>
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder hacer</h5>
+    <p>· Distinguir <b>modelo de planificación</b> y <b>algoritmo de scheduling</b>.</p>
+    <p>· Explicar los modelos y qué hardware permitió cada uno.</p>
+    <p>· Escribir las fórmulas de t<sub>ejec</sub>, t<sub>espera</sub>, t<sub>resp</sub> y la tasa de uso, y aplicarlas en una carta Gantt.</p>
+    <p>· Explicar el quantum (grande vs pequeño) y la espera máxima (N−1)·q.</p>
+  </div>
+  <div class="card"><h5>Dónde está en los libros</h5>
+    <p><b>Wolf</b> (español, misma nomenclatura): cap. 1 §1.3 “Evolución de los sistemas operativos”, pp. 19-22 (lotes, multiprogramados, tiempo compartido); cap. 3 §3.1 “Estados de un proceso”, p. 69; §4.1.2 “Midiendo la respuesta”, p. 134.</p>
+    <p><b>Silberschatz</b>: §1.4.1 <i>Multiprogramming and Multitasking</i>; §3.1 <i>Process Concept</i> (estados y PCB); §3.2.3 <i>Context Switch</i>; §9.5 <i>Swapping</i>.</p>
+  </div>
+  <div class="card"><h5>Plan para este tema (≈ 2 h)</h5>
+    <p>1. Ver Crash Course #18 (14 min) para tener la historia completa.</p>
+    <p>2. Leer las secciones en orden (1 h).</p>
+    <p>3. Hacer N1, A2 y la sección 2 de los certámenes 2024 (C1) y 2023 (C3): son el mismo ejercicio.</p>
+  </div>
+</div>
+</section>
+
+<section id="historia">
+<h2>Historia: de los cables a UNIX</h2>
+<p class="lead">Primera parte de la clase <code>TasksManagement</code>. Parece relleno, pero es el hilo de toda la unidad: <b>cada modelo de planificación nació porque apareció una pieza de hardware nueva</b>.</p>
+
+<div class="tw"><table class="mini">
+<thead><tr><th>Época</th><th>Hardware</th><th>Qué cambia para el SO</th></tr></thead>
+<tbody>
+<tr><td><b>1ª generación</b><br>1945-46</td><td>ENIAC: tubos de vacío, 0,05 MIPS, memoria de algunos KB</td><td>Un solo programa en assembly. <b>No hay SO.</b></td></tr>
+<tr><td>Evolución</td><td>IBM 650, PDP-8: lector de tarjetas perforadas, cintas magnéticas (lentas)</td><td>Primer almacenamiento persistente. Un <b>operador</b> ejecuta los programas en un orden personalizado. Luego: front end que prepara las cintas y back end que ejecuta.</td></tr>
+<tr><td><b>Primeros SO</b></td><td>IBM 704, IBM 1401</td><td>Ejecución y carga/descarga de tareas, gestión mínima de memoria, lenguajes de comando, noción de <b>orden de ejecución</b> y de <b>tiempo de ejecución</b> ⇒ primera noción de planificación y scheduling. Modelo: <b>batch simple</b>.</td></tr>
+<tr><td><b>2ª generación</b></td><td>Discos duros (IBM 1956: 3,75 MB, 1 s de acceso) con <b>controlador propio</b></td><td>Sistemas de archivos, <b>batch con carga anticipada</b>, y con más memoria la <b>multiprogramación</b>.</td></tr>
+<tr><td><b>3ª generación</b><br>1965-71</td><td>Circuitos integrados (Intel 4004), minicomputadores, memorias de cientos de KB</td><td>MULTICS (1965) y UNIX (1969). Con el <b>temporizador</b> llega el <b>tiempo compartido</b> y el <b>swapping</b>.</td></tr>
+</tbody></table></div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · cómo contó la historia<span class="ref">Clase 1 · Introducción · 40:25 / Clase 1 · Introducción · 42:27 / Clase 1 · Introducción · 45:08</span></div><p>El ENIAC se programaba <b>cambiando cables</b>, y había operadores especializados porque ningún usuario podía hacerlo. Las tarjetas perforadas las comparó con el <b>organillo</b> que se ve en las calles de Chile: cartones con hoyos (hoyo = 1, sin hoyo = 0). Si al operador se le caía el cajón, las tarjetas quedaban desordenadas, y por eso les pusieron números. Las cintas eran como un cassette: más rápidas y permitían guardar datos, pero con acceso <b>secuencial</b> (para leer el programa 10 hay que pasar los 9 anteriores). Una placa de memoria de la época guardaba 8 KB.</p><p>Los primeros SO aparecen porque <i>“la gestión empieza a ser complicada para una persona sola”</i>: pasar de un programa a otro, buscar la cinta número 38… El SO permite ejecutar varios programas de forma sucesiva <b>sin intervención humana</b>.</p></div><div class="box profe"><div class="bt"><span class="mic"></span>En clase · UNIX y la ley de Moore<span class="ref">Planificación · Voz 004_1 · 05:17 / Planificación · Voz 001_1 · 00:01 / Planificación · Voz 001_1 · 01:13</span></div><p>MULTICS (MIT, 1965) es el ancestro de UNIX. UNIX marca un quiebre porque es <b>el primer SO escrito en un lenguaje de alto nivel</b> (C), lo que lo hace <b>portable</b>: hoy menos del 1 % del código de un SO depende del hardware. Ritchie y Kernighan escribieron el libro clásico de C; Bourne inventó el Bourne shell, de donde viene <code>bash</code>.</p><p>La <b>ley de Moore</b> dice que la cantidad de transistores se duplica cada 24 meses en la misma superficie. Se cumple porque cada procesador se diseña usando el anterior, que es más potente. Consecuencia: el hardware avanza más rápido que el software. Hoy se está llegando a un límite físico cerca de los 2 nanómetros.</p></div>
+</section>
+<section id="vocabulario">
+<h2>Programa, tarea, proceso</h2>
+<p class="lead">Tres palabras que en el día a día usamos como sinónimos y que en este ramo <b>no lo son</b>. Salen definidas en la Ayudantía 1 y es una pregunta de conocimiento perfectamente razonable.</p>
+
+<div class="box def">
+  <div class="bt">Las tres definiciones (Ayudantía 1)</div>
+  <p><b>Programa:</b> la expresión de un algoritmo con ayuda de un lenguaje de programación.<br>
+  <b>Tarea:</b> la unión de un programa <b>con los datos</b> a los cuales él se aplica.<br>
+  <b>Proceso:</b> la <b>ejecución</b> de una tarea. Se caracteriza por la tarea y su <b>contexto de ejecución</b>: el valor del Program Counter (registro PC), los valores de los otros registros del procesador, etc.</p>
+</div>
+
+<div class="box ana">
+  <div class="bt">🎯 Analogía · la receta</div>
+  <p>El <b>programa</b> es la receta escrita en el libro. La <b>tarea</b> es esa receta más los ingredientes concretos que compraste hoy. El <b>proceso</b> es tú cocinando: la receta, los ingredientes, <i>y además</i> en qué paso vas, qué tienes en la mano y a qué temperatura está el horno. Ese "en qué paso voy y qué tengo en la mano" es el <b>contexto</b>.</p>
+  <p>Por eso una misma receta (programa) puede estar siendo cocinada por dos personas a la vez: dos procesos distintos del mismo programa.</p>
+</div>
+
+<div class="box def">
+  <div class="bt">Contexto de una tarea (o Program Status Word, PSW)</div>
+  <p>Define el <b>estado</b> de una tarea. Contiene una copia de todos los registros del procesador, el estado de las interrupciones, el valor de PC, etc.</p>
+  <p>Cuando ocurre una <b>conmutación de tarea</b>, el sistema operativo debe <b>salvar el contexto</b> de la tarea actual y <b>restaurar el contexto</b> de la nueva tarea elegida por el algoritmo de scheduling.</p>
+</div>
+
+<h3>Mono-programación vs. multiprogramación</h3>
+<div class="tw">
+<table>
+<thead><tr><th></th><th>Mono-programación</th><th>Multiprogramación</th></tr></thead>
+<tbody>
+<tr><td><b>Procesos en memoria en el instante t</b></td><td>Solo uno</td><td>Más de uno</td></tr>
+<tr><td><b>Qué pasa al someter una tarea</b></td><td>Si el procesador está disponible, se carga y se ejecuta hasta el final; después pasa a la siguiente de la lista</td><td>Se carga en memoria si hay espacio y se genera el proceso asociado</td></tr>
+<tr><td><b>Conmutación de procesos</b></td><td>No hay (una tarea a la vez, completa)</td><td>Sí: los procesos listos se ejecutan consecutivamente</td></tr>
+<tr><td><b>Se puede usar en…</b></td><td>—</td><td>Batch Processing <b>o</b> Tiempo Compartido</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box def">
+  <div class="bt">Otras dos definiciones que hay que tener</div>
+  <p><b>Overhead:</b> el tiempo pasado (perdido) al efectuar una conmutación entre dos procesos. Todo tiempo que el SO gasta en administrarse a sí mismo es tiempo que no ejecuta tareas.</p>
+  <p><b>Unidad de intercambio (DMA — Direct Memory Access):</b> sirve para efectuar transferencias entre la memoria principal y un periférico <b>sin usar el procesador</b>. Recibe una orden del procesador, efectúa la transferencia y luego avisa al procesador del término del intercambio mediante una <b>interrupción</b>. Durante la transferencia, el procesador puede hacer otros cálculos.</p>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · el DMA es lo que hace posible todo el ramo</div>
+  <p>Si las E/S consumieran procesador, no habría nada que repartir: mientras el disco lee, la CPU estaría ocupada leyendo. Es precisamente porque el <b>controlador de disco es un procesador aparte</b> que la CPU queda libre durante la E/S, y ahí nace la pregunta "¿y qué hago con la CPU mientras tanto?". La respuesta a esa pregunta es la Unidad 1 completa.</p>
+</div>
+</section><section id="estados">
+<h2>Los estados de una tarea</h2>
+<p class="lead">El diagrama de estados es una <b>pregunta directa de ayudantía</b> ("represente en forma de diagrama de estados… nodos = estados, arcos = acciones o eventos"). Hay tres versiones, una por modelo de planificación, y la gracia es entender qué arco aparece o desaparece en cada una.</p>
+
+<div class="box def">
+  <div class="bt">Los tres estados básicos</div>
+  <p><b>EJECUCIÓN (running):</b> la tarea tiene el procesador.<br>
+  <b>LISTA (ready):</b> la tarea <b>puede</b> ejecutarse pero no tiene el procesador. Definición del curso: <i>"Una tarea está lista para ejecutarse cuando no está esperando que se termine una entrada/salida"</i>.<br>
+  <b>BLOQUEADA (blocked):</b> la tarea está esperando un evento externo (fin de E/S, liberación de un recurso) y <b>no puede</b> ejecutarse aunque le dieran el procesador.</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · qué es exactamente una tarea lista<span class="ref">Planificación · Voz 001_1 · 03:16</span></div><p><i>“Una tarea lista es una tarea que está en memoria, que está cargada, pero que no está bloqueada en una entrada/salida. Lo único que está esperando es obtener el procesador.”</i> Las bloqueadas <b>no son candidatas</b>: el scheduler ni siquiera las mira, porque no necesitan el procesador todavía. Cuando termina la E/S vuelven al estado LISTA y recién ahí compiten de nuevo.</p></div>
+
+
+<div class="box warn">
+  <div class="bt">Ojo · LISTA no significa "va a ejecutarse ahora"</div>
+  <p>Esta confusión cuesta puntos en varios certámenes (2014 P2.5, 2015 P2.5, 2016 P2.6). Pasar a estado LISTA significa <b>solamente que la tarea es candidata</b> a obtener el procesador. Cuándo lo obtiene depende del algoritmo de scheduling y de cuántas tareas haya delante. Por eso un <code>sleep(10)</code> casi siempre devuelve el procesador <b>después</b> de 10 segundos, no exactamente a los 10.</p>
+</div>
+
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 900 250" width="900" role="img" aria-label="Diagramas de estados de los tres modelos">
+ <defs>
+  <marker id="mk-a2" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker>
+ </defs>
+ <g font-family="system-ui,sans-serif" font-size="11.5">
+  <!-- Batch simple -->
+  <text x="18" y="18" fill="var(--brand)" font-weight="700" font-size="13">a) Batch simple</text>
+  <ellipse cx="70" cy="70" rx="46" ry="22" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="70" y="74" text-anchor="middle" fill="var(--brand)" font-weight="700">LISTA</text>
+  <ellipse cx="205" cy="70" rx="52" ry="22" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="205" y="74" text-anchor="middle" fill="var(--accent)" font-weight="700">EJECUCIÓN</text>
+  <ellipse cx="205" cy="165" rx="52" ry="22" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="205" y="169" text-anchor="middle" fill="var(--warn)" font-weight="700">BLOQUEADA</text>
+  <path d="M117,70 L150,70" stroke="var(--muted)" fill="none" marker-end="url(#mk-a2)"/>
+  <text x="133" y="62" text-anchor="middle" fill="var(--muted)" font-size="10">elegida</text>
+  <path d="M190,93 L190,141" stroke="var(--muted)" fill="none" marker-end="url(#mk-a2)"/>
+  <text x="150" y="120" fill="var(--muted)" font-size="10">E/S</text>
+  <path d="M222,141 L222,93" stroke="var(--muted)" fill="none" marker-end="url(#mk-a2)"/>
+  <text x="230" y="120" fill="var(--muted)" font-size="10">fin E/S</text>
+  <path d="M257,70 L292,70" stroke="var(--muted)" fill="none" marker-end="url(#mk-a2)"/>
+  <text x="275" y="62" text-anchor="middle" fill="var(--muted)" font-size="10">fin</text>
+  <text x="205" y="212" text-anchor="middle" fill="var(--warn)" font-size="10.5" font-weight="700">la CPU queda OCIOSA aquí</text>
+
+  <!-- Batch con reciclaje -->
+  <text x="330" y="18" fill="var(--brand)" font-weight="700" font-size="13">b) Multiprogramación</text>
+  <ellipse cx="382" cy="70" rx="46" ry="22" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="382" y="74" text-anchor="middle" fill="var(--brand)" font-weight="700">LISTA</text>
+  <ellipse cx="517" cy="70" rx="52" ry="22" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="517" y="74" text-anchor="middle" fill="var(--accent)" font-weight="700">EJECUCIÓN</text>
+  <ellipse cx="517" cy="165" rx="52" ry="22" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="517" y="169" text-anchor="middle" fill="var(--warn)" font-weight="700">BLOQUEADA</text>
+  <path d="M429,70 L462,70" stroke="var(--muted)" fill="none" marker-end="url(#mk-a2)"/>
+  <text x="445" y="62" text-anchor="middle" fill="var(--muted)" font-size="10">elegida</text>
+  <path d="M517,93 L517,141" stroke="var(--muted)" fill="none" marker-end="url(#mk-a2)"/>
+  <text x="524" y="120" fill="var(--muted)" font-size="10">E/S</text>
+  <path d="M466,160 C400,150 372,120 378,95" stroke="var(--ana)" stroke-width="1.7" fill="none" marker-end="url(#mk-a2)"/>
+  <text x="380" y="140" text-anchor="middle" fill="var(--ana)" font-size="10" font-weight="700">fin E/S</text>
+  <path d="M569,70 L604,70" stroke="var(--muted)" fill="none" marker-end="url(#mk-a2)"/>
+  <text x="587" y="62" text-anchor="middle" fill="var(--muted)" font-size="10">fin</text>
+  <text x="470" y="212" text-anchor="middle" fill="var(--ana)" font-size="10.5" font-weight="700">vuelve a la COLA, no al procesador</text>
+
+  <!-- Time sharing -->
+  <text x="645" y="18" fill="var(--brand)" font-weight="700" font-size="13">c) Tiempo compartido</text>
+  <ellipse cx="697" cy="70" rx="46" ry="22" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="697" y="74" text-anchor="middle" fill="var(--brand)" font-weight="700">LISTA</text>
+  <ellipse cx="832" cy="70" rx="52" ry="22" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="832" y="74" text-anchor="middle" fill="var(--accent)" font-weight="700">EJECUCIÓN</text>
+  <ellipse cx="832" cy="165" rx="52" ry="22" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="832" y="169" text-anchor="middle" fill="var(--warn)" font-weight="700">BLOQUEADA</text>
+  <path d="M744,64 L777,64" stroke="var(--muted)" fill="none" marker-end="url(#mk-a2)"/>
+  <text x="760" y="56" text-anchor="middle" fill="var(--muted)" font-size="10">elegida</text>
+  <path d="M780,84 C755,98 730,96 710,92" stroke="var(--ex)" stroke-width="1.9" fill="none" marker-end="url(#mk-a2)"/>
+  <text x="748" y="112" text-anchor="middle" fill="var(--ex)" font-size="10" font-weight="700">FIN DE QUANTUM</text>
+  <path d="M832,93 L832,141" stroke="var(--muted)" fill="none" marker-end="url(#mk-a2)"/>
+  <text x="839" y="120" fill="var(--muted)" font-size="10">E/S</text>
+  <path d="M781,160 C716,150 688,124 693,95" stroke="var(--ana)" stroke-width="1.7" fill="none" marker-end="url(#mk-a2)"/>
+  <text x="695" y="150" text-anchor="middle" fill="var(--ana)" font-size="10" font-weight="700">fin E/S</text>
+  <text x="790" y="212" text-anchor="middle" fill="var(--ex)" font-size="10.5" font-weight="700">el arco morado es LO NUEVO</text>
+ </g>
+</svg>
+</div>
+<figcaption>Los tres diagramas de estados que pueden pedirte. La diferencia entre (a) y (b) es a dónde vuelve la tarea tras la E/S; entre (b) y (c), el arco de fin de quantum.</figcaption>
+</figure>
+
+<div class="box tip">
+  <div class="bt">Truco · cómo no equivocarse al dibujarlos</div>
+  <p>Piensa en <b>por dónde se sale de EJECUCIÓN</b>, que son las únicas salidas posibles:</p>
+  <ol>
+    <li><b>Batch simple:</b> solo se sale al <b>terminar</b>. (La E/S bloquea a la tarea pero <i>nadie más</i> toma el procesador: queda ocioso. La tarea recupera el procesador inmediatamente al terminar su E/S.)</li>
+    <li><b>Multiprogramación (batch con reciclaje):</b> se sale al terminar <b>o al hacer una E/S</b>. Y el detalle que la ayudantía marca en rojo: <i>la tarea que perdió el procesador al entrar en E/S <b>no lo recupera</b> cuando la E/S termina; vuelve a la lista de espera y debe esperar a ser elegida de nuevo</i>.</li>
+    <li><b>Tiempo compartido:</b> se sale al terminar, al hacer una E/S, <b>al acabarse el quantum</b>, o al dejarlo voluntariamente (<code>sleep()</code>).</li>
+  </ol>
+</div>
+
+<div class="box def">
+  <div class="bt">Los 4 casos en que un proceso pierde el procesador</div>
+  <p>Pregunta textual del certamen 2016 (4.2). Respuesta:</p>
+  <p><b>1.</b> Se <b>termina</b> → estado TERMINADA.<br>
+  <b>2.</b> Hace una <b>entrada/salida</b> → estado BLOQUEADA.<br>
+  <b>3.</b> Se acaba su <b>quantum</b> de tiempo → estado LISTA.<br>
+  <b>4.</b> Deja <b>voluntariamente</b> el procesador (<code>sleep()</code>) o sufre un <b>error fatal</b> → BLOQUEADA / TERMINADA.</p>
+</div>
+
+<div class="box libro">
+  <div class="bt">📖 Un estado extra que aparece en 2015</div>
+  <p><b>LISTO_NO_EN_MEMORIA:</b> un proceso que está listo para ejecutarse pero <b>no está en la memoria</b>. Concretamente, está en el disco duro como resultado de un <b>Swap Out</b>. Es el estado que obliga a que la lista de estados clásica se duplique cuando hay swapping.</p>
+</div>
+</section><section id="tiempos">
+<h2>Los tiempos: las fórmulas</h2>
+<p class="lead">Esta media página es la que más puntos vale de todo el resumen. Casi todos los ejercicios de la sección 2 del certamen se reducen a aplicar estas cinco definiciones sin confundirlas.</p>
+
+<div class="form">
+  <b>t<sub>ejec</sub></b> = Σ t<sub>parciales</sub>
+  <span class="n">Tiempo de <b>ejecución</b>: la suma de todos los tiempos parciales durante los cuales la tarea <b>tiene el procesador</b>. Nada más.</span>
+</div>
+
+<div class="form">
+  <b>t<sub>espera</sub></b> = t<sub>cola</sub> + Σ t<sub>E/S</sub>
+  <span class="n">Tiempo de <b>espera</b>: lo que espera en la cola <b>más</b> todos sus tiempos de entrada/salida. Ojo: las E/S cuentan como espera.</span>
+</div>
+
+<div class="form">
+  <b>t<sub>respuesta</sub></b> = t<sub>final</sub> − t<sub>llegada</sub> = t<sub>espera</sub> + t<sub>ejec</sub>
+  <span class="n">Tiempo de <b>respuesta</b>: desde que la tarea llegó al sistema hasta que terminó. Es lo que el usuario percibe con un cronómetro.</span>
+</div>
+
+<div class="form">
+  <b>T<sub>p</sub></b> = tiempo acumulado de ejecución de las tareas / tiempo total
+  <span class="n"><b>Tasa de ocupación del procesador</b>: el porcentaje de tiempo en que el procesador está ejecutando tareas. Objetivo del SO: acercarla lo más posible al 100 % (sabiendo que el 100 % es inalcanzable).</span>
+</div>
+
+<div class="form">
+  <b>P<sub>r</sub>(t)</b> = ( W(t) + S ) / S = t<sub>respuesta</sub> / t<sub>ejec</sub>
+  <span class="n"><b>Tasa de penalización</b> (penalty ratio): W(t) es el tiempo esperado y S el tiempo de servicio (ejecución). Vale 1 cuando la tarea no esperó nada, y crece con la espera. Es el corazón del algoritmo HPRN, que <b>no entra</b> en este certamen, pero la tasa de penalización como <i>medida</i> sí aparece en los ejercicios de la Ayudantía 2.</span>
+</div>
+
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 860 190" width="860" role="img" aria-label="Los tiempos de una tarea sobre una línea de tiempo">
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <line x1="40" y1="150" x2="820" y2="150" stroke="var(--muted)" stroke-width="1.5"/>
+  <!-- segmentos -->
+  <rect x="60" y="66" width="120" height="30" fill="var(--line)" stroke="var(--muted)" stroke-dasharray="3 3"/>
+  <text x="120" y="86" text-anchor="middle" fill="var(--muted)" font-size="11">espera en cola</text>
+  <rect x="180" y="66" width="130" height="30" fill="var(--g1)"/>
+  <text x="245" y="86" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">ejecución</text>
+  <rect x="310" y="66" width="110" height="30" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="365" y="86" text-anchor="middle" fill="var(--warn)" font-size="11" font-weight="700">E/S</text>
+  <rect x="420" y="66" width="105" height="30" fill="var(--line)" stroke="var(--muted)" stroke-dasharray="3 3"/>
+  <text x="472" y="86" text-anchor="middle" fill="var(--muted)" font-size="11">espera en cola</text>
+  <rect x="525" y="66" width="150" height="30" fill="var(--g1)"/>
+  <text x="600" y="86" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">ejecución</text>
+
+  <!-- marcas -->
+  <line x1="60" y1="60" x2="60" y2="156" stroke="var(--brand)" stroke-width="1.5"/>
+  <text x="60" y="172" text-anchor="middle" fill="var(--brand)" font-size="11" font-weight="700">t llegada</text>
+  <line x1="675" y1="60" x2="675" y2="156" stroke="var(--brand)" stroke-width="1.5"/>
+  <text x="675" y="172" text-anchor="middle" fill="var(--brand)" font-size="11" font-weight="700">t final</text>
+
+  <!-- llaves -->
+  <path d="M180,50 L180,40 L310,40 L310,50" stroke="var(--g1)" fill="none"/>
+  <path d="M525,50 L525,40 L675,40 L675,50" stroke="var(--g1)" fill="none"/>
+  <text x="428" y="34" text-anchor="middle" fill="var(--g1)" font-size="11.5" font-weight="700">t ejec = suma SOLO de los bloques azules</text>
+
+  <path d="M60,112 L60,122 L180,122 L180,112" stroke="var(--muted)" fill="none"/>
+  <path d="M310,112 L310,122 L525,122 L525,112" stroke="var(--muted)" fill="none"/>
+  <text x="300" y="138" text-anchor="middle" fill="var(--muted)" font-size="11.5" font-weight="700">t espera = cola + E/S (todo lo que no es azul)</text>
+
+  <path d="M60,20 L60,12 L675,12 L675,20" stroke="var(--ana)" stroke-width="1.6" fill="none"/>
+  <text x="760" y="16" fill="var(--ana)" font-size="11.5" font-weight="700">t respuesta</text>
+ </g>
+</svg>
+</div>
+<figcaption>Una tarea que se ejecuta en dos tramos con una E/S en medio. El tiempo de respuesta es la barra rosada completa; el de ejecución, solo los bloques azules.</figcaption>
+</figure>
+
+<div class="box warn">
+  <div class="bt">Ojo · la trampa clásica del cronómetro</div>
+  <p>Sale en 2014 (P2.1) y 2015 (P2.3). Si mides con <code>GetTime()</code> antes y después de tu programa, o con un cronómetro, <b>no mides el tiempo de ejecución</b>: mides una aproximación del <b>tiempo de respuesta</b>, porque ahí está incluido el tiempo de ejecución de las otras tareas del sistema. Siempre:</p>
+  <p style="text-align:center"><b>t<sub>CPU</sub> &lt; t<sub>RESPUESTA</sub></b></p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · lo que pidió saber sí o sí en el repaso<span class="ref">Clase de repaso · 42:49 / Clase de repaso · 44:16 / Clase de repaso · 47:58 / Clase de repaso · 49:36 / Clase de repaso · 50:56</span></div><p>En el repaso dijo que en el certamen <i>“hay que saber calcular cuál es el tiempo de respuesta de una tarea, cuál es el tiempo de ejecución”</i> y <i>“la tasa de uso del procesador para la tarea A, o la tasa de uso global del procesador”</i>. Y dibujó una carta Gantt en Round Robin con A, B y C para mostrar los errores que más ve:</p><ul><li><b>El corte del tiempo de respuesta es donde termina ESA tarea.</b> <i>“Yo vi N veces gente que toma el tiempo de respuesta cuando terminan todas las tareas. No: el tiempo de respuesta de B se corta cuando termina B”</i>. En su ejemplo C tenía t<sub>ejec</sub> = 3q, t<sub>resp</sub> = 9q y t<sub>espera</sub> = 6q.</li><li><b>La tasa de uso de una tarea</b> es lo que esa tarea usó el procesador dentro de un intervalo de referencia. En su dibujo, en 9 quanta A usó 2, así que su tasa era 2/9. Hay que fijarse bien cuál es el intervalo (si una tarea termina a mitad de un quantum, cuenta medio quantum).</li><li><b>Ninguna tasa puede pasar del 100 %</b>, ni ser negativa, y con un solo procesador <b>la suma de las tasas de todas las tareas en el mismo intervalo tampoco puede pasar del 100 %</b>.</li><li><b>Tareas cíclicas:</b> si el enunciado dice que la tarea es cíclica (por ejemplo, 2 quanta de CPU y una E/S de 1 quantum, repetido), el intervalo a considerar es <b>el ciclo</b> (3 quanta). Se puede dar su tasa (2/3) y su espera por ciclo (1 quantum), pero <b>no su tiempo de respuesta</b>: <i>“no tengo idea, porque es cíclica y no va a terminar”</i>.</li><li><i>“Lean bien las preguntas. A veces hay dos en una.”</i></li></ul></div>
+
+
+<div class="box libro">
+  <div class="bt">📖 La estructura de estadísticas de Linux (certamen 2014)</div>
+  <p>El SO mantiene por proceso: <code>utime</code> (tiempo de ejecución en modo <b>usuario</b>), <code>stime</code> (en modo <b>sistema</b>) y <code>rtime</code> (tiempo <b>real</b> = tiempo de respuesta). Relaciones que hay que saber justificar:</p>
+  <ul>
+    <li><b>rtime ≥ utime + stime</b>, y normalmente <b>utime &gt; stime</b> (un proceso pasa mucho más tiempo en modo usuario).</li>
+    <li><b>rtime ≠ utime + stime</b> porque rtime incluye el tiempo de ejecución de <i>los otros procesos</i> mientras este esperaba.</li>
+    <li>Se da la igualdad <b>rtime = utime + stime</b> en dos casos: (a) el proceso se ejecuta usando <b>un solo quantum</b>, o (b) el proceso termina durante un periodo en que es <b>el único proceso listo</b> del sistema.</li>
+    <li><code>utime</code> se actualiza <b>cada vez que el proceso pierde el procesador</b> (fin de quantum, E/S, salida voluntaria, término), haciendo <code>utime += p</code> donde <b>p ≤ q</b> es lo que realmente usó del quantum.</li>
+  </ul>
+</div>
+
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · el scheduler no puede cambiar el tiempo de ejecución<span class="ref">Planificación · Voz 005_1 · 04:11</span></div><p>Si una tarea necesita ejecutar dos millones de instrucciones, las va a ejecutar igual en batch (de una vez) que en tiempo compartido (por partes). <b>El tiempo de ejecución no depende del modelo ni del algoritmo</b>. Lo que sí cambia es el <b>tiempo de espera</b> (en la cola, y en parte el de las E/S, que se puede optimizar en el disco) y por lo tanto el de respuesta.</p></div>
+</section><section id="modelo-vs-algo">
+<h2>2 · Modelo de planificación vs. algoritmo de scheduling</h2>
+<p class="lead">Si te tienes que llevar <b>una sola cosa</b> de este resumen, que sea esta distinción. Es la pregunta 1.1 del certamen 2024, es la nota al margen de la Ayudantía 2, y es lo que ordena toda la unidad.</p>
+
+<div class="box def">
+  <div class="bt">Las dos definiciones, textuales</div>
+  <p><b>Modelo de planificación de tareas:</b> define <b>cómo</b> las tareas usan el procesador. Es decir: <i>cuándo</i> una tarea obtiene el procesador, <i>cuándo</i> lo pierde, y <i>cuánto tiempo</i> permanece con él.</p>
+  <p><b>Algoritmo de scheduling:</b> define el <b>orden</b> de ejecución de las tareas. Cuando una tarea pierde el procesador, el algoritmo de scheduling elige <b>cuál es la próxima tarea</b> que lo obtiene.</p>
+</div>
+
+<div class="box ana">
+  <div class="bt">🎯 Analogía · el reglamento y el portero</div>
+  <p>El <b>modelo</b> es el <b>reglamento de la discoteca</b>: "se entra de a uno", "nadie puede estar más de 20 minutos adentro", "si sales a fumar pierdes el puesto". El <b>algoritmo</b> es el <b>portero</b>: dado ese reglamento, decide <i>a quién</i> de la fila deja pasar ahora — al que llegó primero, al que va a estar menos rato adentro, al que lleva más tiempo esperando.</p>
+  <p>Son independientes: puedes cambiar de portero sin cambiar el reglamento. Por eso la nota de la ayudantía dice: <i>"el algoritmo de scheduling es <b>independiente</b> del modelo de planificación de tareas; algunos algoritmos son más adaptados o diseñados para un modelo en particular"</i>.</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · “¿time sharing y Round Robin son lo mismo?”<span class="ref">Planificación · Voz 001_1 · 37:18</span></div><p>Un compañero lo preguntó en clases y la respuesta fue un no rotundo. <b>Time sharing es el modelo de planificación</b>: dice que cada tarea usa el procesador como máximo un quantum q, y que lo pierde antes si hace una E/S o termina. <b>Round Robin es un algoritmo de scheduling</b>: dice cuál sigue (la primera de la cola, y la que pierde el procesador vuelve al final). Round Robin <i>“es el FIFO del scheduling”</i>.</p><p>Se pueden combinar como quieras: <i>“podríamos perfectamente tener tiempo compartido con un scheduler random, o con una pila LIFO”</i>. En clases usa FIFO/RR por defecto solo para poder explicar el modelo.</p></div>
+
+
+<div class="tw">
+<table>
+<thead><tr><th></th><th>Modelo de planificación</th><th>Algoritmo de scheduling</th></tr></thead>
+<tbody>
+<tr><td><b>Responde a</b></td><td>¿Cuándo se pierde el procesador y por cuánto tiempo se tiene?</td><td>¿Quién es el siguiente?</td></tr>
+<tr><td><b>Ejemplos</b></td><td>Batch simple · Batch con multiprogramación · Tiempo compartido</td><td>FCFS · SJN · HPRN · PSJN · SRTN · RR · PV · MLQ · CFS</td></tr>
+<tr><td><b>Se decide en</b></td><td>El diseño del SO (el quantum se elige durante el <b>boot</b>)</td><td>El diseño del SO, a veces configurable en caliente</td></tr>
+<tr><td><b>Combinaciones</b></td><td colspan="2">Los tres modelos se combinan con casi cualquier algoritmo. Por ejemplo, FCFS y SJN están pensados para Batch; RR, PV, MLQ y CFS para Tiempo Compartido; pero nada impide un batch con SJN o un time sharing con prioridades.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · cómo redactar la respuesta en el certamen</div>
+  <p>La pauta 2024 responde exactamente así, y vale 7 puntos:</p>
+  <p><i>"El modelo de planificación de tareas determina la forma de uso del procesador (cuándo se pierde, durante cuánto tiempo una tarea lo tiene). El algoritmo de scheduling elige la tarea siguiente cuando la tarea en ejecución pierde el procesador (se termina, hace una E/S, fin de quantum de tiempo, error fatal)."</i></p>
+  <p>Fíjate que aprovecha de listar <b>los 4 casos en que se pierde el procesador</b>. Regalo: dos respuestas por el precio de una.</p>
+</div>
+</section><section id="batch">
+<h2>Batch Processing simple</h2>
+<p class="lead">1945-1965. No hay sistema operativo, o el que hay solo sabe cargar y descargar programas desde cintas. Un operador humano decide el orden. El modelo más primitivo, y la base contra la que se compara todo lo demás.</p>
+
+<div class="box def">
+  <div class="bt">Planificación de tipo Batch Processing (textual del curso)</div>
+  <p><b>1.</b> Una tarea se ejecuta <b>hasta que se termine</b>.<br>
+  <b>2.</b> Una tarea pierde el procesador cuando: <i>se termina</i>, o <i>hace una entrada/salida</i> — <b>pero ninguna otra tarea se puede ejecutar</b>.<br>
+  <b>3.</b> Recupera el procesador <b>inmediatamente</b> cuando se termina su entrada/salida.</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · por qué existió el batch simple<span class="ref">Clase de repaso · 02:06 / Clase de repaso · 03:14 / Clase 1 · Introducción · 49:17</span></div><p>Porque los primeros computadores tenían <b>tan poca memoria que era imposible cargar más de una tarea</b>. Además no había controlador de disco: <i>“es la misma CPU la que realiza la entrada/salida”</i>. Así que durante la E/S la tarea está bloqueada, el procesador está ocioso (o haciendo él mismo la E/S) y no se ejecuta ninguna otra tarea. En toda esta familia el scheduler es, en general, <b>FIFO</b>.</p><p>Antes de los primeros SO, el orden lo decidía el operador, y no era FIFO: <i>“el programa que se ejecutaba primero era el del amigo del operador”</i>. Con el SO aparece la noción de orden de ejecución con criterios.</p></div>
+
+
+<h3>Cómo funciona la cola</h3>
+<ul>
+  <li>El sistema maneja una <b>cola de espera FIFO</b>.</li>
+  <li>Una tarea nueva entra <b>al final</b> de la lista.</li>
+  <li>El sistema toma la <b>primera</b> tarea de la lista y la ejecuta <b>hasta que se termine</b>, incluyendo sus E/S.</li>
+  <li>Una tarea <b>nunca vuelve</b> a la cola de espera.</li>
+</ul>
+
+<figure>
+<div class="gantt">
+  <div class="grow"><div class="glab">CPU</div><div class="gbar">
+    <div class="gseg idle" style="width:10%">ocioso</div>
+    <div class="gseg t1" style="width:20%">A</div>
+    <div class="gseg idle" style="width:10%">ocioso</div>
+    <div class="gseg t1" style="width:15%">A</div>
+    <div class="gseg idle" style="width:10%">ocioso</div>
+    <div class="gseg t2" style="width:15%">B</div>
+    <div class="gseg idle" style="width:10%">ocioso</div>
+    <div class="gseg t2" style="width:10%">B</div>
+  </div></div>
+  <div class="grow"><div class="glab">Cinta / disco</div><div class="gbar">
+    <div class="gseg io" style="width:10%">LOAD A</div>
+    <div class="gseg blank" style="width:20%"></div>
+    <div class="gseg io" style="width:10%">E/S A</div>
+    <div class="gseg blank" style="width:15%"></div>
+    <div class="gseg io" style="width:10%">LOAD B</div>
+    <div class="gseg blank" style="width:15%"></div>
+    <div class="gseg io" style="width:10%">E/S B</div>
+    <div class="gseg blank" style="width:10%"></div>
+  </div></div>
+  <div class="gaxis">
+    <span class="gtick" style="left:0%">0</span>
+    <span class="gtick" style="left:10%">carga</span>
+    <span class="gtick" style="left:55%">llega B</span>
+    <span class="gtick" style="left:100%">fin</span>
+  </div>
+</div>
+<div class="glegend">
+  <span><i class="sw" style="background:var(--g1)"></i> tarea A en CPU</span>
+  <span><i class="sw" style="background:var(--g2)"></i> tarea B en CPU</span>
+  <span><i class="sw idle"></i> procesador ocioso</span>
+  <span><i class="sw" style="background:var(--warn-soft);border:1px solid var(--warn)"></i> periférico ocupado</span>
+</div>
+<figcaption>Batch simple. Fíjate en el patrón: <b>cada vez que el periférico trabaja, la CPU no hace nada</b>. Aquí la tasa de ocupación es 60 %. Ese desperdicio es el motor de toda la unidad.</figcaption>
+</figure>
+
+<h3>Evaluación</h3>
+<div class="cols">
+  <div class="card"><h5>✅ Ventajas</h5>
+    <p>· La implementación es <b>muy fácil</b>: una cola FIFO simple.</p>
+    <p>· La tarea en ejecución tiene <b>uso exclusivo</b> del procesador (no hay que sincronizar nada).</p>
+    <p>· <b>Cero overhead</b> de conmutación.</p>
+  </div>
+  <div class="card"><h5>❌ Desventajas</h5>
+    <p>· El <b>tiempo de respuesta</b> de una tarea es largo: depende del tiempo de respuesta de <b>todas</b> las tareas que están antes en la cola. En el peor caso puede ser <b>infinito</b>.</p>
+    <p>· Una tarea puede <b>monopolizar</b> el procesador si no se termina nunca.</p>
+    <p>· ⇒ existe <b>riesgo de inanición</b>.</p>
+  </div>
+</div>
+
+<div class="box def">
+  <div class="bt">Inanición — Starvation</div>
+  <p>Hay inanición cuando <b>una o más tareas no pueden obtener el procesador</b>. En la Ayudantía 2 lo definen desde el efecto: <i>"ocurre una inanición cuando los criterios que usa el algoritmo para elegir una tarea producen que al menos una tarea no termine su ejecución"</i>.</p>
+  <p><b>Un buen algoritmo de scheduling no debería tener problema de inanición.</b> Esa frase la repiten en las tres fuentes: apréndetela.</p>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · la pregunta 1.2 del certamen 2024</div>
+  <p><i>"¿Por qué existe un riesgo de inanición en <b>cualquier</b> modelo de planificación de tipo Batch Processing?"</i></p>
+  <p>Respuesta: porque en cualquier modelo batch, <b>la tarea en ejecución conserva el procesador hasta terminar</b>. Si esa tarea monopoliza el procesador (no hace ninguna E/S y no se termina nunca), las demás no lo obtienen jamás. Es una propiedad del <b>modelo</b>, no del algoritmo: no la arregla cambiar de scheduler, solo la arregla el <b>reciclaje</b> (quantum + temporizador).</p>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · dos inaniciones distintas que no hay que confundir</div>
+  <p><b>Inanición del modelo batch:</b> una tarea acapara el procesador y nadie más avanza. La causa es que no hay requisición por temporizador.</p>
+  <p><b>Inanición del algoritmo SJN:</b> siempre llegan tareas más cortas que la que espera, y la larga nunca es elegida. La causa es el <i>criterio de elección</i>, y aquí sí se arregla cambiando de algoritmo (por ejemplo, a HPRN).</p>
+</div>
+</section><section id="gen2">
+<h2>Segunda generación: discos, archivos y batch mejorado</h2>
+<p class="lead">Aparece el hardware que cambia todo: el <b>disco duro</b> (IBM, 1956: 3,75 MB y 1 segundo de tiempo de acceso).</p>
+
+<h3>Qué trae el disco duro</h3>
+<ul>
+  <li>Almacenamiento <b>persistente</b> con <b>acceso directo</b>, no secuencial como las cintas.</li>
+  <li>Tiempo de acceso <b>mucho más pequeño</b>. Más caro que las cintas, pero el desempeño crece rápido, y rápidamente se impone como almacenamiento principal.</li>
+  <li>El <b>controlador es un verdadero procesador</b>: permite la gestión completa de las E/S, optimiza los intercambios con el procesador principal y maneja tablas de sectores para la gestión de fallas.</li>
+</ul>
+
+<div class="box tip">
+  <div class="bt">Truco · por qué el profesor insiste en el controlador</div>
+  <p>Porque es la respuesta a una pregunta de certamen (2014, P3.6): <i>"¿Por qué tener un disco con controlador hardware e interrupciones permite aumentar el grado de multiprogramación?"</i></p>
+  <p>Porque permite al SO <b>cargar tareas en paralelo mientras otra tarea se ejecuta</b>, sin tener que esperar a que termine la carga. Eso reduce el tiempo ocioso del procesador y deja <b>más tareas potencialmente listas</b> en memoria.</p>
+</div>
+
+<h3>Sistemas de archivos</h3>
+<div class="box def">
+  <div class="bt">Archivo</div>
+  <p>Un archivo es un <b>conjunto de datos que tienen el mismo tipo de tratamiento</b>.</p>
+</div>
+<p>Los sistemas de archivos permiten: gestionar un <b>catálogo</b> de archivos, la gestión <b>incremental</b> de archivos, <b>compartir datos entre tareas</b> y <b>reducir los cambios de tareas</b> (task conmutation).</p>
+
+<h3>Batch Processing con sistema de archivos</h3>
+<p>Misma cola FIFO que el batch simple, con una mejora: <b>mientras una tarea se ejecuta, el SO carga la siguiente tarea en memoria</b>. Se reduce el tiempo de espera para ejecutar la tarea siguiente (ya no hay que esperar la carga).</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · qué pasa si A pide una E/S mientras se carga B<span class="ref">Clase de repaso · 04:04</span></div><p>El controlador de disco <b>no puede hacer dos operaciones al mismo tiempo</b>. Si A necesita una E/S mientras se está cargando B por adelantado, <b>se pausa la carga de B</b> y se atiende primero la E/S de A (a veces no de inmediato, porque el disco termina de leer la pista en que está). ¿Por qué A tiene prioridad? Porque <i>“lo único que queremos es deshacernos de A, que se termine luego para liberar memoria”</i>. Después se retoma la carga de B. Aunque A sea tan corta que B no alcance a cargarse entera, igual se gana tiempo respecto del batch simple.</p></div>
+
+
+<div class="box warn">
+  <div class="bt">Ojo · esto todavía NO es multiprogramación</div>
+  <p>Hay <b>dos tareas en memoria</b>, pero <b>solo una puede ejecutarse</b>. La segunda está precargada esperando su turno. El procesador <b>sigue ocioso durante las E/S</b> de la tarea activa. La multiprogramación es el paso siguiente.</p>
+</div>
+
+<h3>Los problemas que quedan</h3>
+<p>El procesador sigue con mucho tiempo ocioso: durante algunas cargas/descargas de tareas y <b>durante las entradas/salidas</b>. Pero la memoria crece (MBytes → TBytes), el sistema reside de forma permanente en memoria y se pueden cargar <b>varias</b> tareas. De ahí sale el salto siguiente.</p>
+</section><section id="multi">
+<h2>Multiprogramación</h2>
+
+<div class="box def">
+  <div class="bt">Multiprogramación</div>
+  <p>Consiste en <b>cargar y ejecutar varias tareas de manera concurrente</b>.</p>
+  <p>Regla del modelo: <b>el sistema operativo cambia de tarea cuando la tarea en ejecución hace una E/S o cuando se termina</b>.</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · la multiprogramación está “entre” batch y tiempo compartido<span class="ref">Clase de repaso · 10:05 / Clase de repaso · 11:54 / Clase de repaso · 20:47</span></div><p>En el repaso la dibujó en medio de las dos familias. No es batch puro, porque cuando una tarea hace una E/S se pasa a otra. Pero tampoco es tiempo compartido, porque <b>una tarea que no hace E/S no pierde nunca el procesador</b>: si B nunca termina ni hace E/S, nunca se vuelve a A. Por eso sigue teniendo inanición.</p><p>La diferencia clave con el tiempo compartido es de <b>hardware</b>: la multiprogramación <b>no necesita temporizador</b>. El tiempo compartido necesita un reloj que interrumpa al procesador cada TICK para <i>“recuperar la mano”</i> cuando se acaba el quantum. Ese hardware no existía en los computadores de esa época (en los de casa llegó recién con el PC, en los 80).</p></div>
+
+
+<div class="box ana">
+  <div class="bt">🎯 Analogía · el profesor que corrige mientras el alumno piensa</div>
+  <p>Un profesor toma un examen oral. En batch simple, le hace una pregunta al alumno y se queda mirándolo en silencio los 3 minutos que este tarda en pensar. En multiprogramación, mientras el alumno piensa (E/S), el profesor <b>atiende al siguiente</b>. Cuando el primero levanta la mano diciendo "ya sé", <b>no lo atiende de inmediato</b>: se anota que está listo y lo atiende cuando termine con el que tiene enfrente.</p>
+</div>
+
+<h3>Ejemplo real (Ayudantía 1, pregunta 2.1)</h3>
+<p>Tres tareas: <b>T1</b> dura 200 ms de CPU y hace una única E/S en su instante propio t=110 ms; <b>T2</b> dura 50 ms y hace una única E/S en su t=5 ms; <b>T3</b> dura 120 ms sin E/S. T1 y T2 llegan en t=0, T3 en t=140 ms. Cada E/S dura 10 ms y hay <b>un solo controlador de disco</b>.</p>
+
+<figure>
+<div class="gantt">
+  <div class="grow"><div class="glab">CPU</div><div class="gbar">
+    <div class="gseg t1" style="width:29.33%">T1</div>
+    <div class="gseg t2" style="width:1.33%"></div>
+    <div class="gseg idle" style="width:1.33%"></div>
+    <div class="gseg t1" style="width:24%">T1</div>
+    <div class="gseg t2" style="width:12%">T2</div>
+    <div class="gseg t3" style="width:32%">T3</div>
+  </div></div>
+  <div class="grow"><div class="glab">Controlador</div><div class="gbar">
+    <div class="gseg blank" style="width:29.33%"></div>
+    <div class="gseg io" style="width:2.67%">E/S T1</div>
+    <div class="gseg io" style="width:2.67%">E/S T2</div>
+    <div class="gseg blank" style="width:65.33%"></div>
+  </div></div>
+  <div class="gaxis">
+    <span class="gtick" style="left:0%">0</span>
+    <span class="gtick" style="left:29.33%">110</span>
+    <span class="gtick" style="left:32%">120</span>
+    <span class="gtick" style="left:34.67%">130</span>
+    <span class="gtick" style="left:56%">210</span>
+    <span class="gtick" style="left:68%">255</span>
+    <span class="gtick" style="left:100%">375</span>
+  </div>
+</div>
+<figcaption>El tramo verde delgado en t=110-115 es T2 ejecutándose 5 ms; el rayado en 115-120 es la CPU ociosa. T = 375 ms, CPU ocupada 370 ms ⇒ <b>T<sub>p</sub> = 370/375 = 98,7 %</b>. La solución paso a paso está en el banco de ejercicios.</figcaption>
+</figure>
+
+<div class="box warn">
+  <div class="bt">Ojo · el detalle que casi todos pierden</div>
+  <p>T2 pide su E/S en t=115, pero el controlador está ocupado con la E/S de T1 hasta t=120. Entonces la E/S de T2 <b>no parte en 115: parte en 120</b> y termina en 130. <b>Si hay un solo periférico, las E/S se serializan.</b> Cuando el enunciado quiere evitar esto, lo dice explícitamente ("la unidad de E/S maneja 2 discos y las E/S de T2 y T4 se hacen con discos diferentes", Ayudantía 2).</p>
+</div>
+
+
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · la multitarea cooperativa (no está en las láminas)<span class="ref">Clase de repaso · 25:24</span></div><p>Mencionó una variante histórica, usada por ejemplo en los primeros Macintosh: la <b>multitarea cooperativa</b> (<i>cooperative multitasking</i>). Como no hay temporizador, se le pide a la aplicación que sea “gentil”: cada cierto tiempo llama voluntariamente al SO para ceder el procesador, <i>“como una especie de entrada/salida falsa”</i>, confiando en que todas las demás harán lo mismo. Funciona mientras todas cooperen; basta una aplicación que no lo haga para que acapare el procesador. <i>“Es un modelo medio malito”</i>, y se abandonó apenas hubo temporizador.</p></div>
+<h3>Evaluación</h3>
+<div class="cols">
+  <div class="card"><h5>✅ Ventajas</h5>
+    <p>· Existe un <b>casi paralelismo</b> de ejecución: a la escala de tiempo del usuario (≈1 s) parece que varias tareas corren al mismo tiempo, aunque en el instante t solo una tiene el procesador.</p>
+    <p>· Se <b>reduce el tiempo ocioso</b>: se usan los tiempos de E/S de una tarea para ejecutar otra.</p>
+    <p>· <b>Transparencia</b>: cada usuario cree que el computador es solo para su tarea.</p>
+  </div>
+  <div class="card"><h5>❌ Problemas</h5>
+    <p>· Necesita <b>más memoria</b> que el batch simple.</p>
+    <p>· Los tiempos de respuesta <b>todavía</b> pueden ser muy largos.</p>
+    <p>· <b>Sigue habiendo riesgo de inanición</b>: cuando una tarea monopoliza el procesador sin hacer ninguna E/S.</p>
+  </div>
+</div>
+
+<h3>Los tres problemas que abre la multiprogramación</h3>
+<div class="tw">
+<table>
+<thead><tr><th>Problema</th><th>Qué hace falta</th><th>Se resuelve en…</th></tr></thead>
+<tbody>
+<tr><td><b>Control del tiempo</b><br>No dejar que una tarea monopolice el procesador; repartirlo equitativamente; bajar el tiempo ocioso</td><td>⇒ La gestión de un <b>temporizador</b></td><td>Gestión del Tiempo (esta unidad)</td></tr>
+<tr><td><b>Gestión de la memoria</b><br>Asignar memoria a tareas de tamaño distinto y duración desconocida; más tareas en memoria = mayor grado de multiprogramación = mejor rendimiento</td><td>⇒ Un <b>algoritmo de asignación de memoria</b></td><td>Unidad 2 (Certamen 2)</td></tr>
+<tr><td><b>Recursos compartidos</b><br>Asignar múltiples recursos (procesador, memoria, periféricos, discos) a múltiples tareas</td><td>⇒ Varios <b>algoritmos de asignación de recursos</b>. Riesgo de <b>interbloqueo</b></td><td>Unidad 3 / cursos posteriores</td></tr>
+</tbody>
+</table>
+</div>
+</section><section id="ts">
+<h2>Tiempo compartido (Time Sharing)</h2>
+<p class="lead">1965-1971. Llegan los circuitos integrados (Intel 4004, varios MIPS), memorias de cientos de KB, y con ellos los primeros grandes SO en tiempo compartido: <b>MULTICS</b> (1965, MIT) y <b>UNIX</b> (1969, Bell Labs — Ritchie / Kernighan / Bourne). Después: BSD v1 (1977), AT&amp;T System V R2 (1984), la norma <b>POSIX</b> (1993), Linux.</p>
+
+<h3>Qué debe considerar la asignación del procesador</h3>
+<ol>
+  <li><b>Las tareas disponibles y listas</b> para ejecutarse. <i>(Definición: una tarea está lista cuando no está esperando que se termine una entrada/salida.)</i></li>
+  <li><b>Las especificaciones de los usuarios</b>: prioridades, tareas urgentes.</li>
+</ol>
+<p>⇒ Ejecución en <b>tiempo compartido</b> ⇒ <b>requisición</b> del procesador.</p>
+
+<div class="box def">
+  <div class="bt">El modelo de Tiempo Compartido (textual)</div>
+  <p>· Una tarea se ejecuta durante un <b>quantum de tiempo q</b>.<br>
+  · Después de su quantum q, la tarea <b>pierde el procesador y vuelve en estado LISTA</b> a la cola.<br>
+  · Si la tarea en ejecución <b>hace una E/S</b>, pierde el procesador y pasa al estado <b>BLOQUEADA</b>.<br>
+  · Cuando una tarea <b>termina su E/S</b>, pasa de nuevo a estado <b>LISTA</b> y vuelve a la cola en espera del procesador.<br>
+  · Cuando una tarea pierde el procesador, el <b>algoritmo de scheduling</b> elige la siguiente.<br>
+  · Si no hay ninguna tarea LISTA, el procesador <b>queda ocioso</b>.</p>
+</div>
+
+<div class="box def">
+  <div class="bt">Quantum</div>
+  <p>Una <b>duración elemental</b> (del orden de 10 a 100 ms) durante la cual, como máximo, una tarea conserva el procesador en tiempo compartido. <b>El quantum lo elige el sistema operativo durante el BOOT.</b> Es un <b>múltiplo del TICK</b>.</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · la pelota de básquetbol y el lápiz<span class="ref">Planificación · Voz 001_1 · 02:45 / Planificación · Voz 001_1 · 13:30</span></div><p>Explicó el tiempo compartido con <b>niños jugando básquetbol en el recreo</b> con una sola pelota (el procesador). Un inspector con cronómetro deja que cada niño juegue, digamos, dos minutos; cuando se acaba el tiempo <b>le quita la pelota aunque quiera seguir jugando</b> (eso es la <b>requisición</b>) y el niño vuelve a la fila, listo para jugar de nuevo. Si un niño se va al baño (una E/S), no está en la fila. El quantum de una tarea no son minutos: <b>10, 20, 50, 100 milisegundos</b>.</p><p>Y para el <b>pseudo-paralelismo</b> usó un lápiz: si el lápiz pasa por cada alumno cada dos minutos, todos ven que lo tiene uno a la vez. Pero si cada uno lo tiene 10 milisegundos y pasa muy rápido, una cámara a 24 imágenes por segundo mostraría a <i>todos</i> escribiendo al mismo tiempo. Con q = 50 ms el procesador cambia de tarea 20 veces por segundo, y a nuestra escala (medio segundo) parece que todas avanzan juntas. <b>Nunca se ejecutan dos a la vez</b> con un solo procesador; para paralelismo real hacen falta varios.</p></div>
+
+
+<h3>Ejemplo real (Ayudantía 1, pregunta 2.2)</h3>
+<p>Las mismas tres tareas de antes, ahora en tiempo compartido con Round Robin y <b>q = 100 ms</b>:</p>
+
+<figure>
+<div class="gantt">
+  <div class="grow"><div class="glab">CPU</div><div class="gbar">
+    <div class="gseg t1" style="width:27.03%">T1</div>
+    <div class="gseg t2" style="width:1.35%"></div>
+    <div class="gseg t1" style="width:2.7%"></div>
+    <div class="gseg t2" style="width:12.16%">T2</div>
+    <div class="gseg t1" style="width:24.32%">T1</div>
+    <div class="gseg t3" style="width:27.03%">T3</div>
+    <div class="gseg t3" style="width:5.41%">T3</div>
+  </div></div>
+  <div class="grow"><div class="glab">Controlador</div><div class="gbar">
+    <div class="gseg blank" style="width:28.38%"></div>
+    <div class="gseg io" style="width:2.7%">E/S T2</div>
+    <div class="gseg io" style="width:2.7%">E/S T1</div>
+    <div class="gseg blank" style="width:66.22%"></div>
+  </div></div>
+  <div class="gaxis">
+    <span class="gtick" style="left:0%">0</span>
+    <span class="gtick" style="left:27.03%">100</span>
+    <span class="gtick" style="left:31.08%">115</span>
+    <span class="gtick" style="left:33.78%">125</span>
+    <span class="gtick" style="left:43.24%">160</span>
+    <span class="gtick" style="left:67.57%">250</span>
+    <span class="gtick" style="left:94.59%">350</span>
+    <span class="gtick" style="left:100%">370</span>
+  </div>
+</div>
+<figcaption>Mismo problema, otro modelo: T = <b>370 ms</b> (contra 375) y <b>no hay ningún tiempo ocioso</b> ⇒ T<sub>p</sub> = 100 %. Ese es el mensaje de la ayudantía: el tiempo compartido mejora la tasa de ocupación, aunque a veces sea por poco.</figcaption>
+</figure>
+
+<h3>Evaluación</h3>
+<div class="cols">
+  <div class="card"><h5>✅ Ventajas</h5>
+    <p>· Tiempo de espera más corto para las tareas urgentes. <b>Favorece a las tareas cortas.</b></p>
+    <p>· Reduce el tiempo ocioso del procesador.</p>
+    <p>· Tiempo de respuesta en general más corto; menos espera para los usuarios.</p>
+    <p>· <b>Transparencia</b> del uso del procesador: cada usuario cree tener un computador para él solo.</p>
+    <p>· Mejor rendimiento y uso más eficiente del computador.</p>
+  </div>
+  <div class="card"><h5>❌ Pero…</h5>
+    <p>· Posibilidad de <b>sobrecargar</b> el computador (memoria y procesador), aumentando el tiempo de espera.</p>
+    <p>· E/S interactivas numerosas y largas ⇒ <b>mal uso de la memoria</b>: las tareas en E/S no son ejecutables pero <b>ocupan memoria</b>.</p>
+    <p>· Coexistencia de usuarios interactivos con tareas largas y pesadas ⇒ hacen falta <b>sistemas híbridos</b> (Time Sharing + Batch Processing).</p>
+  </div>
+</div>
+
+
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · por qué una tarea infinita ya no bloquea el sistema<span class="ref">Planificación · Voz 001_1 · 19:18 / Planificación · Voz 002_1 · 03:50 / Planificación · Voz 002_1 · 12:51</span></div><p>Con quantum, una tarea que entra en un loop infinito <b>molesta pero no bloquea</b>: <i>“con 10 tareas y un quantum de 100 ms, esa tarea infinita se toma un 10 % del procesador, pase lo que pase, pero el 90 % igual se reparte entre las otras nueve”</i>. Antes (batch) se quedaba con el 100 % hasta que alguien la matara. Eso es eliminar la inanición del modelo.</p><p>Y un matiz sobre el rendimiento: el tiempo compartido rinde más cuantas más tareas haya en memoria (es menos probable que <b>todas</b> estén en E/S a la vez), pero más tareas significa más riesgo de <b>saturar la memoria</b>. Además, <b>usar el procesador al 100 % no es buena idea</b>: no queda margen para nada adicional y en algunas situaciones el sistema puede colapsar.</p></div>
+<h3>El quantum: el parámetro que todo lo controla</h3>
+<div class="tw">
+<table>
+<thead><tr><th></th><th>Quantum PEQUEÑO</th><th>Quantum GRANDE</th></tr></thead>
+<tbody>
+<tr><td><b>Ventaja</b></td><td>Reparto más equitativo del procesador. Baja el tiempo de respuesta de las tareas cortas e interactivas: el usuario siente que su tarea corre más rápido. Si q → 0, el procesador se comparte de forma perfectamente equitativa.</td><td>Disminuye el tiempo de gestión (menos llamadas al scheduler, menos conmutaciones) ⇒ <b>aumenta el rendimiento global</b>.</td></tr>
+<tr><td><b>Desventaja</b></td><td><b>Más conmutaciones</b>: el costo de conmutación deja de ser despreciable frente al tiempo de ejecución ⇒ baja el rendimiento del computador.</td><td>Perjudica a las tareas cortas, que deben esperar más para terminar. Si q → ∞, <b>RR degenera en FCFS</b>.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="box tip"><div class="bt">El overhead en números (Ayudantía 3)</div><p>Con quantum q y un costo de conmutación s, una tarea que usa todo su quantum gasta (q + s) por cada q útil: se pierde <b>s/q</b>. Con q = 100 ms y s = 1 ms, una tarea de 20 ms tarda 21 ms (pierde ≈ 5 %) y una de 500 ms tarda 505 ms (≈ 1 %). Con q = 5 ms se perdería el 20 %. Ejercicio completo en la <a class="inl" href="4-Gestion-del-tiempo.html#ay3-1">página 4</a>.</p></div>
+
+
+<div class="box tip">
+  <div class="bt">Truco · la frase que cierra cualquier pregunta sobre el quantum</div>
+  <p><i>"La elección del quantum debe ser un <b>compromiso</b> entre el rendimiento global del computador y el favorecer a las tareas cortas."</i></p>
+  <p>Y el caso concreto del certamen 2024 (P2.5): el administrador baja el quantum a <b>q = 5 ms</b> "para compartir el procesador más equitativamente". Es <b>mala idea</b>, porque implica muchas más llamadas al algoritmo de scheduling, y el costo de conmutación pasa a ser <b>no despreciable</b> frente al tiempo de ejecución de las tareas.</p>
+</div>
+
+<div class="form">
+  t<sub>espera máxima</sub> = <b>(N − 1) · q</b>
+  <span class="n">Con N tareas y quantum q: lo máximo que una tarea espera antes de recuperar el procesador. Ocurre en el <b>peor caso</b>: cuando las otras N−1 tareas no hacen ninguna E/S ni dejan voluntariamente el procesador, y usan su quantum <b>completo</b>. En estricto rigor habría que sumarle N·Δt por las N conmutaciones.</span>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · el peor caso, contado con la fila del recreo<span class="ref">Planificación · Voz 001_1 · 22:27 / Planificación · Voz 001_1 · 33:08</span></div><p>Soy el <b>último de la fila</b>. Delante mío hay N−2 tareas y hay una en ejecución que <b>acaba de recibir</b> la pelota. En el peor caso ninguna hace E/S y todas usan su quantum completo: espero (N−2)·q + q = <b>(N−1)·q</b>. Es un tiempo <b>finito y conocido</b>, y por eso el tiempo compartido es bueno para las tareas urgentes; en batch la espera depende de la “buena voluntad” de las tareas de adelante.</p><p>En promedio se espera bastante menos porque la mayoría de las tareas <b>son interactivas</b> (el profe dijo <b>80 %</b>; la nota de la Ayudantía 2 dice 70 %) y sueltan el procesador antes: alguien que escribe 1 o 2 caracteres por segundo es, para el SO, una E/S de “mediano plazo”.</p></div>
+
+
+<div class="box tip">
+  <div class="bt">Truco · por qué en la práctica se espera mucho menos</div>
+  <p>Nota al margen de la Ayudantía 2: en un sistema normal, <b>el 70 % de las tareas son interactivas</b> y por lo tanto hacen E/S largas, así que sueltan el procesador mucho antes de agotar su quantum. (N−1)q es una <b>cota superior</b>, no el promedio.</p>
+  <p>Ese razonamiento es exactamente lo que pide el certamen 2016 (P2.2): si el 30 % de las N tareas hace una E/S tras usar <b>medio quantum</b>, la espera promedio antes de recuperar el procesador es<br>
+  <b>t = (N − 1) · [0,7·q + 0,3·(q/2)] = 0,85 · q · (N − 1)</b>.</p>
+</div>
+</section><section id="swapping">
+<h2>Swapping</h2>
+<p class="lead">La técnica que permite ejecutar más tareas de las que caben en memoria. Es Unidad 1 solo en su versión conceptual; los algoritmos finos son del Certamen 2.</p>
+
+<div class="box def">
+  <div class="bt">Swap Out / Swap In</div>
+  <p><b>Swap Out</b> — descarga de una tarea <b>de la memoria hacia el disco</b>. Ocurre: cuando hace una E/S larga (interactiva), para cargar otra tarea, por saturación de la memoria, o eventualmente tras varios quanta de tiempo.</p>
+  <p><b>Swap In</b> — carga de una tarea <b>del disco hacia la memoria</b>. Ocurre: cuando está LISTA para ejecutarse (fin de E/S) y cuando hay espacio en la memoria.</p>
+</div>
+
+<div class="box ana">
+  <div class="bt">🎯 Analogía · el escritorio y el cajón</div>
+  <p>Tu escritorio (la RAM) tiene espacio para 3 carpetas. Tienes 10 causas abiertas. Cuando una causa queda esperando un documento que va a llegar por correo (una E/S larga), la guardas en el cajón (el disco) para hacerle espacio a otra. Cuando el documento llega, la sacas del cajón. Guardar y sacar <b>toma tiempo</b>: ese es el costo del swapping.</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · la biblioteca y los libros<span class="ref">Planificación · Voz 002_1 · 21:09 / Planificación · Voz 002_1 · 17:41 / Clase de repaso · 18:50</span></div><p>Su analogía fue la repisa de libros que se llena a medida que avanzas en la carrera. Llega un libro nuevo y no hay espacio: sacas uno a una caja en la bodega. ¿Cuál? <b>No el más viejo, sino el que menos usas</b>, porque es el que tiene menos probabilidad de necesitarse. Y aun así te puedes equivocar: dos días después necesitas una fórmula de física que estaba justo en ese libro y tienes que ir a buscarlo… sacando otro. <i>“El SO es exactamente lo mismo”</i>: elegir qué tarea hacer swap out es una apuesta, porque no sabe si esa E/S de teclado durará 2 segundos o 2 horas.</p><p>Por qué el disco no puede reemplazar a la RAM: leer de la RAM toma unos <b>25-50 ns</b> y un disco mecánico <b>algunos ms</b>, un factor de <b>10<sup>6</sup></b>. Un SSD es unas 1000 veces más rápido que un disco mecánico, pero sigue siendo <b>unas 1000 veces más lento que la RAM</b>. Por eso el disco sirve de <b>memoria secundaria</b> para dejar afuera una tarea durante segundos o minutos, pero no para intercambiar datos de forma permanente.</p></div>
+
+
+<h3>Evaluación</h3>
+<div class="cols">
+  <div class="card"><h5>✅ A favor</h5>
+    <p>· <b>Persistencia</b> de las tareas si el sistema se apaga ⇒ más tolerancia a fallas.</p>
+    <p>· Mejor gestión del espacio de memoria: se recupera memoria cuando el usuario se demora (E/S de teclado).</p>
+    <p>· <b>Grado de multiprogramación más elevado</b>: permite ejecutar más tareas de las que la memoria permitiría ⇒ mejor rendimiento, menos tiempo ocioso.</p>
+  </div>
+  <div class="card"><h5>❌ En contra</h5>
+    <p>· El desempeño de los procesadores <b>aumenta más rápido que el de los discos</b> ⇒ el disco se puede transformar en <b>cuello de botella</b>. Es necesaria una optimización del disco.</p>
+    <p>· <b>Peor escenario</b> (certamen 2015): tener que hacer <b>Swap In de una tarea que se acaba de hacer Swap Out</b>. Ocurre cuando la tarea recién descargada es justo la que el algoritmo de scheduling elige a continuación.</p>
+  </div>
+</div>
+
+
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · tres detalles que dijo del swapping<span class="ref">Planificación · Voz 002_1 · 28:39 / Planificación · Voz 002_1 · 30:36 / Planificación · Voz 002_1 · 31:35</span></div><ul><li><b>Hacer swap in no significa ejecutarse.</b> La tarea vuelve a memoria porque terminó su E/S y es de nuevo candidata; obtendrá el procesador cuando el scheduler la elija (en tiempo compartido, como máximo en (N−1)·q).</li><li><b>Efecto bola de nieve:</b> para hacer swap in de una tarea a veces hay que hacer swap out de otra. Si el total de tareas no cabe en memoria y todas están listas, el sistema termina pasando el tiempo en swap out, swap in, swap out… Es totalmente ineficiente, y se arregla recién con la memoria virtual (Unidad 2).</li><li><b>Persistencia:</b> algunos sistemas (Solaris) podían dejar todas las tareas en disco y recuperarlas tras un apagón. Se abandonó porque hoy el hardware falla mucho menos que en esa época.</li></ul></div>
+<div class="box warn">
+  <div class="bt">Ojo · el problema que el swapping deja abierto</div>
+  <p>El swapping <b>cambia la dirección de memoria de una tarea</b>. Y algunas instrucciones usan <b>direcciones fijas</b>: saltos absolutos, accesos a variables. Habría que <b>modificar las instrucciones</b> cada vez que la tarea se recarga ⇒ costo enorme.</p>
+  <p>Además, asignar memoria es difícil: la memoria puede estar <b>saturada</b>, el espacio libre puede estar <b>fragmentado</b>, y una tarea probablemente <b>no usa todo su espacio</b> en el instante t (convendría cargar solo lo útil y descargar lo que no sirve durante un tiempo T).</p>
+  <p>⇒ Se necesita una gestión <b>transparente</b> de memoria ⇒ <b>MEMORIA VIRTUAL</b> ⇒ eso es el Certamen 2.</p>
+</div>
+
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · los saltos absolutos<span class="ref">Planificación · Voz 002_1 · 46:11</span></div><p>Si una tarea vuelve a memoria en otra posición, los <b>saltos relativos</b> (“salta 100 bytes adelante del PC”) siguen funcionando, pero los <b>saltos absolutos</b> (“salta a la dirección 2000”) y los accesos a variables apuntan a un lugar equivocado. Corregirlos implica analizar y modificar el programa, lo que es costoso. Lo que se busca es una capa intermedia que le haga creer a la tarea que está siempre en la misma dirección: la <b>memoria virtual</b>.</p></div>
+</section>
+<section id="modelos-lado">
+<h2>Los modelos lado a lado</h2>
+<p class="lead">La tabla que conviene poder reconstruir de memoria. Casi todas las preguntas de teoría de esta parte salen de leer una fila o comparar dos.</p>
+<div class="tw"><table>
+<thead><tr><th>Modelo</th><th>La tarea pierde el procesador cuando…</th><th>Hardware que lo hizo posible</th><th>¿Inanición por el modelo?</th><th>¿CPU ociosa en una E/S?</th></tr></thead>
+<tbody>
+<tr><td><b>Batch simple</b></td><td>Termina. (Si hace E/S, nadie más corre.)</td><td>Ninguno especial</td><td><b>Sí</b></td><td><b>Sí</b>, siempre</td></tr>
+<tr><td><b>Batch con sistema de archivos</b></td><td>Termina</td><td>Disco con controlador</td><td><b>Sí</b></td><td>Sí, pero la carga de la siguiente se adelanta</td></tr>
+<tr><td><b>Multiprogramación</b></td><td>Termina o hace una E/S</td><td>Disco con controlador + memoria para varias tareas</td><td><b>Sí</b> (si una tarea no hace E/S)</td><td>No, si hay otra tarea lista</td></tr>
+<tr><td><b>Multitarea cooperativa</b></td><td>Termina, hace E/S o <b>cede voluntariamente</b></td><td>Ninguno: depende de que la aplicación coopere</td><td><b>Sí</b> (si una aplicación no coopera)</td><td>No, si hay otra lista</td></tr>
+<tr><td><b>Tiempo compartido</b></td><td>Termina, hace E/S, <b>fin de quantum</b> o deja el procesador voluntariamente</td><td><b>Temporizador</b> (interrupción del reloj)</td><td><b>No</b> por el modelo (sí podría haberla por el scheduler, por ejemplo MLQ estático)</td><td>No, si hay otra lista</td></tr>
+</tbody></table></div>
+<div class="box tip"><div class="bt">Truco · una sola pregunta ordena la tabla</div>
+<p>¿Qué hardware le permite al SO <b>quitarle</b> el procesador a una tarea que no quiere soltarlo? Hasta la multiprogramación, ninguno: por eso todas esas filas tienen inanición. El temporizador es lo que cambia la última fila.</p></div>
+</section>
+<section id="pendientes">
+<h2>Paralelismo, sincronización y el algoritmo óptimo</h2>
+
+<h3>Paralelismo y concurrencia</h3>
+<p>Las tareas que cooperan pueden ejecutarse en paralelo: <b>de verdad</b> si hay más de un procesador, o en <b>casi paralelismo</b> con multiprogramación sobre un solo procesador. A veces tienen que esperar: porque una necesita los resultados de otra, o porque usan un <b>recurso de uso exclusivo</b>. ⇒ Hacen falta <b>mecanismos de sincronización de tareas</b>, que permiten: usar correctamente los recursos compartidos, esperar resultados aún no disponibles, volver a ejecutar una tarea cuando los resultados están disponibles, y asegurar un uso equitativo de los recursos.</p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · la sincronización, en una frase<span class="ref">Planificación · Voz 002_1 · 40:15</span></div><p>Es como un semáforo en la calle: ofrecer mecanismos para que una tarea espere a otra. Una tarea que espera datos que produce otra hace una especie de <b>“entrada/salida virtual”</b>: no espera al disco sino a otra tarea. <i>“No lo vamos a ver en este curso”</i>: es materia del electivo de programación paralela.</p></div>
+
+
+<h3>El algoritmo óptimo</h3>
+<div class="box def">
+  <div class="bt">La idea que se repite en todo el ramo</div>
+  <p>Muchas veces <b>existe</b> el algoritmo óptimo para resolver un problema del SO (scheduling, gestión de memoria…). Pero <b>no es aplicable</b> porque:</p>
+  <p>· <b>no se conoce el futuro del sistema</b> — qué tareas llegarán, cuánto durarán, cuánta memoria usarán; o<br>
+  · es <b>demasiado costoso</b>.</p>
+  <p>⇒ En general el sistema usa una <b>aproximación</b> del algoritmo óptimo, <b>de bajo costo (rápida)</b>. A veces el sistema se equivoca, lo que genera un costo adicional, pero es <b>poco frecuente</b>.</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · “se equivoca una vez de cada 500 o 1000”<span class="ref">Planificación · Voz 002_1 · 41:38</span></div><p>El óptimo exige conocer desde el arranque qué tareas van a llegar, cuándo, cuánta memoria y cuántas E/S van a necesitar y cuánto va a durar cada una. Como no se sabe, se usan aproximaciones y apuestas que a veces fallan, <i>“una vez de 500 o de 1000”</i>, y ahí se paga más caro.</p><p>Y el caso del óptimo demasiado caro: si para elegir la siguiente tarea el scheduler se demora 2 segundos y luego le da un quantum de 50 ms, <i>“no vale la pena”</i>. Lo que se quiere es las dos cosas a la vez: <b>bajo costo y la mejor decisión posible</b>, y muchas veces no son compatibles.</p></div>
+
+
+<div class="box tip">
+  <div class="bt">Truco · esta respuesta vale 7 puntos y aparece siempre</div>
+  <p>Certamen 2024 P1.4: <i>"¿Por qué en un SO es generalmente imposible implementar un algoritmo óptimo aunque exista?"</i> — Contesta con las <b>dos</b> razones (no conocer el futuro <b>y</b> el costo), y da un ejemplo concreto: para SJN habría que saber de antemano el tiempo de ejecución de cada tarea.</p>
+</div>
+</section><section id="t2-recetas"><h2>Recetas paso a paso</h2><p class="lead">Los procedimientos mecánicos para el ejercicio de la sección 2. La receta de la tabla de evolución de Round Robin está en la página 3.</p><div class="box def">
+  <div class="bt">Convenciones que uso (son las del profesor)</div>
+  <p>· En las tablas de evolución: <code>1L</code> = tarea 1 <b>lista</b>, <code>1B</code> = tarea 1 <b>bloqueada</b>. La lista se escribe en orden e <b>incluye a la tarea que corre, que va primera</b>.<br>
+  · Al <b>perder</b> el procesador (fin de quantum o E/S) la tarea se va <b>al final</b> de la lista.<br>
+  · Al <b>terminar su E/S</b>, la tarea pasa de <code>B</code> a <code>L</code> <b>sin moverse de lugar</b>.<br>
+  · Las E/S "cada X ms" se cuentan sobre el <b>tiempo propio de CPU</b> de la tarea, no sobre el reloj global.<br>
+  · El <b>overhead de conmutación es 0</b> salvo que el enunciado diga lo contrario.</p>
+</div><h3>Receta 1 · Carta Gantt en Batch (simple o con multiprogramación)</h3>
+<ol>
+  <li><b>Dibuja dos filas:</b> una para la <b>CPU</b> y una para el <b>controlador / periférico</b>. Si hay más de un disco, una fila por disco.</li>
+  <li><b>Ordena los eventos</b> por tiempo. Los eventos son solo cuatro tipos: <i>llega una tarea</i>, <i>termina una tarea</i>, <i>empieza una E/S</i>, <i>termina una E/S</i>.</li>
+  <li><b>Avanza evento por evento</b>, nunca de a 1 ms. En cada evento pregúntate: ¿quién tiene la CPU? ¿quién tiene el disco? ¿quién está listo?</li>
+  <li><b>Regla del batch:</b> la tarea elegida <b>corre hasta terminar o hasta hacer una E/S</b>. Nunca la interrumpes por la llegada de otra.</li>
+  <li><b>Cuidado con el periférico:</b> si hay un solo controlador, las E/S <b>se hacen en fila</b>. Una E/S pedida mientras el disco está ocupado <b>empieza cuando el disco se libera</b>.</li>
+  <li>Si nadie está listo, marca <b>IDLE</b> (rayado). No lo omitas: es lo que se resta en la tasa de ocupación.</li>
+</ol>
+
+<h3>Receta 3 · Tasas de ocupación</h3>
+<div class="form">
+  T<sub>p</sub> = (tiempo total en que la CPU ejecuta tareas) / (tiempo total transcurrido)
+  <span class="n">T<sub>u</sub> = (tiempo total en que el periférico trabaja) / (tiempo total transcurrido)</span>
+</div>
+<ol>
+  <li><b>Suma las duraciones</b> de los bloques de color de la fila CPU (no los rayados).</li>
+  <li><b>Divide por el instante final</b> de la carta (el momento en que termina la última tarea).</li>
+  <li>Si la pregunta es por la tasa <b>de una tarea específica</b> (certamen 2024): numerador = solo lo que ejecutó <b>esa</b> tarea; denominador = el <b>periodo</b> del ciclo, si la tarea es cíclica.</li>
+</ol>
+<div class="box tip">
+  <div class="bt">Truco · para tareas cíclicas, encuentra el PERIODO</div>
+  <p>Cuando el enunciado dice "la tarea es cíclica (no se termina)", <b>no calcules sobre toda la carta</b>: identifica el <b>patrón que se repite</b> y calcula sobre él. Ejemplo del 2024: T0 usa 3 quanta de 25 ms y luego hace una E/S de 50 ms ⇒ el patrón dura 75 + 50 = <b>125 ms</b> y en él T0 ejecutó 75 ⇒ T<sub>p</sub>(T0) = 75/125 = 60 %.</p>
+</div>
+
+<h3>Receta 4 · Tiempos de respuesta y tasa de penalización</h3>
+<ol>
+  <li>Para cada tarea, anota <b>t<sub>llegada</sub></b> y <b>t<sub>final</sub></b> (leídos de la carta Gantt).</li>
+  <li><b>t<sub>respuesta</sub> = t<sub>final</sub> − t<sub>llegada</sub></b>. Punto. No lo compliques.</li>
+  <li><b>t<sub>penalización</sub> = t<sub>respuesta</sub> / t<sub>ejecución</sub></b>, donde t<sub>ejecución</sub> es la duración total de CPU de la tarea (el dato del enunciado).</li>
+  <li><b>Verificación:</b> la penalización nunca puede ser <b>menor que 1</b>. Si te da 0,8, tienes un error.</li>
+</ol>
+<div class="box tip">
+  <div class="bt">Truco · el comentario que suma puntos</div>
+  <p>La pauta de la Ayudantía 2 remata así: <i>"el tiempo de respuesta <b>no es necesariamente una buena medida del desempeño</b> porque no toma en cuenta el tiempo de servicio de la tarea. B y C tienen el mismo tiempo de respuesta pero no el mismo nivel de satisfacción"</i>. Si te preguntan "¿qué mide mejor la satisfacción del usuario?", la respuesta es <b>la tasa de penalización</b>, no el tiempo de respuesta.</p>
+</div>
+
+<h3>Receta 5 · Tiempo de respuesta en Batch puro (sin carta Gantt)</h3>
+<p>Cuando todas las tareas llegan a la vez y el algoritmo es FCFS, hay una recurrencia que te ahorra dibujar:</p>
+<div class="form">
+  r<sub>T0</sub> = C<sub>0</sub> + Σ E/S<sub>T0</sub><br>
+  r<sub>Ti</sub> = C<sub>i</sub> + Σ E/S<sub>Ti</sub> + <b>r<sub>Ti−1</sub></b>
+  <span class="n">En batch, el tiempo de espera en la cola de una tarea es <b>la suma de los tiempos de respuesta de todas las que están antes</b>. Como es acumulativo, basta sumar el anterior.</span>
+</div>
+
+</section><section id="t2-videos">
+<h2>Videos del tema</h2>
+<p class="lead">Elegidos después de revisar decenas de candidatos. De cada uno se transcribió el audio para comprobar qué explica y en qué minuto; los marcados como recomendados son los que más se parecen a lo que pregunta el profe.</p>
+
+<div class="box tip"><div class="bt">Cómo ver estos videos en español</div>
+<p><b>Audio en español:</b> en los marcados “Audio en español (doblaje)”, ⚙ Configuración → <b>Pista de audio</b> → Español. Es un doblaje automático de YouTube; se entiende bien.<br>
+<b>Subtítulos:</b> en los que están solo en inglés, activa CC y luego ⚙ → Subtítulos → <b>Traducir automáticamente</b> → Español.</p></div>
+<div class="box warn"><div class="bt">Ojo con la nomenclatura de los videos</div>
+<p>El profe usa la escuela francesa. En los videos vas a oír: <b>SJF</b> = SJN · <b>SRTF / SRT</b> = SRTN · <b>SPN</b> = SJN · <b>HRRN</b> = HPRN (no entra) · <b>preemptive / apropiativo</b> = con requisición · <b>non-preemptive / no apropiativo</b> = sin interrupción · <b>MLFQ / feedback</b> ≈ MLQ del profe · <b>turnaround time</b> = lo que el profe llama <b>tiempo de respuesta</b>. Cuidado: <b>response time</b> en OSTEP y en muchos videos es otra cosa (el tiempo hasta que la tarea se ejecuta por primera vez).</p></div>
+<div class="vgrid">
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=26QPDBe-NB8" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/26QPDBe-NB8/mqdefault.jpg" alt=""><span class="rk">RECOMENDADO</span><span class="dur">13:35</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=26QPDBe-NB8" target="_blank" rel="noopener">Operating Systems · Crash Course Computer Science #18</a>
+    <div class="ch">CrashCourse · 13:35 min</div>
+    <div class="tags"><span class="lt sub">Inglés · subtítulos</span></div>
+    <p>La historia de la clase TasksManagement en 13 minutos animados: de la carga manual al batch processing, los drivers, Atlas aprovechando las esperas de E/S para ejecutar otros programas (multiprogramación), la memoria, el tiempo compartido con terminales, MULTICS, UNIX y los computadores personales.</p>
+    <div class="ver"><b>Qué ver:</b> 0:00-5:05 (batch y multitarea con E/S) y 8:00-10:50 (tiempo compartido, MULTICS, UNIX). Entre 5:05 y 8:00 habla de memoria virtual, que es Unidad 2.</div>
+    <p class="oj">Ojo: No tiene audio en español: activa los subtítulos y en ⚙ → Subtítulos → Traducir automáticamente → Español.</p>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=Hz3jXab8LI4" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/Hz3jXab8LI4/mqdefault.jpg" alt=""><span class="dur">16:43</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=Hz3jXab8LI4" target="_blank" rel="noopener">Multiprogramación en sistemas operativos · uniprogramados y multiprogramados con ejemplo</a>
+    <div class="ch">FNE Profesor - Ciencias de la Computación · 16:43 min</div>
+    <div class="tags"><span class="lt es">En español</span></div>
+    <p>En español. Trabajos que alternan E/S y CPU: calcula el tiempo total y el porcentaje de uso de la CPU con uno, dos y cuatro trabajos, y muestra cómo la utilización sube a medida que hay más trabajos en memoria. Es el mismo razonamiento del ciclo lectura-cálculo-escritura de la Ayudantía 1 (ejercicio A4).</p>
+    <div class="ver"><b>Qué ver:</b> Completo (17 min).</div>
+    
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=tadUeiNe5-g" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/tadUeiNe5-g/mqdefault.jpg" alt=""><span class="dur">23:28</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=tadUeiNe5-g" target="_blank" rel="noopener">How CPUs Interact with So Many Different Devices</a>
+    <div class="ch">Core Dumped · 23:28 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Por qué la CPU no controla directamente los periféricos: cada dispositivo tiene su controlador (un pequeño procesador), y la E/S puede hacerse por consulta (polling) o por interrupciones. Es el hardware que hizo posible la multiprogramación: mientras el controlador trabaja, la CPU atiende otra tarea.</p>
+    <div class="ver"><b>Qué ver:</b> 5:13-8:21 (el controlador del disco hace la E/S) y 12:16-14:12 (polling contra E/S por interrupciones).</div>
+    
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=PpaQrzoDW2I" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/PpaQrzoDW2I/mqdefault.jpg" alt=""><span class="dur">28:41</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=PpaQrzoDW2I" target="_blank" rel="noopener">Computer Timescales Mapped onto Human Timescales</a>
+    <div class="ch">Computerphile · 28:41 min</div>
+    <div class="tags"><span class="lt sub">Inglés · subtítulos</span></div>
+    <p>Traduce los tiempos del computador a escala humana: si una suma tomara un segundo, ir a la RAM sería como bajar a la biblioteca y el disco serían días o meses. Es el argumento del profe para explicar por qué el disco no puede reemplazar a la RAM y por qué el swapping es caro (lo mencionan al final).</p>
+    <div class="ver"><b>Qué ver:</b> 10:01-22:00 (caché, RAM, SSD y disco).</div>
+    <p class="oj">Ojo: 29 minutos en inglés; opcional.</p>
+  </div>
+</div>
+</div>
+</section>
+<section id="n1">
+<h2>N1 · El ejemplo del repaso: tiempos y tasas en Round Robin <span class="num">Nuevo · basado en la pizarra del repaso</span></h2>
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+  <p>Tiempo compartido con Round Robin, <b>q = 10 ms</b>, sin costo de conmutación. En t = 0 están listas A, B y C, en ese orden.</p>
+  <p>· <b>A</b> ejecuta 20 ms de CPU y luego hace una E/S larga de 100 ms (no vuelve antes de t = 75).<br>
+  · <b>B</b> necesita 25 ms de CPU en total, sin E/S.<br>
+  · <b>C</b> necesita 30 ms de CPU en total, sin E/S.</p>
+  <p><b>a)</b> Dibuja la carta Gantt hasta que termina C. <b>b)</b> Calcula t<sub>ejec</sub>, t<sub>resp</sub> y t<sub>espera</sub> de B y de C. <b>c)</b> Calcula la tasa de uso global y la de cada tarea en el intervalo [0, fin de C]. <b>d)</b> ¿Cuál es el error típico que advirtió el profe? <b>e)</b> ¿Qué cambia si A no hiciera E/S y necesitara 40 ms en total?</p>
+</div>
+<details class="ex">
+  <summary>Solución <span class="tag">B: resp 65 · C: resp 75</span></summary>
+  <div class="body">
+    <div class="sol"><div class="st">a) Carta Gantt</div>
+    <div class="gantt">
+      <div class="grow"><div class="glab">CPU</div><div class="gbar">
+        <div class="gseg t1" style="width:13.33%">A</div><div class="gseg t2" style="width:13.33%">B</div><div class="gseg t3" style="width:13.33%">C</div>
+        <div class="gseg t1" style="width:13.33%">A</div><div class="gseg t2" style="width:13.33%">B</div><div class="gseg t3" style="width:13.33%">C</div>
+        <div class="gseg t2" style="width:6.67%">B</div><div class="gseg t3" style="width:13.35%">C</div>
+      </div></div>
+      <div class="grow"><div class="glab">E/S de A</div><div class="gbar">
+        <div class="gseg blank" style="width:53.33%"></div><div class="gseg io" style="width:46.67%">E/S A (hasta 140)</div>
+      </div></div>
+      <div class="gaxis">
+        <span class="gtick" style="left:0%">0</span><span class="gtick" style="left:13.33%">10</span><span class="gtick" style="left:26.67%">20</span>
+        <span class="gtick" style="left:40%">30</span><span class="gtick" style="left:53.33%">40</span><span class="gtick" style="left:66.67%">50</span>
+        <span class="gtick" style="left:80%">60</span><span class="gtick" style="left:86.67%">65</span><span class="gtick" style="left:100%">75</span>
+      </div>
+    </div>
+    <p>En t = 40 A agotó sus 20 ms y se va a su E/S: deja de ser candidata. Desde ahí se alternan B y C. B termina en t = 65 (10 + 10 + 5), a mitad de su tercer quantum, y C toma el procesador en ese mismo instante; C termina en t = 75.</p></div>
+    <div class="sol"><div class="st">b) Tiempos</div>
+    <div class="tw"><table class="mini"><thead><tr><th>Tarea</th><th>t<sub>ejec</sub></th><th>t<sub>resp</sub> = t<sub>final</sub> − t<sub>llegada</sub></th><th>t<sub>espera</sub> = t<sub>resp</sub> − t<sub>ejec</sub></th></tr></thead>
+    <tbody><tr><td>B</td><td>25 ms</td><td>65 − 0 = <b>65 ms</b></td><td>40 ms</td></tr>
+    <tr><td>C</td><td>30 ms</td><td>75 − 0 = <b>75 ms</b></td><td>45 ms</td></tr></tbody></table></div>
+    <p>A no termina dentro de la ventana (está en E/S), así que su tiempo de respuesta no se puede dar con estos datos.</p></div>
+    <div class="sol"><div class="st">c) Tasas</div>
+    <p><b>Global:</b> en [0, 75] el procesador nunca está ocioso ⇒ 75/75 = <b>100 %</b>.<br>
+    <b>Por tarea:</b> A = 20/75 = <b>26,7 %</b> · B = 25/75 = <b>33,3 %</b> · C = 30/75 = <b>40 %</b>. Suman exactamente 100 %, como tiene que ser con un solo procesador y sin tiempo ocioso.</p></div>
+    <div class="sol"><div class="st">d) El error típico</div>
+    <p>Dar el tiempo de respuesta de B como 75 ms (cuando terminan todas). El corte de B es <b>donde termina B</b>: 65 ms.</p></div>
+    <div class="sol"><div class="st">e) Si A necesitara 40 ms sin E/S</div>
+    <p>Secuencia: A 0-10, B 10-20, C 20-30, A 30-40, B 40-50, C 50-60, A 60-70, B 70-75 (termina), C 75-85 (termina), A 85-95 (termina). Respuestas: B = 75, C = 85, A = 95. Esperas: B = 50, C = 55, A = 55. Fíjate que B y C empeoraron 10 ms: ahora A no se fue a E/S y siguió compitiendo por turnos.</p></div>
+  </div>
+</details>
+</section>
+
+<section id="n2">
+<h2>N2 · La tarea cíclica <span class="num">Nuevo · el caso que el profe advirtió en el repaso</span></h2>
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+  <p>Una única tarea A en el sistema, cíclica (no termina nunca): usa <b>2 quanta</b> de CPU y luego hace una E/S que dura <b>1 quantum</b>, y repite. q = 20 ms.</p>
+  <p><b>a)</b> ¿Qué intervalo hay que usar para calcular? <b>b)</b> Tasa de uso del procesador de A. <b>c)</b> Tiempo de espera de A por ciclo. <b>d)</b> ¿Cuál es su tiempo de respuesta?</p>
+</div>
+<details class="ex">
+  <summary>Solución <span class="tag">periodo = 3 quanta</span></summary>
+  <div class="body">
+    <p><b>a)</b> El <b>periodo</b> del ciclo: 2 quanta de CPU + 1 de E/S = 3 quanta = 60 ms.<br>
+    <b>b)</b> 40/60 = <b>66,7 %</b>. Como está sola, la tasa global también es 66,7 %: durante su E/S el procesador queda ocioso.<br>
+    <b>c)</b> 20 ms por ciclo (la E/S).<br>
+    <b>d)</b> <b>No se puede dar</b>: es cíclica y no termina. Esa es justamente la trampa.</p>
+    <p>El paso siguiente (qué pasa cuando llega una segunda tarea cíclica y se cambia el quantum) es exactamente la sección 2 del certamen 2024, más abajo.</p>
+  </div>
+</details>
+</section>
+<section id="a1">
+<h2>A1 · Diagramas de estados de los tres modelos <span class="num">Ayudantía 1, §1</span></h2>
+
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+  <p>Represente en forma de <b>diagrama de estados</b> (nodos = estados de una tarea, arcos = acciones o eventos) la ejecución de una tarea en:</p>
+  <p><b>1.1</b> modo batch simple · <b>1.2</b> modo batch con reciclaje (se elige otra tarea cuando la actual entra en E/S) · <b>1.3</b> modo tiempo compartido.</p>
+</div>
+
+<details class="ex">
+  <summary>Solución <span class="tag">3 diagramas + justificación</span></summary>
+  <div class="body">
+    <p>Los tres diagramas están dibujados en el resumen (sección <i>Los estados de una tarea</i>). Lo que se evalúa no es el dibujo: es <b>qué arcos aparecen y por qué</b>.</p>
+
+    <div class="sol">
+      <div class="st">1.1 · Batch simple</div>
+      <p>Estados: LISTA → EJECUCIÓN → (BLOQUEADA) → TERMINADA.</p>
+      <p>Arcos: <code>LISTA → EJECUCIÓN</code> (elegida), <code>EJECUCIÓN → BLOQUEADA</code> (hace E/S), <b><code>BLOQUEADA → EJECUCIÓN</code></b> (fin de E/S: <b>vuelve directamente a ejecutarse</b>), <code>EJECUCIÓN → TERMINADA</code>.</p>
+      <p><b>Justificación que hay que escribir:</b> <i>"En modo batch simple una tarea ocupa el procesador hasta terminarse (aunque esté en una E/S). Cuando la tarea está bloqueada no usa el procesador, y <b>el procesador queda ocioso</b>. Este modelo es simple pero no entrega un buen uso del procesador, y por lo tanto el computador tiene un bajo rendimiento."</i></p>
+    </div>
+
+    <div class="sol">
+      <div class="st">1.2 · Batch con reciclaje (multiprogramación)</div>
+      <p>El único cambio: el arco de fin de E/S ya <b>no</b> va a EJECUCIÓN, va a <b>LISTA</b>.</p>
+      <p><b>Justificación (la nota al margen de la pauta, que es lo que se califica):</b> <i>"Es importante mostrar que la tarea que pierde el procesador cuando entra en una E/S <b>no lo recupera</b> cuando la E/S termina: debe esperar a ser elegida de nuevo."</i></p>
+      <p>Y el porqué: la tarea puede esperar mucho, porque <b>no se sabe</b> cuánto tiempo la nueva tarea que obtuvo el procesador lo va a usar antes de terminarse o de hacer una nueva E/S, ni <b>cuándo</b> el scheduler volverá a elegirla.</p>
+      <p>Es mejor que el batch simple porque <b>no deja el procesador ocioso</b> mientras una tarea está en E/S.</p>
+    </div>
+
+    <div class="sol">
+      <div class="st">1.3 · Tiempo compartido</div>
+      <p>Se agrega un arco nuevo: <code>EJECUCIÓN → LISTA</code> etiquetado <b>"fin de quantum"</b>.</p>
+      <p><b>Justificación:</b> <i>"Una tarea puede perder el procesador cuando hace una E/S, o cuando se acaba el quantum de tiempo. Si se acaba el quantum, la tarea vuelve a estado LISTA y es de nuevo candidata a ser elegida por el scheduler. Cuando termina la E/S, la tarea también vuelve al estado LISTA."</i></p>
+    </div>
+
+    <div class="box tip">
+      <div class="bt">Truco de corrección</div>
+      <p>Cuenta los arcos que <b>salen</b> de EJECUCIÓN. Batch simple: 2 (E/S, fin). Multiprogramación: 2 (E/S, fin), pero el retorno cambia. Tiempo compartido: 3 (E/S, fin, fin de quantum). Si dibujaste el mismo número de arcos en los tres, algo está mal.</p>
+    </div>
+  </div>
+</details>
+</section>
+<section id="a2">
+<h2>A2 · Carta Gantt en batch con multiprogramación <span class="num">Ayudantía 1, P2.1</span></h2>
+
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+  <p>Se considera la ejecución de 3 tareas:</p>
+  <ul>
+    <li><b>T1</b> dura <b>200 ms</b> (fuera de las E/S) y realiza una única E/S en el instante <b>t = 110 ms</b> (de su propio tiempo de CPU).</li>
+    <li><b>T2</b> dura <b>50 ms</b> y realiza una única E/S en el instante <b>t = 5 ms</b>.</li>
+    <li><b>T3</b> dura <b>120 ms</b> sin hacer E/S.</li>
+  </ul>
+  <p>T1 y T2 se crean en t = 0; T3 se crea en t = 140 ms. <b>Cada E/S dura 10 ms.</b> Hay un solo disco.</p>
+  <p>Represente en una carta Gantt la ejecución en <b>modo batch con disco duro</b> (cuando una tarea está en E/S, el scheduler elige otra). Calcule el tiempo total de ejecución <b>T</b> y la tasa de ocupación del procesador <b>T<sub>p</sub></b>.</p>
+</div>
+
+<details class="ex">
+  <summary>Solución paso a paso <span class="tag">T = 375 ms · Tp = 98,7 %</span></summary>
+  <div class="body">
+    <div class="steps">
+      <div class="step"><b>t = 0.</b> Cola: T1, T2. Batch ⇒ se elige T1 y <b>corre hasta terminar o hasta hacer su E/S</b>. T1 hace su E/S cuando su contador propio llega a 110 ⇒ corre <b>0 → 110</b>.</div>
+      <div class="step"><b>t = 110.</b> T1 pide su E/S y se bloquea. El disco está libre ⇒ <b>E/S de T1: 110 → 120</b>. El scheduler elige a T2 (la única lista). T2 hará su E/S cuando su contador llegue a 5 ⇒ corre <b>110 → 115</b>.</div>
+      <div class="step"><b>t = 115.</b> T2 pide su E/S. <b>Pero el disco está ocupado con T1 hasta 120</b> ⇒ la E/S de T2 <b>queda encolada</b>. No hay ninguna tarea lista (T1 y T2 bloqueadas, T3 aún no existe) ⇒ <b>CPU OCIOSA 115 → 120</b>.</div>
+      <div class="step"><b>t = 120.</b> Termina la E/S de T1 ⇒ T1 queda lista. El disco se libera y empieza la <b>E/S de T2: 120 → 130</b>. Se elige a T1, que en batch corre hasta terminar: le faltan 200 − 110 = <b>90 ms</b> ⇒ <b>120 → 210</b>.</div>
+      <div class="step"><b>t = 130.</b> Termina la E/S de T2 ⇒ T2 queda LISTA, pero <b>no obtiene el procesador</b>: T1 lo tiene hasta terminar.</div>
+      <div class="step"><b>t = 140.</b> Llega T3 y queda LISTA.</div>
+      <div class="step"><b>t = 210.</b> T1 termina. Listas: T2 (lista desde 130) y T3 (lista desde 140). Se elige a <b>T2</b> por orden de llegada a la cola. Le faltan 50 − 5 = <b>45 ms</b> ⇒ <b>210 → 255</b>.</div>
+      <div class="step"><b>t = 255.</b> T2 termina. Corre <b>T3: 255 → 375</b> (120 ms sin E/S).</div>
+    </div>
+
+    <figure>
+      <div class="gantt">
+        <div class="grow"><div class="glab">CPU</div><div class="gbar">
+          <div class="gseg t1" style="width:29.33%">T1</div>
+          <div class="gseg t2" style="width:1.33%"></div>
+          <div class="gseg idle" style="width:1.33%"></div>
+          <div class="gseg t1" style="width:24%">T1</div>
+          <div class="gseg t2" style="width:12%">T2</div>
+          <div class="gseg t3" style="width:32%">T3</div>
+        </div></div>
+        <div class="grow"><div class="glab">Disco</div><div class="gbar">
+          <div class="gseg blank" style="width:29.33%"></div>
+          <div class="gseg io" style="width:2.67%">E/S T1</div>
+          <div class="gseg io" style="width:2.67%">E/S T2</div>
+          <div class="gseg blank" style="width:65.33%"></div>
+        </div></div>
+        <div class="gaxis">
+          <span class="gtick" style="left:0%">0</span>
+          <span class="gtick" style="left:29.33%">110</span>
+          <span class="gtick" style="left:30.67%">115</span>
+          <span class="gtick" style="left:32%">120</span>
+          <span class="gtick" style="left:34.67%">130</span>
+          <span class="gtick" style="left:56%">210</span>
+          <span class="gtick" style="left:68%">255</span>
+          <span class="gtick" style="left:100%">375</span>
+        </div>
+      </div>
+      <div class="glegend">
+        <span><i class="sw" style="background:var(--g1)"></i> T1</span>
+        <span><i class="sw" style="background:var(--g2)"></i> T2</span>
+        <span><i class="sw" style="background:var(--g3)"></i> T3</span>
+        <span><i class="sw idle"></i> CPU ociosa</span>
+      </div>
+    </figure>
+
+    <div class="sol">
+      <div class="st">Cálculo de la tasa de ocupación</div>
+      <p>CPU ocupada = 110 + 5 + 90 + 45 + 120 = <b>370 ms</b>. Tiempo total <b>T = 375 ms</b>. Tiempo ocioso: 5 ms (de 115 a 120).</p>
+      <p style="text-align:center"><b>T<sub>p</sub> = 370 / 375 = 98,7 %</b></p>
+    </div>
+
+    <div class="ans">Respuesta: <b>T = 375 ms</b>, <b>T<sub>p</sub> = 98,7 %</b>. El único tiempo ocioso son los 5 ms en que ambas tareas están bloqueadas y T3 todavía no ha llegado.</div>
+
+    <div class="box warn">
+      <div class="bt">Las 3 trampas de este ejercicio</div>
+      <p><b>1. El disco es uno solo.</b> La E/S de T2 no puede partir en 115. Si la haces partir ahí, T2 queda lista en 125 y toda tu carta se corre.</p>
+      <p><b>2. Batch = corre hasta terminar.</b> En t=120, T1 se lleva 90 ms de un tirón. Si la interrumpes por T2 o T3, estás haciendo tiempo compartido.</p>
+      <p><b>3. El instante de la E/S es tiempo propio.</b> T2 hace su E/S "en t=5" de <b>su</b> reloj, que en el reloj global es t=115.</p>
+    </div>
+  </div>
+</details>
+</section>
+<section id="a3">
+<h2>A3 · Carta Gantt en tiempo compartido <span class="num">Ayudantía 1, P2.2</span></h2>
+
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+  <p>Las <b>mismas tres tareas</b> del ejercicio A2, ahora en <b>tiempo compartido</b> con <b>q = 100 ms</b> (se supone implícitamente que el algoritmo de scheduling es Round Robin). Calcule T y T<sub>p</sub>.</p>
+</div>
+
+<details class="ex">
+  <summary>Solución paso a paso <span class="tag">T = 370 ms · Tp = 100 %</span></summary>
+  <div class="body">
+    <div class="steps">
+      <div class="step"><b>0 → 100.</b> Corre T1. Se le acaba el <b>quantum</b> (su contador va en 100, su E/S es en 110, así que no alcanza). T1 vuelve al final de la cola. Cola: T2, T1.</div>
+      <div class="step"><b>100 → 105.</b> Corre T2. A los 5 ms de su tiempo propio hace su E/S ⇒ se bloquea. <b>E/S de T2: 105 → 115</b> (disco libre).</div>
+      <div class="step"><b>105 → 115.</b> Corre T1. Le faltaban 10 ms para llegar a su instante de E/S (110 propio) ⇒ a los 10 ms hace su E/S y se bloquea. Pide el disco en t=115, que <b>justo se libera</b> ⇒ <b>E/S de T1: 115 → 125</b>.</div>
+      <div class="step"><b>t = 115.</b> Termina la E/S de T2 ⇒ T2 lista. Es la única ⇒ corre. Le faltan <b>45 ms</b>, menos que un quantum ⇒ corre <b>115 → 160</b> y <b>termina</b>.</div>
+      <div class="step"><b>t = 125.</b> Termina la E/S de T1 ⇒ T1 queda LISTA (esperando).</div>
+      <div class="step"><b>t = 140.</b> Llega T3. Cola: T1 (lista desde 125), T3.</div>
+      <div class="step"><b>160 → 250.</b> T2 terminó ⇒ se elige a T1. Le faltan 200 − 110 = <b>90 ms</b>, menos que un quantum ⇒ corre 90 ms y <b>termina en 250</b>.</div>
+      <div class="step"><b>250 → 350.</b> Corre T3 un quantum completo (100 de sus 120 ms). Fin de quantum ⇒ vuelve al final de la cola, pero está sola ⇒ <b>350 → 370</b>, termina.</div>
+    </div>
+
+    <figure>
+      <div class="gantt">
+        <div class="grow"><div class="glab">CPU</div><div class="gbar">
+          <div class="gseg t1" style="width:27.03%">T1</div>
+          <div class="gseg t2" style="width:1.35%"></div>
+          <div class="gseg t1" style="width:2.7%"></div>
+          <div class="gseg t2" style="width:12.16%">T2</div>
+          <div class="gseg t1" style="width:24.32%">T1</div>
+          <div class="gseg t3" style="width:27.03%">T3</div>
+          <div class="gseg t3" style="width:5.41%">T3</div>
+        </div></div>
+        <div class="grow"><div class="glab">Disco</div><div class="gbar">
+          <div class="gseg blank" style="width:28.38%"></div>
+          <div class="gseg io" style="width:2.7%">E/S T2</div>
+          <div class="gseg io" style="width:2.7%">E/S T1</div>
+          <div class="gseg blank" style="width:66.22%"></div>
+        </div></div>
+        <div class="gaxis">
+          <span class="gtick" style="left:0%">0</span>
+          <span class="gtick" style="left:27.03%">100</span>
+          <span class="gtick" style="left:28.38%">105</span>
+          <span class="gtick" style="left:31.08%">115</span>
+          <span class="gtick" style="left:33.78%">125</span>
+          <span class="gtick" style="left:43.24%">160</span>
+          <span class="gtick" style="left:67.57%">250</span>
+          <span class="gtick" style="left:94.59%">350</span>
+          <span class="gtick" style="left:100%">370</span>
+        </div>
+      </div>
+    </figure>
+
+    <div class="sol">
+      <div class="st">Cálculo</div>
+      <p>CPU ocupada = 100 + 5 + 10 + 45 + 90 + 100 + 20 = <b>370 ms</b>. Tiempo total <b>T = 370 ms</b>.</p>
+      <p><b>No existe ningún tiempo ocioso</b> ⇒ <b>T<sub>p</sub> = 1 = 100 %</b>.</p>
+    </div>
+
+    <div class="ans">Respuesta: <b>T = 370 ms</b>, <b>T<sub>p</sub> = 100 %</b>.</div>
+
+    <div class="box tip">
+      <div class="bt">La conclusión que se evalúa (P4.2 de la misma ayudantía)</div>
+      <p><i>"El tiempo compartido permite un mejor uso del procesador y evita que las tareas cortas sean perjudicadas por las tareas largas. Evita que las tareas largas monopolicen el procesador. Es también mucho mejor en el caso de tener tareas interactivas, ya que permite ejecutar otras tareas durante las E/S largas."</i></p>
+      <p>Fíjate en el detalle fino: aquí la ganancia fue de solo 5 ms (375 → 370). El profesor lo hace a propósito: <b>"hay que mostrar que el tiempo compartido mejora la tasa de ocupación, aunque sea de poco en este ejemplo"</b>. Lo importante es el mecanismo, no la magnitud.</p>
+    </div>
+  </div>
+</details>
+</section>
+<section id="a4">
+<h2>A4 · Ciclo lectura-cálculo-escritura y tasas <span class="num">Ayudantía 1, P2.3 a P2.5</span></h2>
+
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+  <p>Dos tareas idénticas T1 y T2 se someten simultáneamente en t = 0. Cada una realiza <b>n veces</b> lo siguiente: lectura de un dato del disco (duración <b>L</b>), operación de cálculo con el dato (duración <b>C</b>), escritura del resultado en el disco (duración <b>E</b>).</p>
+  <p><b>2.3</b> Solo T1 se somete en t=0. Carta Gantt, y calcular T, T<sub>p</sub> y la tasa de ocupación del disco T<sub>u</sub>.<br>
+  <b>2.4</b> ¿Qué se deduce de T, T<sub>p</sub> y T<sub>u</sub> si T1 y T2 se ejecutan en <b>mono-programación</b>? Datos: E=5 ms, C=7 ms, L=8 ms, n=4.<br>
+  <b>2.5</b> Carta Gantt de T1 y T2 en <b>multiprogramación batch</b>, suponiendo C &lt; L y C &gt; E. Calcular T, T<sub>p</sub> y T<sub>u</sub> y comparar.</p>
+</div>
+
+<details class="ex">
+  <summary>Solución <span class="tag">Con los números exactos del caso multiprogramado</span></summary>
+  <div class="body">
+    <div class="sol">
+      <div class="st">2.3 · Una sola tarea</div>
+      <p>La tarea alterna disco-CPU-disco sin solaparse consigo misma: cada ciclo dura L + C + E y no hay nada más que hacer.</p>
+      <p style="text-align:center"><b>T = n × (L + C + E)</b></p>
+      <p style="text-align:center"><b>T<sub>p</sub> = n·C / T = C / (L + C + E)</b> &nbsp;&nbsp;·&nbsp;&nbsp; <b>T<sub>u</sub> = (L + E) / (L + C + E)</b></p>
+      <p>Con los datos: L+C+E = 20 ms ⇒ T<sub>p</sub> = 7/20 = <b>35 %</b>, T<sub>u</sub> = 13/20 = <b>65 %</b>.</p>
+    </div>
+
+    <div class="sol">
+      <div class="st">2.4 · Dos tareas en mono-programación</div>
+      <p>En mono-programación (batch simple) T1 se ejecuta completa y <b>luego</b> T2, que es exactamente igual. Entonces:</p>
+      <p>· El tiempo total es <b>el doble</b>: T = 2 × 4 × 20 = <b>160 ms</b>.<br>
+      · <b>T<sub>p</sub> y T<sub>u</sub> NO se modifican</b> (35 % y 65 %), porque tanto el tiempo de CPU como el de disco también se duplican: el cociente es el mismo.</p>
+      <div class="ans">T = <b>160 ms</b>, T<sub>p</sub> = <b>35 %</b>, T<sub>u</sub> = <b>65 %</b>. <b>Duplicar la carga sin multiprogramación no mejora nada:</b> solo tardas el doble.</div>
+    </div>
+
+    <div class="sol">
+      <div class="st">2.5 · Dos tareas en multiprogramación batch</div>
+      <p>Ahora las dos tareas se solapan: mientras una calcula, la otra usa el disco. Con L=8, C=7, E=5 (se cumple C&lt;L y C&gt;E) y un solo disco, el sistema entra en un <b>régimen periódico de 28 ms</b>:</p>
+      <figure>
+        <div class="gantt">
+          <div class="grow"><div class="glab">CPU</div><div class="gbar">
+            <div class="gseg idle" style="width:28.6%">ociosa</div>
+            <div class="gseg t1" style="width:25%">C1</div>
+            <div class="gseg idle" style="width:3.6%"></div>
+            <div class="gseg t2" style="width:25%">C2</div>
+            <div class="gseg idle" style="width:17.8%">ociosa</div>
+          </div></div>
+          <div class="grow"><div class="glab">Disco</div><div class="gbar">
+            <div class="gseg io" style="width:28.6%">L1</div>
+            <div class="gseg io" style="width:28.6%">L2</div>
+            <div class="gseg io" style="width:17.8%">E1</div>
+            <div class="gseg blank" style="width:7.2%"></div>
+            <div class="gseg io" style="width:17.8%">E2</div>
+          </div></div>
+          <div class="gaxis">
+            <span class="gtick" style="left:0%">0</span>
+            <span class="gtick" style="left:28.6%">8</span>
+            <span class="gtick" style="left:53.6%">15</span>
+            <span class="gtick" style="left:57.2%">16</span>
+            <span class="gtick" style="left:75%">21</span>
+            <span class="gtick" style="left:82.2%">23</span>
+            <span class="gtick" style="left:100%">28</span>
+          </div>
+        </div>
+        <figcaption>Un periodo completo (0 a 28 ms). Después se repite idéntico: 28→56, 56→84, 84→112.</figcaption>
+      </figure>
+      <p><b>El detalle clave de la pauta:</b> <i>"Una vez que E1 finaliza, aunque la unidad de intercambio esté libre, no puede comenzar la siguiente lectura L1. Se requiere que T1 <b>disponga antes del procesador</b> para hacer su solicitud de lectura. Esto ocurre una vez que C2 terminó."</i> Es decir: <b>pedir una E/S también requiere tener la CPU</b>.</p>
+      <p>Con n = 4 ciclos, el sistema termina en:</p>
+      <div class="ans">T = <b>112 ms</b> (contra 160 en mono) · T<sub>p</sub> = 56/112 = <b>50 %</b> (contra 35 %) · T<sub>u</sub> = 104/112 = <b>92,9 %</b> (contra 65 %)</div>
+      <p><b>Conclusión que se evalúa:</b> <i>"Debido al paralelismo entre los cálculos y las E/S se aumenta la ocupación del procesador y se mejora el desempeño global: el tiempo total de ejecución es menor."</i></p>
+      <p>Y un matiz que vale puntos extra: aquí el <b>cuello de botella pasó a ser el disco</b> (92,9 % de ocupación). Como L + E = 13 ms &gt; C = 7 ms por ciclo, agregar una tercera tarea <b>ya casi no mejoraría nada</b>: el disco no da más. Ese es exactamente el argumento del profesor de que "el disco se puede transformar en cuello de botella".</p>
+    </div>
+  </div>
+</details>
+</section>
+<section id="a5">
+<h2>A5 · Tiempo de respuesta en modo batch <span class="num">Ayudantía 1, §3</span></h2>
+
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+  <p>Cuatro tareas llegan al mismo tiempo a la cola, en el orden T0, T1, T2, T3. El algoritmo es <b>FCFS</b> y el modelo es <b>batch</b>. Calcular el tiempo de respuesta r de cada tarea.</p>
+  <div class="tw"><table>
+  <thead><tr><th>Tarea</th><th>C (CPU total)</th><th>E/S</th></tr></thead>
+  <tbody>
+  <tr><td>T0</td><td>150 ms</td><td>3 × 50 ms</td></tr>
+  <tr><td>T1</td><td>25 ms</td><td>2 × 20 ms</td></tr>
+  <tr><td>T2</td><td>200 ms</td><td>30 ms</td></tr>
+  <tr><td>T3</td><td>80 ms</td><td>4 × 20 ms</td></tr>
+  </tbody></table></div>
+</div>
+
+<details class="ex">
+  <summary>Solución <span class="tag">300 · 365 · 595 · 755 ms</span></summary>
+  <div class="body">
+    <p>En batch las tareas se ejecutan hasta terminar. El tiempo de respuesta de una tarea incluye <b>su tiempo de ejecución + su tiempo de E/S + su espera en la cola</b>. Y la espera en la cola es <b>la suma de los tiempos de respuesta de las tareas que están antes</b>. Como es acumulativo, basta con arrastrar el anterior:</p>
+    <div class="form">
+      r<sub>T0</sub> = C<sub>0</sub> + Σ E/S<sub>T0</sub><br>
+      r<sub>Ti</sub> = C<sub>i</sub> + Σ E/S<sub>Ti</sub> + r<sub>Ti−1</sub>
+    </div>
+    <div class="steps">
+      <div class="step">r<sub>T0</sub> = 150 + (3 × 50) = 150 + 150 = <b>300 ms</b></div>
+      <div class="step">r<sub>T1</sub> = 25 + (2 × 20) + 300 = 25 + 40 + 300 = <b>365 ms</b></div>
+      <div class="step">r<sub>T2</sub> = 200 + 30 + 365 = <b>595 ms</b></div>
+      <div class="step">r<sub>T3</sub> = 80 + (4 × 20) + 595 = 80 + 80 + 595 = <b>755 ms</b></div>
+    </div>
+    <div class="ans">r<sub>T0</sub> = 300 ms · r<sub>T1</sub> = 365 ms · r<sub>T2</sub> = 595 ms · r<sub>T3</sub> = <b>755 ms</b></div>
+    <div class="box tip">
+      <div class="bt">La pregunta 3.2: ¿es razonable un trabajo interactivo en modo batch?</div>
+      <p><b>No.</b> Un trabajo interactivo (como la edición) no es recomendable en modo batch cuando se someten trabajos de gran volumen, ya que <b>el tiempo de respuesta de las tareas que están en la cola aumenta considerablemente</b>. Mira T1: es la tarea más corta de todas (25 ms de CPU) y tarda <b>365 ms</b> en responder, casi 15 veces su duración. Su tasa de penalización es 365/25 = <b>14,6</b>.</p>
+    </div>
+  </div>
+</details>
+</section>
+<section id="a6">
+<h2>A6 · Tiempo de respuesta en régimen permanente <span class="num">Ayudantía 1, §4</span></h2>
+
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+  <p>Sea q el quantum y se supone que <b>no existe overhead</b>. Hay <b>n</b> usuarios realizando comandos de edición (duración <b>c</b> cada uno) y <b>N</b> usuarios efectuando compilaciones (duración <b>C</b> cada una). c y C son múltiplos de q. Todos empiezan a la vez.</p>
+  <p>Expresar los tiempos de respuesta <b>r</b> (edición) y <b>R</b> (compilación) en régimen permanente. Calcular para n = 10, c = 0,1 ms, N = 5, C = 3 ms.</p>
+</div>
+
+<details class="ex">
+  <summary>Solución <span class="tag">r = 1,5 ms · R = 45 ms</span></summary>
+  <div class="body">
+    <div class="steps">
+      <div class="step"><b>El número de procesos listos es constante</b> e igual a <b>n + N</b> (nadie hace E/S en este modelo).</div>
+      <div class="step">Por lo tanto, cada proceso obtiene un quantum cada <b>(n + N)·q</b> milisegundos: uno para él y N+n−1 para los demás.</div>
+      <div class="step">Un proceso de duración d necesita <b>d/q</b> quanta para terminar. Como recibe uno cada (n+N)·q, tarda:</div>
+    </div>
+    <div class="form">
+      r = (n + N)·q · <b>c/q</b> = <b>(n + N)·c</b><br>
+      R = (n + N)·q · <b>C/q</b> = <b>(n + N)·C</b>
+      <span class="n">El quantum <b>se cancela</b>: en régimen permanente y sin overhead, el tiempo de respuesta no depende de q, solo de cuántos compiten.</span>
+    </div>
+    <div class="ans">r = 15 × 0,1 = <b>1,5 ms</b> &nbsp;·&nbsp; R = 15 × 3 = <b>45 ms</b></div>
+    <div class="box tip">
+      <div class="bt">Lo bonito de este resultado</div>
+      <p>El tiempo de respuesta de cada tarea es <b>su propia duración multiplicada por la cantidad de tareas</b>. Dicho de otra forma: <b>en régimen permanente todas las tareas tienen la misma tasa de penalización, igual a (n+N)</b>. Ese es el sentido exacto de "Round Robin es equitativo": no reparte tiempo igual, reparte <b>penalización</b> igual.</p>
+      <p>Y explica por qué el usuario que edita queda contento (1,5 ms es imperceptible) y el que compila también (45 ms es aceptable): en batch, el que edita habría esperado a que terminaran las compilaciones.</p>
+    </div>
+  </div>
+</details>
+</section>
+<section id="c1">
+<h2>C1 · Certamen 2024-1, sección 2 <span class="num">Planificación en tiempo compartido · 35 pts</span></h2>
+<div class="box warn">
+  <div class="bt">Este es EL ejercicio a dominar</div>
+  <p>El certamen 2024-1 cubrió exactamente tu Unidad 1. Esta sección es el mejor predictor de lo que te van a preguntar. Hazla <b>cronometrada: 25 minutos para las 5 preguntas</b>.</p>
+</div>
+
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+  <p>El SO usa un modelo de planificación de <b>tiempo compartido</b> con algoritmo <b>Round Robin</b>, quantum <b>q = 25 ms</b>. En el instante t<sub>0</sub> hay 3 tareas en la cola:</p>
+  <div class="tw"><table>
+  <thead><tr><th>Tarea</th><th>Llegada</th><th>Quantum necesarios</th></tr></thead>
+  <tbody>
+  <tr><td>T0</td><td>t = t<sub>0</sub></td><td>4</td></tr>
+  <tr><td>T1</td><td>t = t<sub>0</sub></td><td>3</td></tr>
+  <tr><td>T2</td><td>t = t<sub>0</sub></td><td>2</td></tr>
+  </tbody></table></div>
+  <p>Ninguna tarea hace E/S y todas usan completamente su último quantum antes de terminar.</p>
+  <p><b>2.1</b> Calcular el tiempo de respuesta de cada tarea.</p>
+</div>
+
+<details class="ex">
+  <summary>2.1 · Solución <span class="tag">150 · 200 · 225 ms</span></summary>
+  <div class="body">
+    <p>Round Robin puro: se van turnando en orden hasta que cada una agota sus quanta.</p>
+    <figure>
+      <div class="gantt">
+        <div class="grow"><div class="glab">CPU</div><div class="gbar">
+          <div class="gseg t1" style="width:11.11%">T0</div>
+          <div class="gseg t2" style="width:11.11%">T1</div>
+          <div class="gseg t3" style="width:11.11%">T2</div>
+          <div class="gseg t1" style="width:11.11%">T0</div>
+          <div class="gseg t2" style="width:11.11%">T1</div>
+          <div class="gseg t3" style="width:11.11%">T2</div>
+          <div class="gseg t1" style="width:11.11%">T0</div>
+          <div class="gseg t2" style="width:11.11%">T1</div>
+          <div class="gseg t1" style="width:11.11%">T0</div>
+        </div></div>
+        <div class="gaxis">
+          <span class="gtick" style="left:0%">0</span>
+          <span class="gtick" style="left:22.22%">50</span>
+          <span class="gtick" style="left:44.44%">100</span>
+          <span class="gtick" style="left:66.67%">150</span>
+          <span class="gtick" style="left:88.89%">200</span>
+          <span class="gtick" style="left:100%">225</span>
+        </div>
+      </div>
+    </figure>
+    <p>Ronda 1: T0, T1, T2 (0-75). Ronda 2: T0, T1, T2 (75-150) ⇒ <b>T2 termina en 150</b>. Ronda 3: T0, T1 (150-200) ⇒ <b>T1 termina en 200</b>. Ronda 4: T0 (200-225) ⇒ <b>T0 termina en 225</b>.</p>
+    <div class="ans">t<sub>resp</sub>(T0) = <b>225 ms</b> · t<sub>resp</sub>(T1) = <b>200 ms</b> · t<sub>resp</sub>(T2) = <b>150 ms</b></div>
+    <div class="box tip">
+      <div class="bt">Truco de verificación</div>
+      <p>Con todas llegando en t=0, la última tarea en terminar lo hace en <b>(suma de todos los quanta) × q</b> = 9 × 25 = 225. Y la tarea con k quanta termina en el instante en que se han repartido todos los quanta de las tareas con ≤ k quanta más k quanta de cada tarea más larga. Si tu carta no cuadra con 225 al final, cuéntala de nuevo.</p>
+    </div>
+  </div>
+</details>
+
+<div class="enun">
+  <div class="et">ENUNCIADO (continúa)</div>
+  <p>Ahora hay <b>una sola tarea</b> T0 que llega en t = t<sub>0</sub>, se ejecuta durante <b>3 quantum</b> y hace una <b>E/S que dura 50 ms</b>. T0 es <b>cíclica</b> (no se termina).</p>
+  <p><b>2.2</b> Calcular la tasa de ocupación del procesador de la tarea T0.</p>
+</div>
+
+<details class="ex">
+  <summary>2.2 · Solución <span class="tag">60 %</span></summary>
+  <div class="body">
+    <p>Como T0 es cíclica, hay que trabajar sobre <b>un periodo</b>. El patrón que se repite es: 3 quanta de CPU + 1 E/S.</p>
+    <figure>
+      <div class="gantt">
+        <div class="grow"><div class="glab">CPU</div><div class="gbar">
+          <div class="gseg t1" style="width:20%">T0</div>
+          <div class="gseg t1" style="width:20%">T0</div>
+          <div class="gseg t1" style="width:20%">T0</div>
+          <div class="gseg idle" style="width:40%">ociosa</div>
+        </div></div>
+        <div class="grow"><div class="glab">Disco</div><div class="gbar">
+          <div class="gseg blank" style="width:60%"></div>
+          <div class="gseg io" style="width:40%">E/S 50 ms</div>
+        </div></div>
+        <div class="gaxis">
+          <span class="gtick" style="left:0%">0</span>
+          <span class="gtick" style="left:20%">25</span>
+          <span class="gtick" style="left:40%">50</span>
+          <span class="gtick" style="left:60%">75</span>
+          <span class="gtick" style="left:100%">125</span>
+        </div>
+      </div>
+      <figcaption>El periodo dura 3 × 25 + 50 = <b>125 ms</b>, y en él T0 ocupa la CPU 75 ms.</figcaption>
+    </figure>
+    <div class="ans">Tasa(T0) = 75 / 125 = <b>60 %</b>. Como T0 es la única tarea, el rendimiento global del computador también es 60 %: hay un <b>40 % de tiempo ocioso</b>.</div>
+  </div>
+</details>
+
+<div class="enun">
+  <div class="et">ENUNCIADO (continúa)</div>
+  <p>En t = t<sub>0</sub> + 25 ms llega la tarea <b>T1</b>, que <b>no hace ninguna E/S</b> y es <b>cíclica</b>.</p>
+  <p><b>2.3</b> Calcular la tasa de ocupación del procesador para T0 y para T1. ¿Cuál es el rendimiento global del sistema?</p>
+</div>
+
+<details class="ex">
+  <summary>2.3 · Solución <span class="tag">42,86 % · 57,14 % · rendimiento 100 %</span></summary>
+  <div class="body">
+    <p>T1 aparece justo cuando T0 acaba su primer quantum, así que se turnan. La gracia: <b>mientras T0 hace su E/S de 50 ms, T1 aprovecha y se lleva dos quanta seguidos</b>.</p>
+    <figure>
+      <div class="gantt">
+        <div class="grow"><div class="glab">CPU</div><div class="gbar">
+          <div class="gseg t1" style="width:14.29%">T0</div>
+          <div class="gseg t2" style="width:14.29%">T1</div>
+          <div class="gseg t1" style="width:14.29%">T0</div>
+          <div class="gseg t2" style="width:14.29%">T1</div>
+          <div class="gseg t1" style="width:14.29%">T0</div>
+          <div class="gseg t2" style="width:14.29%">T1</div>
+          <div class="gseg t2" style="width:14.29%">T1</div>
+        </div></div>
+        <div class="grow"><div class="glab">Disco</div><div class="gbar">
+          <div class="gseg blank" style="width:71.43%"></div>
+          <div class="gseg io" style="width:28.57%">E/S T0 (50 ms)</div>
+        </div></div>
+        <div class="gaxis">
+          <span class="gtick" style="left:0%">0</span>
+          <span class="gtick" style="left:14.29%">25</span>
+          <span class="gtick" style="left:42.86%">75</span>
+          <span class="gtick" style="left:71.43%">125</span>
+          <span class="gtick" style="left:100%">175</span>
+        </div>
+      </div>
+      <figcaption>Periodo de <b>175 ms</b>: T0 recibe 3 quanta (75 ms) y T1 recibe 4 quanta (100 ms).</figcaption>
+    </figure>
+    <div class="ans">Tasa(T0) = 75/175 = 3/7 = <b>42,86 %</b> · Tasa(T1) = 100/175 = 4/7 = <b>57,14 %</b> · <b>Rendimiento del computador r = 100 %</b> (ya no hay tiempo ocioso).</div>
+    <div class="box tip">
+      <div class="bt">La moraleja</div>
+      <p>Agregar una segunda tarea <b>bajó</b> la tasa de T0 (de 60 % a 42,86 %) pero <b>subió el rendimiento del computador de 60 % a 100 %</b>. Ese es literalmente el argumento de la multiprogramación: <i>"se usan los tiempos de E/S de una tarea para ejecutar otra"</i>.</p>
+    </div>
+  </div>
+</details>
+
+<div class="enun">
+  <div class="et">ENUNCIADO (continúa)</div>
+  <p><b>2.4</b> Suponga ahora que el quantum es <b>q = 50 ms</b>. ¿Cuál de las 2 tareas, T0 o T1, sale favorecida de este cambio? Justificar.</p>
+  <p><b>2.5</b> El administrador baja el quantum a <b>q = 5 ms</b> con el objetivo de compartir el procesador de forma más equitativa. ¿Es una buena idea? Justificar.</p>
+</div>
+
+<details class="ex">
+  <summary>2.4 y 2.5 · Solución <span class="tag">T0 se beneficia · q=5ms es mala idea</span></summary>
+  <div class="body">
+    <div class="sol">
+      <div class="st">2.4</div>
+      <p><b>Ojo con la interpretación:</b> el enunciado dice que T0 "se ejecuta durante <b>3 quantum</b>", no "durante 75 ms". Si el quantum pasa a 50 ms, T0 ahora usa <b>3 × 50 = 150 ms de CPU</b> antes de su E/S.</p>
+      <p>El nuevo periodo: T0 y T1 se turnan quanta de 50 ms; T0 necesita 3 turnos (150 ms) y luego hace su E/S de 50 ms, durante la cual T1 se lleva un turno extra.</p>
+      <figure>
+        <div class="gantt">
+          <div class="grow"><div class="glab">CPU</div><div class="gbar">
+            <div class="gseg t1" style="width:16.67%">T0</div>
+            <div class="gseg t2" style="width:16.67%">T1</div>
+            <div class="gseg t1" style="width:16.67%">T0</div>
+            <div class="gseg t2" style="width:16.67%">T1</div>
+            <div class="gseg t1" style="width:16.67%">T0</div>
+            <div class="gseg t2" style="width:16.67%">T1</div>
+          </div></div>
+          <div class="grow"><div class="glab">Disco</div><div class="gbar">
+            <div class="gseg blank" style="width:83.33%"></div>
+            <div class="gseg io" style="width:16.67%">E/S T0</div>
+          </div></div>
+          <div class="gaxis">
+            <span class="gtick" style="left:0%">0</span>
+            <span class="gtick" style="left:33.33%">100</span>
+            <span class="gtick" style="left:66.67%">200</span>
+            <span class="gtick" style="left:83.33%">250</span>
+            <span class="gtick" style="left:100%">300</span>
+          </div>
+        </div>
+        <figcaption>Periodo de <b>300 ms</b>: T0 recibe 150 ms y T1 recibe 150 ms.</figcaption>
+      </figure>
+      <div class="ans">Tasa(T0) = 150/300 = <b>50 %</b> · Tasa(T1) = 150/300 = <b>50 %</b>. Es la tarea <b>T0</b> la que sale favorecida, ya que <b>su tasa de ocupación del procesador aumenta</b> (de 42,86 % a 50 %).</div>
+      <p><b>Por qué:</b> con un quantum más grande, T0 acumula más trabajo antes de bloquearse, y su E/S de 50 ms pesa proporcionalmente menos dentro del ciclo. En general, <b>un quantum grande favorece a las tareas con muchas E/S</b> relativas a su cómputo.</p>
+    </div>
+    <div class="sol">
+      <div class="st">2.5</div>
+      <p><b>Es una mala idea.</b> Reducir demasiado el quantum implica <b>más llamadas al algoritmo de scheduling</b>, lo que hace que el <b>costo de conmutación de tareas sea cada vez menos despreciable</b> frente al tiempo de ejecución de las tareas. Resultado: <b>baja el rendimiento del computador</b>.</p>
+      <p>El objetivo del administrador (repartir de forma más equitativa) sí se cumple, pero <b>a costa del rendimiento global</b>. La elección del quantum debe ser un <b>compromiso</b>.</p>
+    </div>
+  </div>
+</details>
+</section>
+<section id="c3">
+<h2>C3 · Certamen 2023-1, sección 2 <span class="num">Planificación y scheduling en tiempo compartido · 48 pts</span></h2>
+<div class="box tip"><div class="bt">Por qué este ejercicio vale oro</div>
+<p>Es <b>la misma plantilla</b> que la sección 2 del certamen 2024 (el ejercicio C1 de más arriba), con otros números. Dos años seguidos el profe preguntó lo mismo; hazlo sin mirar la solución y compáralo con el de 2024. El archivo <code>Regalito.pdf</code> no trae pauta: esta solución es propia y está verificada con un simulador de Round Robin.</p></div>
+<div class="enun">
+  <div class="et">ENUNCIADO (6 preguntas de 8 puntos)</div>
+  <p>El sistema operativo usa un modelo de planificación de tipo tiempo compartido con el algoritmo de scheduling Round Robin con un quantum <b>q = 35 ms</b>. La tabla muestra, para cada tarea, su tiempo de llegada y la cantidad de quanta que necesita:</p>
+  <div class="tw"><table class="mini"><thead><tr><th>Tarea</th><th>Llegada</th><th>Quanta</th></tr></thead><tbody>
+  <tr><td>T0</td><td>t = t<sub>0</sub></td><td>4</td></tr><tr><td>T1</td><td>t = t<sub>0</sub> + 10 ms</td><td>3</td></tr><tr><td>T2</td><td>t = t<sub>0</sub> + 20 ms</td><td>2</td></tr></tbody></table></div>
+  <p>Ninguna tarea hace entradas/salidas y todas usan completamente su último quantum.</p>
+  <p><b>2.1</b> Calcular el tiempo de respuesta de cada tarea.</p>
+  <p>Ahora hay una sola tarea (T0), que llega en t<sub>0</sub>, se ejecuta durante 3 quanta y hace una E/S de 50 ms. T0 es cíclica.</p>
+  <p><b>2.2</b> Calcular la tasa de ocupación del procesador de la tarea T0.</p>
+  <p>En t = t<sub>0</sub> + 25 ms llega T1, que no hace ninguna E/S y es cíclica.</p>
+  <p><b>2.3</b> Calcular la tasa de ocupación del procesador de T0 y de T1. ¿Cuál es el rendimiento global del sistema?</p>
+  <p>Ahora el quantum es q = 50 ms. <b>2.4</b> ¿Cuál de las 2 tareas saldrá favorecida de este cambio? Justificar.</p>
+  <p>El administrador baja el quantum a q = 5 ms para compartir el procesador de forma más equitativa. <b>2.5</b> ¿Es una buena idea? Justificar.</p>
+  <p><b>2.6</b> ¿Por qué el algoritmo Round Robin no tiene problema de inanición?</p>
+</div>
+<details class="ex">
+  <summary>Solución <span class="tag">T0 315 · T1 270 · T2 190 · 3/7 y 4/7 · T0 favorecida</span></summary>
+  <div class="body">
+    <div class="sol"><div class="st">2.1 · Tiempos de respuesta</div>
+    <div class="gantt"><div class="grow"><div class="glab">CPU</div><div class="gbar"><div class="gseg t1" style="width:11.11%">T0</div><div class="gseg t2" style="width:11.11%">T1</div><div class="gseg t3" style="width:11.11%">T2</div><div class="gseg t1" style="width:11.11%">T0</div><div class="gseg t2" style="width:11.11%">T1</div><div class="gseg t3" style="width:11.11%">T2</div><div class="gseg t1" style="width:11.11%">T0</div><div class="gseg t2" style="width:11.11%">T1</div><div class="gseg t1" style="width:11.12%">T0</div></div></div><div class="gaxis"><span class="gtick" style="left:0%">0</span><span class="gtick" style="left:11.11%">35</span><span class="gtick" style="left:22.22%">70</span><span class="gtick" style="left:33.33%">105</span><span class="gtick" style="left:44.44%">140</span><span class="gtick" style="left:55.56%">175</span><span class="gtick" style="left:66.67%">210</span><span class="gtick" style="left:77.78%">245</span><span class="gtick" style="left:88.89%">280</span><span class="gtick" style="left:100%">315</span></div></div>
+    <p>En t = 35, cuando T0 agota su quantum, T1 (llegó en 10) y T2 (llegó en 20) ya están en la cola, así que T0 vuelve <b>detrás</b> de ellas. Desde ahí es una rotación T0, T1, T2. T2 termina en 210 (sus 2 quanta), T1 en 280 (3 quanta), T0 en 315 (4 quanta).</p>
+    <div class="tw"><table class="mini"><thead><tr><th>Tarea</th><th>t<sub>final</sub></th><th>t<sub>resp</sub> = t<sub>final</sub> − t<sub>llegada</sub></th><th>t<sub>ejec</sub></th><th>t<sub>espera</sub></th></tr></thead><tbody>
+    <tr><td>T0</td><td>315</td><td>315 − 0 = <b>315 ms</b></td><td>140</td><td>175</td></tr>
+    <tr><td>T1</td><td>280</td><td>280 − 10 = <b>270 ms</b></td><td>105</td><td>165</td></tr>
+    <tr><td>T2</td><td>210</td><td>210 − 20 = <b>190 ms</b></td><td>70</td><td>120</td></tr></tbody></table></div>
+    <div class="box warn"><div class="bt">Ojo · dos trampas de esta pregunta</div>
+    <p><b>1.</b> A diferencia de 2024, aquí las tareas <b>no llegan juntas</b>: hay que restar la llegada (el profe insistió en que el tiempo de respuesta es t<sub>final</sub> − t<sub>llegada</sub>).<br>
+    <b>2.</b> En la copia escaneada alguien anotó 140, 105 y 70 al lado de la tabla. Esos son los <b>tiempos de ejecución</b> (4, 3 y 2 quanta de 35 ms), no los de respuesta.</p></div></div>
+    <div class="sol"><div class="st">2.2 · T0 sola</div>
+    <p>Periodo del ciclo: 3 × 35 + 50 = 155 ms, de los cuales T0 usa el procesador 105 ⇒ <b>Tasa(T0) = 105/155 ≈ 67,7 %</b>. (Como está sola, el procesador queda ocioso durante su E/S.)</p></div>
+    <div class="sol"><div class="st">2.3 · Llega T1 cíclica</div>
+    <div class="gantt"><div class="grow"><div class="glab">CPU</div><div class="gbar"><div class="gseg t1" style="width:7.14%">T0</div><div class="gseg t2" style="width:7.14%">T1</div><div class="gseg t1" style="width:7.14%">T0</div><div class="gseg t2" style="width:7.14%">T1</div><div class="gseg t1" style="width:7.14%">T0</div><div class="gseg t2" style="width:7.14%">T1</div><div class="gseg t2" style="width:7.14%">T1</div><div class="gseg t1" style="width:7.14%">T0</div><div class="gseg t2" style="width:7.14%">T1</div><div class="gseg t1" style="width:7.14%">T0</div><div class="gseg t2" style="width:7.14%">T1</div><div class="gseg t1" style="width:7.14%">T0</div><div class="gseg t2" style="width:7.14%">T1</div><div class="gseg t2" style="width:7.18%">T1</div></div></div><div class="grow"><div class="glab">E/S de T0</div><div class="gbar"><div class="gseg blank" style="width:35.71%"></div><div class="gseg io" style="width:10.2%">E/S</div><div class="gseg blank" style="width:39.8%"></div><div class="gseg io" style="width:10.2%">E/S</div><div class="gseg blank" style="width:4.09%"></div></div></div><div class="gaxis"><span class="gtick" style="left:0%">0</span><span class="gtick" style="left:35.71%">175</span><span class="gtick" style="left:45.92%">225</span><span class="gtick" style="left:50%">245</span><span class="gtick" style="left:85.71%">420</span><span class="gtick" style="left:95.92%">470</span><span class="gtick" style="left:100%">490</span></div></div>
+    <p>T0 y T1 se alternan; cuando T0 agota su tercer quantum (t = 175) se va a su E/S de 50 ms. T1 usa un quantum (175-210) y, como T0 recién vuelve en 225, <b>usa otro más</b> (210-245). En 245 vuelve a empezar el mismo patrón. El ciclo dura <b>245 ms</b> (7 quanta).</p>
+    <p><b>Tasa(T0) = 105/245 = 3/7 ≈ 42,86 %</b> · <b>Tasa(T1) = 140/245 = 4/7 ≈ 57,14 %</b> · rendimiento global <b>100 %</b> (el procesador nunca queda ocioso).</p>
+    <p>Fíjate que da exactamente lo mismo que en 2024 (3/7 y 4/7) aunque el quantum cambió de 25 a 35 ms: en ambos casos la E/S de T0 alcanza para que T1 use dos quanta seguidos.</p></div>
+    <div class="sol"><div class="st">2.4 · q = 50 ms</div>
+    <div class="gantt"><div class="grow"><div class="glab">CPU</div><div class="gbar"><div class="gseg t1" style="width:16.67%">T0</div><div class="gseg t2" style="width:16.67%">T1</div><div class="gseg t1" style="width:16.67%">T0</div><div class="gseg t2" style="width:16.67%">T1</div><div class="gseg t1" style="width:16.66%">T0</div><div class="gseg t2" style="width:16.66%">T1</div></div></div><div class="grow"><div class="glab">E/S de T0</div><div class="gbar"><div class="gseg blank" style="width:83.33%"></div><div class="gseg io" style="width:16.67%">E/S</div></div></div><div class="gaxis"><span class="gtick" style="left:0%">0</span><span class="gtick" style="left:16.67%">50</span><span class="gtick" style="left:33.33%">100</span><span class="gtick" style="left:50%">150</span><span class="gtick" style="left:66.67%">200</span><span class="gtick" style="left:83.33%">250</span><span class="gtick" style="left:100%">300</span></div></div>
+    <p>Ahora la E/S de T0 (50 ms) dura exactamente un quantum: T1 usa <b>un solo</b> quantum mientras T0 está en E/S. Ciclo de 300 ms: <b>Tasa(T0) = 150/300 = 50 %</b>, <b>Tasa(T1) = 150/300 = 50 %</b>. <b>Sale favorecida T0</b>, que pasa de 42,86 % a 50 %.</p>
+    <div class="box warn"><div class="bt">Ojo · escribe el supuesto</div>
+    <p>En t = 300 ocurren dos cosas a la vez: T1 termina su quantum y T0 termina su E/S. La pauta 2024 (mismo ejercicio) deja pasar primero a T0, y eso da 50/50. Si pasara primero T1, T0 volvería a quedar en 3/7. En el certamen, anota el supuesto en una línea.</p></div></div>
+    <div class="sol"><div class="st">2.5 · q = 5 ms</div>
+    <p><b>Mala idea.</b> Con un quantum tan pequeño se multiplican las conmutaciones y las llamadas al scheduler, y su costo deja de ser despreciable frente al tiempo útil: con un costo de conmutación de 1 ms (el de la Ayudantía 3) se perdería s/q = 1/5 = <b>20 %</b> del procesador, contra 2 % con q = 50 ms. Baja el rendimiento del computador.</p></div>
+    <div class="sol"><div class="st">2.6 · Por qué Round Robin no tiene inanición</div>
+    <p>Porque una tarea que está en la cola de listas obtiene el procesador en un tiempo finito: como máximo <b>(N−1)·q</b> si hay N tareas. Las tareas nuevas y las que terminan su quantum entran <b>al final</b> de la cola, así que nadie se le puede adelantar indefinidamente, y el temporizador impide que una tarea monopolice el procesador más de un quantum.</p></div>
+  </div>
+</details>
+</section>
+<section id="t2-preguntas"><h2>Preguntas del tema</h2><p class="lead">Todas las preguntas de conocimiento de certámenes anteriores que corresponden a este tema, más las que salen de lo que dijo el profe en clases. Tapa la respuesta y contesta en voz alta.</p><details class="ex">
+  <summary>1 · Explicar la diferencia entre el modelo de planificación de tareas y el algoritmo de scheduling <span class="tag">2024 · 7 pts · se repitió en 2023</span></summary>
+  <div class="body"><p>El modelo de planificación determina la <b>forma de uso del procesador</b>: cuándo se pierde y durante cuánto tiempo una tarea lo tiene. El algoritmo de scheduling <b>elige la tarea siguiente</b> cuando la tarea en ejecución pierde el procesador (se termina, hace una E/S, fin de quantum, error fatal).</p></div>
+</details>
+<details class="ex">
+  <summary>2 · ¿Por qué existe riesgo de inanición en cualquier modelo de tipo Batch Processing? <span class="tag">2024 · 7 pts · se repitió en 2023</span></summary>
+  <div class="body"><p>Porque en cualquier modelo batch existe riesgo de inanición si la tarea en ejecución <b>monopoliza el procesador</b>: no hace ninguna E/S y no se termina. Como el modelo no tiene requisición por temporizador, nada se lo puede quitar.</p></div>
+</details>
+<details class="ex">
+  <summary>4 · ¿Por qué es generalmente imposible implementar un algoritmo óptimo aunque exista? <span class="tag">2024 · 7 pts · se repitió en 2023</span></summary>
+  <div class="body"><p>Porque se necesita <b>conocer el futuro del sistema</b> (especialmente el futuro de cada tarea: cuáles llegarán, cuánto durarán, qué E/S harán), lo que en la práctica es imposible. También existe el caso en que el algoritmo óptimo <b>sí</b> se puede implementar pero es <b>demasiado costoso</b> para el sistema.</p></div>
+</details>
+<details class="ex">
+  <summary>10 · Diferencia entre planificación en Batch Processing y en Time Sharing <span class="tag">2014 · 5 pts</span></summary>
+  <div class="body"><p>En <b>Batch</b>, una tarea se ejecuta completamente; el procesador queda <b>ocioso durante las E/S</b> y las demás tareas listas deben esperar su turno, lo que aumenta el tiempo de respuesta.</p><p>En <b>Time Sharing</b>, la tarea pierde el procesador cuando hace una E/S, cuando lo deja voluntariamente o cuando se le acaba el <b>quantum</b>; el sistema asigna el procesador a otra tarea lista. Mejora el tiempo de respuesta de las tareas cortas.</p></div>
+</details>
+<details class="ex">
+  <summary>13 · El usuario mide su programa con GetTime() antes y después. ¿Es correcto? <span class="tag">2014 · 5 pts</span></summary>
+  <div class="body"><p>No. <code>t2 − t1</code> mide un tiempo cercano al <b>tiempo de respuesta</b> de la tarea, porque usa la <b>hora universal</b>. El tiempo de ejecución corresponde al <b>tiempo de CPU</b>, y siempre <b>t<sub>CPU</sub> &lt; t<sub>RESPUESTA</sub></b>. Lo medido es <b>superior</b> al tiempo de ejecución real.</p></div>
+</details>
+<details class="ex">
+  <summary>14 · ¿Por qué rtime ≠ utime + stime? ¿Cuándo sí son iguales? <span class="tag">2014 · 5 + 5 pts</span></summary>
+  <div class="body"><p><code>rtime</code> es el <b>tiempo de respuesta</b>: incluye el tiempo de ejecución de los <b>otros</b> procesos hasta que este termine. Por eso siempre <b>rtime ≥ utime + stime</b> (y normalmente <b>utime &gt; stime</b>).</p><p>Son <b>iguales</b> en dos casos: (a) el proceso se ejecuta usando <b>un solo quantum</b>; (b) el proceso termina durante un periodo en que es <b>el único proceso listo</b> del sistema.</p></div>
+</details>
+<details class="ex">
+  <summary>15 · ¿Cuándo y cómo actualiza el SO el tiempo utime de un proceso? <span class="tag">2014 · 7 pts</span></summary>
+  <div class="body"><p>Cuando el proceso <b>pierde el procesador</b>: al terminarse el quantum, al dejarlo voluntariamente, al hacer una E/S, o al terminar. La actualización es <code>pstat[i].utime += p</code>, donde <b>p ≤ q</b> es el tiempo que <b>realmente</b> usó de su quantum.</p></div>
+</details>
+<details class="ex">
+  <summary>18 · Peor escenario del Swapping <span class="tag">2015 · 3 pts</span></summary>
+  <div class="body"><p>Tener que hacer <b>Swap In de una tarea que se acaba de hacer Swap Out</b>. Ocurre cuando la tarea recién descargada es justamente la que el algoritmo de scheduling elige a continuación: se paga dos veces el costo de disco sin ganar nada.</p></div>
+</details>
+<details class="ex">
+  <summary>19 · Tasa de ocupación del procesador y tiempo de respuesta: definir <span class="tag">2015 · 3 pts</span></summary>
+  <div class="body"><p><b>Tasa de ocupación:</b> el porcentaje de tiempo en que el procesador está <b>ejecutando tareas</b>.<br><b>Tiempo de respuesta:</b> el tiempo real de ejecución de una tarea = tiempo real de terminación − tiempo real de inicio.</p><p><b>Objetivo principal del SO desde el punto de vista del procesador:</b> tener una tasa de ocupación lo más cercana posible al <b>100 %</b>, sabiendo que el 100 % es un valor <b>inalcanzable</b>.</p></div>
+</details>
+<details class="ex">
+  <summary>20 · ¿En qué caso la tasa de ocupación es mala en Batch simple? <span class="tag">2015 · 3 pts</span></summary>
+  <div class="body"><p>Cuando la tarea hace <b>muchas entradas/salidas</b>. En batch simple la tarea conserva el procesador hasta terminar, y durante sus E/S el procesador <b>no se asigna a otra tarea</b>: queda ocioso todo ese tiempo.</p></div>
+</details>
+<details class="ex">
+  <summary>21 · Definir quantum, y por qué Time Sharing rinde más que Batch <span class="tag">2015, 2016 · 3-4 pts</span></summary>
+  <div class="body"><p><b>Quantum:</b> el tiempo durante el cual una tarea obtiene el procesador en un modelo de tiempo compartido. La tarea lo pierde cuando se acaba el quantum, cuando hace una E/S o cuando lo deja voluntariamente (<code>Sleep()</code>).</p><p><b>Por qué rinde más:</b> permite <b>aumentar la tasa de ocupación</b>, porque cuando una tarea hace una E/S hay una conmutación y <b>otra tarea obtiene el procesador</b> en vez de dejarlo ocioso.</p></div>
+</details>
+<details class="ex">
+  <summary>22 · Diferencia entre tiempo de respuesta y tiempo de ejecución <span class="tag">2016 · 4 pts</span></summary>
+  <div class="body"><p>El <b>tiempo de ejecución</b> es la suma de los tiempos parciales durante los cuales la tarea <b>tiene el procesador</b>. El <b>tiempo de respuesta</b> es el intervalo entre su llegada al sistema y su término, e incluye además <b>el tiempo en cola y el tiempo de sus E/S</b>. Siempre t<sub>ejec</sub> ≤ t<sub>resp</sub>.</p></div>
+</details>
+<details class="ex">
+  <summary>23 · En Batch, ¿por qué una tarea puede esperar un tiempo potencialmente infinito? <span class="tag">2016 · 4 pts</span></summary>
+  <div class="body"><p>Porque su tiempo de espera en la cola es la <b>suma de los tiempos de respuesta de todas las tareas que están antes</b>, y en batch una tarea conserva el procesador hasta terminar. Si una de esas tareas <b>nunca termina</b> (bucle infinito sin E/S), la espera es infinita.</p></div>
+</details>
+<details class="ex">
+  <summary>25 · Definir el contexto de una tarea (PSW). ¿Qué pasa en una conmutación? <span class="tag">2015 · 8 pts</span></summary>
+  <div class="body"><p>El <b>contexto</b> (o Program Status Word) define el <b>estado</b> de una tarea: contiene una copia de <b>todos los registros del procesador</b>, el estado de las interrupciones, el valor de <b>PC</b>, etc.</p><p>Cuando ocurre una conmutación de tarea, el SO debe <b>salvar el contexto</b> de la tarea actual y <b>restaurar el contexto</b> de la nueva tarea elegida por el algoritmo de scheduling.</p></div>
+</details>
+<details class="ex">
+  <summary>26 · Etapas de gestión de una E/S por parte del SO <span class="tag">2014 · 10 pts</span></summary>
+  <div class="body"><p><b>1.</b> El SO pide la E/S correspondiente al <b>controlador de disco</b>.<br><b>2.</b> La tarea <b>pierde el procesador</b> y pasa a estado <b>BLOQUEADA</b>.<br><b>3.</b> El algoritmo de planificación <b>elige una nueva tarea</b> y la ejecuta.<br><b>4.</b> Cuando termina la E/S, el controlador <b>genera una interrupción</b>.<br><b>5.</b> El SO maneja la interrupción y pone la tarea en estado <b>LISTA</b>.<br><b>6.</b> Después de un tiempo T, la tarea <b>recupera el procesador</b> para un nuevo quantum.</p></div>
+</details>
+<details class="ex">
+  <summary>27 · ¿Por qué un disco con controlador hardware e interrupciones aumenta el grado de multiprogramación? <span class="tag">2014 · 5 pts</span></summary>
+  <div class="body"><p>Porque permite al SO <b>cargar tareas en paralelo</b> mientras otra tarea se ejecuta, sin tener que esperar a que termine la carga. Reduce el tiempo ocioso del procesador y permite tener <b>más tareas potencialmente listas</b> para ejecutarse.</p></div>
+</details>
+<details class="ex">
+  <summary>N · ¿Son lo mismo time sharing y Round Robin? <span class="tag">pregunta hecha en clase</span></summary>
+  <div class="body"><p>No. Time sharing es un <b>modelo de planificación</b> (cada tarea usa el procesador a lo más un quantum; lo pierde antes si hace E/S o termina). Round Robin es un <b>algoritmo de scheduling</b> (elige la primera de la cola y la que pierde el procesador vuelve al final). Se puede tener tiempo compartido con otro scheduler (prioridades, MLQ, incluso aleatorio).</p></div>
+</details>
+<details class="ex">
+  <summary>N · ¿Por qué la multiprogramación no necesitaba temporizador y el tiempo compartido sí? <span class="tag">repaso</span></summary>
+  <div class="body"><p>Porque en multiprogramación el cambio de tarea lo provoca la propia tarea al hacer una E/S (o al terminar): no hay que quitarle nada a nadie. En tiempo compartido hay que <b>quitarle</b> el procesador a una tarea que no quiere soltarlo al acabarse su quantum, y para eso se necesita un hardware que interrumpa al procesador: el temporizador (interrupción del reloj). Sin él, una tarea que no hace E/S monopoliza el procesador.</p></div>
+</details>
+<details class="ex">
+  <summary>N · ¿Qué es la multitarea cooperativa y cuál es su problema? <span class="tag">repaso</span></summary>
+  <div class="body"><p>Un esquema sin temporizador en que cada aplicación cede voluntariamente el procesador cada cierto tiempo (una especie de E/S falsa), confiando en que todas lo harán. El problema es que depende de la buena voluntad de las aplicaciones: una que no coopere (o que tenga un error) monopoliza el procesador. Se abandonó cuando llegó el temporizador.</p></div>
+</details>
+<details class="ex">
+  <summary>N · En tiempo compartido, ¿puede haber inanición? <span class="tag">repaso</span></summary>
+  <div class="body"><p>Por el <b>modelo</b>, no: ninguna tarea puede quedarse con el procesador más de un quantum. Pero el <b>algoritmo de scheduling</b> sí puede generarla: por ejemplo un MLQ estático, si llega un flujo constante de tareas a la primera cola, las que ya bajaron casi no reciben procesador.</p></div>
+</details>
+<details class="ex">
+  <summary>N · ¿Por qué no se puede usar el disco como si fuera memoria RAM? <span class="tag">clase</span></summary>
+  <div class="body"><p>Por la diferencia de velocidad: la RAM responde en 25-50 ns y un disco mecánico en milisegundos (factor ~10<sup>6</sup>); un SSD es ~1000 veces más rápido que el mecánico pero sigue ~1000 veces más lento que la RAM. El disco sirve como memoria secundaria para dejar afuera tareas que no se van a ejecutar por segundos o minutos (swapping), no para intercambiar datos de forma permanente.</p></div>
+</details>
+<details class="ex">
+  <summary>N · Una tarea hace swap in. ¿Se ejecuta de inmediato? <span class="tag">clase</span></summary>
+  <div class="body"><p>No. Vuelve a memoria porque terminó su E/S y es otra vez candidata (estado LISTA). Obtendrá el procesador cuando el scheduler la elija; en tiempo compartido, a más tardar en (N−1)·q.</p></div>
+</details>
+<details class="ex">
+  <summary>N · ¿Por qué tener más tareas en memoria mejora la tasa de ocupación, y cuál es el límite? <span class="tag">clase</span></summary>
+  <div class="body"><p>Porque con más tareas es menos probable que <b>todas</b> estén bloqueadas en E/S al mismo tiempo, y siempre habrá alguna lista para usar el procesador. El límite es la memoria: más tareas significa más riesgo de saturarla (y las tareas crecen con asignación dinámica), y entonces hay que hacer swapping, que es caro.</p></div>
+</details>
+<details class="ex">
+  <summary>N · ¿Por qué una tarea en loop infinito no bloquea un sistema de tiempo compartido? <span class="tag">clase</span></summary>
+  <div class="body"><p>Porque al acabarse su quantum pierde el procesador igual que cualquier otra. Consume su parte (con 10 tareas y q = 100 ms, un 10 %), pero el resto se reparte entre las demás. Molesta, pero no impide que las otras se ejecuten.</p></div>
+</details>
+
+<details class="ex"><summary>2023 · En tiempo compartido, ¿qué representa el quantum? <span class="tag">2023 · 8 pts</span></summary>
+<div class="body"><p>El tiempo <b>máximo</b> que una tarea puede usar el procesador de forma continua. Cuando se acaba (lo detecta la interrupción del reloj, porque el quantum es un múltiplo del TICK), la tarea pierde el procesador aunque no haya terminado y vuelve al estado LISTA en la cola; antes de eso lo puede perder si hace una E/S o termina. Es un parámetro que el SO fija (en el boot) y que es un compromiso entre el costo de conmutar y favorecer a las tareas cortas.</p></div></details>
+<details class="ex"><summary>2023 · Diferencia entre batch processing con sistema de archivos y multiprogramación <span class="tag">2023 · 8 pts</span></summary>
+<div class="body"><p>En <b>batch con sistema de archivos</b> el SO carga la tarea siguiente mientras se ejecuta la actual (se adelanta la carga), pero solo una se ejecuta y la conserva hasta terminar: si hace una E/S, <b>el procesador queda ocioso</b>. En <b>multiprogramación</b> hay varias tareas cargadas y, cuando la que corre hace una E/S, el procesador se le da a otra tarea lista; la que hizo la E/S vuelve a la cola al terminarla. Ninguna de las dos tiene temporizador, así que en ambas una tarea que no hace E/S puede monopolizar el procesador.</p></div></details>
+<details class="ex"><summary>2023 · Explicar la noción de overhead en un sistema operativo <span class="tag">2023 · 8 pts</span></summary>
+<div class="body"><p>Es el <b>costo de las operaciones de gestión</b> del SO: el tiempo que el procesador dedica a conmutar tareas, ejecutar el scheduler o las rutinas de interrupción (por ejemplo la del reloj), durante el cual <b>no ejecuta tareas</b> de los usuarios. Por eso se considera tiempo perdido y debe ser el mínimo posible. Ejemplo (Ayudantía 3): con quantum q y costo de conmutación s, la fracción perdida es s/q; con q = 100 ms y s = 1 ms, 1 %.</p></div></details>
+</section>
+<div class="pnav"><a href="1-Introduccion.html"><small>← Anterior</small>Introducción</a><a class="nx" href="3-Scheduling.html"><small>Siguiente →</small>Scheduling</a></div>
+</main>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('so-c1-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('so-c1-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='so-c1-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+</script>
+
+</body>
+</html>

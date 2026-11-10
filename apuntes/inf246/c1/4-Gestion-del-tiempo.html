@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gestión del tiempo · SO C1</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T4</div>
+    <div><h1>Gestión del tiempo</h1><small>Sistemas Operativos · INF-246 · Certamen 1</small></div>
+  </div>
+  <div class="pages"><a href="0-Guia-de-estudio-C1.html"><b>0</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del miércoles 30</small></span></a><a href="1-Introduccion.html"><b>1</b><span>Introducción<br><small style="color:var(--muted)">qué es un SO</small></span></a><a href="2-Planificacion-de-tareas.html"><b>2</b><span>Planificación de tareas<br><small style="color:var(--muted)">modelos, tiempos, estados</small></span></a><a href="3-Scheduling.html"><b>3</b><span>Scheduling<br><small style="color:var(--muted)">los algoritmos</small></span></a><a href="4-Gestion-del-tiempo.html" class=cur><b>4</b><span>Gestión del tiempo<br><small style="color:var(--muted)">interrupciones y reloj</small></span></a><a href="5-Ejercicios-por-pregunta.html"><b>5</b><span>Ejercicios por pregunta<br><small style="color:var(--muted)">P1, P2 y P3 del certamen</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 4</div><a href="#t4-inicio">Qué pesa y qué estudiar</a><a href="#tiempo-intro">Para qué sirve</a><a href="#intexc">Interrupciones y excepciones</a><a href="#irq">El controlador de interrupciones</a><a href="#quepasa">Qué pasa en una interrupción</a><a href="#reloj">Reloj, temporizador y RTMAX</a><a href="#rutina">La rutina del reloj: TICK y JIFFIES</a><a href="#hora">La hora universal y NTP</a><a href="#plazos">La lista de plazos</a><div class="grp">Práctica</div><a href="#t4-receta">Receta: cálculos del tiempo</a><a href="#t4-videos">Videos del tema</a><a href="#c2">Certamen 2024 · sección 3</a><a href="#c4">C2 2023 · gestión del tiempo</a><a href="#ay3-1">Ay. 3 · quantum y overhead</a><a href="#ay3-2">Ay. 3 · interrupción del reloj</a><a href="#ay3-3">Ay. 3 · costo del TICK</a><a href="#e3">E3 · Temporizador, TICK, quantum</a><a href="#n7">N7 · Lista de plazos</a><a href="#n8">N8 · Cuánto se atrasa la hora</a><a href="#n9">N9 · Costo de la rutina del reloj</a><a href="#n10">N10 · Interrupción paso a paso</a><a href="#t4-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+
+<section id="t4-inicio">
+<h2>Tema 4 · Gestión del tiempo</h2>
+<p class="lead">Clase <code>TimeManagement</code> (dos sesiones de septiembre) más el documento <code>Mini_curso_Interrupciones</code> escrito por el profe. Interrupciones y excepciones, el controlador de interrupciones, el temporizador y RTMAX, la rutina del reloj, la hora universal, NTP y la lista de plazos.</p>
+<div class="hero">
+  <div class="big">Peso en el certamen: un tercio</div>
+  <div class="sub">En 2024 fue una sección completa de 35 puntos: un cálculo de RTMAX (el punto más seguro del certamen) y cuatro preguntas cortas sobre TICK y quantum, por qué se atrasa la hora, NTP y el costo del scheduler. Las preguntas se repiten casi textuales entre años. En 2023 este tema fue al Certamen 2 (con la misma pregunta de RTMAX); este año se pasó antes del C1 y el profe dijo que entra.</div>
+</div>
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder hacer</h5>
+    <p>· Diferenciar interrupción y excepción.</p>
+    <p>· Explicar qué pasa, paso a paso, cuando ocurre una interrupción (tabla de vectores, CALL, pila, RET).</p>
+    <p>· Calcular <b>RTMAX = F × TICK</b> y la duración de la rutina <b>|RTempo|/F</b>.</p>
+    <p>· Explicar por qué la rutina del reloj debe ser corta, por qué la hora se atrasa y por qué NTP no salta.</p>
+    <p>· Explicar la lista de plazos relativos y su costo.</p>
+  </div>
+  <div class="card"><h5>Dónde está en los libros</h5>
+    <p><b>Wolf</b>: §2.2.2 “Interrupciones y excepciones” (p. 46), §2.5 “Relojes y temporizadores” (p. 50), §2.6.2 DMA (p. 53); tick y quantum en §4.1.2 (p. 134).</p>
+    <p><b>Silberschatz</b>: §1.2.1 <i>Interrupts</i> (vector de interrupciones, línea de interrupción revisada después de cada instrucción) y §1.4.3 <i>Timer</i> (recuadro <i>Linux timers</i>: HZ y jiffies).</p>
+    <p><b>Del ramo</b>: <code>Mini_curso_Interrupciones.md</code> (4 páginas, es materia) y <code>Stack.md</code>.</p>
+  </div>
+  <div class="card"><h5>Plan para este tema (≈ 2 h)</h5>
+    <p>1. Leer las secciones en orden (1 h).</p>
+    <p>2. Video de Core Dumped sobre <code>sleep</code> (20 min, audio en español): cubre temporizador, cola de listos y lista de plazos.</p>
+    <p>3. Ejercicios: certamen 2024 sección 3 (C2), la Ayudantía 3 completa, C4 (2023), N7 y N8.</p>
+  </div>
+</div>
+</section>
+<section id="tiempo-intro">
+<h2>Para qué sirve la gestión del tiempo</h2>
+<p class="lead">Clase <code>TimeManagement</code> + el documento <code>Mini_curso_Interrupciones</code>. Es <b>un tercio del certamen</b> y es la parte que la gente estudia menos, porque parece hardware. Es la más rentable: son pocas ideas y las preguntas se repiten casi textuales de un año a otro.</p>
+
+<ul>
+  <li><b>Mantener la hora universal.</b></li>
+  <li><b>Gestión de eventos.</b></li>
+  <li><b>Para medir:</b> el tiempo de ejecución de una tarea; usar <b>timers</b> (despertar una tarea después de un tiempo t); la llamada de sistema <code>sleep()</code>.</li>
+  <li><b>Para la adquisición de datos</b> a frecuencia fija (audio ripping, mp3…).</li>
+  <li><b>Para los sistemas en tiempo real:</b> reaccionar a un evento <b>antes de un tiempo máximo t</b>.</li>
+</ul>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · el timer del huevo y el tiempo discreto<span class="ref">Gestión del tiempo · Voz 001 · 00:00 / Gestión del tiempo · Voz 001 · 07:59 / Gestión del tiempo · Voz 001 · 10:13 / Gestión del tiempo · Voz 001 · 03:31</span></div><p><b>La hora:</b> el SO tiene que saber qué hora es porque hay comandos del tipo “ejecuta esta tarea mañana a las 4”. <b>Medir:</b> el CFS necesita el tiempo de ejecución acumulado de cada tarea, y el quantum hay que cronometrarlo: <i>“si doy 50 ms, son 50, no 55 ni 100”</i>; es el inspector del recreo que cuenta los tres tiros.</p><p><b>Timers:</b> pones el huevo a cocer y un timer de 3 minutos, y te vas a hacer otra cosa, porque sabes que el timer te va a avisar. Eso es un timer en el SO: dejar dormida una tarea y despertarla después de un tiempo (la llamada <code>sleep</code>). <b>Adquisición de datos:</b> para pasar una canción analógica a MP3 hay que tomar una muestra cada pocos milisegundos, como un metrónomo. <b>Tiempo real:</b> despertar la tarea que frena el auto antes de un tiempo máximo.</p><p>Y una idea de fondo: nosotros percibimos el tiempo como algo continuo (no distinguimos menos de medio segundo), pero <b>para el SO el tiempo es discreto</b>: avanza de a pasos, al ritmo de los ciclos del procesador y de las interrupciones del reloj.</p></div>
+
+
+<div class="box tip">
+  <div class="bt">Truco · el hilo conductor de esta clase</div>
+  <p>Toda la clase responde una sola pregunta: <b>¿cómo recupera el control el sistema operativo?</b></p>
+  <p>Piénsalo: si una tarea está corriendo en la CPU y no llama a nadie, el SO <b>no existe</b> — no hay ningún código del SO ejecutándose. La única forma de que el SO vuelva a tomar el control es que <b>algo externo interrumpa</b> a la CPU. Ese algo es el <b>temporizador</b>. Sin temporizador no hay quantum, sin quantum no hay tiempo compartido, y sin tiempo compartido volvemos al batch con su inanición. <b>Toda la Unidad 1 descansa sobre la IRQ 0.</b></p>
+</div>
+</section><section id="intexc">
+<h2>Interrupciones y excepciones</h2>
+
+<div class="box def">
+  <div class="bt">Interrupción</div>
+  <p>Una interrupción es una <b>señal para el procesador</b>, emitida por hardware o software, que <b>indica un evento que necesita atención inmediata</b>. Alerta al procesador de una <b>condición de alta prioridad</b> que requiere la interrupción del código que el procesador está ejecutando.</p>
+</div>
+
+<div class="box def">
+  <div class="bt">Excepción</div>
+  <p>Una excepción es un <b>evento anormal o sin precedentes que ocurre durante la ejecución de un programa</b>. Es un error durante la ejecución, un resultado o evento no deseado que afecta el flujo normal del programa.</p>
+  <p><b>Ejemplos:</b> división por 0, <i>segmentation fault</i>, <i>overflow</i>.</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · esperada contra inesperada, y el hermano chico<span class="ref">Gestión del tiempo · Voz 001 · 14:38 / Gestión del tiempo · Voz 001 · 16:20 / Gestión del tiempo · Voz 001 · 19:34</span></div><p>Su forma de separarlas: una <b>interrupción es un evento esperado</b>. El timer lo pusiste tú y sabes que va a sonar; cuando el SO le pide al disco una lectura, sabe que va a terminar (no cuándo, pero va a terminar). Una <b>excepción es la misma idea, pero inesperada y no deseada</b>: una división por cero, una placa de memoria que falla, el <i>segmentation violation</i> de un puntero sin inicializar.</p><p>Y la analogía: estás haciendo una tarea y llega tu hermano chico a pedirte que le arregles el lápiz. Pones pausa, lo arreglas y vuelves a lo tuyo: una interrupción corta. Si tu mamá dice “a comer”, también es una interrupción, pero más larga. Las dos hay que atenderlas <b>ahora</b>, no en dos horas: si no sacas el huevo cuando suena el timer, se quema.</p></div>
+
+
+<div class="box warn">
+  <div class="bt">Ojo · la diferencia exacta (pregunta de 2015 y 2016)</div>
+  <p>La respuesta buena tiene tres capas:</p>
+  <p><b>1. Origen.</b> Una <b>interrupción</b> viene de <b>afuera</b> de la instrucción que se está ejecutando: puede ser <b>física</b> (un dispositivo hardware interrumpe la CPU usando una entrada cableada — fin de E/S del controlador de disco) o <b>software</b> (una instrucción especial tipo <b>TRAP</b>). Una <b>excepción</b> viene de <b>adentro</b>: es el resultado de un <b>error al ejecutar una instrucción</b>.</p>
+  <p><b>2. Mecanismo.</b> Es <b>exactamente el mismo</b>: a cada una le corresponde un <b>número</b> y un <b>vector de interrupción</b> que contiene la dirección de memoria de la subrutina que la gestiona.</p>
+  <p><b>3. Previsibilidad.</b> La interrupción es <b>asíncrona</b> (puede llegar en cualquier momento); la excepción es <b>síncrona</b> (siempre en la misma instrucción, si repites la ejecución vuelve a ocurrir).</p>
+</div>
+
+<div class="box ana">
+  <div class="bt">🎯 Analogía · trabajando en tu escritorio</div>
+  <p><b>Interrupción:</b> suena el timbre de la puerta. No tiene nada que ver con lo que estabas haciendo, llegó de afuera, y puede pasar en cualquier momento. Marcas dónde ibas, atiendes, y vuelves.</p>
+  <p><b>Excepción:</b> estás sumando una columna y descubres que un número está escrito con lápiz corrido y no se entiende. El problema <b>lo generó tu propio trabajo</b>, y si vuelves a hacer exactamente lo mismo, vuelve a pasar.</p>
+</div>
+</section><section id="irq">
+<h2>El controlador de interrupciones (IRQ Controller)</h2>
+<p><b>IRQ = Interruption ReQuest.</b> Los dispositivos no interrumpen directamente a la CPU: le hablan a un chip intermedio, el <b>controlador de interrupciones</b>, que ordena y regula el tráfico.</p>
+
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 840 300" width="840" role="img" aria-label="Controlador de interrupciones">
+ <defs><marker id="a5" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <rect x="12" y="18" width="152" height="34" rx="7" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="88" y="40" text-anchor="middle" fill="var(--warn)" font-weight="700">Temporizador · IRQ 0</text>
+  <rect x="12" y="62" width="152" height="34" rx="7" fill="var(--panel)" stroke="var(--line)"/>
+  <text x="88" y="84" text-anchor="middle" fill="var(--ink)">Teclado · IRQ 1</text>
+  <rect x="12" y="106" width="152" height="34" rx="7" fill="var(--panel)" stroke="var(--line)"/>
+  <text x="88" y="128" text-anchor="middle" fill="var(--ink)">Tarjeta audio · IRQ 5</text>
+  <rect x="12" y="150" width="152" height="34" rx="7" fill="var(--panel)" stroke="var(--line)"/>
+  <text x="88" y="172" text-anchor="middle" fill="var(--ink)">Tarjeta video · IRQ 9</text>
+  <rect x="12" y="194" width="152" height="34" rx="7" fill="var(--panel)" stroke="var(--line)"/>
+  <text x="88" y="216" text-anchor="middle" fill="var(--ink)">Disco ATA · IRQ 14, 15</text>
+
+  <rect x="232" y="24" width="196" height="206" rx="10" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="330" y="48" text-anchor="middle" fill="var(--brand)" font-weight="700">IRQ CONTROLLER</text>
+  <text x="330" y="72" text-anchor="middle" fill="var(--muted)" font-size="10.5">lista FIFO por cada nivel</text>
+  <rect x="248" y="84" width="164" height="22" rx="4" fill="var(--panel)" stroke="var(--warn)"/><text x="330" y="100" text-anchor="middle" fill="var(--warn)" font-size="10.5" font-weight="700">IRQ 0 — máxima prioridad</text>
+  <rect x="248" y="112" width="164" height="22" rx="4" fill="var(--panel)" stroke="var(--line)"/><text x="330" y="128" text-anchor="middle" fill="var(--ink)" font-size="10.5">IRQ 1 — lista</text>
+  <rect x="248" y="140" width="164" height="22" rx="4" fill="var(--panel)" stroke="var(--line)"/><text x="330" y="156" text-anchor="middle" fill="var(--ink)" font-size="10.5">…</text>
+  <rect x="248" y="168" width="164" height="22" rx="4" fill="var(--panel)" stroke="var(--line)"/><text x="330" y="184" text-anchor="middle" fill="var(--ink)" font-size="10.5">IRQ N — mínima prioridad</text>
+  <text x="330" y="214" text-anchor="middle" fill="var(--ex)" font-size="10.5" font-weight="700">MASKING (enmascaramiento)</text>
+
+  <rect x="496" y="70" width="130" height="112" rx="10" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="561" y="98" text-anchor="middle" fill="var(--accent)" font-weight="700">CPU</text>
+  <text x="561" y="122" text-anchor="middle" fill="var(--muted)" font-size="10.5">pin INTR</text>
+  <text x="561" y="146" text-anchor="middle" fill="var(--muted)" font-size="10.5">+ nº de IRQ</text>
+
+  <rect x="682" y="52" width="146" height="148" rx="10" fill="var(--ex-soft)" stroke="var(--ex)"/>
+  <text x="755" y="76" text-anchor="middle" fill="var(--ex)" font-weight="700">VECTOR TABLE</text>
+  <text x="755" y="98" text-anchor="middle" fill="var(--muted)" font-size="10.5">en memoria</text>
+  <rect x="696" y="108" width="118" height="20" rx="4" fill="var(--panel)" stroke="var(--line)"/><text x="755" y="123" text-anchor="middle" fill="var(--ink)" font-size="10">0 → @rutina reloj</text>
+  <rect x="696" y="132" width="118" height="20" rx="4" fill="var(--panel)" stroke="var(--line)"/><text x="755" y="147" text-anchor="middle" fill="var(--ink)" font-size="10">1 → @rutina teclado</text>
+  <rect x="696" y="156" width="118" height="20" rx="4" fill="var(--panel)" stroke="var(--line)"/><text x="755" y="171" text-anchor="middle" fill="var(--ink)" font-size="10">n → @rutina n</text>
+
+  <g stroke="var(--muted)" fill="none" marker-end="url(#a5)">
+    <path d="M164,35 L228,60"/><path d="M164,79 L228,90"/><path d="M164,123 L228,120"/>
+    <path d="M164,167 L228,150"/><path d="M164,211 L228,180"/>
+    <path d="M428,120 L492,120"/>
+    <path d="M626,120 L678,120"/>
+  </g>
+  <text x="460" y="112" text-anchor="middle" fill="var(--muted)" font-size="10">INTR</text>
+  <text x="652" y="112" text-anchor="middle" fill="var(--muted)" font-size="10">nº</text>
+  <text x="420" y="266" text-anchor="middle" fill="var(--ink)" font-size="12">m = MEM[ n × (b/8) ]  →  CALL m   ·   <tspan fill="var(--muted)">b = tamaño en bits de las direcciones del procesador</tspan></text>
+ </g>
+</svg>
+</div>
+<figcaption>Del dispositivo al código: el controlador ordena por prioridad, la CPU recibe el número de IRQ, lo usa como índice en la tabla de vectores y salta a la rutina correspondiente.</figcaption>
+</figure>
+
+<div class="box def">
+  <div class="bt">Los 2 roles del controlador de interrupciones</div>
+  <p><b>1. Ordenar las interrupciones según sus prioridades.</b> El orden IRQ-0 hasta IRQ-N <b>indica el orden de prioridad</b> (IRQ 0, el temporizador, es la más prioritaria). El controlador genera la señal desde la más prioritaria hasta la menos prioritaria. <i>Teóricamente puede existir riesgo de inanición para las interrupciones de baja prioridad, pero no debe ocurrir en la práctica.</i></p>
+  <p><b>2. Hacer que no se pierdan interrupciones.</b> Para cada nivel mantiene una <b>lista</b>, de forma que espera a que la interrupción sea procesada antes de generar la señal siguiente. Cuando el SO procesa una interrupción, <b>inhibe (enmascara) las otras</b> en el controlador, y las que llegan durante ese tiempo <b>quedan en lista de espera</b>. Justo antes de terminar el procesamiento, el SO <b>autoriza de nuevo</b> las señales.</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · números de IRQ, prioridades y la tabla de vectores<span class="ref">Gestión del tiempo · Voz 002 · 00:30 / Gestión del tiempo · Voz 002 · 03:29 / Gestión del tiempo · Voz 002 · 04:27 / Gestión del tiempo · Voz 002 · 07:25 / Gestión del tiempo · Voz 003 · 00:30</span></div><p>Como pueden llegar interrupciones mientras se procesa otra (<i>“en cascada”</i>), y manejar eso es complicado, lo normal es <b>serializarlas</b>: las que llegan quedan <b>pendientes</b> en una cola del controlador, ordenadas por prioridad. Cada dispositivo tiene un <b>número de IRQ</b> asignado por la BIOS (<i>Basic Input Output System</i>), que el SO puede cambiar, salvo uno: <b>la IRQ 0 es siempre el reloj</b>. Además, la del reloj es <b>la única que no se puede enmascarar</b>; va a ocurrir sí o sí, porque si no se procesa de inmediato se pierde tiempo en el reloj del sistema.</p><p>¿Por qué el teclado tiene más prioridad que el disco? Porque si el usuario escribe otra tecla antes de leer la anterior, se pierde; en cambio, que el fin de una lectura de disco se atienda 5 o 10 microsegundos más tarde no le cambia nada a nadie. La tarjeta de red también es urgente: su memoria interna es pequeña y se llena rápido.</p><p>La <b>tabla de vectores</b> la llena <b>el SO al iniciarse</b>, con las direcciones de sus rutinas (teclado, reloj, disco…), y después habilita las interrupciones. Funciona como un <code>switch</code> en C: según el número, llama a una función. Solo la del reloj ocurre mil veces por segundo en Linux.</p></div>
+
+
+<div class="box warn">
+  <div class="bt">Ojo · el enmascaramiento y la hora (certamen 2014, P1.4)</div>
+  <p><b>Enmascarar</b> una interrupción = prohibir que ocurra (que el controlador interrumpa la CPU cuando el evento asociado ocurra).</p>
+  <p><i>"¿Por qué enmascarar la interrupción del reloj durante el tratamiento de otra interrupción puede tener consecuencias importantes para la hora universal?"</i> (En clases el profe dijo que la del reloj no se puede enmascarar; la pregunta plantea la hipótesis para que expliques por qué sería grave.)</p>
+  <p>Porque si el tiempo de tratamiento de esa otra interrupción es <b>superior al periodo de la interrupción del reloj</b>, se podría <b>perder</b> una interrupción del reloj, y eso provoca una <b>deriva de la hora universal</b>. Es otra razón (además del overhead) para que las rutinas sean cortas.</p>
+</div>
+
+<div class="box libro">
+  <div class="bt">📖 Código reentrante y tiempo real</div>
+  <p>Un SO de tiempo real debe reaccionar antes de un tiempo máximo t. Eso obliga a que <b>una nueva interrupción pueda ocurrir mientras el SO ya está procesando una</b>, incluso entrando a <b>la misma rutina</b>. Un código así se llama <b>reentrante</b>: <i>"a program or subroutine is called reentrant if it can be interrupted in the middle of its execution and then safely called again before its previous invocations complete execution"</i>. Es mucho más complejo de implementar que un código tradicional.</p>
+</div>
+</section><section id="quepasa">
+<h2>Qué pasa cuando ocurre una interrupción</h2>
+
+<h3>Cuándo se comprueba: en el FETCH</h3>
+<p>La CPU ejecuta el ciclo <b>FETCH → DECODE → EXECUTE → WRITE BACK</b>. En cada etapa de tipo <b>FETCH</b>, la lógica de control del procesador <b>verifica la presencia de una señal de interrupción</b>.</p>
+
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 800 220" width="800" role="img" aria-label="Ciclo fetch con chequeo de interrupción">
+ <defs><marker id="a6" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <rect x="20" y="60" width="96" height="42" rx="8" fill="var(--brand-soft)" stroke="var(--brand)"/><text x="68" y="86" text-anchor="middle" fill="var(--brand)" font-weight="700">FETCH</text>
+  <polygon points="160,81 208,54 256,81 208,108" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="208" y="79" text-anchor="middle" fill="var(--warn)" font-weight="700" font-size="11">¿Hay</text>
+  <text x="208" y="93" text-anchor="middle" fill="var(--warn)" font-weight="700" font-size="11">INTR?</text>
+  <rect x="300" y="60" width="104" height="42" rx="8" fill="var(--panel)" stroke="var(--line)"/><text x="352" y="86" text-anchor="middle" fill="var(--ink)">DECODE</text>
+  <rect x="424" y="60" width="104" height="42" rx="8" fill="var(--panel)" stroke="var(--line)"/><text x="476" y="86" text-anchor="middle" fill="var(--ink)">EXECUTE</text>
+  <rect x="548" y="60" width="112" height="42" rx="8" fill="var(--panel)" stroke="var(--line)"/><text x="604" y="86" text-anchor="middle" fill="var(--ink)">WRITE BACK</text>
+
+  <g stroke="var(--muted)" fill="none" marker-end="url(#a6)">
+    <path d="M116,81 L156,81"/>
+    <path d="M256,81 L296,81"/>
+    <path d="M404,81 L420,81"/>
+    <path d="M528,81 L544,81"/>
+    <path d="M660,81 L700,81 L700,150 L68,150 L68,106"/>
+  </g>
+  <text x="276" y="73" text-anchor="middle" fill="var(--accent)" font-size="10.5" font-weight="700">NO</text>
+  <text x="400" y="165" text-anchor="middle" fill="var(--muted)" font-size="10.5">PC ← PC + 4 · siguiente instrucción</text>
+
+  <path d="M208,108 L208,178" stroke="var(--warn)" stroke-width="1.8" fill="none" marker-end="url(#a6)"/>
+  <text x="222" y="130" fill="var(--warn)" font-size="10.5" font-weight="700">SÍ</text>
+  <rect x="120" y="182" width="180" height="30" rx="7" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="210" y="202" text-anchor="middle" fill="var(--warn)" font-weight="700" font-size="11">PC ← @intr (vector table)</text>
+  <text x="330" y="202" fill="var(--muted)" font-size="11">≡ CALL @intr : la CPU salta a la rutina del SO</text>
+ </g>
+</svg>
+</div>
+<figcaption>Por eso una interrupción nunca parte una instrucción por la mitad: se comprueba <b>entre</b> instrucciones, en el FETCH.</figcaption>
+</figure>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · antes de cada instrucción, y la instrucción que no hace nada<span class="ref">Gestión del tiempo · Voz 002 · 10:28</span></div><p>La lógica del procesador revisa la “patita” de interrupción <b>antes de cada instrucción</b>: ¿hay interrupción? no; ¿hay? no; ¿hay? sí ⇒ se procesa y después se vuelve a ejecutar la instrucción que estaba por empezar.</p><p>De paso contó que todos los procesadores tienen <b>NOP</b> (<i>no operation</i>): una instrucción que no hace nada salvo perder los ciclos de fetch y decode. Se usa para “perder tiempo” a propósito, por ejemplo en juegos antiguos en que el procesador era demasiado rápido.</p></div>
+
+
+<h3>Qué hace la CPU: la pila</h3>
+<p>El procesador hace el equivalente de un <code>CALL</code>: recupera de la tabla de vectores la dirección <code>m = MEM[n × (b/8)]</code> y salta ahí. Pero antes tiene que <b>guardar dónde iba</b>, y eso se hace en la <b>pila de ejecución (stack, LIFO)</b>.</p>
+
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 800 260" width="800" role="img" aria-label="La pila durante una interrupción">
+ <g font-family="system-ui,sans-serif" font-size="11.5">
+  <text x="20" y="20" fill="var(--brand)" font-weight="700" font-size="13">1 · Llega INTR</text>
+  <rect x="20" y="34" width="150" height="140" rx="6" fill="var(--panel)" stroke="var(--line)"/>
+  <rect x="20" y="148" width="150" height="26" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="95" y="166" text-anchor="middle" fill="var(--brand)" font-weight="700">valor de PC</text>
+  <text x="95" y="196" text-anchor="middle" fill="var(--muted)">PUSH PC</text>
+  <text x="95" y="212" text-anchor="middle" fill="var(--muted)">(dirección de retorno)</text>
+
+  <text x="220" y="20" fill="var(--brand)" font-weight="700" font-size="13">2 · La rutina salva registros</text>
+  <rect x="220" y="34" width="150" height="140" rx="6" fill="var(--panel)" stroke="var(--line)"/>
+  <rect x="220" y="148" width="150" height="26" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="295" y="166" text-anchor="middle" fill="var(--brand)" font-weight="700">valor de PC</text>
+  <rect x="220" y="120" width="150" height="26" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="295" y="138" text-anchor="middle" fill="var(--accent)" font-weight="700">EAX</text>
+  <text x="295" y="196" text-anchor="middle" fill="var(--muted)">PUSH eax, ebx, …</text>
+  <text x="295" y="212" text-anchor="middle" fill="var(--muted)">salvar el CONTEXTO</text>
+
+  <text x="420" y="20" fill="var(--brand)" font-weight="700" font-size="13">3 · Se ejecuta la rutina</text>
+  <rect x="420" y="34" width="150" height="140" rx="6" fill="var(--panel)" stroke="var(--line)"/>
+  <rect x="420" y="148" width="150" height="26" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="495" y="166" text-anchor="middle" fill="var(--brand)" font-weight="700">valor de PC</text>
+  <rect x="420" y="120" width="150" height="26" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="495" y="138" text-anchor="middle" fill="var(--accent)" font-weight="700">EAX</text>
+  <text x="495" y="196" text-anchor="middle" fill="var(--muted)">MOV eax, [200] …</text>
+  <text x="495" y="212" text-anchor="middle" fill="var(--muted)">trabajo del SO</text>
+
+  <text x="620" y="20" fill="var(--brand)" font-weight="700" font-size="13">4 · POP y RET</text>
+  <rect x="620" y="34" width="150" height="140" rx="6" fill="var(--panel)" stroke="var(--line)"/>
+  <text x="695" y="112" text-anchor="middle" fill="var(--muted)">(vacía)</text>
+  <text x="695" y="196" text-anchor="middle" fill="var(--muted)">POP eax · POP PC</text>
+  <text x="695" y="212" text-anchor="middle" fill="var(--muted)">JUMP a PC</text>
+
+  <text x="400" y="242" text-anchor="middle" fill="var(--ink)" font-size="12">La pila es <tspan font-weight="700">LIFO</tspan>: lo último que entra es lo primero que sale. Por eso los POP van en orden inverso a los PUSH.</text>
+ </g>
+</svg>
+</div>
+<figcaption>Ciclo completo de una interrupción. El documento <code>Stack.md</code> del ramo desarrolla esto con código assembly real generado por <code>gcc</code>.</figcaption>
+</figure>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · CALL, RET y el cuaderno prestado<span class="ref">Gestión del tiempo · Voz 002 · 13:11 / Gestión del tiempo · Voz 002 · 21:26 / Gestión del tiempo · Voz 002 · 23:10 / Gestión del tiempo · Voz 002 · 28:26</span></div><p>El salto a la rutina es una <b>llamada</b>, no un simple salto: <code>CALL</code> equivale a <b>PUSH PC + JUMP</b> a la dirección de la tabla. Al final, <code>RET</code> (en x86, <code>IRET</code>) equivale a <b>POP PC</b>: el PC vuelve a apuntar a la instrucción donde ocurrió la interrupción. La pila es una pila de panqueques: LIFO.</p><p>¿Por qué la rutina hace <code>PUSH eax</code> al principio y <code>POP eax</code> al final? Porque la aplicación estaba usando EAX, y cuando vuelva tiene que encontrar sus registros intactos. Su analogía: le pides prestado el cuaderno a un compañero, lo usas, y se lo devuelves con páginas borradas: <i>“no está bien”</i>. Guardar los registros es como <b>sacarle una foto</b> al estado antes de tocarlo. Si la rutina usa varios registros, los POP van en orden inverso a los PUSH. Resultado: <i>“la aplicación no se dio cuenta de nada”</i>.</p></div>
+
+
+<div class="box def">
+  <div class="bt">Los dos finales posibles de una interrupción</div>
+  <p><b>Caso A — no hay conmutación de proceso:</b> el SO hace el <code>RET</code> normal y vuelve a ejecutar el proceso que fue interrumpido, exactamente donde iba.</p>
+  <p><b>Caso B — sí hay conmutación</b> (la interrupción es del temporizador y se acabó el quantum): el SO <b>elige un nuevo proceso</b>, <b>cambia el contexto del procesador</b> (restaura los valores de los registros del nuevo proceso) y hace un <b>JUMP</b> a la nueva dirección de memoria a ejecutar.</p>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · "salvar el contexto", respuesta completa (2016, P4.4)</div>
+  <p>Significa <b>copiar a memoria (típicamente a la pila o al PCB de la tarea) todo el estado del procesador que la tarea necesita para poder seguir después como si nada hubiera pasado</b>: todos los registros, el Program Counter, el Stack Pointer, los flags y el estado de las interrupciones. Al restaurar, se recargan esos mismos valores. Es <b>puro overhead</b>: por eso el costo de conmutación importa, y por eso un quantum demasiado chico degrada el rendimiento.</p>
+</div>
+
+<h3>El ciclo completo de una E/S</h3>
+<p>Pregunta de 10 puntos en el certamen 2014 (P3.5). Los 6 pasos:</p>
+<ol>
+  <li>La tarea pide la E/S mediante una <b>llamada al sistema</b>; el SO pide la operación al <b>controlador</b> del periférico (por ejemplo el controlador de disco).</li>
+  <li>La tarea <b>pierde el procesador</b> y pasa a estado <b>BLOQUEADA</b>.</li>
+  <li>El algoritmo de planificación <b>elige una nueva tarea</b> y la ejecuta.</li>
+  <li>Cuando la E/S termina, el controlador <b>genera una interrupción</b>.</li>
+  <li>El SO maneja la interrupción, recupera los datos, los transfiere al espacio de memoria de la tarea, y <b>pone la tarea en estado LISTA</b>.</li>
+  <li>Después de un tiempo T, la tarea <b>recupera el procesador</b> para un nuevo quantum.</li>
+</ol>
+<div class="box warn">
+  <div class="bt">Ojo · el paso 6 es el que se les olvida a todos</div>
+  <p>Terminar la E/S <b>no</b> es recuperar el procesador. Hay un paso 6 con un tiempo T desconocido en medio. Si en la respuesta te saltas ese paso, pierdes puntos, porque es justo lo que el profesor quiere que entiendas.</p>
+</div>
+</section><section id="reloj">
+<h2>Reloj y temporizador</h2>
+
+<div class="box def">
+  <div class="bt">El registro reloj</div>
+  <p>El procesador está controlado por una <b>señal de reloj</b> con frecuencia F (clock signal), generada por un <b>cuarzo</b>.</p>
+  <p>El <b>registro reloj</b> es un registro que <b>se incrementa a cada pulso del cuarzo</b> (generalmente un cuarzo <b>distinto</b> del cuarzo del procesador). Permite mantener la hora universal: almacena impulsos durante varios años y <b>tiene una pila</b> para mantenerlo cuando el computador está apagado.</p>
+  <p><b>Se puede leer en modo usuario o sistema. Se puede escribir solamente en modo sistema.</b></p>
+</div>
+
+<div class="box def">
+  <div class="bt">El registro temporizador (RTempo / Watchdog)</div>
+  <p>· Se <b>inicializa con un valor RTMAX</b>.<br>
+  · Se <b>decrementa a cada impulso</b> del cuarzo.<br>
+  · Cuando llega al valor <b>0</b>, genera la <b>interrupción IRQ 0</b> — la <b>Clock Interrupt</b>, que tiene la <b>más alta prioridad</b>.<br>
+  · Durante la interrupción, <b>el temporizador se vuelve negativo</b> (complemento a 2) y sigue contando hasta que el sistema lo rearme.</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · cómo lo derivó en la pizarra<span class="ref">Gestión del tiempo · Voz 002 · 30:48 / Gestión del tiempo · Voz 002 · 38:08 / Gestión del tiempo · Voz 002 · 39:53</span></div><p>Al registro le entra una señal de frecuencia <b>F</b> desde un cuarzo (otro, no el del procesador). El periodo es <b>T = 1/F</b>: con F = 1 GHz, T = 10<sup>−9</sup> s. Cada periodo el registro baja 1: si parte en N, llega a 0 después de <b>Δt = N · T</b>, genera la IRQ 0, y el SO lo vuelve a cargar con N. Ese N es RTMAX. Para una interrupción cada 1 ms con un cuarzo de 1 GHz: N = 10<sup>−3</sup>/10<sup>−9</sup> = 10<sup>6</sup>.</p><p>Y al llegar a 0 no se detiene: sigue bajando a −1, −2, −3… <b>a la misma velocidad</b>, porque depende del mismo cuarzo. Ese valor negativo es lo que se usa después para medir cuánto duró la rutina.</p></div>
+
+
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 800 220" width="800" role="img" aria-label="Diente de sierra del registro temporizador">
+ <g font-family="system-ui,sans-serif" font-size="11.5">
+  <line x1="60" y1="120" x2="770" y2="120" stroke="var(--muted)" stroke-width="1.4"/>
+  <text x="778" y="124" fill="var(--muted)">t</text>
+  <line x1="60" y1="30" x2="60" y2="200" stroke="var(--muted)" stroke-width="1.4"/>
+  <text x="20" y="42" fill="var(--muted)">RTMAX</text>
+  <text x="34" y="124" fill="var(--muted)">0</text>
+
+  <!-- diente 1 -->
+  <line x1="60" y1="38" x2="270" y2="120" stroke="var(--brand)" stroke-width="2.4"/>
+  <line x1="270" y1="120" x2="320" y2="158" stroke="var(--warn)" stroke-width="2.8"/>
+  <line x1="320" y1="158" x2="320" y2="38" stroke="var(--accent)" stroke-width="2.2" stroke-dasharray="4 3"/>
+  <!-- diente 2 -->
+  <line x1="320" y1="38" x2="530" y2="120" stroke="var(--brand)" stroke-width="2.4"/>
+  <line x1="530" y1="120" x2="580" y2="158" stroke="var(--warn)" stroke-width="2.8"/>
+  <line x1="580" y1="158" x2="580" y2="38" stroke="var(--accent)" stroke-width="2.2" stroke-dasharray="4 3"/>
+  <line x1="580" y1="38" x2="760" y2="108" stroke="var(--brand)" stroke-width="2.4"/>
+
+  <circle cx="270" cy="120" r="4" fill="var(--warn)"/><circle cx="530" cy="120" r="4" fill="var(--warn)"/>
+  <text x="270" y="112" text-anchor="middle" fill="var(--warn)" font-weight="700">INTR</text>
+  <text x="530" y="112" text-anchor="middle" fill="var(--warn)" font-weight="700">INTR</text>
+
+  <path d="M270,180 L320,180" stroke="var(--warn)" stroke-width="1.4"/>
+  <text x="295" y="196" text-anchor="middle" fill="var(--warn)" font-size="10.5" font-weight="700">duración t de la rutina</text>
+  <text x="420" y="176" text-anchor="middle" fill="var(--muted)" font-size="10.5">RTempo se vuelve NEGATIVO: su valor absoluto mide cuánto duró la rutina</text>
+  <text x="352" y="52" fill="var(--accent)" font-size="10.5" font-weight="700">reinicialización a RTMAX</text>
+  <path d="M60,26 L270,26" stroke="var(--brand)" stroke-width="1.2"/>
+  <text x="165" y="20" text-anchor="middle" fill="var(--brand)" font-size="10.5" font-weight="700">1 TICK</text>
+ </g>
+</svg>
+</div>
+<figcaption>El diente de sierra del temporizador. El tramo naranja bajo cero es lo que permite al SO <b>medirse a sí mismo</b>: es el truco central de esta clase.</figcaption>
+</figure>
+
+<h3>Los 7 usos del temporizador</h3>
+<ul>
+  <li>Medir el tiempo</li>
+  <li>Generar eventos</li>
+  <li><b>Manejar el quantum de tiempo</b></li>
+  <li>Gestión de <b>time out</b></li>
+  <li>Contabilizar el tiempo (ejecución, respuesta)</li>
+  <li>Gestión de <b>cuotas de usuarios</b></li>
+  <li>Sistemas en tiempo real</li>
+</ul>
+
+<h3>El cálculo de RTMAX — la pregunta más segura del certamen</h3>
+<div class="form">
+  <b>RTMAX = F × TICK</b>
+  <span class="n">F = frecuencia del cuarzo (Hz) · TICK = tiempo deseado entre dos interrupciones del reloj (s).<br>Equivalente: <b>TICK = RTMAX / F</b>.</span>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · el razonamiento, para no memorizar la fórmula</div>
+  <p>El cuarzo da <b>F pulsos por segundo</b>, o sea <b>un pulso cada 1/F segundos</b>. El registro baja de 1 en 1 en cada pulso. Si quiero que tarde TICK segundos en llegar de RTMAX a 0:</p>
+  <p style="text-align:center"><b>RTMAX = TICK / (1/F) = TICK × F</b></p>
+  <p>Es una regla de tres. Si te bloqueas en el certamen, hazla así y sale sola.</p>
+</div>
+
+<details class="ex" open>
+  <summary>Ejemplo 1 · el de la clase <span class="tag">Linux, F = 1 GHz</span></summary>
+  <div class="body">
+    <p>Para procesadores rápidos, Linux usa una interrupción del reloj a <b>1000 veces por segundo</b>, es decir cada 0,001 s = 1 ms = 10<sup>−3</sup> s. Si el cuarzo es de <b>F = 1 GHz</b> (un impulso cada 1×10<sup>−9</sup> s):</p>
+    <pre>RTMAX = TICK / periodo = 10⁻³ / 10⁻⁹ = 10⁶</pre>
+    <p>El registro se carga con <b>1.000.000</b> y va bajando hasta 0.</p>
+  </div>
+</details>
+
+<details class="ex">
+  <summary>Ejemplo 2 · el del certamen 2024 <span class="tag">F = 5 GHz, TICK = 1 ms</span></summary>
+  <div class="body">
+    <p>Sistema ACME: registro RTEMPO con cuarzo de frecuencia <b>F = 5 GHz</b> y un <b>TICK de 1 ms</b>. Calcular el valor inicial de RTEMPO para obtener una interrupción del reloj después de un TICK.</p>
+    <pre>F = 5 GHz = 5 × 10⁹ Hz
+RTEMPO = F × TICK = 5 × 10⁹ × 10⁻³ = <b>5 × 10⁶</b></pre>
+    <div class="box warn" style="margin-top:12px">
+      <div class="bt">Errata de la pauta oficial</div>
+      <p>La pauta 2024 escribe <i>"F = 5Ghz = 5·10<sup>6</sup> Hz"</i>. Eso está mal: 5 GHz = 5·10<sup>9</sup> Hz. En el cálculo siguiente <b>sí usa 5·10<sup>9</sup></b> y llega al resultado correcto. Es un typo, no un cambio de criterio.</p>
+    </div>
+  </div>
+</details>
+</section><section id="rutina">
+<h2>La rutina de interrupción del reloj: TICK y JIFFIES</h2>
+
+<div class="box def">
+  <div class="bt">TICK</div>
+  <p>El <b>tiempo entre dos interrupciones del reloj</b>. Consecuencia directa: <b>la precisión mínima que tiene el sistema para el manejo del tiempo es de un TICK</b>, y <b>el quantum de tiempo es un múltiplo del TICK</b>.</p>
+</div>
+
+<div class="box def">
+  <div class="bt">JIFFIES</div>
+  <p>Contador que Linux mantiene con el <b>tiempo que pasó desde que se inició el sistema</b>. La cantidad de JIFFIES <b>se incrementa cada TICK</b>.</p>
+</div>
+
+<h3>Qué hace la rutina, y con qué frecuencia</h3>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 860 250" width="860" role="img" aria-label="Acciones de la rutina de interrupción del reloj">
+ <defs><marker id="a7" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <rect x="14" y="94" width="126" height="56" rx="9" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="77" y="118" text-anchor="middle" fill="var(--warn)" font-weight="700">Clock Interrupt</text>
+  <text x="77" y="136" text-anchor="middle" fill="var(--muted)" font-size="10.5">IRQ 0 · INTR</text>
+
+  <rect x="200" y="14" width="200" height="34" rx="7" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="300" y="36" text-anchor="middle" fill="var(--brand)" font-size="11.5" font-weight="700">Actualizar la hora real</text>
+  <rect x="200" y="56" width="200" height="34" rx="7" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="300" y="78" text-anchor="middle" fill="var(--brand)" font-size="11.5" font-weight="700">Actualizar la lista de plazos</text>
+  <text x="410" y="56" fill="var(--muted)" font-size="10.5" font-weight="700">CADA TICK</text>
+
+  <rect x="200" y="106" width="200" height="34" rx="7" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="300" y="128" text-anchor="middle" fill="var(--accent)" font-size="11.5" font-weight="700">Actualizar prioridades</text>
+  <rect x="200" y="148" width="200" height="34" rx="7" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="300" y="170" text-anchor="middle" fill="var(--accent)" font-size="11.5" font-weight="700">Actualizar estadísticas</text>
+  <text x="410" y="148" fill="var(--muted)" font-size="10.5" font-weight="700">CADA K TICKS</text>
+
+  <rect x="200" y="198" width="200" height="34" rx="7" fill="var(--ex-soft)" stroke="var(--ex)"/>
+  <text x="300" y="220" text-anchor="middle" fill="var(--ex)" font-size="11.5" font-weight="700">Requisición · conmutación</text>
+  <text x="410" y="214" fill="var(--muted)" font-size="10.5" font-weight="700">CADA N TICKS = FIN DE QUANTUM</text>
+
+  <g stroke="var(--muted)" fill="none" marker-end="url(#a7)">
+    <path d="M140,110 L196,31"/><path d="M140,116 L196,73"/>
+    <path d="M140,122 L196,123"/><path d="M140,128 L196,165"/><path d="M140,140 L196,215"/>
+  </g>
+
+  <rect x="600" y="94" width="248" height="80" rx="9" fill="var(--panel)" stroke="var(--line)"/>
+  <text x="724" y="118" text-anchor="middle" fill="var(--ink)" font-size="11.5" font-weight="700">En Linux</text>
+  <text x="724" y="138" text-anchor="middle" fill="var(--muted)" font-size="11">100 veces/segundo en CPU lentas</text>
+  <text x="724" y="156" text-anchor="middle" fill="var(--muted)" font-size="11">1000 veces/segundo en CPU rápidas</text>
+ </g>
+</svg>
+</div>
+<figcaption>Tres frecuencias distintas dentro de una misma rutina. El fin de quantum es un <b>caso particular</b> de la interrupción del reloj, no una interrupción aparte.</figcaption>
+</figure>
+
+<p>La lista completa de lo que hace la rutina (de la clase y del mini-curso):</p>
+<ol>
+  <li>Mantiene la <b>hora universal</b>.</li>
+  <li>Actualiza los <b>timers</b> asociados a los procesos (lista de plazos).</li>
+  <li>Actualiza las <b>prioridades</b> de las tareas.</li>
+  <li>Hace la <b>contabilidad</b>: tiempo de ejecución, de respuesta, de espera del proceso en ejecución.</li>
+  <li>Cada p interrupciones, hace una <b>conmutación de proceso</b>.</li>
+  <li><b>Rearma el temporizador</b> con el valor RTMAX antes de retornar.</li>
+  <li>Permite <b>recuperar la mano</b> si una tarea no hace ninguna E/S ← la función esencial.</li>
+</ol>
+
+<div class="box warn">
+  <div class="bt">Ojo · por qué la rutina del reloj debe ser lo más corta posible</div>
+  <p>Es <b>la</b> pregunta de esta sección: aparece en 2014, 2016 y 2024. Hay <b>tres</b> razones y conviene dar las tres:</p>
+  <p><b>1. Overhead.</b> Es tiempo en que el SO <b>no ejecuta ninguna tarea</b>: se considera tiempo ocioso. Como la interrupción del reloj ocurre <b>muy frecuentemente</b> (hasta 1000 veces por segundo), un tratamiento caro baja mucho el rendimiento del sistema.</p>
+  <p><b>2. Precisión de la hora.</b> Para que el registro temporizador <b>no pase de los valores negativos de vuelta a 0</b> (es decir, que la rutina no dure más de un TICK completo), lo que arruinaría la corrección de la hora.</p>
+  <p><b>3. Pérdida de interrupciones.</b> Si la rutina dura más que el periodo del reloj y las interrupciones están enmascaradas, se puede <b>perder</b> una interrupción del reloj ⇒ deriva de la hora universal.</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · por qué no subir a 10.000 interrupciones por segundo<span class="ref">Gestión del tiempo · Voz 002 · 49:49 / Gestión del tiempo · Voz 002 · 57:29 / Gestión del tiempo · Voz 002 · 61:08 / Gestión del tiempo · Voz 003 · 05:36</span></div><p>Se ganaría precisión, pero el procesador pasaría demasiado tiempo en la rutina del reloj y el rendimiento caería. Mil por segundo parece mucho, pero en un milisegundo un procesador moderno ejecuta del orden de un millón de instrucciones.</p><p>La parte cara de la rutina es el <b>fin de quantum</b>, porque llama al scheduler: con un TICK de 1 ms y q = 50 ms, <b>el scheduler se llama 20 veces por segundo</b>. Por eso tiene que tomar microsegundos, no milisegundos. Si la rutina se demorara más que un TICK, el registro <i>“daría la vuelta”</i> y se perderían interrupciones.</p><p>Y un detalle que explica todo lo que sigue: <b>la rutina no dura siempre lo mismo</b>. En cada TICK solo actualiza la hora y los timers; cada K TICKS además actualiza prioridades y estadísticas; cada N TICKS además hace el cambio de tarea. Por eso no se puede sumar una constante a la hora: hay que <b>medir</b> cuánto duró cada vez, y para eso está el valor negativo del registro.</p></div>
+
+
+<div class="box libro">
+  <div class="bt">📖 High Resolution Timers</div>
+  <p>En hardware más moderno (Core i3/i5/i7…), Linux maneja <b>timers de alta resolución</b>, del orden de los <b>microsegundos</b>, en vez de estar limitado a la granularidad del TICK.</p>
+</div>
+</section><section id="hora">
+<h2>La hora universal y por qué se atrasa</h2>
+
+<div class="box def">
+  <div class="bt">El tiempo Epoch</div>
+  <p>Linux mantiene la hora universal <b>relativamente al tiempo Epoch</b>, que corresponde al <b>01-01-1970</b>: la fecha en que salió la primera versión de UNIX. Funciones de la biblioteca de programación permiten traducir eso a la hora actual.</p>
+  <p><small><b>Errata:</b> la lámina del curso dice "01-01-1070". Es un typo evidente — <b>1970</b>.</small></p>
+</div>
+
+<h3>La actualización ingenua y por qué está mal</h3>
+<p>Entre dos interrupciones del reloj pasa un TICK, así que uno diría:</p>
+<pre>Hora = Hora + TICK</pre>
+<p><b>Pero…</b> la ejecución de la rutina del reloj toma un tiempo t. Si no se toma en cuenta, <b>la hora universal se atrasa un tiempo t en cada interrupción</b>. Y aquí entra el truco del registro negativo: <b>RTempo se vuelve negativo después de la interrupción, y su valor absoluto determina cuánto se demoró la rutina en ejecutarse</b>.</p>
+
+<div class="form">
+  Hora = Hora + TICK − <b>RTempo / F</b>
+  <span class="n">Con RTempo &lt; 0, el término −RTempo/F es <b>positivo</b> y vale exactamente lo que duró la rutina. Es la actualización correcta al final de la rutina de interrupción.</span>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · las pautas viejas tienen esta fórmula mal escrita</div>
+  <p>Vas a encontrar tres versiones distintas en el material. La <b>única dimensionalmente correcta</b> es la de arriba. Verifícalo tú mismo: <code>[RTempo]</code> son <i>pulsos</i> y <code>[F]</code> son <i>pulsos/segundo</i>, así que <code>RTempo/F</code> son <b>segundos</b>. ✔</p>
+  <ul>
+    <li><b>Clase (correcta):</b> <code>Hora = Hora + TICK − RTempo/F</code> ✔</li>
+    <li><b>Mini-curso (correcta, otra forma):</b> <code>hora = hora + s − RTEMPO·s/N</code>, con s = TICK y N = RTMAX. Como RTMAX = F·TICK, <code>RTEMPO·TICK/RTMAX = RTEMPO/F</code>: es la misma. ✔</li>
+    <li><b>Pauta 2015:</b> <code>hora = hora + TICK − RTempo·Freq/TICK</code> ✘ (dimensionalmente imposible)</li>
+    <li><b>Pauta 2024:</b> <code>hora = hora + TICK + Δt</code> con <code>Δt = F × |RTEMPO|</code> ✘ (debería ser <code>|RTEMPO|/F</code>)</li>
+  </ul>
+  <p>En el certamen escribe la de la clase y, si quieres blindarte, <b>escribe también qué significa cada término</b>. Nadie te va a descontar por eso.</p>
+</div>
+
+<h3>Y aun así se atrasa</h3>
+<pre>void clock_intr()
+{
+    ...
+    time = time + TICK - RTempo/F;
+    return();
+}</pre>
+<p>Aunque corrijas con RTempo, <b>quedan dos instrucciones fuera de la medición</b>:</p>
+<ul>
+  <li>la <b>modificación de la variable</b> <code>time</code> (y el <b>rearme del temporizador</b>),</li>
+  <li>la instrucción <b><code>return()</code></b> de la interrupción.</li>
+</ul>
+<p><b>Conclusión del curso:</b> <i>la hora universal se atrasa algunos nanosegundos en cada interrupción, lo que lleva a <b>minutos de atraso después de días o semanas</b>.</i></p>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · cuánto se atrasa y por qué importa<span class="ref">Gestión del tiempo · Voz 003 · 13:14 / Gestión del tiempo · Voz 003 · 15:00 / Gestión del tiempo · Voz 003 · 19:31</span></div><p>El rearme del temporizador y el <code>return</code> toman quizás 2 o 3 nanosegundos. Parece nada, pero con mil interrupciones por segundo son microsegundos por segundo, milisegundos por hora… y en un servidor que está encendido meses, <b>minutos</b>. Hay además una <b>segunda causa</b>: el cuarzo no es perfecto, su frecuencia varía (por ejemplo con la temperatura), y ese error se suma. No se sabe de cuánto será el desfase, pero va a haber desfase.</p><p>¿Por qué es grave? Por los <b>logs</b> (a qué hora se conectó un cliente) y por las <b>tareas programadas</b>: un respaldo que corría a medianoche empieza a correr a las 00:05, y más tarde todavía, hasta que se sale del tiempo disponible para terminarlo. Los autos sin conexión a Internet tienen el reloj atrasado justamente por esto.</p></div>
+
+
+<div class="box ana">
+  <div class="bt">🎯 Analogía · el cronómetro que no se puede detener a sí mismo</div>
+  <p>Imagina que quieres cronometrar cuánto tardas en apagar un cronómetro. Puedes medir casi todo, pero <b>el gesto final de apretar el botón nunca queda medido</b>, porque es el propio acto de medir. Con el reloj del SO pasa lo mismo: el último tramo (rearmar el timer y retornar) es justamente lo que <b>no puede</b> contabilizarse, porque ocurre después de leer el valor.</p>
+</div>
+
+<h3>NTP — Network Time Protocol</h3>
+<div class="box def">
+  <div class="bt">La solución</div>
+  <p>El computador <b>se sincroniza usando un servidor de tiempo</b>. El servidor mantiene la hora <b>UTC</b> y tiene una <b>tarjeta hardware que recibe la señal de un reloj atómico</b> (EE.UU., Europa). NTP mantiene un reloj de tipo <b>Drifting Clock</b>.</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · de dónde sale la hora correcta<span class="ref">Gestión del tiempo · Voz 003 · 17:59 / Gestión del tiempo · Voz 003 · 21:07 / Gestión del tiempo · Voz 003 · 22:47 / Gestión del tiempo · Voz 003 · 24:26</span></div><p>El celular está a la hora porque la recibe de la red celular; la red la saca de servidores que tienen la hora correcta, y esos la sacan de un <b>reloj atómico</b> (según el profe, hay en Estados Unidos y Europa, no en el hemisferio sur). Los computadores usan <b>NTP</b>: al instalar Linux te pregunta qué servidor usar (por defecto uno de <code>pool.ntp.org</code>) y después se sincroniza solo; Android usa los servidores de Google.</p><p>Lo que se recibe es la hora <b>UTC</b> (la de Greenwich, también llamada GMT), y cada equipo le aplica su zona horaria: en Chile ahora es UTC−3 (UTC−4 más una hora de verano).</p></div>
+
+
+<div class="box warn">
+  <div class="bt">Ojo · la pregunta 3.4 del certamen 2024, que confunde a todos</div>
+  <p><i>"¿Por qué los sistemas NTP no pueden pasar directamente de la hora h a h+Δt de un solo golpe?"</i></p>
+  <p><b>Porque no existirían todos los tiempos intermedios</b>, y <b>algunas tareas programadas del sistema operativo podrían no ejecutarse</b>. Si el reloj salta de 10:00:00 a 10:00:05, todo lo que estaba agendado para los segundos 1, 2, 3 y 4 <b>nunca se dispara</b>.</p>
+  <p>Por eso NTP no "corrige" el reloj de golpe: hace un <b>drifting clock</b>, es decir <b>acelera o frena levemente el ritmo</b> del reloj local hasta que coincida con el servidor. Ningún instante se salta y ningún instante se repite.</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · el microondas y la bicicleta<span class="ref">Gestión del tiempo · Voz 003 · 27:59 / Gestión del tiempo · Voz 003 · 31:53 / Gestión del tiempo · Voz 003 · 36:54 / Gestión del tiempo · Voz 003 · 41:13 / Gestión del tiempo · Voz 003 · 43:17</span></div><p>Cuando el microondas está atrasado, lo pones a la hora de un salto. Si un computador hiciera eso, pasando de las 23:58 a las 00:01, los instantes intermedios <b>nunca existirían</b>, y el respaldo programado para medianoche <b>no se ejecutaría</b> (el cron no encuentra esa hora, porque el tiempo es discreto y se la saltó).</p><p>Lo que hace NTP es como alcanzar en bicicleta a alguien que va delante: <b>aceleras</b> para acercarte y <b>frenas</b> al llegar. En el reloj, un segundo físico “dura” un poco más o un poco menos para el computador hasta que converge. Como es difícil frenar justo, se pasa un poco, luego queda un poco atrás: el reloj termina <b>oscilando</b> alrededor de la hora real, con errores de microsegundos en vez de minutos, y en una escala de minutos, no de segundos. Su imagen: es como <b>un elástico</b> que se estira o se comprime, <i>“pero todos los tiempos van a existir”</i>.</p><p>Dos detalles: al <b>encender</b> el equipo, NTP sí toma la hora y hace el salto (el reloj con pila de la placa madre, la CR2032, probablemente se atrasó mientras estuvo apagado), y después mantiene el reloj oscilante. Y no consulta al servidor todo el tiempo: más o menos cada media hora o una hora.</p></div>
+
+</section><section id="plazos">
+<h2>La lista de plazos (Timers List)</h2>
+
+<div class="box def">
+  <div class="bt">Lista de plazos</div>
+  <p>Contiene una lista de <b>cosas que el sistema tiene que hacer después de un tiempo t o a una hora fija h</b>: despertar una tarea, alarmas, ejecutar una tarea de forma recurrente (<b>CronTab</b>).</p>
+</div>
+<div class="box profe"><div class="bt"><span class="mic"></span>En clase · el huevo, el horno y el ejemplo de 20, 30 y 47 ms<span class="ref">Gestión del tiempo · Voz 003 · 45:53 / Gestión del tiempo · Voz 003 · 51:05 / Gestión del tiempo · Voz 003 · 55:10 / Gestión del tiempo · Voz 003 · 58:48</span></div><p>Con 100 aplicaciones, cada una con sus timers, la solución ingenua es decrementar <b>todos</b> los timers en cada TICK: O(N) a cada rato. La idea mejor la explicó con la cocina: huevo a 3 minutos y horno a 5. En vez de dos timers de 3 y 5, pones uno de 3 y, cuando suena, otro de <b>2</b>. Solo tienes que mirar el primero.</p><p>El ejemplo de la clase es exactamente la figura de abajo: plazos reales de 20, 30 y 47 ms se guardan como <b>20, 10, 17</b>. Para insertar uno de 35 ms se recorre la lista sumando (20, 30…, y 47 ya se pasa), se inserta un <b>5</b> antes del último y el último queda en <b>12</b>. Insertar cuesta O(N), pero se hace <b>una vez</b>; la comprobación de vencimiento se hace en cada TICK y cuesta O(1). <i>“Pago una sola vez, y después todos pagamos O(1)”</i>.</p></div>
+
+
+<h3>Solución simple: plazos absolutos — O(N)</h3>
+<p>Usar una <b>lista enlazada</b> de los plazos. A cada interrupción del reloj, el sistema <b>recorre la lista buscando los plazos vencidos</b>. Para todos los vencidos, cambia el estado de la tarea de <b>BLOQUEADA a LISTA</b>.</p>
+<p><b>Costo: O(N)</b> con N plazos… <b>en cada TICK</b>. Y el TICK ocurre 1000 veces por segundo. Inaceptable.</p>
+
+<h3>Solución eficiente: plazos relativos — O(1)</h3>
+<p>Mantener una lista con <b>plazos relativos</b>: cada elemento guarda <b>cuánto falta respecto del anterior</b>, no la hora absoluta.</p>
+
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 840 260" width="840" role="img" aria-label="Lista de plazos absolutos vs relativos">
+ <defs><marker id="a8" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="var(--muted)"/></marker></defs>
+ <g font-family="system-ui,sans-serif" font-size="12">
+  <text x="14" y="22" fill="var(--warn)" font-weight="700" font-size="13">Plazos ABSOLUTOS — hay que revisar toda la lista en cada TICK · O(N)</text>
+  <g>
+   <rect x="20" y="36" width="150" height="46" rx="8" fill="var(--panel)" stroke="var(--warn)"/>
+   <text x="95" y="55" text-anchor="middle" fill="var(--ink)" font-weight="700">Tarea B</text>
+   <text x="95" y="72" text-anchor="middle" fill="var(--muted)" font-size="11">plazo real 20 ms</text>
+   <rect x="200" y="36" width="150" height="46" rx="8" fill="var(--panel)" stroke="var(--warn)"/>
+   <text x="275" y="55" text-anchor="middle" fill="var(--ink)" font-weight="700">Tarea A</text>
+   <text x="275" y="72" text-anchor="middle" fill="var(--muted)" font-size="11">plazo real 30 ms</text>
+   <rect x="380" y="36" width="150" height="46" rx="8" fill="var(--panel)" stroke="var(--warn)"/>
+   <text x="455" y="55" text-anchor="middle" fill="var(--ink)" font-weight="700">Tarea D</text>
+   <text x="455" y="72" text-anchor="middle" fill="var(--muted)" font-size="11">plazo real 35 ms</text>
+   <rect x="560" y="36" width="150" height="46" rx="8" fill="var(--panel)" stroke="var(--warn)"/>
+   <text x="635" y="55" text-anchor="middle" fill="var(--ink)" font-weight="700">Tarea C</text>
+   <text x="635" y="72" text-anchor="middle" fill="var(--muted)" font-size="11">plazo real 47 ms</text>
+   <g stroke="var(--muted)" fill="none" marker-end="url(#a8)">
+     <path d="M170,59 L196,59"/><path d="M350,59 L376,59"/><path d="M530,59 L556,59"/>
+   </g>
+  </g>
+
+  <text x="14" y="132" fill="var(--accent)" font-weight="700" font-size="13">Plazos RELATIVOS — solo se decrementa el primero · O(1)</text>
+  <g>
+   <rect x="20" y="146" width="150" height="60" rx="8" fill="var(--accent-soft)" stroke="var(--accent)"/>
+   <text x="95" y="168" text-anchor="middle" fill="var(--accent)" font-weight="700">Tarea B</text>
+   <text x="95" y="186" text-anchor="middle" fill="var(--ink)" font-size="14" font-weight="700">20 ms</text>
+   <text x="95" y="200" text-anchor="middle" fill="var(--muted)" font-size="10">(real: 20)</text>
+   <rect x="200" y="146" width="150" height="60" rx="8" fill="var(--panel)" stroke="var(--accent)"/>
+   <text x="275" y="168" text-anchor="middle" fill="var(--ink)" font-weight="700">Tarea A</text>
+   <text x="275" y="186" text-anchor="middle" fill="var(--ink)" font-size="14" font-weight="700">10 ms</text>
+   <text x="275" y="200" text-anchor="middle" fill="var(--muted)" font-size="10">(real: 30)</text>
+   <rect x="380" y="146" width="150" height="60" rx="8" fill="var(--panel)" stroke="var(--accent)"/>
+   <text x="455" y="168" text-anchor="middle" fill="var(--ink)" font-weight="700">Tarea D</text>
+   <text x="455" y="186" text-anchor="middle" fill="var(--ink)" font-size="14" font-weight="700">5 ms</text>
+   <text x="455" y="200" text-anchor="middle" fill="var(--muted)" font-size="10">(real: 35)</text>
+   <rect x="560" y="146" width="150" height="60" rx="8" fill="var(--panel)" stroke="var(--accent)"/>
+   <text x="635" y="168" text-anchor="middle" fill="var(--ink)" font-weight="700">Tarea C</text>
+   <text x="635" y="186" text-anchor="middle" fill="var(--ink)" font-size="14" font-weight="700">12 ms</text>
+   <text x="635" y="200" text-anchor="middle" fill="var(--muted)" font-size="10">(real: 47)</text>
+   <g stroke="var(--muted)" fill="none" marker-end="url(#a8)">
+     <path d="M170,176 L196,176"/><path d="M350,176 L376,176"/><path d="M530,176 L556,176"/>
+   </g>
+  </g>
+  <path d="M95,214 L95,232" stroke="var(--accent)" stroke-width="1.6" fill="none" marker-end="url(#a8)"/>
+  <text x="112" y="238" fill="var(--accent)" font-size="11.5" font-weight="700">en cada TICK solo se decrementa ESTE. Si llega a 0, vence (y pueden vencer varios seguidos con 0).</text>
+ </g>
+</svg>
+</div>
+<figcaption>La misma información, guardada de otra forma. 20 + 10 = 30, 30 + 5 = 35, 35 + 12 = 47: los plazos reales se recuperan sumando.</figcaption>
+</figure>
+
+<div class="tw">
+<table>
+<thead><tr><th></th><th>Búsqueda de plazos vencidos</th><th>Inserción de un plazo</th><th>Frecuencia de la operación</th></tr></thead>
+<tbody>
+<tr><td><b>Absolutos</b></td><td>O(N) — hay que revisar toda la lista</td><td>O(1) o O(N)</td><td>Búsqueda: <b>en cada TICK</b> 😱</td></tr>
+<tr><td><b>Relativos</b></td><td><b>O(1)</b> — solo se decrementa el primero</td><td>O(N) — hay que recorrer sumando para encontrar el lugar y reajustar el siguiente</td><td>Inserción: <b>poco frecuente</b> 👍</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · la moraleja de diseño (y una idea de Estructuras de Datos)</div>
+  <p>Es un <b>trade-off clásico</b>: se empeora la operación <b>rara</b> (insertar un timer) para mejorar la operación <b>frecuentísima</b> (comprobar si venció algo, 1000 veces por segundo). <b>Optimiza el caso común, no el caso elegante.</b></p>
+  <p>Es el mismo razonamiento que en el CFS: pagar O(log N) al insertar para tener O(1) al elegir. Si te preguntan por qué un SO elige una estructura de datos, la respuesta casi siempre es <b>"porque la operación que se repite millones de veces tiene que ser O(1)"</b>.</p>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · el certamen 2016 pregunta por actualizar cada 5 TICKS</div>
+  <p><i>"¿Cuáles son las consecuencias positivas y negativas si el sistema actualiza la lista de plazos cada 5 TICKS en vez de cada TICK?"</i></p>
+  <p><b>Positiva:</b> baja el <b>overhead</b> — el trabajo de recorrer/decrementar la lista se hace 5 veces menos seguido, así que queda más CPU para las tareas.</p>
+  <p><b>Negativa:</b> se <b>pierde precisión</b>: un plazo puede vencer hasta 5 TICKS tarde. La granularidad efectiva del sistema pasa de 1 TICK a 5 TICKS, lo que es grave para timers finos y letal para un sistema de tiempo real.</p>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · y el 2016 también pregunta lo contrario</div>
+  <p><i>"Si el sistema quiere ganar precisión, baja el TICK de 20 ms a 10 ms. ¿Qué consecuencias negativas tiene?"</i></p>
+  <p><b>1.</b> El doble de interrupciones del reloj por segundo ⇒ el <b>doble de overhead</b> de la rutina del reloj.<br>
+  <b>2.</b> Como <b>q = N × TICK</b>, si N no cambia, el <b>quantum se reduce a la mitad</b> ⇒ más conmutaciones ⇒ más overhead todavía.<br>
+  <b>3.</b> El tiempo de la rutina del reloj pasa a ser una fracción mayor del TICK, y se acerca el riesgo de que la rutina no alcance a terminar dentro de un TICK.</p>
+  <p><i>(Comparar con la P3.2 del 2024, que pregunta lo mismo pidiendo también el lado positivo: mayor precisión de la hora, que se actualiza más frecuentemente.)</i></p>
+</div>
+</section><section id="t4-receta"><h2>Receta: los cálculos de gestión del tiempo</h2><h3>Receta 6 · Los cálculos de gestión del tiempo</h3>
+<div class="tw">
+<table>
+<thead><tr><th>Te piden…</th><th>Usa</th><th>Ojo con</th></tr></thead>
+<tbody>
+<tr><td>El valor inicial del registro temporizador</td><td><b>RTMAX = F × TICK</b></td><td>Pasar GHz a Hz (×10<sup>9</sup>) y ms a s (×10<sup>−3</sup>)</td></tr>
+<tr><td>El TICK dado RTMAX y F</td><td><b>TICK = RTMAX / F</b></td><td>Lo mismo al revés</td></tr>
+<tr><td>El quantum</td><td><b>q = N × TICK</b></td><td>El quantum siempre es un <b>múltiplo entero</b> del TICK</td></tr>
+<tr><td>Cuánto duró la rutina de interrupción</td><td><b>Δt = |RTempo| / F</b></td><td>RTempo es negativo al final de la rutina</td></tr>
+<tr><td>La corrección de la hora</td><td><b>Hora = Hora + TICK − RTempo/F</b></td><td>El signo: RTempo &lt; 0 ⇒ el término suma</td></tr>
+<tr><td>Espera máxima en RR</td><td><b>t<sub>max</sub> = (N − 1) · q</b></td><td>Es cota superior; agrega N·Δt si te piden rigor</td></tr>
+<tr><td>El quantum del CFS</td><td><b>t<sub>max</sub> = t<sub>wait</sub> / N</b></td><td>N es la cantidad <b>total</b> de tareas</td></tr>
+</tbody>
+</table>
+</div>
+<div class="box tip"><div class="bt">Más práctica del certamen 2016</div><p>Las preguntas 3.x del certamen 2016 (actualizar la lista de plazos cada 5 TICKS, bajar el TICK de 20 a 10 ms, actualizar prioridades cada K TICKS) están resueltas en la <a class="inl" href="3-Scheduling.html#d1">página 3</a>, junto con la sección 2 de ese certamen.</p></div></section><section id="t4-videos">
+<h2>Videos del tema</h2>
+<p class="lead">Elegidos después de revisar decenas de candidatos. De cada uno se transcribió el audio para comprobar qué explica y en qué minuto; los marcados como recomendados son los que más se parecen a lo que pregunta el profe.</p>
+
+<div class="box tip"><div class="bt">Cómo ver estos videos en español</div>
+<p><b>Audio en español:</b> en los marcados “Audio en español (doblaje)”, ⚙ Configuración → <b>Pista de audio</b> → Español. Es un doblaje automático de YouTube; se entiende bien.<br>
+<b>Subtítulos:</b> en los que están solo en inglés, activa CC y luego ⚙ → Subtítulos → <b>Traducir automáticamente</b> → Español.</p></div>
+<div class="box warn"><div class="bt">Ojo con la nomenclatura de los videos</div>
+<p>El profe usa la escuela francesa. En los videos vas a oír: <b>SJF</b> = SJN · <b>SRTF / SRT</b> = SRTN · <b>SPN</b> = SJN · <b>HRRN</b> = HPRN (no entra) · <b>preemptive / apropiativo</b> = con requisición · <b>non-preemptive / no apropiativo</b> = sin interrupción · <b>MLFQ / feedback</b> ≈ MLQ del profe · <b>turnaround time</b> = lo que el profe llama <b>tiempo de respuesta</b>. Cuidado: <b>response time</b> en OSTEP y en muchos videos es otra cosa (el tiempo hasta que la tarea se ejecuta por primera vez).</p></div>
+<div class="vgrid">
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=e5g8eYKEhMw" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/e5g8eYKEhMw/mqdefault.jpg" alt=""><span class="rk">RECOMENDADO</span><span class="dur">19:41</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=e5g8eYKEhMw" target="_blank" rel="noopener">What Happens When a Program Calls Sleep?</a>
+    <div class="ch">Core Dumped · 19:41 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>El video que más se parece a esta clase. Un temporizador de hardware que cuenta hacia abajo desde un valor, por qué esperar con loops de NOP desperdicia CPU, el SO apropiativo que recupera el procesador con la interrupción del timer, la cola de procesos dormidos ordenada con <b>tiempos relativos</b> (la lista de plazos) y por qué un <code>sleep(n)</code> garantiza dormir <b>al menos</b> n: al despertar, la tarea pasa a la cola de listas.</p>
+    <div class="ver"><b>Qué ver:</b> Completo. Si hay poco tiempo: 1:30-3:30 (temporizador), 8:24-11:24 (interrupción del timer y cola de listos) y 12:30-19:00 (cola de dormidos y el “al menos”).</div>
+    
+  </div>
+</div>
+<div class="vcard top">
+  <a class="th" href="https://www.youtube.com/watch?v=g_koa00MBLg" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/g_koa00MBLg/mqdefault.jpg" alt=""><span class="rk">RECOMENDADO</span><span class="dur">31:17</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=g_koa00MBLg" target="_blank" rel="noopener">How do hardware timers work?</a>
+    <div class="ch">Ben Eater · 31:17 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Ben Eater programa el temporizador de un computador de 8 bits hecho en protoboard. Carga un contador que baja con cada pulso del reloj: a 1 MHz, 50.000 cuentas son 50 ms, que es <b>RTMAX = F × tiempo</b>. Después lo pone a interrumpir cada 10 ms y en la rutina incrementa un contador <code>ticks</code>, que es exactamente la idea de JIFFIES, y lo usa para medir intervalos sin bloquear el programa.</p>
+    <div class="ver"><b>Qué ver:</b> 1:10-4:40 (por qué no esperar con loops de NOP), 5:36-14:54 (cuenta regresiva y el cálculo del valor inicial), 14:54-22:25 (interrupción cada 10 ms y el contador de ticks).</div>
+    <p class="oj">Ojo: Es un procesador 6502 a 1 MHz; los números cambian, la idea es la misma.</p>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=G7bqvpAw7HE" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/G7bqvpAw7HE/mqdefault.jpg" alt=""><span class="dur">9:51</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=G7bqvpAw7HE" target="_blank" rel="noopener">How Interrupts Work in Modern Computers</a>
+    <div class="ch">BitLemon · 9:51 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>En 10 minutos: por qué las interrupciones son mejores que preguntar a cada rato (polling), interrupciones de hardware contra excepciones (división por cero, page fault), cómo llegan al procesador, el número de vector que indica la rutina, y los tres pasos: salvar el estado, ejecutar la rutina y restaurar.</p>
+    <div class="ver"><b>Qué ver:</b> Completo.</div>
+    
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=1HHeyUVz43k" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/1HHeyUVz43k/mqdefault.jpg" alt=""><span class="dur">13:14</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=1HHeyUVz43k" target="_blank" rel="noopener">How Hardware Assist Software When Multitasking</a>
+    <div class="ch">Core Dumped · 13:14 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Qué pasa con los registros cuando se interrumpe una tarea: la rutina tiene que guardarlos (con cuidado con el stack pointer) antes de hacer cualquier cosa, y cómo el hardware ayuda guardando automáticamente el PC. Es la lámina de la pila y el paso previo a la conmutación de tareas.</p>
+    <div class="ver"><b>Qué ver:</b> 0:00-5:20 y 6:20-12:30.</div>
+    
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=DlEa8kd7n3Q" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/DlEa8kd7n3Q/mqdefault.jpg" alt=""><span class="dur">27:35</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=DlEa8kd7n3Q" target="_blank" rel="noopener">Hardware interrupts</a>
+    <div class="ch">Ben Eater · 27:35 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Interrupciones vistas en hardware real: la línea IRQ (enmascarable) contra la NMI (no enmascarable), la dirección de la rutina en una tabla fija de la memoria, una rutina que incrementa un contador y vuelve, y por qué a veces hay que deshabilitar las interrupciones mientras se lee un dato que la rutina modifica.</p>
+    <div class="ver"><b>Qué ver:</b> 0:49-3:32 (IRQ, NMI y tabla de vectores), 12:18-14:30 (habilitar interrupciones) y 17:58-22:06 (NMI).</div>
+    <p class="oj">Ojo: Largo (28 min) y con mucho detalle de electrónica. Opcional.</p>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=xs5iOwkX9fU" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/xs5iOwkX9fU/mqdefault.jpg" alt=""><span class="dur">19:40</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=xs5iOwkX9fU" target="_blank" rel="noopener">Why CPU Time ≠ Wall Clock Time! (Computerphile)</a>
+    <div class="ch">Computerphile · 19:40 min</div>
+    <div class="tags"><span class="lt sub">Inglés · subtítulos</span></div>
+    <p>Cómo obtiene la hora un computador: un contador que parte en cero al encender (la idea de JIFFIES) más un desfase que se toma del reloj con pila o de NTP, referido al Epoch de 1970. Explica la <b>segunda causa</b> del atraso: el cristal no oscila exactamente a su frecuencia nominal y cambia con la temperatura (en su ejemplo, perdería unos 2 segundos al día). Y por qué NTP corrige de a poco en vez de saltar.</p>
+    <div class="ver"><b>Qué ver:</b> 2:13-5:30 (contador desde el arranque, Epoch) y 10:25-12:50 (el cristal no es exacto y NTP ajusta de a poco).</div>
+    <p class="oj">Ojo: Pese al título, no trata la diferencia entre tiempo de ejecución y de respuesta de una tarea.</p>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=BAo5C2qbLq8" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/BAo5C2qbLq8/mqdefault.jpg" alt=""><span class="dur">10:40</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=BAo5C2qbLq8" target="_blank" rel="noopener">Network Time Protocol (NTP) · Computerphile</a>
+    <div class="ch">Computerphile · 10:40 min</div>
+    <div class="tags"><span class="lt sub">Inglés · subtítulos</span></div>
+    <p>Cómo funciona NTP: las marcas de tiempo para estimar el retardo de la red, el ajuste <b>gradual</b> del reloj (“en vez de avanzar un segundo, avanza 0,99” para no dar saltos), los estratos (el estrato 0 es un reloj atómico o GPS) y cada cuánto se consulta.</p>
+    <div class="ver"><b>Qué ver:</b> 3:19-7:30.</div>
+    <p class="oj">Ojo: Solo en inglés con subtítulos automáticos. En español con doblaje está el de CertBros (abajo).</p>
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=oCtkwEjhyD4" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/oCtkwEjhyD4/mqdefault.jpg" alt=""><span class="dur">10:13</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=oCtkwEjhyD4" target="_blank" rel="noopener">NTP Explained · Network Time Protocol</a>
+    <div class="ch">CertBros · 10:13 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Explicación de NTP desde redes: para qué se sincroniza la hora, servidores y estratos, cliente y servidor. Sirve como alternativa en español al de Computerphile.</p>
+    <div class="ver"><b>Qué ver:</b> Completo (10 min). La configuración en equipos Cisco del final no es materia.</div>
+    
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=_2By2ane2I4" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/_2By2ane2I4/mqdefault.jpg" alt=""><span class="dur">17:35</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=_2By2ane2I4" target="_blank" rel="noopener">How a quartz watch works – its heart beats 32,768 times a second</a>
+    <div class="ch">Steve Mould · 17:35 min</div>
+    <div class="tags"><span class="lt dub">Audio en español (doblaje)</span></div>
+    <p>Por qué se usa un cristal de cuarzo para contar el tiempo, cómo vibra y a qué frecuencia. Es el “cuarzo” que alimenta al registro reloj y al temporizador de la clase, y ayuda a entender por qué no es perfecto.</p>
+    <div class="ver"><b>Qué ver:</b> Opcional, por curiosidad. Tiene doblaje latinoamericano.</div>
+    
+  </div>
+</div>
+<div class="vcard">
+  <a class="th" href="https://www.youtube.com/watch?v=CVLCLpHYJxM" target="_blank" rel="noopener"><img loading="lazy" src="https://i.ytimg.com/vi/CVLCLpHYJxM/mqdefault.jpg" alt=""><span class="dur">6:35</span></a>
+  <div class="vb">
+    <a class="vt" href="https://www.youtube.com/watch?v=CVLCLpHYJxM" target="_blank" rel="noopener">Interrupciones por hardware (Arquitectura de Computadoras UNLP)</a>
+    <div class="ch">Arquitectura de Computadoras UNLP · 6:35 min</div>
+    <div class="tags"><span class="lt es">En español</span></div>
+    <p>Explicación en español, corta, de cómo un dispositivo interrumpe a la CPU y qué hace el procesador. Complemento en español para la parte de interrupciones.</p>
+    <div class="ver"><b>Qué ver:</b> Completo (7 min). Sigue con <a class=inl href="https://www.youtube.com/watch?v=GUSGY_OYbtQ" target="_blank">Vector de interrupciones</a> (10 min).</div>
+    
+  </div>
+</div>
+</div>
+</section><section id="c2">
+<h2>C2 · Certamen 2024-1, sección 3 <span class="num">Gestión del tiempo e interrupciones · 35 pts</span></h2>
+
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+  <p>El sistema ACME tiene un registro temporizador <b>RTEMPO</b> asociado a un cuarzo de frecuencia <b>F = 5 GHz</b>. El sistema maneja un <b>TICK de 1 ms</b>.</p>
+  <p><b>3.1</b> Calcular el valor inicial de RTEMPO para obtener una interrupción del reloj después de un TICK.<br>
+  <b>3.2</b> Cada N TICKs el sistema termina el quantum. ¿Qué consecuencia tiene bajar el valor del TICK sobre el quantum y sobre la actualización de la hora?<br>
+  <b>3.3</b> ¿Por qué la hora local de un SO se atrasa?<br>
+  <b>3.4</b> ¿Por qué NTP no puede pasar directamente de la hora h a h + Δt de un solo golpe?<br>
+  <b>3.5</b> ¿Por qué el tiempo de ejecución del algoritmo de scheduling tiene que ser el más corto posible?</p>
+</div>
+
+<details class="ex">
+  <summary>Solución completa <span class="tag">5 preguntas de 7 pts</span></summary>
+  <div class="body">
+    <div class="sol">
+      <div class="st">3.1</div>
+      <pre>F = 5 GHz = 5 × 10⁹ Hz
+TICK = 1 ms = 10⁻³ s
+
+RTEMPO = F × TICK = 5 × 10⁹ × 10⁻³ = <b>5 × 10⁶</b></pre>
+      <p><i>Nota:</i> la pauta oficial escribe "5 GHz = 5·10⁶ Hz", que es un typo; el cálculo siguiente sí usa 5·10⁹.</p>
+    </div>
+    <div class="sol">
+      <div class="st">3.2</div>
+      <p>Bajar el TICK <b>disminuye el valor del quantum</b>, dado que <b>q = N × TICK</b>, y <b>aumenta la precisión de la hora</b> del computador, que se actualiza de forma más frecuente.</p>
+      <p><i>Si te sobra espacio, agrega el lado negativo (el 2016 sí lo pregunta):</i> más interrupciones por segundo ⇒ más overhead de la rutina del reloj, y más conmutaciones porque el quantum bajó.</p>
+    </div>
+    <div class="sol">
+      <div class="st">3.3</div>
+      <p>Porque hay <b>dos instrucciones</b> —<b>rearmar el temporizador</b> y el <b><code>return</code> de la interrupción</b>— que <b>no se pueden tomar en cuenta</b> al momento de calcular el tiempo Δt que se demora la rutina de interrupción (con Δt = |RTEMPO| / F). Así, el Δt medido es <b>inferior</b> al real, y el cálculo <code>hora = hora + TICK + Δt</code> queda corto. Ese error se acumula en cada interrupción.</p>
+    </div>
+    <div class="sol">
+      <div class="st">3.4</div>
+      <p>Porque <b>no existirían todos los tiempos intermedios</b>, y algunas <b>tareas programadas del sistema operativo podrían no ejecutarse</b>. Por eso NTP ajusta el reloj como un <i>drifting clock</i>: acelerándolo o frenándolo.</p>
+    </div>
+    <div class="sol">
+      <div class="st">3.5</div>
+      <p>Porque si es demasiado grande, <b>este tiempo se vuelve no despreciable frente al valor del quantum</b> de tiempo, y <b>el rendimiento del computador baja</b>.</p>
+    </div>
+    <div class="box tip">
+      <div class="bt">Fíjate en el patrón de las respuestas</div>
+      <p>Cuatro de las cinco terminan en la <b>misma idea</b>: <i>el SO no debe gastar en administrarse lo que debería gastar en ejecutar tareas</i>. Si en el certamen te aparece una pregunta de gestión del tiempo que no sabes, apuesta por una respuesta que hable de <b>overhead</b> y de <b>rendimiento del computador</b>: es casi siempre por ahí.</p>
+    </div>
+  </div>
+</details>
+</section>
+<section id="c4">
+<h2>C4 · Certamen 2 2023-1, sección 2 <span class="num">Gestión del tiempo e interrupciones · 42 pts</span></h2>
+<div class="box def"><div class="bt">Por qué está aquí</div>
+<p>En 2023 la gestión del tiempo se evaluó en el Certamen 2 (el resto de ese certamen es memoria, que es de la Unidad 2). El escaneo muestra solo las preguntas 2.1 y 2.2 de esta sección, aunque anuncia 42 puntos a 6 por pregunta, así que probablemente faltan hojas. La 2.1 es idéntica a la del C1 2024.</p></div>
+<div class="enun"><div class="et">ENUNCIADO</div>
+<p>El sistema ACME tiene un registro temporizador RTEMPO asociado a un cuarzo de <b>F = 5 GHz</b> y maneja un <b>TICK de 1 ms</b>. <b>2.1</b> Calcular el valor inicial de RTEMPO para obtener una interrupción del reloj después de un TICK.</p>
+<p>Cada K TICKS, ACME actualiza la lista de plazos, y cada N TICKS termina el quantum de tiempo. <b>2.2</b> ¿Qué consecuencia tiene bajar el valor del TICK sobre la lista de plazos, el quantum de tiempo y la actualización de la hora del reloj?</p></div>
+<details class="ex"><summary>Solución <span class="tag">RTEMPO = 5·10⁶</span></summary><div class="body">
+<p><b>2.1</b> RTEMPO = F × TICK = 5·10<sup>9</sup> × 10<sup>−3</sup> = <b>5·10<sup>6</sup></b>.</p>
+<p><b>2.2</b> Si baja el TICK (y K y N no cambian):</p>
+<ul>
+<li><b>Lista de plazos:</b> se actualiza cada K·TICK, o sea más seguido: los plazos se cumplen con más precisión, pero se gasta más tiempo recorriéndola.</li>
+<li><b>Quantum:</b> q = N·TICK <b>disminuye</b> ⇒ más conmutaciones y más llamadas al scheduler (más overhead), aunque se favorece a las tareas cortas.</li>
+<li><b>Hora:</b> se actualiza más seguido ⇒ <b>más precisa</b>. Pero hay más interrupciones por segundo, y como en cada una se pierden algunos nanosegundos (rearme y return), la hora tiende a atrasarse más rápido.</li>
+<li>En general: más interrupciones del reloj ⇒ más costo de gestión y menos rendimiento.</li>
+</ul>
+</div></details>
+</section>
+
+<section id="ay3-1">
+<h2>Ayudantía 3 · 1. Quantum y overhead <span class="num">pauta oficial</span></h2>
+<div class="enun"><div class="et">ENUNCIADO</div>
+<p>Sistema en tiempo compartido; cada tarea usa la totalidad de su quantum q, y hay un overhead de s ms en cada conmutación.</p>
+<p><b>1.1</b> Calcular la razón entre el tiempo total usado por una tarea y el tiempo útil, y el costo (overhead) de la conmutación.<br>
+Ahora q = 100 ms, s = 1 ms, T1 necesita 20 ms de cálculo y T2 500 ms. <b>1.2</b> ¿Cuál es la duración total de cada tarea (CPU + conmutación)? ¿Qué porcentaje pierde cada una en conmutación? <b>1.3</b> ¿Qué criterios permiten elegir el valor del quantum?</p></div>
+<details class="ex"><summary>Solución <span class="tag">(q+s)/q · T1 21 ms (≈5 %) · T2 505 ms (≈1 %)</span></summary><div class="body">
+<p><b>1.1</b> Tiempo total / tiempo útil = <b>(q + s)/q</b>; el overhead es <b>s/q</b>. El porcentaje perdido <b>aumenta</b> si las tareas no usan todo su quantum.</p>
+<p><b>1.2</b> T1 usa menos de un quantum: una sola conmutación al terminar ⇒ <b>21 ms</b>, pierde 1/21 ≈ <b>5 %</b>. T2 usa 5 quanta ⇒ 5 conmutaciones ⇒ <b>505 ms</b>, pierde 5/505 ≈ <b>1 %</b>. Las tareas cortas pierden proporcionalmente más; por eso el scheduler tiene que ser muy eficiente.</p>
+<p><b>1.3</b> Es un compromiso. Si q es <b>pequeño</b>, se multiplican las conmutaciones y el overhead se vuelve significativo, pero las tareas cortas recuperan el procesador más rápido. Si q es <b>grande</b>, s/q es pequeño y se pierde poco en conmutar, pero se perjudica a las cortas: con N tareas, una nueva espera en el peor caso <b>(N−1)·q</b>, que puede ser largo comparado con su duración. Depende de cuántas tareas acepte el sistema: con pocas tareas se puede usar un quantum más grande sin perjudicar mucho a las cortas.</p>
+</div></details>
+</section>
+
+<section id="ay3-2">
+<h2>Ayudantía 3 · 2. La interrupción del reloj <span class="num">pauta oficial</span></h2>
+<div class="enun"><div class="et">ENUNCIADO</div>
+<p>Procesador de 64 bits con un registro temporizador RTEMPO en complemento a 2, asociado a un cuarzo de <b>1 GHz</b>, que se decrementa en 1 por impulso y genera la IRQ 0 al llegar a 0. La interrupción del reloj sirve para mantener la hora universal, conmutar tareas, contabilizar tiempos, mantener la lista de plazos y actualizar prioridades.</p>
+<p><b>2.1</b> Si se quiere una interrupción cada 10 ms, ¿cuál es RTMAX? <b>2.2</b> ¿Por qué RTEMPO sigue decrementándose después de llegar a 0? <b>2.3</b> Ventajas y desventajas de un TICK pequeño o grande. <b>2.4</b> ¿Por qué la hora del computador no se puede atrasar demasiado y de forma permanente? <b>2.5</b> ¿Por qué un algoritmo tipo NTP no puede saltar directo a la hora del servidor?</p></div>
+<details class="ex"><summary>Solución <span class="tag">RTMAX = 10⁷</span></summary><div class="body">
+<p><b>2.1</b> El registro se decrementa 10<sup>9</sup> veces por segundo; 10 ms = 10<sup>−2</sup> s ⇒ <b>RTMAX = 10<sup>9</sup> × 10<sup>−2</sup> = 10<sup>7</sup></b>.</p>
+<p><b>2.2</b> Porque RTEMPO no solo maneja el quantum: también sirve para la hora universal, y el tiempo no se detiene mientras corre la rutina. Hay que contabilizar lo que dura la propia rutina del reloj, que es |RTEMPO| al final de ella. La hora se actualiza con <b>hora = hora + (RTMAX + |RTEMPO|)/F = hora + TICK + |RTEMPO|/F</b> (la misma fórmula de la clase, escrita con el valor absoluto).</p>
+<p><b>2.3</b> TICK <b>pequeño</b>: más precisión en el manejo del tiempo (el TICK es la precisión máxima), pero más interrupciones ⇒ más costo de gestión ⇒ baja el rendimiento. TICK <b>grande</b>: menos precisión y menos opciones para el quantum (es múltiplo del TICK), pero menos costo y mejor rendimiento.</p>
+<p><b>2.4</b> Porque el SO ejecuta tareas a horas determinadas: si el respaldo de todas las noches a las 00:00 se corre cada vez más, después de meses podría ocurrir de día y molestar a quienes trabajan con esos archivos. Por eso se sincroniza con NTP, cuyo servidor se alinea con un reloj atómico.</p>
+<p><b>2.5</b> Saltar significa que los tiempos intermedios <b>no existen</b> para el SO, y las tareas programadas en ese intervalo no se ejecutan (si salta de 23:59 a 00:01, no se hace el respaldo de las 00:00). La nota de la pauta insiste: <i>todos los tiempos deben existir</i>; el tiempo se <b>comprime o dilata</b> para llegar a la hora real pasando por todos los estados intermedios.</p>
+</div></details>
+</section>
+
+<section id="ay3-3">
+<h2>Ayudantía 3 · 3. El costo del TICK <span class="num">pauta oficial, con una errata</span></h2>
+<div class="enun"><div class="et">ENUNCIADO</div>
+<p>En cada TICK el SO actualiza la hora y la lista de plazos (Δt<sub>1</sub>). Cada K TICKS actualiza prioridades y contabilidad (Δt<sub>2</sub>). Cada N TICKS (N múltiplo de K) saca a la tarea, llama al scheduler y conmuta (Δt<sub>3</sub>).</p>
+<p><b>3.1</b> Calcular p, la proporción del tiempo que el SO pasa en gestión. <b>3.2</b> Con TICK = 10 ms, Δt<sub>1</sub> = 100 µs, Δt<sub>2</sub> = 150 µs, K = 5, Δt<sub>3</sub> = 500 µs, N = 10. <b>3.3</b> Igual, pero con q = 40 ms y K = 2. <b>3.4</b> Igual que 3.2 pero con N = 50. <b>3.5</b> Ventajas y desventajas de un quantum pequeño o grande.</p></div>
+<details class="ex"><summary>Solución <span class="tag">1,8 % · 3 % · 1,4 %</span></summary><div class="body">
+<p><b>3.1</b> En un quantum (N TICKS) el SO gasta N·Δt<sub>1</sub> + (N/K)·Δt<sub>2</sub> + Δt<sub>3</sub>:</p>
+<div class="form"><b>p = ( N·Δt<sub>1</sub> + (N/K)·Δt<sub>2</sub> + Δt<sub>3</sub> ) / ( N·TICK )</b></div>
+<p><b>3.2</b> q = 10 × 10 ms = 100 ms. p = (10×100 + 2×150 + 500) µs / 100 ms = 1800 µs / 100 ms = <b>1,8 %</b>.</p>
+<p><b>3.3</b> q = 40 ms ⇒ N = 4, y K = 2 ⇒ N/K = 2. p = (4×100 + 2×150 + 500) µs / 40 ms = 1200 µs / 40 ms = <b>3 %</b>.</p>
+<div class="box warn"><div class="bt">Errata de la pauta</div><p>La pauta calcula con K = 5 (4/5 × 150) aunque el enunciado dice K = 2, y además 1020 µs / 40 ms es 2,55 %, no 2,94 %. Con los datos del enunciado el resultado es 3 %. En cualquier caso la conclusión es la misma: al achicar el quantum, p sube.</p></div>
+<p><b>3.4</b> N = 50 ⇒ q = 500 ms. p = (50×100 + 10×150 + 500) µs / 500 ms = 7000 µs / 500 ms = <b>1,4 %</b>.</p>
+<p><b>Lectura de los tres resultados:</b> el costo por TICK (Δt<sub>1</sub>) se paga siempre; lo que cambia es cuántos TICKS se reparten el costo fijo de conmutar (Δt<sub>3</sub>). Quantum más grande ⇒ menor p.</p>
+<p><b>3.5</b> Quantum <b>pequeño</b>: reparto más equitativo, menos espera para acceder al procesador, más sensación de computador propio; pero más porcentaje de gestión y más conmutaciones. Quantum <b>grande</b>: menos gestión; pero reparto menos equitativo y menos casi-paralelismo. Es un compromiso que depende de la velocidad del procesador y de la cantidad de tareas; por eso Linux no usa un quantum fijo sino uno variable (el CFS).</p>
+</div></details>
+</section>
+<section id="e3">
+<h2>E3 · Temporizador, TICK y quantum <span class="num">Extra</span></h2>
+
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+  <p>Un sistema tiene un cuarzo de <b>F = 2 GHz</b> y quiere un <b>TICK de 10 ms</b>.</p>
+  <p><b>a)</b> ¿Con qué valor se inicializa el registro temporizador?<br>
+  <b>b)</b> Otro sistema tiene RTMAX = 4 × 10<sup>6</sup> y F = 800 MHz. ¿Cuánto vale su TICK?<br>
+  <b>c)</b> Si el TICK es de 5 ms y se quiere un quantum de 40 ms, ¿cada cuántos TICKS hay conmutación?<br>
+  <b>d)</b> Al terminar la rutina del reloj, el registro del primer sistema marca <b>−12.000</b>. ¿Cuánto duró la rutina y cómo queda la corrección de la hora?<br>
+  <b>e)</b> ¿Qué fracción del tiempo gasta ese sistema en la rutina del reloj? ¿Qué pasaría si el TICK bajara a 10 µs?</p>
+</div>
+
+<details class="ex">
+  <summary>Solución <span class="tag">La (e) es la pregunta interesante</span></summary>
+  <div class="body">
+    <div class="sol">
+      <div class="st">a)</div>
+      <pre>RTMAX = F × TICK = 2 × 10⁹ × 10 × 10⁻³ = 2 × 10⁹ × 10⁻² = <b>2 × 10⁷</b></pre>
+    </div>
+    <div class="sol">
+      <div class="st">b)</div>
+      <pre>TICK = RTMAX / F = 4 × 10⁶ / (8 × 10⁸) = 0,5 × 10⁻² = 5 × 10⁻³ s = <b>5 ms</b></pre>
+    </div>
+    <div class="sol">
+      <div class="st">c)</div>
+      <pre>q = N × TICK  ⇒  N = q / TICK = 40 ms / 5 ms = <b>8 TICKS</b></pre>
+      <p>Es decir, la rutina del reloj se ejecuta 8 veces y solo <b>en la octava</b> provoca una conmutación de tarea. Las otras 7 solo actualizan hora, plazos y estadísticas.</p>
+    </div>
+    <div class="sol">
+      <div class="st">d)</div>
+      <pre>Δt = |RTempo| / F = 12.000 / (2 × 10⁹) = 6 × 10⁻⁶ s = <b>6 µs</b>
+
+Hora = Hora + TICK − RTempo/F
+     = Hora + 10 ms + 6 µs = Hora + <b>10,006 ms</b></pre>
+      <p>Ojo con el signo: RTempo = −12.000, así que <code>− RTempo/F = +6 µs</code>. La hora avanza <b>más</b> que un TICK, no menos.</p>
+    </div>
+    <div class="sol">
+      <div class="st">e) — la pregunta que enseña algo</div>
+      <pre>overhead = 6 µs / 10 ms = 6 × 10⁻⁶ / 10⁻² = 6 × 10⁻⁴ = <b>0,06 %</b></pre>
+      <p>Despreciable: el SO gasta 6 microsegundos de cada 10 milisegundos en administrarse. Perfecto.</p>
+      <p><b>Pero si el TICK bajara a 10 µs:</b></p>
+      <pre>overhead = 6 µs / 10 µs = <b>60 %</b></pre>
+      <div class="ans">El sistema pasaría <b>el 60 % del tiempo ejecutando la rutina del reloj</b> y solo el 40 % ejecutando tareas. Sería <b>inutilizable</b>. Peor todavía: la rutina (6 µs) casi no cabe en el TICK (10 µs), así que el registro temporizador estaría a punto de <b>no alcanzar a ser rearmado a tiempo</b> y se perderían interrupciones.</div>
+      <p><b>Esta es la justificación cuantitativa</b> de todas las respuestas cualitativas del certamen sobre "la rutina del reloj debe ser lo más corta posible" y "bajar el TICK tiene consecuencias negativas". Si en el certamen puedes acompañar la frase con un número así, la respuesta queda redonda.</p>
+    </div>
+  </div>
+</details>
+</section>
+<section id="n7">
+<h2>N7 · Lista de plazos: insertar y avanzar el tiempo <span class="num">Nuevo · el ejemplo de clase, extendido</span></h2>
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+  <p>En t = 0 hay tres timers: B vence en 20 ms, A en 30 ms y C en 47 ms. TICK = 1 ms.</p>
+  <p><b>a)</b> Escribe la lista de plazos relativos. <b>b)</b> Inserta D, que vence en 35 ms. <b>c)</b> Pasan 8 TICKS: ¿qué valores cambian? <b>d)</b> En t = 8 se pide un timer E que vence 15 ms después. Insértalo. <b>e)</b> Verifica que los plazos absolutos sigan correctos. <b>f)</b> ¿Cuánto cuesta cada operación y por qué conviene?</p>
+</div>
+<details class="ex">
+  <summary>Solución <span class="tag">[B12, E3, A7, D5, C12]</span></summary>
+  <div class="body">
+    <p><b>a)</b> [B 20, A 10, C 17] (20; 30 − 20; 47 − 30).<br>
+    <b>b)</b> Se recorre sumando: 20 (B), 30 (A); el siguiente llevaría a 47 &gt; 35, así que D va antes de C con 35 − 30 = <b>5</b>, y C queda en 17 − 5 = <b>12</b> ⇒ [B 20, A 10, D 5, C 12].<br>
+    <b>c)</b> Solo cambia el <b>primero</b>: B pasa de 20 a <b>12</b>. Los demás no se tocan.<br>
+    <b>d)</b> Sumando desde t = 8: B vence en 12; con A se llegaría a 22 &gt; 15. E va entre B y A con 15 − 12 = <b>3</b>, y A queda en 10 − 3 = <b>7</b> ⇒ <b>[B 12, E 3, A 7, D 5, C 12]</b>.<br>
+    <b>e)</b> Desde t = 8: B 12 → vence en t = 20 ✓; E 12 + 3 = 15 → t = 23 ✓; A 15 + 7 = 22 → t = 30 ✓; D 22 + 5 = 27 → t = 35 ✓; C 27 + 12 = 39 → t = 47 ✓.<br>
+    <b>f)</b> Comprobar vencimientos en cada TICK: <b>O(1)</b> (decrementar el primero; si llega a 0 vence, y pueden vencer varios seguidos si los siguientes tienen 0). Insertar: <b>O(N)</b>. Conviene porque la comprobación ocurre mil veces por segundo y la inserción rara vez.</p>
+  </div>
+</details>
+</section>
+
+<section id="n8">
+<h2>N8 · ¿Cuánto se atrasa la hora? <span class="num">Nuevo · con los números que dio el profe</span></h2>
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+  <p>Un sistema interrumpe con el reloj 1000 veces por segundo. En cada interrupción, el rearme del temporizador y el <code>return</code> toman 3 ns que no quedan contabilizados.</p>
+  <p><b>a)</b> ¿Cuánto se atrasa la hora por segundo, por día y en 30 días? <b>b)</b> Además, el cuarzo tiene un error de 20 partes por millón. ¿Cuánto aporta eso por día? <b>c)</b> ¿Por qué no se corrige simplemente sumando 3 ns en cada interrupción? <b>d)</b> ¿Qué solución se usa?</p>
+</div>
+<details class="ex">
+  <summary>Solución <span class="tag">≈ 8 s/mes + ≈ 52 s/mes</span></summary>
+  <div class="body">
+    <p><b>a)</b> 3 ns × 1000 = <b>3 µs por segundo</b>; × 86.400 s = <b>0,26 s por día</b>; × 30 = <b>7,8 s en un mes</b>.<br>
+    <b>b)</b> 20 × 10<sup>−6</sup> × 86.400 s = <b>1,73 s por día</b> (≈ 52 s al mes). Sumado a lo anterior, cerca de <b>un minuto al mes</b>: justo lo que dice la lámina, <i>“minutos de atraso después de días o semanas”</i>.<br>
+    <b>c)</b> Porque no es un valor fijo ni conocido: la duración exacta de esas instrucciones y, sobre todo, el error del cuarzo varían (temperatura, fabricación). No se puede medir desde dentro del propio sistema lo que no alcanza a contabilizarse.<br>
+    <b>d)</b> Sincronizar con una referencia externa, <b>NTP</b>, que ajusta el reloj de forma gradual (acelerándolo o frenándolo) para no saltarse instantes.</p>
+  </div>
+</details>
+</section>
+
+<section id="n9">
+<h2>N9 · Lo que hace la rutina del reloj y cuánto cuesta <span class="num">Nuevo</span></h2>
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+  <p>TICK = 1 ms. En cada TICK la rutina actualiza la hora y la lista de plazos (2 µs). Cada K = 10 TICKS además actualiza prioridades y estadísticas (+3 µs). Cada N = 50 TICKS además es fin de quantum: llama al scheduler y cambia de tarea (+15 µs).</p>
+  <p><b>a)</b> ¿Cuánto vale el quantum? <b>b)</b> ¿Cuántas veces por segundo se llama al scheduler? <b>c)</b> ¿Qué porcentaje del procesador se va en la rutina del reloj? <b>d)</b> Se baja el TICK a 0,1 ms manteniendo q = 50 ms y actualizando estadísticas 100 veces por segundo. ¿Cuánto overhead hay ahora? <b>e)</b> ¿Por qué este ejercicio explica que la hora se corrija con RTempo y no con una constante?</p>
+</div>
+<details class="ex">
+  <summary>Solución <span class="tag">q = 50 ms · 20 llamadas/s · 0,26 % → 2,06 %</span></summary>
+  <div class="body">
+    <p><b>a)</b> q = N × TICK = 50 × 1 ms = <b>50 ms</b>.<br>
+    <b>b)</b> 1000/50 = <b>20 veces por segundo</b>.<br>
+    <b>c)</b> Por segundo: 1000 × 2 µs + 100 × 3 µs + 20 × 15 µs = 2000 + 300 + 300 = 2600 µs = 2,6 ms ⇒ <b>0,26 %</b>.<br>
+    <b>d)</b> Ahora hay 10.000 interrupciones por segundo (N = 500, K = 100): 10.000 × 2 + 100 × 3 + 20 × 15 = 20.600 µs ⇒ <b>2,06 %</b>, ocho veces más, casi todo por la parte que se hace en cada TICK. Es la razón del profe para no subir la frecuencia a 10.000.<br>
+    <b>e)</b> Porque la rutina dura 2, 5 o 20 µs según el TICK: no hay una constante que sumar. Hay que medir cada vez cuánto duró, y eso es |RTempo|/F.</p>
+  </div>
+</details>
+</section>
+
+<section id="n10">
+<h2>N10 · Una interrupción, instrucción por instrucción <span class="num">Nuevo · la lámina de la pila</span></h2>
+<div class="enun">
+  <div class="et">ENUNCIADO</div>
+<pre>100: MOV eax, ebx
+104: INC eax        ← llega una interrupción justo antes de esta instrucción
+108: CMP eax, 0
+112: JNZ 100
+
+Rutina del SO en 500:  PUSH eax · MOV eax, [200] · … · POP eax · IRET</pre>
+  <p><b>a)</b> ¿Cuándo detecta la CPU la interrupción? <b>b)</b> ¿Cómo encuentra la dirección 500? <b>c)</b> Escribe el contenido de la pila después del CALL, después de PUSH eax, después de POP eax y después de IRET. <b>d)</b> ¿Por qué la rutina guarda EAX? <b>e)</b> ¿Qué cambia si la interrupción es del reloj y se acabó el quantum?</p>
+</div>
+<details class="ex">
+  <summary>Solución <span class="tag">se guarda PC = 104</span></summary>
+  <div class="body">
+    <p><b>a)</b> Antes del FETCH de la instrucción en 104: la CPU revisa la línea de interrupción entre instrucciones, así que <code>INC eax</code> no alcanza a empezar.<br>
+    <b>b)</b> El controlador le entrega el número de IRQ n; la CPU lo usa como índice en la tabla de vectores: <code>m = MEM[n × (b/8)]</code> (con direcciones de 32 bits, MEM[4n]). Ahí está 500, la dirección que el SO dejó al iniciar.<br>
+    <b>c)</b> Tras el CALL: [104]. Tras <code>PUSH eax</code>: [104, eax de la aplicación]. La rutina puede usar EAX libremente. Tras <code>POP eax</code>: [104] y EAX vuelve a su valor original. Tras <code>IRET</code> (POP PC): pila vacía y PC = 104, así que se ejecuta <code>INC eax</code> como si nada.<br>
+    <b>d)</b> Porque la aplicación estaba usando EAX; si la rutina lo modifica sin restaurarlo, la aplicación sigue con un valor incorrecto (el cuaderno prestado y borrado).<br>
+    <b>e)</b> No se vuelve a esta tarea: el SO salva su contexto completo, llama al scheduler, restaura el contexto de la tarea elegida y el retorno salta al PC de <b>esa</b> tarea. Eso es la conmutación de tareas, que se verá en detalle en la Unidad 3.</p>
+  </div>
+</details>
+</section>
+<section id="t4-preguntas"><h2>Preguntas del tema</h2><p class="lead">Las de certámenes anteriores sobre gestión del tiempo e interrupciones, y las que salen de lo que dijo el profe. En 2024 esta sección valió 35 puntos.</p><details class="ex">
+  <summary>5 · ¿Por qué el tiempo dedicado a gestionar una interrupción o excepción debe ser el más corto posible? <span class="tag">2024 · 7 pts</span></summary>
+  <div class="body"><p>Porque es un tiempo considerado <b>tiempo ocioso</b>: durante él el SO no ejecuta ninguna tarea. Un tiempo de gestión demasiado alto <b>reduce el rendimiento del sistema</b>.</p></div>
+</details>
+<details class="ex">
+  <summary>6 · ¿Qué consecuencia tiene bajar el valor del TICK sobre el quantum y sobre la hora? <span class="tag">2024 · 7 pts</span></summary>
+  <div class="body"><p>Bajar el TICK <b>disminuye el quantum</b>, dado que <b>q = N × TICK</b>; y <b>aumenta la precisión de la hora</b> del computador, que se actualiza de forma más frecuente. <i>(Lado negativo, del 2016: más overhead por más interrupciones y más conmutaciones.)</i></p></div>
+</details>
+<details class="ex">
+  <summary>7 · ¿Por qué la hora local de un sistema operativo se atrasa? <span class="tag">2024 · 7 pts</span></summary>
+  <div class="body"><p>Porque hay <b>dos instrucciones</b> —rearmar el temporizador y el <code>return</code> de la interrupción— que <b>no se pueden tomar en cuenta</b> al calcular el tiempo Δt que se demoró la rutina de interrupción. Así, Δt medido es inferior al real, y la corrección <code>hora = hora + TICK − RTempo/F</code> queda corta. Ese error se acumula en cada interrupción hasta convertirse en minutos tras días o semanas.</p></div>
+</details>
+<details class="ex">
+  <summary>8 · ¿Por qué NTP no puede pasar de la hora h a h+Δt de un solo golpe? <span class="tag">2024 · 7 pts</span></summary>
+  <div class="body"><p>Porque <b>no existirían todos los tiempos intermedios</b>, y algunas <b>tareas programadas</b> del sistema operativo (timers, alarmas, crontab) <b>podrían no ejecutarse</b>. Por eso NTP usa un <i>drifting clock</i>: acelera o frena el reloj local hasta converger.</p></div>
+</details>
+<details class="ex">
+  <summary>12 · ¿Por qué enmascarar la interrupción del reloj durante otra interrupción es peligroso? <span class="tag">2014 · 5 pts</span></summary>
+  <div class="body"><p><b>Enmascarar</b> = prohibir que la interrupción ocurra. Si el tiempo de tratamiento de la otra interrupción es <b>superior al periodo de la interrupción del reloj</b>, se podría <b>perder</b> una interrupción del reloj, provocando una <b>deriva de la hora universal</b>.</p></div>
+</details>
+<details class="ex">
+  <summary>16 · ¿Por qué un sleep(n) casi siempre devuelve el procesador después de n segundos? <span class="tag">2014, 2015, 2016 · repetidísima</span></summary>
+  <div class="body"><p>Cuando vence el plazo, el SO cambia el estado de la tarea de <b>BLOQUEADA a LISTA</b>. Pasar a LISTA <b>no significa que la tarea se ejecute de inmediato</b>: debe esperar a recuperar el procesador, y eso depende del algoritmo de planificación y de cuántas tareas haya delante. Por eso recupera el procesador tras un tiempo <b>n + Δt</b>.</p><p>El único caso en que Δt es muy pequeño es cuando <b>la tarea es la elegida por el scheduler apenas la tarea actual pierde el procesador</b>: típicamente si es el único proceso del sistema, o si no hay ningún otro proceso listo con prioridad superior.</p><p><b>Cálculo (2016):</b> con q = 50 ms y N = 100 tareas, el peor caso de espera adicional es <b>(N−1)·q = 99 × 50 ms = 4,95 s</b>, o sea el <code>sleep(10)</code> podría devolver a los <b>≈ 14,95 s</b>.</p></div>
+</details>
+<details class="ex">
+  <summary>24 · Diferencia entre interrupción y excepción, con ejemplo <span class="tag">2015, 2016 · 4-5 pts</span></summary>
+  <div class="body"><p>Una <b>interrupción</b> puede ser <b>física</b> —un dispositivo hardware interrumpe el procesador por una entrada cableada; a cada una le corresponde un número y un <b>vector de interrupción</b> con la dirección de la subrutina de gestión (ej.: fin de E/S del controlador de disco)— o <b>software</b> (un <b>TRAP</b>: mismo mecanismo, pero provocado por una instrucción especial).</p><p>Una <b>excepción</b> usa exactamente el mismo mecanismo que una interrupción software, pero <b>proviene de un error de ejecución de una instrucción</b>. Ejemplo: división por cero, segmentation fault, overflow.</p></div>
+</details>
+<details class="ex">
+  <summary>26 · Etapas de gestión de una E/S por parte del SO <span class="tag">2014 · 10 pts</span></summary>
+  <div class="body"><p><b>1.</b> El SO pide la E/S correspondiente al <b>controlador de disco</b>.<br><b>2.</b> La tarea <b>pierde el procesador</b> y pasa a estado <b>BLOQUEADA</b>.<br><b>3.</b> El algoritmo de planificación <b>elige una nueva tarea</b> y la ejecuta.<br><b>4.</b> Cuando termina la E/S, el controlador <b>genera una interrupción</b>.<br><b>5.</b> El SO maneja la interrupción y pone la tarea en estado <b>LISTA</b>.<br><b>6.</b> Después de un tiempo T, la tarea <b>recupera el procesador</b> para un nuevo quantum.</p></div>
+</details>
+<details class="ex">
+  <summary>30 · Definir la noción de TICK <span class="tag">2014, 2015 · 5 pts</span></summary>
+  <div class="body"><p>Un TICK es el <b>tiempo mínimo entre dos interrupciones del reloj</b> (temporizador). En cada TICK el SO actualiza la <b>hora universal</b>; cada N TICKS hace operaciones como actualizar la <b>lista de plazos</b> y las <b>prioridades</b> de las tareas; y cada P TICKS ocurre el <b>fin del quantum</b> y una conmutación de tarea.</p></div>
+</details>
+<details class="ex"><summary>N · ¿Por qué la interrupción del reloj es la más prioritaria y no se puede enmascarar? <span class="tag">clase</span></summary>
+<div class="body"><p>Porque es la que permite al SO recuperar el control (quantum) y llevar la hora. Si se retrasa o se pierde, se desincroniza la hora universal y una tarea podría quedarse con el procesador. Por eso es la IRQ 0, fija, y va a ocurrir sí o sí.</p></div></details>
+<details class="ex"><summary>N · ¿Quién llena la tabla de vectores de interrupción y cuándo? <span class="tag">clase</span></summary>
+<div class="body"><p>El sistema operativo, al iniciarse: escribe en cada entrada la dirección de su rutina (reloj, teclado, disco…) y después habilita las interrupciones.</p></div></details>
+<details class="ex"><summary>N · ¿Por qué la rutina de interrupción guarda los registros que va a usar? <span class="tag">clase</span></summary>
+<div class="body"><p>Porque el programa interrumpido debe retomar su ejecución con los registros exactamente como estaban. La rutina hace PUSH de lo que va a modificar y POP al final, en orden inverso; el PC lo guarda el CALL y lo recupera el RET. La aplicación no se entera de que fue interrumpida.</p></div></details>
+<details class="ex"><summary>N · ¿Por qué no se corrige la hora sumando una constante por la duración de la rutina del reloj? <span class="tag">clase</span></summary>
+<div class="body"><p>Porque la rutina no dura siempre lo mismo: en cada TICK hace poco, cada K TICKS actualiza estadísticas y prioridades, y cada N TICKS llama al scheduler y cambia de tarea. Hay que medirla cada vez, con el valor negativo de RTempo: Δt = |RTempo|/F.</p></div></details>
+<details class="ex"><summary>N · ¿Cuáles son las dos causas de que la hora del sistema se atrase? <span class="tag">clase</span></summary>
+<div class="body"><p>(1) Las instrucciones finales de la rutina del reloj (rearmar el temporizador y retornar) no se pueden contabilizar, y esos pocos nanosegundos se acumulan en cada interrupción. (2) El cuarzo no es perfecto: su frecuencia tiene error y varía, por ejemplo con la temperatura.</p></div></details>
+<details class="ex"><summary>N · ¿De dónde saca la hora correcta un computador? ¿Y un celular? <span class="tag">clase</span></summary>
+<div class="body"><p>El computador, de un servidor NTP (por ejemplo del pool que propone Linux al instalarse), que a su vez se sincroniza con relojes atómicos. El celular, de la red celular, que también la obtiene de esas fuentes. Se transmite la hora UTC y cada equipo aplica su zona horaria.</p></div></details>
+<details class="ex"><summary>N · Si NTP no puede saltar, ¿por qué al encender el computador sí corrige de un golpe? <span class="tag">clase</span></summary>
+<div class="body"><p>Porque al arrancar la hora viene del reloj con pila de la placa madre, que pudo atrasarse bastante mientras el equipo estuvo apagado, y todavía no hay tareas del sistema corriendo que dependan de los instantes intermedios. Después del arranque, NTP mantiene el reloj con ajustes graduales (acelerar o frenar) para que todos los instantes existan.</p></div></details>
+<details class="ex"><summary>N · Diferencia entre TICK y JIFFIES <span class="tag">lámina</span></summary>
+<div class="body"><p>El TICK es el tiempo entre dos interrupciones del reloj (la precisión mínima del sistema). JIFFIES es el contador de Linux con la cantidad de TICKS transcurridos desde que se inició el sistema: tiempo relativo al arranque, no la hora real.</p></div></details>
+<details class="ex"><summary>N · Según el profe, ¿qué diferencia una interrupción de una excepción? <span class="tag">clase</span></summary>
+<div class="body"><p>La interrupción es un evento esperado (el timer que pusiste, la lectura de disco que pediste: sabes que va a ocurrir aunque no cuándo). La excepción usa el mismo mecanismo pero es un evento inesperado y no deseado, causado por un error: división por cero, segmentation fault, falla de memoria.</p></div></details>
+
+<details class="ex"><summary>Ay. 3 · ¿Por qué RTEMPO sigue decrementándose después de llegar a 0? <span class="tag">Ayudantía 3</span></summary>
+<div class="body"><p>Porque además del quantum sirve para mantener la hora universal, y el tiempo no se detiene mientras se ejecuta la rutina de interrupción. Su valor absoluto al final de la rutina mide cuánto duró esa rutina, y se usa para corregir la hora: hora = hora + TICK + |RTEMPO|/F.</p></div></details>
+<details class="ex"><summary>Ay. 3 · ¿Por qué la hora del computador no se puede atrasar demasiado y de forma permanente? <span class="tag">Ayudantía 3</span></summary>
+<div class="body"><p>Porque el SO ejecuta tareas a horas fijas: un respaldo programado a las 00:00 empezaría cada vez más tarde y, después de meses, podría correr de día y molestar a los usuarios. Por eso se sincroniza con NTP.</p></div></details>
+<details class="ex"><summary>Ay. 3 · ¿Qué criterios permiten elegir el valor del quantum? <span class="tag">Ayudantía 3</span></summary>
+<div class="body"><p>Es un compromiso entre el overhead (s/q crece si q es chico) y favorecer a las tareas cortas (con q grande, una tarea nueva espera hasta (N−1)·q). Depende de la velocidad del procesador y de la cantidad de tareas: con pocas tareas se puede usar un quantum mayor. Linux lo resuelve con un quantum variable (CFS).</p></div></details>
+</section>
+<div class="pnav"><a href="3-Scheduling.html"><small>← Anterior</small>Scheduling</a><a class="nx" href="5-Ejercicios-por-pregunta.html"><small>Siguiente →</small>Ejercicios por pregunta</a></div>
+</main>
+</div>
+
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('so-c1-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('so-c1-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='so-c1-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+</script>
+
+</body>
+</html>

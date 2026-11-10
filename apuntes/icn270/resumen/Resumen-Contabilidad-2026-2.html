@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contabilidad explicada con analogías · IMAFI 2026-2</title>
+
+<!-- MathJax. Matemática EN LÍNEA con \( ... \) para poder escribir $ de pesos sin romper nada. -->
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      tags: 'none'
+    },
+    svg: { fontCache: 'global' },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#0e7a5f; --brand-soft:#e3f4ee;
+    --accent:#3a5bd9; --accent-soft:#eaefff;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --code:#f0f1f4;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:296px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#4fd1ab; --brand-soft:#16302a;
+    --accent:#8aa2ff; --accent-soft:#20263a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --code:#232733;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#4fd1ab; --brand-soft:#16302a;
+      --accent:#8aa2ff; --accent-soft:#20263a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --code:#232733;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;
+  }
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{
+    width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;
+  }
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 120px; max-width:1000px; margin:0 auto}
+
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--ana));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px;flex:0 0 auto}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:6px 10px;border-radius:7px;
+    font-size:13.5px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+
+  .toolbar{display:flex;gap:8px;margin-top:14px}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+
+  h2{font-size:26px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20px;margin:30px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:20px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:46px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.formula{border-left-color:var(--brand);background:var(--brand-soft)}
+  .box.formula .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)}
+  .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+  .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)}
+  .box.ana .bt{color:var(--ana)}
+
+  .keys{display:grid;gap:2px;margin:6px 0}
+  .keys .k{display:flex;justify-content:space-between;gap:14px;padding:9px 4px;border-bottom:1px dashed var(--line);
+    flex-wrap:wrap;align-items:baseline}
+  .keys .k:last-child{border-bottom:0}
+  .keys .k .d{color:var(--muted);font-size:13.5px;flex:1 1 250px;min-width:190px}
+  .keys .k .f{flex:0 0 auto}
+
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex>summary::before{content:"▸";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex .body{padding:6px 18px 16px}
+  .step{margin:12px 0}
+  .step .n{display:inline-block;background:var(--ex);color:#fff;border-radius:6px;font-size:11px;
+    font-weight:700;padding:1px 7px;margin-right:6px}
+
+  .tablewrap{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:10px}
+  table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:520px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-size:12.5px;text-transform:uppercase;letter-spacing:.03em}
+  tr:last-child td{border-bottom:0}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+  td .yes{color:var(--brand);font-weight:700}
+  td .no{color:var(--muted)}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0}
+  .card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--panel);box-shadow:var(--shadow)}
+  .card .num{font-size:12px;font-weight:700;color:var(--brand)}
+  .card h4{margin:2px 0 4px;color:var(--ink)}
+  .card p{margin:0;font-size:13.5px;color:var(--muted)}
+
+  .menuToggle{display:none}
+  @media (max-width:900px){
+    .sidebar{position:fixed;z-index:40;left:0;top:0;transform:translateX(-102%);transition:transform .22s;
+      box-shadow:var(--shadow)}
+    .sidebar.open{transform:none}
+    .menuToggle{display:inline-flex;position:fixed;z-index:50;top:12px;left:12px}
+    .content{padding-top:64px}
+    .scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:35}
+    .scrim.on{display:block}
+  }
+  .backtop{position:fixed;right:18px;bottom:18px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+  .backtop.on{opacity:1;pointer-events:auto}
+</style>
+</head>
+<body>
+
+<button class="btn menuToggle" id="menuToggle">☰ Índice</button>
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="dot">C</div>
+      <div>
+        <h1>Contabilidad con analogías</h1>
+        <small>IMAFI · ICN-270 · 2026-2 · USM</small>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" id="themeBtn">🌓 Tema</button>
+      <button class="btn" id="printBtn">🖨️ Imprimir</button>
+    </div>
+
+    <nav id="nav">
+      <div class="grp">Empezar aquí</div>
+      <a href="#intro">Cómo usar esta guía</a>
+      <a href="#mapa">La idea grande</a>
+
+      <div class="grp">Fundamentos</div>
+      <a href="#c1">1 · Qué es la contabilidad</a>
+      <a href="#c2">2 · La ecuación contable</a>
+      <a href="#c3">3 · Partida doble y cuentas</a>
+      <a href="#c4">4 · El ciclo contable</a>
+
+      <div class="grp">Los estados</div>
+      <a href="#c5">5 · Balance (Situación Fin.)</a>
+      <a href="#c6">6 · Estado de Resultados</a>
+      <a href="#c7">7 · EBITDA, EBIT y EBT</a>
+      <a href="#c8">8 · IVA</a>
+
+      <div class="grp">Temas específicos</div>
+      <a href="#c9">9 · Depreciación</a>
+      <a href="#c10">10 · Amortización y deterioro</a>
+      <a href="#c11">11 · Tipos de sociedad</a>
+
+      <div class="grp">Análisis</div>
+      <a href="#c12">12 · Vertical y horizontal</a>
+      <a href="#c13">13 · Ratios financieros</a>
+      <a href="#c14">14 · Conexión entre estados</a>
+      <a href="#c15">15 · Cómo redactar el análisis</a>
+
+      <div class="grp">Cierre</div>
+      <a href="#ejercicios">Ejercicios resueltos</a>
+      <a href="#master">Formulario maestro</a>
+      <a href="#errores">Errores y checklist</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+
+  <!-- ===== INTRO ===== -->
+  <section id="intro">
+    <h2>Contabilidad, explicada con analogías</h2>
+    <p class="lead">Toda la materia de <strong>Primera Diapo.pdf</strong> (las 235 láminas del profesor Ricardo Henríquez) más el <strong>Resumen y Formulario IMAFI</strong> del caso Carozzi, ordenada de principio a fin y explicada con comparaciones de la vida real para que se entienda de verdad, no de memoria.</p>
+
+    <div class="box tip">
+      <div class="bt">Cómo leer esto</div>
+      <ol style="margin:6px 0 0">
+        <li>Las cajas <strong style="color:var(--ana)">rosadas</strong> son <strong>analogías</strong>: si entiendes la analogía, entendiste el concepto. Son el corazón de esta guía.</li>
+        <li>Las cajas <strong style="color:var(--brand)">verdes</strong> son fórmulas y definiciones formales (lo que va en el certamen).</li>
+        <li>Las <strong style="color:var(--warn)">naranjas</strong> son errores típicos; las <strong style="color:var(--accent)">azules</strong>, trucos y contexto.</li>
+        <li>Al final hay <a class="inl" href="#ejercicios">ejercicios resueltos</a>, un <a class="inl" href="#master">formulario maestro</a> y un <a class="inl" href="#errores">checklist</a>.</li>
+      </ol>
+    </div>
+
+    <div class="box tip">
+      <div class="bt">Datos del ramo (de las primeras láminas)</div>
+      Profesor <strong>Ricardo Henríquez Ávalos</strong> (Ing. Civil Industrial USM, actuario). Evaluación: <strong>Certamen 1 (35%)</strong>, <strong>Certamen 2 (35%)</strong> y <strong>30%</strong> de controles, tareas y casos (3 controles, 3 tareas + 3 casos, en grupos de máximo 4). Los certámenes son <strong>presenciales</strong>. Libros: Torres Salazar <em>IFRS Contabilidad y Finanzas</em>, Warren <em>Contabilidad Financiera</em> y Blank &amp; Tarquin <em>Ingeniería Económica</em>.
+    </div>
+  </section>
+
+  <!-- ===== MAPA ===== -->
+  <section id="mapa">
+    <h2>La idea grande (antes de entrar al detalle)</h2>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía madre: la contabilidad es la ficha médica de la empresa</div>
+      Un doctor no adivina si estás sano: te toma exámenes, los anota siempre igual y los compara con los del año pasado. La contabilidad hace lo mismo con una empresa. <strong>El Balance es la radiografía</strong> (cómo estás <em>hoy</em>), <strong>el Estado de Resultados es el examen de esfuerzo</strong> (cómo te fue <em>durante</em> el año) y <strong>los ratios son los valores de referencia</strong> ("colesterol sobre 200 = ojo"). Todo el ramo es aprender a tomar esos exámenes y, sobre todo, a <em>leerlos</em>.
+    </div>
+
+    <p>El curso completo se puede dibujar como una cadena de producción: entran <strong>hechos económicos</strong> (compras, ventas, pagos) y sale <strong>información para decidir</strong>.</p>
+
+    <div class="cards">
+      <div class="card"><div class="num">PASO 1 · REGISTRAR</div><h4>Partida doble</h4><p>Cada hecho se anota en dos cuentas: qué recibo y qué entrego. Debe = Haber, siempre.</p></div>
+      <div class="card"><div class="num">PASO 2 · ORDENAR</div><h4>Diario → Mayor → Balance</h4><p>Primero cronológico, luego agrupado por cuenta, luego cuadrado.</p></div>
+      <div class="card"><div class="num">PASO 3 · PRESENTAR</div><h4>Estados financieros</h4><p>Balance, Estado de Resultados, Flujo de Efectivo, Cambios en el Patrimonio.</p></div>
+      <div class="card"><div class="num">PASO 4 · INTERPRETAR</div><h4>Análisis financiero</h4><p>Vertical, horizontal y ratios: liquidez, endeudamiento, eficiencia, rentabilidad.</p></div>
+    </div>
+
+    <div class="box warn">
+      <div class="bt">Dónde se ganan y se pierden los puntos</div>
+      El paso 1 y 2 son <strong>mecánica</strong>: se aprenden practicando, y si practicas no fallas. El paso 4 es <strong>criterio</strong>: ahí es donde el profesor separa notas, porque hay que <em>explicar qué significa el número</em>. Una respuesta que solo dice "subió 12%" vale la mitad de una que dice "subió 12% porque X, lo que implica Y, y habría que revisar Z".
+    </div>
+  </section>
+
+  <!-- ===== 1 ===== -->
+  <section id="c1">
+    <h2>1 · Qué es la contabilidad (y con qué se relaciona)</h2>
+
+    <div class="box formula">
+      <div class="bt">Definición del curso</div>
+      La contabilidad es una <strong>técnica de la administración de empresas</strong> cuya función es el <strong>registro sistemático de los hechos económicos</strong> en que se ve involucrada la empresa, con el objeto de <strong>entregar información financiera-económica a quien la solicite</strong>.
+    </div>
+
+    <p>Fíjate en las dos mitades de esa definición, porque explican con qué ciencia se conecta cada una:</p>
+    <ul>
+      <li><strong>Función = medir y registrar</strong> los hechos económicos (una venta, una compra, un pago) → se conecta con la <strong>Economía</strong>.</li>
+      <li><strong>Objetivo = apoyar decisiones</strong> de los administradores → se conecta con la <strong>Administración</strong>.</li>
+    </ul>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: el árbitro que anota el partido</div>
+      La <strong>economía</strong> estudia por qué la gente juega (recursos escasos, necesidades infinitas). La <strong>administración</strong> decide la táctica del equipo. La <strong>contabilidad</strong> es el que anota el marcador y las estadísticas: no juega ni decide, pero sin sus números nadie sabe si van ganando. Y ojo: si el que anota se equivoca, el técnico toma decisiones malas con datos malos.
+    </div>
+
+    <h3>Conceptos previos que el profesor deja establecidos</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Concepto</th><th>Definición del curso</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Economía</strong></td><td>Ciencia que estudia los problemas del hombre para satisfacer necesidades <em>múltiples y crecientes</em> con recursos <em>escasos y limitados</em>.</td></tr>
+          <tr><td><strong>Administración</strong></td><td>Ciencia que norma, regula y orienta a la empresa mediante planeación, organización, dirección, ejecución y control.</td></tr>
+          <tr><td><strong>Empresa</strong></td><td>Entidad de medios personales, materiales e inmateriales que busca fines económicos, con individualidad legal propia. Es donde se usa la contabilidad.</td></tr>
+          <tr><td><strong>Persona natural</strong></td><td>Un individuo que ejerce derechos y obligaciones. Existe legalmente desde que nace hasta que muere.</td></tr>
+          <tr><td><strong>Persona jurídica</strong></td><td>Un <em>ente ficticio creado por la ley</em> cuando varios se unen por un objetivo común. Es <strong>independiente y distinta</strong> de sus miembros.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: la persona jurídica es un "avatar" legal</div>
+      Cuando creas una empresa como persona jurídica, es como crearte un <strong>personaje en un videojuego</strong>: ese personaje tiene su propia vida, sus propias deudas y su propio inventario. Si al personaje lo matan, <em>tú</em> sigues vivo. Por eso los socios "no ponen en riesgo su patrimonio: solo responden por el monto aportado". En cambio, como <strong>persona natural</strong>, juegas con tu propio cuerpo: si la empresa cae, te embargan tu casa.
+    </div>
+
+    <h3>Tipos de contabilidad</h3>
+    <p>Es la misma técnica, pero cambia el <em>para quién</em> y el <em>para qué</em>:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tipo</th><th>Para qué sirve</th></tr></thead>
+        <tbody>
+          <tr><td><strong>De costos</strong></td><td>Producción y comercialización: cuánto cuesta fabricar cada cosa.</td></tr>
+          <tr><td><strong>Administrativa</strong></td><td>Informar (usuarios externos e internos) para la gestión.</td></tr>
+          <tr><td><strong>Pública o gubernamental</strong></td><td>Entidades del Estado (usa normas NIC-SP).</td></tr>
+          <tr><td><strong>Presupuestaria</strong></td><td>Cuantificar actividades <em>futuras</em>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Y según el <strong>giro</strong> de la entidad: <strong>comercial</strong> (compran y venden mercadería), <strong>industrial</strong> (transforman materia prima en producto terminado), <strong>gubernamental</strong> y <strong>entidades no lucrativas</strong> (buscan un beneficio social, no utilidades).</p>
+
+    <h3>Los cuatro estados financieros básicos</h3>
+    <p>Son el <strong>producto final</strong> del sistema contable:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Estado</th><th>Qué responde</th><th>Analogía</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Balance General</strong><br>(Estado de Situación Financiera)</td><td>¿Qué tengo y qué debo, hoy?</td><td>Una <strong>foto</strong>. Es estático, tiene fecha exacta.</td></tr>
+          <tr><td><strong>Estado de Resultados</strong></td><td>¿Gané o perdí durante el período?</td><td>Una <strong>película</strong>. Cubre un lapso de tiempo.</td></tr>
+          <tr><td><strong>Estado de Flujos de Efectivo</strong></td><td>¿De dónde salió y adónde fue la plata real?</td><td>La <strong>cartola del banco</strong>.</td></tr>
+          <tr><td><strong>Estado de Cambios en el Patrimonio</strong></td><td>¿Cómo varió lo de los dueños?</td><td>El <strong>detrás de escena</strong>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía clave: foto vs. película</div>
+      Esta distinción cae siempre. El <strong>Balance</strong> es una foto tomada el 31 de diciembre a las 23:59: muestra un <em>saldo acumulado</em> (todo lo que tienes en ese instante). El <strong>Estado de Resultados</strong> es el video de todo el año: muestra un <em>flujo del período</em> (lo que ganaste <em>durante</em> esos 12 meses). Por eso el patrimonio y la utilidad no son lo mismo: el patrimonio es la foto acumulada de años; la utilidad es solo el capítulo de este año.
+    </div>
+  </section>
+
+  <!-- ===== 2 ===== -->
+  <section id="c2">
+    <h2>2 · La ecuación contable</h2>
+
+    <div class="box formula">
+      <div class="bt">La igualdad que nunca se rompe</div>
+      $$\text{ACTIVO} = \text{PASIVO} + \text{PATRIMONIO (Capital)}$$
+      Y despejada, como aparece en el formulario del caso Carozzi: \(\;A - P - Pat = 0\).
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: el auto y quién lo pagó</div>
+      Compras un auto de <strong>$5.000.000</strong>. Pediste <strong>$2.000.000</strong> al banco y pusiste <strong>$3.000.000</strong> tuyos.
+      <ul style="margin:8px 0 0">
+        <li><strong>Activo = $5.000.000</strong> → el auto, la cosa que existe y que puedes usar.</li>
+        <li><strong>Pasivo = $2.000.000</strong> → la parte del auto que, en el fondo, es del banco.</li>
+        <li><strong>Patrimonio = $3.000.000</strong> → la parte que es tuya de verdad.</li>
+      </ul>
+      El auto es <em>uno solo</em>. Lo que cambia es <strong>desde qué lado lo miras</strong>: el activo dice <em>qué hay</em>; el pasivo y el patrimonio dicen <em>quién lo financió</em>. Por eso los dos lados <strong>siempre</strong> suman lo mismo: es la misma cosa contada dos veces.
+    </div>
+
+    <p>El profesor lo dice así en las láminas: el activo es la <strong>aplicación</strong> de los recursos (en qué se invirtieron) y el pasivo + patrimonio es el <strong>origen o financiamiento</strong> (de dónde salieron). Traducido a la pregunta práctica: <strong>"cuánto tengo y cuánto debo"</strong>.</p>
+
+    <h3>Las tres piezas, una por una</h3>
+
+    <h4>ACTIVO — lo que tienes y lo que te deben</h4>
+    <p>Son los <strong>recursos económicos controlados por la entidad</strong>. Su esencia es la <strong>capacidad de generar beneficios futuros</strong>. Algo es activo por alguna de estas cuatro razones:</p>
+    <ul>
+      <li>Porque sirve como <strong>medio de compra</strong> → Caja.</li>
+      <li>Porque es un <strong>derecho de cobro exigible</strong> → Clientes, Documentos por Cobrar.</li>
+      <li>Porque puede <strong>venderse y convertirse en efectivo</strong> → Inventario.</li>
+      <li>Porque <strong>presta un servicio por su uso</strong> → Edificios, Maquinaria.</li>
+    </ul>
+
+    <h4>PASIVO — lo que debes a terceros</h4>
+    <p>Sus características (van tal cual en las láminas):</p>
+    <ul>
+      <li>Representan deudas y obligaciones <strong>presentes</strong>.</li>
+      <li>Se pagarán en el <strong>futuro</strong> con efectivo, bienes o servicios.</li>
+      <li>Son <strong>virtualmente ineludibles</strong>.</li>
+      <li>Provienen de operaciones <strong>ocurridas en el pasado</strong>.</li>
+    </ul>
+
+    <h4>PATRIMONIO (Capital) — lo que debes a los dueños</h4>
+    <p>Es lo que aportaron los propietarios <em>más</em> lo que el negocio ha ido ganando. Su característica central es la <strong>naturaleza residual</strong>:</p>
+    <div class="box formula">
+      <div class="bt">Patrimonio = lo que sobra</div>
+      $$\text{CAPITAL} = \text{ACTIVO} - \text{PASIVO}$$
+      Por eso el formulario lo llama "<strong>participación residual</strong> de los propietarios": es lo que queda <em>después</em> de pagarle a todos los de afuera.
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: el orden de la fila para cobrar</div>
+      Si la empresa se liquidara mañana y se vendiera todo (el activo), hay una <strong>fila</strong> para repartirse la plata. Primero cobran los de afuera: bancos, proveedores, el fisco, los trabajadores (<strong>el pasivo</strong>). Los dueños están <strong>al final de la fila</strong> y se llevan lo que sobre (<strong>el patrimonio</strong>). Por eso se dice que el patrimonio es "residual" y por eso los dueños asumen más riesgo... pero también se quedan con toda la ganancia si sobra mucho.
+    </div>
+
+    <div class="box warn">
+      <div class="bt">Ojo: el patrimonio también es una deuda</div>
+      Las láminas insisten en esto: "<em>desde el punto de vista de la empresa el PATRIMONIO constituye una deuda con los dueños</em>". La empresa (el avatar legal) le debe esa plata a los socios. Por eso va del mismo lado que el pasivo: ambos son <strong>fuentes de financiamiento</strong>.
+    </div>
+  </section>
+
+  <!-- ===== 3 ===== -->
+  <section id="c3">
+    <h2>3 · Partida doble, cuentas, Debe y Haber</h2>
+
+    <p>Este es el <strong>motor</strong> de toda la contabilidad y donde más gente se pierde. Vamos despacio.</p>
+
+    <div class="box formula">
+      <div class="bt">El principio de la partida doble</div>
+      Toda operación se registra <strong>simultáneamente en al menos dos cuentas</strong>, por un <strong>mismo valor</strong>. El total de <strong>débitos</strong> (Debe, cargos) será <strong>siempre igual</strong> al total de <strong>créditos</strong> (Haber, abonos).
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: nada aparece de la nada (conservación de la energía)</div>
+      Tú ya viste esto en física: la energía no se crea ni se destruye, solo se transforma. La partida doble es lo mismo con la plata. Si aparecen <strong>$500.000</strong> en la caja de la empresa, esa plata <em>vino de algún lado</em>: o la aportó un socio, o la prestó un banco, o fue una venta. <strong>Nunca hay un movimiento con un solo lado.</strong> Si tú anotas solo uno, el balance no cuadra — igual que si en un problema de física te aparece energía de la nada.
+    </div>
+
+    <h3>Las dos preguntas mágicas</h3>
+    <p>El profesor da un método concreto para no equivocarse. Primero identificas <strong>qué cuentas intervienen</strong>, y después te haces dos preguntas, <em>siempre poniéndote en el lugar del empresario</em> ("yo compro, yo vendo, yo recibo, yo entrego"):</p>
+
+    <div class="box formula">
+      <div class="bt">El método infalible</div>
+      <strong>¿Qué se RECIBE?</strong> → eso va al <strong>DEBE</strong> (cuenta deudora, se carga).<br>
+      <strong>¿Qué se ENTREGA?</strong> → eso va al <strong>HABER</strong> (cuenta acreedora, se abona).
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: todo es un trueque</div>
+      Cualquier transacción es un intercambio: <em>algo entra, algo sale</em>. Compras mercadería y pagas en efectivo: <strong>recibes</strong> mercadería (Debe) y <strong>entregas</strong> plata (Haber). Pides un préstamo: <strong>recibes</strong> plata (Debe) y <strong>entregas</strong> una promesa de pago (Haber). Si logras ver cada operación como un trueque, los asientos salen solos.
+    </div>
+
+    <h3>Los tres principios fundamentales</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Principio</th><th>Qué significa</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1. Las cuentas se personalizan</strong></td><td>Se imagina que hay una <em>persona</em> detrás de cada cuenta, para explicar su función.</td></tr>
+          <tr><td><strong>2. No hay deudor sin acreedor</strong></td><td>Si alguien debe plata, necesariamente hay alguien a quien se le debe. Este principio <strong>sirve para detectar si se te pasó una cuenta</strong>.</td></tr>
+          <tr><td><strong>3. Toda cuenta primero ingresa y después sale</strong></td><td>Excepto las que representan obligaciones (los pasivos parten al <em>haber</em> y después se debitan).</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>La cuenta, el Debe y el Haber</h3>
+    <p>Una <strong>cuenta</strong> es un registro donde se anotan los aumentos y disminuciones de un valor del activo, pasivo o capital. Se dibuja como una <strong>"T"</strong>:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>DEBE (izquierda)</th><th>HABER (derecha)</th></tr></thead>
+        <tbody>
+          <tr><td>Deudor · anotar aquí se llama <strong>CARGO</strong> (cargar)</td><td>Acreedor · anotar aquí se llama <strong>ABONO</strong> (abonar)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box warn">
+      <div class="bt">Error nº1 de todo el ramo</div>
+      <strong>Debe/Haber NO significa bueno/malo, ni entrada/salida de plata.</strong> Son simplemente <em>izquierda</em> y <em>derecha</em>, como norte y sur. Un cargo aumenta un activo pero <em>disminuye</em> un pasivo. Cuando el banco te dice "abonamos a su cuenta", está hablando desde <em>su</em> contabilidad, no la tuya.
+    </div>
+
+    <h3>Naturaleza de las cuentas (la tabla que hay que saber de memoria)</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Naturaleza DEUDORA (parten en el Debe)</th><th>Naturaleza ACREEDORA (parten en el Haber)</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Activos</strong><br><strong>Gastos y costos</strong></td><td><strong>Pasivos y Patrimonio</strong><br><strong>Ingresos</strong></td></tr>
+          <tr><td colspan="2" style="text-align:center;color:var(--muted)">Los activos, pasivos y patrimonio van al <strong>Estado de Situación Financiera</strong>.<br>Los gastos, costos e ingresos van al <strong>Estado de Resultados</strong>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box formula">
+      <div class="bt">Reglas del cargo y del abono</div>
+      <div class="tablewrap" style="margin:8px 0 0">
+        <table>
+          <thead><tr><th>Va al DEBE</th><th>Va al HABER</th></tr></thead>
+          <tbody>
+            <tr><td>Aumentos de <strong>ACTIVO</strong></td><td>Disminuciones de <strong>ACTIVO</strong></td></tr>
+            <tr><td>Disminuciones de <strong>PASIVO</strong></td><td>Aumentos de <strong>PASIVO</strong></td></tr>
+            <tr><td>Movimientos en <strong>COSTOS y GASTOS</strong></td><td>Movimientos en <strong>INGRESOS</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Truco para memorizar: "ADE" y "PPR"</div>
+      Aumentan con <strong>DÉBITO</strong> → <strong>A</strong>ctivos, <strong>D</strong>ividendos/retiros, <strong>E</strong>gresos/gastos = <em>"ADE"</em>.<br>
+      Aumentan con <strong>CRÉDITO</strong> → <strong>P</strong>asivos, <strong>P</strong>atrimonio, <strong>R</strong>esultados/ingresos = <em>"PPR"</em>.<br>
+      <span style="color:var(--muted)">Y para disminuir, al revés. Con esto resuelves el 80% de los asientos sin pensar.</span>
+    </div>
+
+    <h3>Movimientos y saldos</h3>
+    <ul>
+      <li><strong>Movimiento deudor</strong> = suma de todos los cargos (suma del Debe).</li>
+      <li><strong>Movimiento acreedor</strong> = suma de todos los abonos (suma del Haber).</li>
+      <li><strong>Saldo</strong> = la diferencia entre ambos.</li>
+    </ul>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Situación</th><th>Resultado</th></tr></thead>
+        <tbody>
+          <tr><td>Débitos &gt; Créditos</td><td><strong>Saldo Deudor</strong></td></tr>
+          <tr><td>Débitos &lt; Créditos</td><td><strong>Saldo Acreedor</strong></td></tr>
+          <tr><td>Débitos = Créditos</td><td><strong>Cuenta saldada</strong> (balanceada)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Ejemplo de las láminas: una cuenta con cargos de 10.000 + 15.000 + 35.000 = <strong>60.000</strong> y abonos de 3.000 + 5.000 + 12.000 = <strong>20.000</strong> tiene un <strong>saldo deudor de 40.000</strong>.</p>
+
+    <h3>Cuentas de resultado</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tipo</th><th>Qué registra</th><th>Cómo se mueve</th><th>Ejemplos</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Resultado DEUDORAS</strong></td><td>Costos, gastos y pérdidas</td><td>Aumentan <em>cargando</em>, disminuyen <em>abonando</em>. Saldo deudor.</td><td>Compras, Gastos de Venta, Gastos de Administración</td></tr>
+          <tr><td><strong>Resultado ACREEDORAS</strong></td><td>Ingresos, ganancias y utilidades</td><td>Aumentan <em>abonando</em>, disminuyen <em>cargando</em>. Saldo acreedor.</td><td>Ventas, Descuentos sobre compras, Productos Financieros</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Los cinco ejemplos del profesor, resueltos</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Operación</th><th>Análisis</th><th>Debe</th><th>Haber</th></tr></thead>
+        <tbody>
+          <tr><td>Compra de mercadería <strong>de contado</strong> $10.000</td><td>(+) Activo Mercaderías<br>(−) Activo Bancos</td><td>Mercaderías 10.000</td><td>Bancos 10.000</td></tr>
+          <tr><td>Compra de mercadería <strong>a crédito</strong> $35.000</td><td>(+) Activo Mercaderías<br>(+) Pasivo Proveedores</td><td>Mercaderías 35.000</td><td>Proveedores 35.000</td></tr>
+          <tr><td><strong>Aporte</strong> del Sr. Pérez $8.000 efectivo</td><td>(+) Activo Caja<br>(+) Capital</td><td>Caja 8.000</td><td>Capital 8.000</td></tr>
+          <tr><td><strong>Pago a proveedores</strong> $12.000</td><td>(−) Pasivo Proveedores<br>(−) Activo Caja</td><td>Proveedores 12.000</td><td>Caja 12.000</td></tr>
+          <tr><td><strong>Gasto de venta</strong> pagado $11.000</td><td>(+) Gasto (baja capital)<br>(−) Activo Bancos</td><td>Gastos de Venta 11.000</td><td>Bancos 11.000</td></tr>
+          <tr><td>Gastos de administración <strong>pendientes</strong> $18.000</td><td>(+) Gasto<br>(+) Pasivo</td><td>Gastos de Admin. 18.000</td><td>Cuentas por Pagar 18.000</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box tip">
+      <div class="bt">Lee la tabla en diagonal</div>
+      Fíjate en el patrón: cuando intervienen <strong>dos activos</strong>, uno sube y otro baja. Cuando interviene un <strong>activo y un pasivo/patrimonio</strong>, <em>los dos suben</em> (o los dos bajan). Ese es todo el secreto.
+    </div>
+  </section>
+
+  <!-- ===== 4 ===== -->
+  <section id="c4">
+    <h2>4 · El ciclo contable: del hecho al estado financiero</h2>
+
+    <h3>Libro Diario vs. Libro Mayor</h3>
+    <div class="box formula">
+      <div class="bt">La diferencia exacta</div>
+      En el <strong>Libro Diario</strong> se anotan <strong>cronológicamente</strong> todas las operaciones (la actividad día a día). En el <strong>Libro Mayor</strong> se anotan los movimientos <strong>agrupados por cuenta</strong>, para ver su evolución y su saldo de un vistazo. El Mayor también se conoce como <strong>"cuenta T"</strong>.
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía para ti (que viste Bases de Datos)</div>
+      El <strong>Libro Diario</strong> es la <strong>tabla de transacciones</strong>: append-only, ordenada por timestamp, cada fila un hecho. El <strong>Libro Mayor</strong> es un <code>SELECT cuenta, SUM(debe), SUM(haber) FROM diario GROUP BY cuenta</code>. Es exactamente la misma información, agrupada de otra forma. Y el <strong>Balance de Comprobación</strong> es el <strong>checksum</strong>: si <code>SUM(debe) != SUM(haber)</code>, hay un error en algún registro y hay que ir a buscarlo.
+    </div>
+
+    <p>Ejemplo del profesor (traspaso del Diario al Mayor):</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Fecha</th><th>Operación</th><th class="num">Debe</th><th class="num">Haber</th><th class="num">Saldo (Efectivo)</th></tr></thead>
+        <tbody>
+          <tr><td>01/01</td><td>Inversión del dueño (Robert Lutece)</td><td class="num">20.000</td><td class="num"></td><td class="num">20.000</td></tr>
+          <tr><td>02/01</td><td>Compra de mobiliario</td><td class="num"></td><td class="num">700</td><td class="num">19.300</td></tr>
+          <tr><td>03/01</td><td>Ingresos por servicios</td><td class="num">3.000</td><td class="num"></td><td class="num">22.300</td></tr>
+          <tr><td>04/01</td><td>Retiro del dueño</td><td class="num"></td><td class="num">5.000</td><td class="num">17.300</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>En paralelo, la cuenta <strong>Capital</strong> queda con saldo 15.000 (20.000 del aporte menos 5.000 del retiro) y <strong>Equipo de Oficina</strong> con 700.</p>
+
+    <h3>Las tres fases del ciclo contable</h3>
+    <div class="cards">
+      <div class="card"><div class="num">FASE 1</div><h4>Apertura</h4><p>Se abren los libros, sea una empresa nueva o una que ya venía operando (arrastra saldos del año anterior).</p></div>
+      <div class="card"><div class="num">FASE 2</div><h4>Desarrollo o gestión</h4><p>Todo el ejercicio anual: interpretar y registrar las operaciones que van surgiendo.</p></div>
+      <div class="card"><div class="num">FASE 3</div><h4>Conclusión o cierre</h4><p>Recopilación y síntesis: ajustes a las cuentas para producir los estados financieros finales.</p></div>
+    </div>
+
+    <p>El flujo completo que muestra la lámina es:</p>
+    <p style="text-align:center"><code>Balance inicial → APERTURA → DESARROLLO (Diario y Mayor) → Balance de comprobación → REGULARIZACIÓN → DETERMINACIÓN DEL RESULTADO (Pérdidas y ganancias) → CIERRE → Balance de situación final</code></p>
+
+    <h3>Las operaciones de cierre</h3>
+    <p>Después de la última operación del año, el contador hace cuatro pasos: <strong>regularización → determinación de resultados → asiento de cierre → elaboración de las cuentas anuales</strong>. La <strong>regularización</strong> ajusta la contabilidad a la realidad del momento de cierre e incluye:</p>
+    <ul>
+      <li><strong>Regularización de existencias</strong> (cuadrar el inventario contable con el real).</li>
+      <li><strong>Reclasificación de cuentas</strong> (p. ej., deuda de largo plazo que ahora vence dentro del año pasa a corriente).</li>
+      <li><strong>Periodificación de ingresos y gastos</strong> (asignar cada cosa a su año).</li>
+      <li><strong>Correcciones valorativas</strong>: amortizaciones y <strong>deterioros</strong>.</li>
+      <li>Eventualmente: ajustes a valor razonable y reconocimiento de provisiones.</li>
+    </ul>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: el cierre es "guardar y cerrar sesión"</div>
+      Durante el año vas anotando todo rápido, sin detenerte. El cierre es el momento en que <strong>ordenas el escritorio antes de irte</strong>: revisas que el inventario que dice el papel sea el que está en la bodega, reconoces que el notebook ya no vale lo mismo (depreciación), separas lo que corresponde a este año de lo que es del próximo, y recién ahí imprimes el informe. Sin ese ordenamiento, los estados financieros mienten.
+    </div>
+
+    <h3>El Balance de 8 columnas (tabulado o tributario)</h3>
+    <p>Es una <strong>extensión del balance de comprobación de sumas y saldos</strong> que se hace al final del ejercicio, después de cerrar todas las cuentas del Mayor que tuvieron movimiento. Presenta el detalle de las cuentas con sus saldos, las clasifica según su origen y determina el nivel de pérdidas o ganancias.</p>
+    <p>Está compuesto por <strong>tres secciones</strong> (de ahí las 8 columnas):</p>
+    <ol>
+      <li><strong>Balance de comprobación y saldos</strong> (sumas Debe/Haber, saldos Deudor/Acreedor)</li>
+      <li><strong>Inventario</strong> (Activo / Pasivo)</li>
+      <li><strong>Resultado</strong> (Pérdidas / Ganancias)</li>
+    </ol>
+
+    <div class="box formula">
+      <div class="bt">La doble verificación del balance de 8 columnas</div>
+      $$\text{Resultado del Ejercicio} = \text{Ganancias} - \text{Pérdidas}$$
+      Ejemplo de la lámina: \(1.500 - 1.000 = 500\). Y esa diferencia, sumada al Pasivo, debe dar el Activo: \(500 + 10.000 = 10.500\).<br>
+      <span style="color:var(--muted)">Si las diferencias de la sección Resultado y de la sección Inventario coinciden, el informe no tiene errores.</span>
+    </div>
+
+    <h4>Tipos de balances que menciona el curso</h4>
+    <p>Balance de <strong>8 columnas</strong> · de <strong>Comprobación y Saldos</strong> · <strong>Clasificado</strong> · <strong>Consolidado</strong> · <strong>Pro-Forma</strong> · <strong>FECU</strong> · otros.</p>
+  </section>
+
+  <!-- ===== 5 ===== -->
+  <section id="c5">
+    <h2>5 · El Balance / Estado de Situación Financiera en detalle</h2>
+
+    <p>Muestra la situación financiera en una <strong>fecha determinada</strong> (es estático). Se presenta comparado con el año anterior.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>ACTIVOS</th><th>PASIVOS Y PATRIMONIO</th></tr></thead>
+        <tbody>
+          <tr><td>Activos Corrientes</td><td>Pasivos Corrientes</td></tr>
+          <tr><td>Activos No Corrientes</td><td>Pasivos de Largo Plazo</td></tr>
+          <tr><td></td><td>Patrimonio</td></tr>
+          <tr><td class="num"><strong>TOTAL ACTIVOS</strong></td><td class="num"><strong>TOTAL PASIVO + PATRIMONIO</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>El criterio de clasificación: los 12 meses</h3>
+    <div class="box formula">
+      <div class="bt">La única pregunta que hay que hacerse</div>
+      <p style="text-align:center;font-size:17px;margin:4px 0"><strong>¿Se convertirá, consumirá o pagará dentro de los próximos 12 meses?</strong></p>
+      Si la respuesta es <strong>sí</strong> → <strong>corriente</strong>. Si es <strong>no</strong> → <strong>no corriente</strong>.
+    </div>
+
+    <div class="box warn">
+      <div class="bt">Criterio importante (va en el formulario)</div>
+      <strong>No se clasifica por el nombre</strong> de la cuenta ni por si el monto es grande o chico ni por si es "buena" o "mala". <strong>Manda el vencimiento</strong> y el ciclo operacional. Una misma deuda puede tener una <em>porción corriente</em> (la cuota de este año) y una <em>porción no corriente</em> (el resto).
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: la despensa y el refrigerador</div>
+      <strong>Activo corriente</strong> = lo del refrigerador: se consume esta semana, rota rápido. <strong>Activo no corriente</strong> = el refrigerador mismo: te dura años y es lo que te <em>permite</em> tener comida. Nadie vende el refrigerador para comprar el almuerzo... salvo que esté en problemas serios. Por eso los activos no corrientes hablan de <em>capacidad productiva</em> y los corrientes de <em>liquidez</em>.
+    </div>
+
+    <h3>Activos Corrientes (ordenados de mayor a menor liquidez)</h3>
+    <p><strong>Liquidez</strong> = facilidad con la que un activo se convierte en efectivo. Ese es el orden en que se presentan.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Cuenta</th><th>Qué representa</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Caja</strong></td><td>Dinero efectivo o en cheques, moneda nacional o extranjera, a la fecha del balance.</td></tr>
+          <tr><td><strong>Bancos</strong></td><td>Saldo disponible en cuentas corrientes del país o el exterior.</td></tr>
+          <tr><td><strong>Cuentas de ahorro</strong></td><td>Saldo en cuentas de ahorro en entidades financieras.</td></tr>
+          <tr><td><strong>Inversiones temporales</strong></td><td>Inversiones de carácter temporal con excedentes de tesorería: acciones, depósitos a plazo, fondos mutuos de corto plazo (conversión a efectivo en ≤ 1 año).</td></tr>
+          <tr><td><strong>Cuentas por cobrar a clientes</strong></td><td>Valor a cobrar por bienes o servicios facturados. Requiere registro detallado por cliente.</td></tr>
+          <tr><td><strong>Provisión para cuentas por cobrar</strong></td><td>La parte que se estima que <strong>no</strong> se podrá recaudar. Va <em>restando</em>.</td></tr>
+          <tr><td><strong>Inventarios</strong></td><td>Valor de costo de mercaderías, materias primas, productos en proceso y terminados, materiales y repuestos.</td></tr>
+          <tr><td><strong>Provisión para inventarios</strong></td><td>Inventario que no se podrá vender al valor normal por obsolescencia, deterioro o defecto. Va <em>restando</em>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: la escalera de liquidez</div>
+      Piensa en estados del agua. La <strong>caja</strong> es agua líquida: la usas al toque. Las <strong>cuentas por cobrar</strong> son hielo: es agua, pero tienes que esperar a que se derrita (que el cliente pague). El <strong>inventario</strong> es hielo en bloque: primero hay que <em>venderlo</em> y después <em>cobrarlo</em>, doble espera. Un <strong>terreno</strong> es un iceberg: vale muchísimo, pero convertirlo en plata te puede tomar un año. Por eso el balance los ordena así: de lo más líquido a lo más congelado.
+    </div>
+
+    <h4>Tipos de inventario</h4>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tipo</th><th>Qué es</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Materias primas (MP)</strong></td><td>Elementos adquiridos para usar en el proceso de fabricación.</td></tr>
+          <tr><td><strong>Productos en proceso (PP)</strong></td><td>Semielaborados: ya llevan materia prima, mano de obra directa y costos indirectos.</td></tr>
+          <tr><td><strong>Productos terminados (PT)</strong></td><td>Terminaron su producción y están disponibles para la venta.</td></tr>
+          <tr><td><strong>Materiales y repuestos</strong></td><td>Necesarios para mantención y reparación de equipos de producción.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Las <strong>empresas comerciales</strong> solo muestran inventario de mercaderías (compran y venden sin transformar). Las <strong>de servicios</strong> generalmente no tienen este rubro. Las <strong>industriales</strong> muestran los cuatro tipos.</p>
+
+    <h3>Propiedad, Planta y Equipo (PPE)</h3>
+    <p>Bienes que la organización <strong>emplea de manera permanente</strong> en su objeto social. Para ser PPE deben cumplir: <strong>no estar destinados a la venta</strong>, tener un costo relativamente importante (más de dos salarios mínimos mensuales) y naturaleza durable (<strong>más de un año</strong>). Se registran a <strong>valor de costo</strong> = precio de compra + todo gasto necesario para dejarlo en condiciones de uso.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tangibles NO depreciables</th><th>Tangibles depreciables</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Terrenos</strong> — no incluye construcciones.</td><td><strong>Construcciones y edificaciones</strong> (solo el edificio; el terreno va aparte).</td></tr>
+          <tr><td><strong>Construcciones en curso</strong> — cuenta <em>transitoria</em>, se traslada a edificios al terminar.</td><td><strong>Maquinaria y equipo</strong> (usados en producción).</td></tr>
+          <tr><td><strong>Maquinaria en montaje</strong> — cuenta <em>transitoria</em>, se traslada al activo depreciable correspondiente.</td><td><strong>Equipo de oficina</strong>, <strong>equipo de computación y comunicación</strong>, <strong>flota y equipo de transporte</strong>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box tip">
+      <div class="bt">Por qué el terreno no se deprecia</div>
+      Un activo depreciable es uno cuyo valor <strong>decrece durante su vida productiva</strong>. Un terreno no se gasta con el uso: sigue ahí igual en 50 años. Tampoco se deprecian los <strong>activos que no están en uso</strong> (si no se usa, no se desgasta) ni las cuentas transitorias como obras en curso.
+    </div>
+
+    <h3>Intangibles</h3>
+    <p>Recursos identificables <strong>sin sustancia física</strong>. Para que un activo se considere intangible debe cumplir <strong>tres condiciones</strong>: ser <strong>identificable</strong>, producir <strong>beneficios económicos futuros</strong> y que exista <strong>control</strong> sobre esos beneficios.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Cuenta</th><th>Qué es</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Good Will</strong> (crédito mercantil)</td><td>El valor del "buen nombre" de una empresa o producto: mayor o menor valor de los activos en conjunto versus su valor contable.</td></tr>
+          <tr><td><strong>Marca</strong></td><td>Valor de un nombre o símbolo. <strong>Debe estar registrada</strong> para reconocerle valor económico.</td></tr>
+          <tr><td><strong>Patente</strong></td><td>Valor de un conocimiento o forma específica de hacer algo (una fórmula, un proceso). También debe estar registrada.</td></tr>
+          <tr><td><strong>Franquicia</strong></td><td>Derecho a usar un nombre comercial y procesos específicos.</td></tr>
+          <tr><td><strong>Software</strong> / <strong>Derechos de autor</strong></td><td>Derechos intelectuales sobre programas, libros, música, etc.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: la receta de la Coca-Cola</div>
+      La fábrica, los camiones y las botellas de Coca-Cola son <strong>tangibles</strong>: se pueden tocar y valen algo. Pero lo que realmente vale la empresa es la <strong>receta secreta</strong> y el hecho de que todo el mundo conoce la marca. Eso no lo puedes tocar, no pesa nada... y vale más que todas las fábricas juntas. Eso es un <strong>intangible</strong>. El <strong>goodwill</strong> es justamente esa diferencia entre lo que vale la empresa "en papel" y lo que alguien está dispuesto a pagar por ella.
+    </div>
+
+    <h3>Otros activos</h3>
+    <p>No cumplen los requisitos para ser corrientes ni PPE:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Cuenta</th><th>Qué es</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Gastos pagados por anticipado</strong></td><td>Servicios pagados adelantado (seguros, intereses, arriendos). El pago debe cubrir <strong>períodos mayores a un mes</strong>.</td></tr>
+          <tr><td><strong>Cargos diferidos</strong></td><td>Conceptos que por su cuantía y período de beneficio se <em>difieren</em> (organización y preoperativos, estudios, publicidad, mejoras en propiedad ajena, útiles y papelería, impuesto de renta diferido...). <strong>Diferir</strong> = proyectar a futuro su conversión de activo a gasto (eso se llama <strong>amortización</strong>).</td></tr>
+          <tr><td><strong>Inversiones permanentes</strong></td><td>Inversiones de carácter permanente en acciones o cuotas de capital de otras sociedades.</td></tr>
+          <tr><td><strong>Bienes recibidos en pago</strong></td><td>Bienes que entregó un cliente porque no pudo pagar en dinero (por acuerdo o por decisión judicial). Si se quedan para uso de la empresa, se trasladan a PPE.</td></tr>
+          <tr><td><strong>Valorizaciones</strong></td><td>Diferencia entre valores actuales y valores de costo en libros (típicamente en inmuebles e inversiones permanentes).</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: el seguro anual pagado en enero</div>
+      Pagas $1.200.000 en enero por el seguro de todo el año. ¿Es un gasto de enero? <strong>No.</strong> En enero solo "consumiste" $100.000 de seguro; los otros $1.100.000 son un <strong>activo</strong>: un derecho a estar asegurado los próximos 11 meses. Mes a mes ese activo se va convirtiendo en gasto. Eso es un <strong>gasto pagado por anticipado</strong>, y es la misma lógica de los cargos diferidos.
+    </div>
+
+    <h3>Pasivos</h3>
+    <p>Se clasifican por el criterio de <strong>exigibilidad</strong> (la prioridad de pago):</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Pasivos CORRIENTES (&lt; 1 año)</th><th>Pasivos NO CORRIENTES (&gt; 1 año)</th></tr></thead>
+        <tbody>
+          <tr><td>
+            Obligaciones financieras (deudas con bancos a menos de un año)<br>
+            Proveedores (mercaderías o materias primas a crédito)<br>
+            Cuentas por pagar (honorarios, servicios, arriendos, seguros, transportes)<br>
+            Dividendos o participaciones por pagar<br>
+            Impuestos, gravámenes y tasas por pagar (renta, IVA...)<br>
+            Obligaciones laborales (sueldos, vacaciones, primas)<br>
+            Pasivos estimados y provisiones<br>
+            Ingresos recibidos por anticipado / Anticipos de clientes
+          </td><td>
+            Obligaciones financieras de largo plazo<br>
+            <span style="color:var(--muted)">(generalmente tienen porción corriente y no corriente)</span><br><br>
+            <strong>Bonos en circulación</strong> — deuda por bonos emitidos, operación que hacen el Estado o entidades privadas grandes a través de un banco que la avala.
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: "ingresos recibidos por anticipado" es un pasivo (suena raro, pero tiene toda la lógica)</div>
+      Un gimnasio te cobra el plan anual completo en enero. Para el gimnasio esa plata <strong>todavía no es un ingreso</strong>: es una <strong>deuda</strong>, porque te debe 12 meses de servicio. Si cierra en marzo, tiene que devolverte 9 meses. Recién se convierte en ingreso a medida que te va entregando el servicio. Por eso "cobré por adelantado" = pasivo, no ganancia.
+    </div>
+
+    <h3>Patrimonio</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Cuenta</th><th>Qué representa</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Capital</strong></td><td>Aportes iniciales y posteriores de los propietarios. Cambia de nombre según la sociedad: en sociedades de capital → <em>capital autorizado, suscrito y pagado</em>; en sociedades de personas → <em>cuotas o partes de interés social</em>; en personas naturales → <em>capital</em>.</td></tr>
+          <tr><td><strong>Superávit de capital</strong></td><td>Aumentos por mayores valores en colocación de acciones (<em>primas</em>) y donaciones recibidas.</td></tr>
+          <tr><td><strong>Reservas</strong></td><td>Utilidades de ejercicios anteriores que se quedan en el patrimonio con una <strong>destinación específica</strong> (por ley, estatutos o decisión de los órganos de dirección).</td></tr>
+          <tr><td><strong>Utilidades del ejercicio</strong></td><td>Aumento patrimonial del período. Si hay <strong>pérdida</strong>, se presenta <em>restando</em>.</td></tr>
+          <tr><td><strong>Utilidades de ejercicios anteriores</strong></td><td>Utilidades pasadas a las que <em>no</em> se les dio destinación específica.</td></tr>
+          <tr><td><strong>Superávit por valorizaciones</strong></td><td>Contrapartida de las valorizaciones del activo.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4>Dos cuentas que el profesor destaca</h4>
+    <div class="cards">
+      <div class="card"><div class="num">1</div><h4>Capital Social ("cuenta obligada")</h4><p>Aportes comprometidos y efectivamente entregados al constituir la empresa. Es <strong>obligatoria</strong>: es la base legal y financiera, y determina el compromiso mínimo de los socios frente a terceros.</p></div>
+      <div class="card"><div class="num">2</div><h4>Cuenta Particular (o Corriente)</h4><p>Refleja las transacciones entre la empresa y <em>cada socio</em>, distintas del capital: <strong>retiros personales</strong> (saldo deudor) o <strong>aportes extraordinarios</strong> (saldo acreedor).</p></div>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: la cuenta particular es el "me llevé plata de la caja"</div>
+      Imagina que tú y un amigo tienen un negocio y hay un frasco con la plata común. Si tu amigo saca $50.000 para comprarse zapatillas, eso <strong>no es un gasto del negocio</strong> — es plata que él se llevó. La <strong>cuenta particular</strong> es la libreta donde se anota eso, para que al final del año quede claro cuánto sacó cada uno. Por eso es una cuenta de <em>patrimonio</em>: afecta directamente lo que le corresponde a cada socio, no el resultado del negocio.
+    </div>
+  </section>
+
+  <!-- ===== 6 ===== -->
+  <section id="c6">
+    <h2>6 · El Estado de Resultados</h2>
+
+    <p>Presenta los resultados de un ente económico <strong>en un período determinado</strong>. Compara ingresos contra costos y gastos: si los ingresos son mayores, hay <strong>utilidad</strong>; si son menores, <strong>pérdida</strong>.</p>
+
+    <div class="box warn">
+      <div class="bt">Dos advertencias del profesor que caen en certamen</div>
+      1. El Estado de Resultados contabiliza <strong>las facturas emitidas</strong>, no lo que entra o sale de la caja. Una factura emitida aparece aquí, pero <em>no dice si se pudo cobrar ni cuándo</em>.<br>
+      2. Los valores del EERR son <strong>netos</strong>: si una compra o venta lleva IVA, <strong>solo se considera el valor neto</strong> (sin IVA).
+    </div>
+
+    <div class="box formula">
+      <div class="bt">Estructura completa (la cascada)</div>
+      <div class="keys">
+        <div class="k"><span class="d">Ingresos Operacionales</span><span class="f">ventas del giro</span></div>
+        <div class="k"><span class="d">(−) Costo de Ventas</span><span class="f">incluye Depreciación y Amortización <em>según IFRS</em></span></div>
+        <div class="k"><span class="d">= <strong>UTILIDAD BRUTA</strong></span><span class="f">Ing. Operacionales − Costo de Ventas</span></div>
+        <div class="k"><span class="d">(−) Gastos de Administración y Ventas</span><span class="f"></span></div>
+        <div class="k"><span class="d">= <strong>RESULTADO OPERACIONAL</strong></span><span class="f">Margen Bruto − GAV</span></div>
+        <div class="k"><span class="d">(±) Resultado No Operacional</span><span class="f">Ingreso No Op. − Gasto No Op.</span></div>
+        <div class="k"><span class="d">= <strong>RESULTADO ANTES DE IMPUESTO</strong></span><span class="f">R. Operacional ± R. No Operacional</span></div>
+        <div class="k"><span class="d">(−) Impuesto</span><span class="f">\(\text{RAI}\times 27\%\) · <strong>cero si no hay resultado positivo</strong></span></div>
+        <div class="k"><span class="d">= <strong>UTILIDAD NETA</strong></span><span class="f">RAI − Impuesto</span></div>
+      </div>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: el Estado de Resultados es tu liquidación de sueldo</div>
+      Arriba está el <strong>sueldo bruto</strong> (los ingresos). Después empiezan los descuentos, <em>en orden</em>: primero lo que te costó producir (costo de ventas), después los gastos fijos (administración), después los intereses del crédito de consumo, y al final el impuesto. Lo que queda abajo del todo es tu <strong>líquido</strong> = la utilidad neta. Y como en la liquidación, lo importante no es solo el número final: es <em>en qué escalón</em> se te fue la plata.
+    </div>
+
+    <h3>Ingresos</h3>
+    <p><strong>Aumentos transitorios del patrimonio</strong> que generan aumentos de activos o disminuciones de pasivos. Son la <em>entrada bruta de beneficios económicos</em> producidos a lo largo del período contable.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tipo</th><th>De dónde vienen</th><th>Ejemplos</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Operacionales</strong></td><td>Del <strong>objeto propio</strong> de la organización.</td><td>Venta de bienes y servicios. En empresas comerciales/industriales se usa la cuenta <em>"Ventas"</em>; en servicios, <em>"Ingresos por..."</em>.</td></tr>
+          <tr><td><strong>No operacionales</strong></td><td>De actividades <strong>distintas</strong> al objeto social.</td><td>Venta de material de desecho, intereses financieros, arriendos, dividendos, utilidad en venta de inversiones o de PPE, recuperación de gastos de ejercicios anteriores.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Costos y Gastos</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th></th><th>COSTO</th><th>GASTO</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Qué es</strong></td><td>Valor de los recursos aportados a los procesos de <strong>producción y ventas</strong>.</td><td>Disminución transitoria del patrimonio por el <strong>esfuerzo financiero para generar los ingresos</strong>.</td></tr>
+          <tr><td><strong>Relación con el ingreso</strong></td><td><strong>Coadyuva directamente</strong> a generar el ingreso (se identifica con él).</td><td><strong>No se identifica de manera directa</strong> con un ingreso.</td></tr>
+          <tr><td><strong>Cuentas típicas</strong></td><td>Costo de ventas y prestación de servicios, costo de compra de mercancías, materias primas, mano de obra directa, materiales indirectos.</td><td><em>Operacionales:</em> personal, honorarios, impuestos, arriendos, seguros, servicios, gastos legales, mantenimiento, depreciaciones, amortizaciones.<br><em>No operacionales:</em> gastos financieros, pérdida en venta y retiro de bienes, gastos extraordinarios y diversos.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Contablemente <strong>tienen el mismo efecto</strong> (ambos bajan la utilidad); se separan solo por su relación con el proceso productivo.</p>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: la pizzería</div>
+      La <strong>harina, el queso y el sueldo del pizzero</strong> son <strong>costo</strong>: sin eso, no hay pizza. Puedes decir exactamente cuánta harina lleva cada pizza. El <strong>arriendo del local, la cuenta de luz y el contador</strong> son <strong>gasto</strong>: son necesarios, pero no puedes decir "esta pizza usó 3 minutos de contador". Esa es toda la diferencia: <em>¿puedo trazarlo directamente al producto?</em>
+    </div>
+  </section>
+
+  <!-- ===== 7 ===== -->
+  <section id="c7">
+    <h2>7 · EBITDA, EBIT y EBT <span class="pill w">tema nuevo, cae seguro</span></h2>
+
+    <p>Son tres "paradas" dentro del Estado de Resultados. Todas responden a la misma pregunta —<em>¿cuánto gana esta empresa?</em>— pero <strong>cortando en distintos puntos</strong>.</p>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: las tres formas de decir cuánto ganas</div>
+      Imagina que tienes un Uber.
+      <ul style="margin:8px 0 0">
+        <li><strong>EBITDA</strong> = lo que te deja el auto <em>manejando</em>: pasajes cobrados menos bencina y mantención. No descuentas el crédito del auto, ni el impuesto, ni el hecho de que el auto se está desvalorizando. Es <strong>"¿el negocio en sí funciona?"</strong>.</li>
+        <li><strong>EBIT</strong> = lo anterior, <em>pero ahora sí</em> reconociendo que el auto pierde valor cada año (depreciación). Es <strong>"¿funciona considerando que la herramienta se gasta?"</strong>.</li>
+        <li><strong>EBT</strong> = lo anterior menos <strong>la cuota del crédito del auto</strong> (los intereses). Es <strong>"¿me queda algo después de pagarle al banco?"</strong>.</li>
+        <li>Y después del impuesto → <strong>utilidad neta</strong>, lo que realmente te queda en el bolsillo.</li>
+      </ul>
+    </div>
+
+    <div class="box formula">
+      <div class="bt">Definiciones y fórmulas</div>
+      <div class="keys">
+        <div class="k"><span class="d"><strong>EBITDA</strong> — Earnings Before Interest, Taxes, Depreciation and Amortization</span><span class="f">\(= \text{EBIT} + \text{Dep.} + \text{Amort.}\)</span></div>
+        <div class="k"><span class="d">También, partiendo del beneficio neto</span><span class="f">\(= \text{Bº Neto} + \text{Int.} + \text{Imp.} + \text{Dep.} + \text{Amort.}\)</span></div>
+        <div class="k"><span class="d"><strong>EBIT</strong> — Earnings Before Interest and Taxes</span><span class="f">\(= \text{Ingresos} - \text{Costos Operativos}\)</span></div>
+        <div class="k"><span class="d"><strong>EBT</strong> — Earnings Before Taxes</span><span class="f">\(= \text{EBIT} - \text{Gastos Financieros}\)</span></div>
+      </div>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th></th><th>EBT</th><th>EBIT</th><th>EBITDA</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Qué muestra</strong></td><td>Rentabilidad <em>después</em> de intereses pero <em>antes</em> de impuestos.</td><td>Rentabilidad <strong>operativa</strong>, sin considerar intereses ni impuestos.</td><td>Capacidad de <strong>generación de caja</strong>, sin costos financieros ni contables.</td></tr>
+          <tr><td><strong>Distancia del Bº neto</strong></td><td>El <strong>más cerca</strong> (solo falta descontar impuestos).</td><td>Más alejado (faltan intereses e impuestos).</td><td>El <strong>más alejado</strong> (faltan D&amp;A, intereses e impuestos).</td></tr>
+          <tr><td><strong>Para qué se usa</strong></td><td>Comparar empresas en <strong>distintos regímenes fiscales</strong>.</td><td>Indicar la rentabilidad <strong>operativa</strong> de la empresa.</td><td>Evaluar la <strong>capacidad de generar caja</strong>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box tip">
+      <div class="bt">Cómo interpretarlo</div>
+      Un <strong>EBITDA alto</strong> indica que la empresa genera beneficios importantes de sus <em>operaciones principales</em>. Un <strong>EBITDA bajo</strong> es motivo de preocupación —sugiere que no logra generar ingresos suficientes de su operación y que quizás necesita reestructurar— pero hay que evaluarlo con cuidado.
+    </div>
+
+    <div class="box warn">
+      <div class="bt">La trampa del EBITDA</div>
+      El EBITDA <strong>ignora deliberadamente</strong> la depreciación. Eso es útil para comparar la operación pura entre empresas... pero es peligroso si te lo crees demasiado: una empresa con máquinas que se están cayendo a pedazos puede mostrar un EBITDA precioso y estar quebrada. La depreciación <em>no es plata que sale</em>, pero sí representa un desgaste real que <strong>algún día habrá que reponer</strong>.
+    </div>
+  </section>
+
+  <!-- ===== 8 ===== -->
+  <section id="c8">
+    <h2>8 · Tratamiento del IVA</h2>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: la empresa es el cajero del fisco</div>
+      Cuando vendes con IVA, ese 19% <strong>nunca fue tuyo</strong>: se lo cobraste al cliente <em>en nombre del Estado</em> y lo tienes que entregar. Es como cuando organizas un asado y juntas la plata de todos: esa plata pasa por tus manos pero no es tu ingreso. Por eso el <strong>IVA Débito Fiscal es un PASIVO</strong> (se lo debes al fisco) y el <strong>IVA Crédito Fiscal es un ACTIVO</strong> (el fisco te lo debe a ti, porque tú lo pagaste al comprar).
+    </div>
+
+    <div class="box formula">
+      <div class="bt">Las dos cuentas</div>
+      <strong>IVA CRÉDITO FISCAL — cuenta de ACTIVO.</strong> Se genera en las <em>compras</em> de mercaderías e insumos del giro. <strong>Solo si se justifica con la factura respectiva.</strong> También aplica a servicios básicos que ayudan al giro (agua, electricidad) con su factura correspondiente.<br><br>
+      <strong>IVA DÉBITO FISCAL — cuenta de PASIVO.</strong> Se genera en <em>todas</em> las ventas de la empresa, <strong>sea con boleta o con factura</strong>.
+    </div>
+
+    <div class="box warn">
+      <div class="bt">La asimetría que hay que tener clarísima</div>
+      Para <strong>vender</strong>, da lo mismo boleta o factura: siempre generas débito fiscal. Para <strong>comprar</strong>, solo la <strong>factura</strong> te da derecho a crédito fiscal — <em>las boletas no dan derecho a crédito fiscal</em>. Por eso las empresas siempre piden factura.
+    </div>
+
+    <h3>El ajuste mensual</h3>
+    <p>Al término de cada mes se hace un <strong>asiento de ajuste</strong> que salda las cuentas de IVA Débito e IVA Crédito, y determina si hay que pagar o recuperar:</p>
+    <div class="box formula">
+      <div class="bt">Liquidación mensual</div>
+      $$\text{IVA a pagar} = \text{IVA Débito Fiscal} - \text{IVA Crédito Fiscal}$$
+      Si el resultado es <strong>positivo</strong> → se paga. Si es <strong>negativo</strong> → queda un <strong>remanente</strong> a favor, que se guarda <strong>expresado en UTM</strong> y se usa el mes siguiente.
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Por qué el remanente se guarda en UTM</div>
+      Porque si lo guardaras en pesos, la inflación te lo comería mientras esperas a usarlo. La <strong>UTM</strong> es una unidad que se reajusta, así que guardar el remanente en UTM es como <strong>guardarlo en un frasco a prueba de inflación</strong>: cuando lo usas el mes siguiente, vale lo mismo que cuando lo guardaste.
+    </div>
+
+    <h4>Ejemplo del profesor (con remanente)</h4>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Período</th><th>Cálculo</th><th class="num">Resultado</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Nov 2022</strong></td><td>IVA DF 14.100.000 − IVA CF 8.520.000</td><td class="num">5.580.000</td></tr>
+          <tr><td></td><td>Convertido a UTM: \(5.580.000 / 62.000\)</td><td class="num">90 UTM</td></tr>
+          <tr><td><strong>Dic 2022</strong></td><td>IVA CF del mes 10.500.000 + remanente 5.670.000 (las 90 UTM) = 16.170.000</td><td class="num">16.170.000</td></tr>
+          <tr><td></td><td>IVA DF 24.100.000 − 16.170.000</td><td class="num"><strong>7.930.000 a pagar</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="color:var(--muted);font-size:14px">Fíjate: las 90 UTM que en noviembre valían 5.580.000, en diciembre se usaron por 5.670.000 — se reajustaron.</p>
+  </section>
+
+  <!-- ===== 9 ===== -->
+  <section id="c9">
+    <h2>9 · Depreciación</h2>
+
+    <div class="box formula">
+      <div class="bt">Definición</div>
+      <strong>Pérdida sistemática de valor de un activo fijo a lo largo del tiempo</strong> debido al uso, desgaste o envejecimiento. Es el mecanismo que reconoce el desgaste que sufre un bien por el uso que se hace de él.
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: el notebook de la universidad</div>
+      Compras un notebook en <strong>$1.200.000</strong> para toda la carrera (5 años). ¿Es justo decir que en 2026 "gastaste" $1.200.000 y en 2027 nada, si lo usaste los dos años igual? <strong>No.</strong> Lo correcto es decir que cada año "consumiste" $240.000 de notebook. <strong>Eso es la depreciación</strong>: repartir el costo de algo que te dura varios años entre todos los años que efectivamente lo usas.
+    </div>
+
+    <p>La lámina lo explica exactamente así: <em>"ese activo generó ingresos y significó un gasto en más de un período, por lo que mediante la depreciación se distribuye en varios períodos el gasto inherente al uso del activo, de esta forma solo se imputan a los ingresos los gastos en que efectivamente se incurrieron para generarlo en sus respectivos períodos"</em>.</p>
+
+    <div class="box tip">
+      <div class="bt">La segunda cara de la depreciación (visión financiera)</div>
+      Al reconocer el desgaste, se va creando <strong>una especie de provisión o reserva</strong> que al final permite reemplazar el activo <em>sin afectar la liquidez ni el capital de trabajo</em>. Es decir: además de ser un ajuste contable, te obliga a "guardar mentalmente" para cuando haya que comprar la máquina nueva.
+    </div>
+
+    <h3>Normas y variables</h3>
+    <div class="cards">
+      <div class="card"><div class="num">NIC 16</div><h4>Propiedad, Planta y Equipo</h4><p>Reconocimiento inicial y medición posterior.</p></div>
+      <div class="card"><div class="num">NIC 36</div><h4>Deterioro del Valor de los Activos</h4><p>Cuando el activo pierde valor de golpe, fuera del desgaste normal.</p></div>
+      <div class="card"><div class="num">NIC 8</div><h4>Políticas contables y estimaciones</h4><p>Cambios en estimaciones y errores; revisión periódica.</p></div>
+    </div>
+    <p><strong>Variables clave del cálculo:</strong> costo inicial del activo · valor residual (o de recuperación) · vida útil estimada · método de depreciación.</p>
+    <p><strong>Qué se deprecia:</strong> Propiedades, planta y equipo (PPE). <strong>No</strong> se deprecian los <strong>terrenos</strong> (salvo casos especiales) ni las obras en curso.</p>
+
+    <h3>Métodos</h3>
+    <p>El curso menciona tres: <strong>lineal (recto)</strong>, <strong>saldo decreciente</strong> y <strong>unidades de producción</strong>.</p>
+
+    <div class="box formula">
+      <div class="bt">Método lineal (el principal)</div>
+      $$D_t = \frac{\text{Costo} - \text{Valor residual}}{\text{Vida útil}}$$
+    </div>
+
+    <h4>Ejemplo completo de las láminas</h4>
+    <p>Activo de <strong>$120.000.000</strong>, valor residual <strong>$10.000.000</strong>, vida útil <strong>10 años</strong>. Cuota anual: \(\frac{120.000.000 - 10.000.000}{10} = 11.000.000\).</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Año</th><th class="num">Cuota de depreciación</th><th class="num">Depreciación acumulada</th><th class="num">Valor neto en libros</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td class="num">11.000.000</td><td class="num">11.000.000</td><td class="num">109.000.000</td></tr>
+          <tr><td>2</td><td class="num">11.000.000</td><td class="num">22.000.000</td><td class="num">98.000.000</td></tr>
+          <tr><td>3</td><td class="num">11.000.000</td><td class="num">33.000.000</td><td class="num">87.000.000</td></tr>
+          <tr><td>5</td><td class="num">11.000.000</td><td class="num">55.000.000</td><td class="num">65.000.000</td></tr>
+          <tr><td>10</td><td class="num">11.000.000</td><td class="num">110.000.000</td><td class="num"><strong>10.000.000</strong> (= valor residual)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Fíjate cómo al final de la vida útil el valor en libros aterriza <strong>exactamente en el valor residual</strong>. Esa es la verificación de que lo hiciste bien.</p>
+
+    <div class="box formula">
+      <div class="bt">Depreciación ACUMULADA vs. depreciación DEL EJERCICIO</div>
+      <strong>Acumulada:</strong> el total depreciado <em>desde que se compró el activo hasta hoy</em>. Se registra en el <strong>Balance</strong>, restando del costo del activo fijo. Cada año crece.<br><br>
+      <strong>Del ejercicio:</strong> la que corresponde a <em>un período contable específico</em> (normalmente un año). Se registra como <strong>gasto en el Estado de Resultados</strong>.
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: el odómetro y el viaje de hoy</div>
+      La <strong>depreciación acumulada</strong> es el <strong>odómetro</strong> del auto: los kilómetros totales desde que salió de la fábrica. La <strong>depreciación del ejercicio</strong> es el <strong>trip meter</strong>: los kilómetros de <em>este</em> viaje. Uno es un saldo que se acumula (va al Balance, la foto); el otro es un flujo del período (va al Estado de Resultados, la película). Misma distinción de siempre.
+    </div>
+
+    <p>El asiento es: <strong>Débito a Gasto por Depreciación</strong>, <strong>Crédito a Depreciación Acumulada</strong>. Ejemplo del curso: costo $100.000, residual $10.000, vida 5 años → depreciación anual <strong>$18.000</strong>.</p>
+  </section>
+
+  <!-- ===== 10 ===== -->
+  <section id="c10">
+    <h2>10 · Amortización, intangibles y deterioro</h2>
+
+    <div class="box formula">
+      <div class="bt">Amortización</div>
+      Proceso contable que <strong>distribuye el costo de un activo intangible o de una deuda financiera</strong> a lo largo del tiempo, para reflejar sistemáticamente la pérdida de valor o la cancelación de una obligación.
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: amortización = depreciación de lo que no puedes tocar</div>
+      Si compras una <strong>máquina</strong> y se va gastando → <strong>depreciación</strong>. Si compras una <strong>licencia de software por 5 años</strong>, no se "gasta" físicamente (no se raya, no se oxida), pero igual se va acabando: cada año te queda menos licencia. Eso es <strong>amortización</strong>. Misma idea, distinto tipo de activo.
+    </div>
+
+    <h3>Depreciación vs. Amortización (tabla comparativa del curso)</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Concepto</th><th>AMORTIZACIÓN</th><th>DEPRECIACIÓN</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Aplica a</strong></td><td>Activos <strong>intangibles</strong> o deudas</td><td>Activos <strong>tangibles</strong></td></tr>
+          <tr><td><strong>Ejemplos</strong></td><td>Software, licencias, préstamos</td><td>Maquinarias, edificios, vehículos</td></tr>
+          <tr><td><strong>Método</strong></td><td>Lineal (lo común), basado en tiempo</td><td>Lineal, unidades de producción, doble saldo decreciente</td></tr>
+          <tr><td><strong>Valor residual</strong></td><td>Generalmente <strong>cero</strong></td><td><strong>Puede tener</strong> valor residual</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>Tipos de amortización de intangibles:</strong> patentes, licencias, marcas registradas, software, concesiones. Su finalidad es <em>registrar el gasto por el uso del activo en cada período</em>. Otras formas de amortización que menciona el curso: cancelación de una deuda mediante pagos consecutivos, extinción gradual de una prima de seguros o bonos, y agotamiento de un intangible.</p>
+
+    <div class="box formula">
+      <div class="bt">Impacto de la amortización en los tres estados</div>
+      <div class="keys">
+        <div class="k"><span class="d"><strong>Estado de Resultados</strong></span><span class="f">Aumenta los gastos operativos</span></div>
+        <div class="k"><span class="d"><strong>Balance General</strong></span><span class="f">Disminuye el activo; aparece "amortización acumulada"</span></div>
+        <div class="k"><span class="d"><strong>Flujo de Efectivo</strong></span><span class="f">No lo afecta directamente (gasto no desembolsado), <strong>pero reduce la base imponible</strong></span></div>
+      </div>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 El "escudo fiscal" en una frase</div>
+      La depreciación y la amortización son gastos <strong>que no sacan plata de tu bolsillo</strong>, pero que <strong>sí bajan la utilidad</strong> sobre la que te cobran impuesto. Es un gasto de mentira que te ahorra impuestos de verdad. Por eso se llaman <em>escudo fiscal</em>.
+    </div>
+
+    <h3>Deterioro (NIC 36)</h3>
+    <div class="box formula">
+      <div class="bt">Cálculo del deterioro</div>
+      <strong>Valor contable</strong> = precio de adquisición − amortización/depreciación acumulada.<br>
+      <strong>Valor recuperable</strong> = el <strong>mayor</strong> entre:
+      <ul style="margin:6px 0">
+        <li><strong>Valor neto realizable</strong>: lo que obtendrías por su venta menos los costes relacionados.</li>
+        <li><strong>Valor en uso</strong>: el valor actual de los flujos de efectivo que esperas obtener usándolo.</li>
+      </ul>
+      $$\text{Pérdida por deterioro} = \text{Valor contable} - \text{Importe recuperable} \quad (\text{si el primero es mayor})$$
+      Después de calcularlo, la <strong>base de la próxima cuota</strong> de amortización pasa a ser el valor recuperable.
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: el desgaste normal vs. el choque</div>
+      Tu auto pierde valor todos los años por el uso: eso es <strong>depreciación</strong>, es esperado y programado. Pero si un día chocas y queda con el chasis torcido, pierde un montón de valor <strong>de golpe y fuera del programa</strong>: eso es <strong>deterioro</strong>. La depreciación es el envejecimiento; el deterioro es el accidente.
+    </div>
+
+    <h3>Provisiones</h3>
+    <div class="box formula">
+      <div class="bt">Provisión (del formulario del caso Carozzi)</div>
+      <strong>Estimación de una pérdida u obligación probable con monto o fecha incierta.</strong> Ejemplos: incobrables, obsolescencia, beneficios a empleados.
+      $$CxC_{\text{neta}} = CxC_{\text{bruta}} - Prov._{\text{incobrables}} \qquad Inv._{\text{neto}} = Inv._{\text{bruto}} - Prov._{\text{obsolescencia}}$$
+    </div>
+    <p>Los <strong>inventarios</strong> se valorizan al <strong>menor</strong> entre costo y <strong>valor neto realizable (VNR)</strong>, donde \(VNR = \text{precio estimado} - \text{costos para vender}\).</p>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: el amigo que te debe $50.000</div>
+      Tienes 10 amigos que te deben $50.000 cada uno = $500.000 por cobrar. Pero por experiencia sabes que uno de ellos nunca paga. ¿Cuánto vale realmente tu "cuenta por cobrar"? <strong>$450.000</strong>, no $500.000. Esa rebaja de $50.000 es la <strong>provisión de incobrables</strong>: reconocer <em>por adelantado</em> y con honestidad la parte que probablemente no vas a ver nunca. Contabilidad prudente = no inflarte con plata que no vas a cobrar.
+    </div>
+
+    <p>Y el <strong>saldo neto</strong>, en general: \(\;\text{Neto} = \text{Bruto} - \text{ajustes acumulados}\).</p>
+  </section>
+
+  <!-- ===== 11 ===== -->
+  <section id="c11">
+    <h2>11 · Estructuras patrimoniales (tipos de sociedad)</h2>
+
+    <p>Una <strong>empresa</strong> es un ente que realiza actividades comerciales, financieras, económicas y tributarias con finalidad de lucro. Dos categorías básicas para constituirla:</p>
+    <div class="cards">
+      <div class="card"><div class="num">OPCIÓN A</div><h4>Persona natural</h4><p>La <strong>propia persona</strong> asume todos los derechos y obligaciones (incluyendo deudas) de la empresa.</p></div>
+      <div class="card"><div class="num">OPCIÓN B</div><h4>Persona jurídica</h4><p>La <strong>empresa</strong> (no el dueño) asume los derechos y obligaciones. Los socios <strong>no ponen en riesgo su patrimonio</strong>: solo responden por el monto aportado.</p></div>
+    </div>
+
+    <h3>Los cinco tipos que enumera el curso</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>#</th><th>Tipo</th><th>Características</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><strong>Sociedad de Responsabilidad Limitada (Ltda.)</strong></td><td>De <strong>2 a 50 socios</strong> (naturales o jurídicas). Responden <strong>de forma limitada</strong> por el monto o capital que aporten.</td></tr>
+          <tr><td>2</td><td><strong>Sociedad por Acciones (SpA)</strong></td><td>Creada por una persona jurídica; participan <strong>una o más</strong> personas, y su participación en el capital <strong>se representa por acciones</strong>.</td></tr>
+          <tr><td>3</td><td><strong>Empresa Individual de Responsabilidad Limitada (EIRL)</strong></td><td><strong>Sin socios</strong>: cualquier persona (natural o jurídica) puede crearla. Permite que el dueño tome <strong>decisiones autónomas</strong>, porque no hay a quién consultar.</td></tr>
+          <tr><td>4</td><td><strong>Sociedad en Comandita</strong></td><td>Dos o más socios de <strong>dos clases</strong>: los <em>comanditarios</em> (solo aportan capital y responden por sus aportes) y los <em>gestores</em> (administran y responden por la sociedad).</td></tr>
+          <tr><td>5</td><td><strong>Sociedad Colectiva Comercial</strong></td><td>Al menos dos socios. La responsabilidad es <strong>ILIMITADA</strong>: responden con su <strong>patrimonio personal</strong>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Sociedades Anónimas: los tres tipos</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Tipo</th><th>Qué la define</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Abiertas</strong></td><td>Inscriben sus acciones en el <strong>Registro de Valores</strong> (voluntaria u obligatoriamente). Son fiscalizadas por la <strong>CMF</strong>.</td></tr>
+          <tr><td><strong>Especiales</strong></td><td>No se rigen solo por el Código de Comercio, sino <strong>también por una ley especial</strong>: ley de bancos, ley de empresas aseguradoras, etc.</td></tr>
+          <tr><td><strong>Cerradas</strong></td><td>Las que no son abiertas. Su responsabilidad es limitada, y no están reguladas por la Superintendencia de Valores y Seguros como las abiertas.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: cuánto pones en riesgo cuando juegas</div>
+      Piensa en las sociedades como <strong>niveles de protección</strong>. La <strong>colectiva</strong> es jugar sin casco: si el negocio se hunde, van por tu casa y tu auto. La <strong>Ltda./SpA/EIRL</strong> es jugar con casco y rodilleras: si se hunde, pierdes lo que apostaste (tu aporte) y nada más. La <strong>S.A. abierta</strong> es jugar en un estadio con árbitros y cámaras: máxima protección para los inversionistas, pero te fiscaliza la CMF y tienes que publicar todo. <em>Mientras más gente arriesga plata contigo, más te vigilan.</em>
+    </div>
+
+    <div class="box tip">
+      <div class="bt">La cuenta de retiros del socio</div>
+      Para cualquier sociedad hay que generar una cuenta contable de <strong>retiros del socio ("Particular" o "Corriente")</strong>. Es una <strong>cuenta de patrimonio</strong> porque afecta directamente la utilidad y los capitales. El socio puede <strong>retirar</strong> (se contabiliza como <em>cargo</em>) o <strong>aportar</strong> (se contabiliza como <em>abono</em>).
+    </div>
+  </section>
+
+  <!-- ===== 12 ===== -->
+  <section id="c12">
+    <h2>12 · Análisis vertical y horizontal</h2>
+
+    <p>Aquí empieza la parte de <em>interpretar</em>, que es donde se juegan las notas. Son dos formas complementarias de mirar los mismos estados.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>ANÁLISIS HORIZONTAL</th><th>ANÁLISIS VERTICAL</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Compara <strong>una misma cuenta entre períodos</strong>.
+              $$\Delta X = X_{2025} - X_{2024}$$
+              $$\text{Var.}\% = \frac{X_{2025} - X_{2024}}{X_{2024}}\times 100$$
+            </td>
+            <td>Mide el <strong>peso de una cuenta dentro de un total</strong> del mismo período.
+              $$\text{Part.}\% = \frac{\text{Cuenta}}{\text{Total correspondiente}}\times 100$$
+              Ej.: inventarios/activos corrientes; PPE/activos totales; pasivo/activos.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: la balanza y el espejo</div>
+      El <strong>análisis horizontal</strong> es <strong>pesarte cada mes</strong>: te dice si subiste o bajaste <em>respecto de ti mismo</em>. El <strong>análisis vertical</strong> es <strong>mirarte al espejo</strong>: te dice cómo está <em>repartido</em> tu cuerpo hoy (cuánto es músculo, cuánto grasa), sin importar el peso total. Por eso el vertical sirve para comparar una empresa gigante con una chica: aunque una venda 1.000 veces más, ambas pueden gastar 30% de sus ventas en sueldos.
+    </div>
+
+    <div class="box warn">
+      <div class="bt">Error clásico: la base de la variación porcentual</div>
+      La base <strong>siempre es el año antiguo</strong> (2024), nunca el nuevo. Está listado explícitamente en los errores frecuentes del formulario: "<em>Usar 2025 como base de la variación porcentual</em>".
+    </div>
+
+    <h3>Los ejemplos del caso Carozzi</h3>
+    <div class="box formula">
+      <div class="bt">Horizontal — el efectivo</div>
+      $$\Delta E = 28.932.544 - 64.543.801 = -\text{M\$}\,35.611.257$$
+      $$\text{Var.}\% = \frac{28.932.544 - 64.543.801}{64.543.801}\times 100 \approx -55{,}2\%$$
+      <strong>Lectura:</strong> el efectivo disminuyó 55,2%. Pero eso <em>por sí solo no implica un problema</em>: debe conectarse con los pasivos corrientes, el capital de trabajo, la razón corriente y los flujos de efectivo.
+    </div>
+    <div class="box formula">
+      <div class="bt">Vertical — los inventarios (2025)</div>
+      $$\frac{\text{Inventarios}}{\text{Activos corrientes}}\times 100 = \frac{291.183.724}{607.983.692}\times 100 \approx 47{,}9\%$$
+      <strong>Lectura:</strong> hay una <strong>alta concentración</strong> de los recursos corrientes en inventarios, que son <em>menos líquidos</em> que el efectivo.
+    </div>
+
+    <div class="box tip">
+      <div class="bt">Unidades: M\$ y MM\$</div>
+      Las cifras del caso están en <strong>M\$ (miles de pesos)</strong>: \(\text{M\$}\,1.000 = \$1.000.000\). <strong>No se deben mezclar</strong> M\$, pesos y MM\$ en una misma tabla — es uno de los errores frecuentes listados.
+    </div>
+  </section>
+
+  <!-- ===== 13 ===== -->
+  <section id="c13">
+    <h2>13 · Ratios financieros</h2>
+
+    <p><strong>Razones financieras</strong> = operaciones aritméticas que comparan dos cuentas o grupos de cuentas de los estados financieros, para analizar el manejo de la empresa. Se caracterizan por su facilidad de cálculo y el consenso en la interpretación.</p>
+
+    <h3>Conceptos previos (los da el profesor antes de las fórmulas)</h3>
+    <div class="box formula">
+      <div class="bt">Convenciones que hay que respetar</div>
+      <div class="keys">
+        <div class="k"><span class="d">Capital de trabajo <strong>bruto</strong></span><span class="f">= Activo Circulante</span></div>
+        <div class="k"><span class="d">Capital de trabajo <strong>neto</strong></span><span class="f">= Activo Circulante − Pasivo Circulante</span></div>
+        <div class="k"><span class="d">Promedio de una cuenta</span><span class="f">\(\dfrac{\text{saldo inicial} + \text{saldo final}}{2}\)</span></div>
+        <div class="k"><span class="d">Deuda Total</span><span class="f">= Pasivos exigibles corrientes + no corrientes (fondos de terceros)</span></div>
+        <div class="k"><span class="d">Período <strong>calendario</strong></span><span class="f">365 días</span></div>
+        <div class="k"><span class="d">Período <strong>uniforme</strong></span><span class="f">360 días (todos los meses de 30)</span></div>
+      </div>
+    </div>
+
+    <p>Las familias de razones: <strong>liquidez, endeudamiento, gestión o eficiencia, rentabilidad, valor de mercado</strong> y <strong>Du Pont</strong>.</p>
+
+    <h3>a) Razones de liquidez</h3>
+    <p>Muestran la relación entre el efectivo, otros activos corrientes y los pasivos corrientes: <em>¿puede la empresa afrontar sus compromisos de corto plazo?</em></p>
+    <div class="box formula">
+      <div class="bt">Las tres (más el capital de trabajo)</div>
+      <div class="keys">
+        <div class="k"><span class="d"><strong>Liquidez corriente</strong> (razón circulante / corriente / de funcionamiento)</span><span class="f">\(LC = \dfrac{\text{Activo Corriente}}{\text{Pasivo Corriente}}\)</span></div>
+        <div class="k"><span class="d"><strong>Prueba ácida</strong> (razón de tesorería) — saca las existencias</span><span class="f">\(\dfrac{AC - \text{Inventarios}}{PC}\)</span></div>
+        <div class="k"><span class="d"><strong>Prueba acidísima</strong> (razón de disponible / real de caja)</span><span class="f">\(\dfrac{\text{Caja} + \text{Banco}}{PC}\)</span></div>
+        <div class="k"><span class="d"><strong>Capital de trabajo neto</strong></span><span class="f">\(CT = AC - PC\)</span></div>
+      </div>
+    </div>
+    <p>Regla de lectura del profesor: <em>"Liquidez corriente de 2 a 1 permite a la empresa trabajar sin apuros. Significa tener dos pesos por cada peso que debe."</em></p>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: las tres pruebas son un examen cada vez más estricto</div>
+      Imagina que te preguntan si puedes pagar $1.000.000 de deudas este mes.
+      <ul style="margin:8px 0 0">
+        <li><strong>Razón corriente:</strong> "cuento TODO lo que tengo a mano: mi plata, lo que me deben, y la ropa que puedo vender". Es el examen <em>generoso</em>.</li>
+        <li><strong>Prueba ácida:</strong> "ya, pero la ropa capaz que no la venda a tiempo... contemos sin ella". Examen <em>realista</em>. Se saca el inventario porque, frente a una venta rápida, <strong>puede perder valor</strong>.</li>
+        <li><strong>Prueba acidísima:</strong> "cuánta plata tienes AHORA MISMO en la billetera y en el banco, sin vender ni cobrar nada". Examen <em>brutal</em>.</li>
+      </ul>
+      Si pasas las tres, estás sólido de verdad.
+    </div>
+
+    <div class="box tip">
+      <div class="bt">Lectura conjunta de la liquidez (del formulario Carozzi)</div>
+      Carozzi tiene \(RC = \frac{607.983.692}{316.939.461} \approx 1{,}92\) y \(CT = \text{M\$}\,291.044.231\). Pero <strong>1,92 no significa que tenga M\$1,92 en caja</strong> por cada M\$1 exigible: buena parte de esos activos corrientes son inventarios y cuentas por cobrar, que primero hay que <em>vender</em> y <em>cobrar</em>. Por eso hay que mirar simultáneamente: la composición de los activos corrientes, la antigüedad y calidad de las CxC, la rotación/obsolescencia de inventarios, los vencimientos de las obligaciones y la capacidad de generar flujo operacional positivo.
+    </div>
+
+    <div class="box warn">
+      <div class="bt">Liquidez ≠ Solvencia</div>
+      La <strong>liquidez</strong> es la capacidad de pagar obligaciones de <strong>corto plazo</strong>. La <strong>solvencia</strong> mira la capacidad financiera de <strong>largo plazo</strong> y la estructura total de deuda y patrimonio. Una empresa puede tener capital de trabajo positivo <em>y al mismo tiempo</em> un endeudamiento elevado.
+    </div>
+
+    <h3>b) Razones de endeudamiento</h3>
+    <div class="box formula">
+      <div class="bt">Fórmulas</div>
+      <div class="keys">
+        <div class="k"><span class="d"><strong>Razón de endeudamiento</strong> (sobre activos)</span><span class="f">\(\dfrac{\text{Deuda CP} + \text{Deuda LP}}{\text{Activo Total}}\times 100\)</span></div>
+        <div class="k"><span class="d"><strong>Razón de apalancamiento</strong> (deuda/patrimonio)</span><span class="f">\(\dfrac{\text{Deuda Total}}{\text{Patrimonio}}\)</span></div>
+        <div class="k"><span class="d"><strong>Autonomía financiera</strong></span><span class="f">\(\dfrac{\text{Patrimonio}}{\text{Activo Total}}\times 100\)</span></div>
+        <div class="k"><span class="d"><strong>Desagregación de la deuda</strong></span><span class="f">\(\dfrac{\text{Deuda CP}}{\text{Deuda Total}}\) y \(\dfrac{\text{Deuda LP}}{\text{Deuda Total}}\)</span></div>
+        <div class="k"><span class="d"><strong>Cobertura de intereses</strong></span><span class="f">\(\dfrac{\text{BAII (EBIT)}}{\text{Gastos financieros}}\)</span></div>
+        <div class="k"><span class="d"><strong>Fondo de maniobra sobre activos</strong></span><span class="f">\(\dfrac{AC - PC}{\text{Activo Total}}\)</span></div>
+      </div>
+    </div>
+    <p>Regla de lectura del profesor: <em>"Debe ser inferior al 60%. Si el endeudamiento es del 60%, significa que la empresa debe $60 por cada $100 de sus activos."</em></p>
+    <p>Del formulario: <strong>endeudamiento + autonomía = 100%</strong>. Es una buena verificación rápida.</p>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: ¿de quién es realmente tu departamento?</div>
+      Compras un depto de <strong>$100.000.000</strong> con <strong>$70.000.000</strong> de crédito hipotecario. Tu <strong>razón de endeudamiento</strong> es 70%: de cada $100 del depto, $70 son del banco. Tu <strong>autonomía</strong> es 30%. Y tu <strong>razón deuda/patrimonio</strong> es \(70/30 = 2{,}33\): debes $2,33 por cada peso realmente tuyo.<br><br>
+      La <strong>cobertura de intereses</strong> es otra pregunta: "¿tu sueldo alcanza para pagar el dividendo?". Si ganas $2.000.000 y el dividendo es $500.000, tu cobertura es 4 veces — cómodo. Si es 1,1 veces, cualquier mes malo y no pagas.
+    </div>
+
+    <p>Ejemplo real (Análisis Razonado de Polpaico): <em>"La razón de endeudamiento alcanzó <strong>1,71 veces</strong>... un aumento de 4,3% respecto al mismo período del año anterior, que se explica principalmente por el aumento de la deuda total en un 4,8% compensado por el incremento en el patrimonio total."</em> Y sobre cobertura: <em>"muestra una disminución de 70,9%... alcanzando el valor de <strong>1,18 veces</strong>. Esto se explica principalmente por el menor resultado del ejercicio."</em></p>
+
+    <h3>c) Razones de eficiencia / gestión (rotaciones)</h3>
+    <p>Miden qué tan eficientemente la empresa administra sus activos.</p>
+    <div class="box formula">
+      <div class="bt">Rotaciones y días</div>
+      <div class="keys">
+        <div class="k"><span class="d">Rotación de <strong>inventario</strong></span><span class="f">\(\dfrac{\text{Costo de Venta}}{\text{Inventario Promedio}}\)</span></div>
+        <div class="k"><span class="d"><strong>Permanencia</strong> de inventario (días)</span><span class="f">\(\dfrac{\text{Días del período}}{\text{R. Inventario}}\)</span></div>
+        <div class="k"><span class="d">Rotación de <strong>clientes</strong></span><span class="f">\(\dfrac{\text{Ventas Crédito}\times 1{,}19}{\text{Clientes Promedio}}\)</span></div>
+        <div class="k"><span class="d"><strong>Días de cobro</strong></span><span class="f">\(\dfrac{\text{Días del período}}{\text{R. Clientes}}\)</span></div>
+        <div class="k"><span class="d">Rotación de <strong>proveedores</strong></span><span class="f">\(\dfrac{\text{Compras Crédito}\times 1{,}19}{\text{Proveedores Promedio}}\)</span></div>
+        <div class="k"><span class="d"><strong>Días de pago</strong></span><span class="f">\(\dfrac{\text{Días del período}}{\text{R. Proveedores}}\)</span></div>
+        <div class="k"><span class="d">Rotación de <strong>activos</strong></span><span class="f">\(\dfrac{\text{Ventas}}{\text{Activo Total}}\)</span></div>
+        <div class="k"><span class="d"><strong>Ciclo operacional</strong></span><span class="f">Permanencia Inventario + Días de Cobro</span></div>
+      </div>
+    </div>
+
+    <div class="box warn">
+      <div class="bt">¿Por qué aparece el 1,19?</div>
+      Porque las <strong>ventas y compras se registran netas</strong> (sin IVA) en el Estado de Resultados, pero las cuentas de <strong>Clientes y Proveedores del Balance incluyen el IVA</strong> (es lo que efectivamente te van a pagar / vas a pagar). Multiplicar por <strong>1,19</strong> deja ambas cifras en la misma base para que la división tenga sentido. Es un detalle chico que delata si entendiste o si estabas copiando la fórmula.
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: la panadería y la joyería</div>
+      Una <strong>panadería</strong> vacía y llena su vitrina todos los días: rotación de inventario altísima, permanencia de 1 día. Una <strong>joyería</strong> puede tener el mismo anillo 8 meses: rotación bajísima. <strong>Ninguna está mal</strong> — así son sus negocios. Por eso los ratios se comparan <em>contra el mismo sector</em>, no en abstracto.<br><br>
+      El <strong>ciclo operacional</strong> es cuánto te demoras desde que compras la harina hasta que tienes la plata del pan de vuelta en el bolsillo. Y aquí está el truco del negocio: si tus <strong>días de pago</strong> a proveedores son <em>mayores</em> que tu ciclo operacional, estás operando <strong>con la plata de tus proveedores</strong> — que es exactamente lo que hacen los supermercados.
+    </div>
+
+    <h3>d) Razones de rentabilidad</h3>
+    <p>Muestran el efecto combinado de las políticas de liquidez, administración de activos y de deuda sobre los resultados.</p>
+    <div class="box formula">
+      <div class="bt">Fórmulas (con sus nombres en inglés)</div>
+      <div class="keys">
+        <div class="k"><span class="d">Rentabilidad de la <strong>venta</strong> (ROS)</span><span class="f">\(\dfrac{\text{Resultado Neto}}{\text{Ventas}}\times 100\)</span></div>
+        <div class="k"><span class="d">Rentabilidad de los <strong>activos en explotación</strong></span><span class="f">\(\dfrac{\text{Resultado Operacional}}{\text{Activos Totales}}\)</span></div>
+        <div class="k"><span class="d">Rentabilidad de los <strong>activos</strong> (ROA / ROI)</span><span class="f">\(\dfrac{\text{Resultado Neto}}{\text{Activos Totales}}\)</span></div>
+        <div class="k"><span class="d">Rentabilidad del <strong>patrimonio</strong> (ROE)</span><span class="f">\(\dfrac{\text{Resultado Neto}}{\text{Patrimonio}}\)</span></div>
+        <div class="k"><span class="d">Descomposición <strong>Du Pont</strong></span><span class="f">\(ROA = \text{RT Operacional}\times \text{Rotación de Activos}\)</span></div>
+      </div>
+    </div>
+    <p>Regla de lectura del profesor: <em>"Si este índice es 20%, quiere decir que la empresa gana $20 por cada $100 de venta."</em> El ROE también se llama <strong>rentabilidad financiera</strong> o <em>desempeño de los dueños</em>.</p>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: ROA vs. ROE, o por qué la deuda "amplifica"</div>
+      Vuelve al depto de <strong>$100.000.000</strong> que arriendas y te renta <strong>$6.000.000</strong> al año.
+      <ul style="margin:8px 0 0">
+        <li>El <strong>ROA</strong> mira <em>el depto completo</em>: \(6/100 = 6\%\). Esto es lo que rinde el negocio, sin importar quién lo pagó.</li>
+        <li>El <strong>ROE</strong> mira <em>solo tu plata</em>. Si pusiste $30.000.000 y el banco $70.000.000 (a un interés de, digamos, $3.000.000 al año), te quedan $3.000.000 limpios sobre tus $30.000.000 → <strong>ROE = 10%</strong>.</li>
+      </ul>
+      <strong>El mismo negocio rinde 6% o 10% según cómo lo financies.</strong> Eso es el <strong>apalancamiento</strong>: si el negocio rinde más que la tasa del banco, la deuda multiplica tu ganancia. Pero funciona igual de bien <em>al revés</em>: si el arriendo baja, tu ROE se desploma mucho más rápido que el ROA. Más deuda = más rentabilidad potencial <em>y</em> más riesgo.
+    </div>
+
+    <p>Ejemplo real (Polpaico): <em>"La rentabilidad sobre el patrimonio alcanzó <strong>1,19%</strong> en comparación con 3,67% al cierre de marzo 2021... Por su parte, la rentabilidad sobre el activo total fue de <strong>0,52%</strong> en comparación con 1,62%... que se explica principalmente por el menor resultado del ejercicio."</em></p>
+
+    <h3>Preguntas de razonamiento (las que le gustan al profesor)</h3>
+    <details class="ex">
+      <summary>Una empresa usa efectivo para pagar existencias adicionales. ¿Qué pasa con el ratio circulante y con la prueba ácida? <span class="tag">pregunta de clase</span></summary>
+      <div class="body">
+        <div class="step"><span class="n">a</span><strong>Ratio circulante: NO CAMBIA.</strong> Bajó el efectivo pero subió el inventario en el mismo monto. Ambos son activo corriente, así que el numerador queda igual y el pasivo corriente no se tocó.</div>
+        <div class="step"><span class="n">b</span><strong>Prueba ácida: BAJA.</strong> Porque la prueba ácida <em>excluye</em> las existencias: perdiste efectivo (que sí cuenta) y ganaste inventario (que no cuenta). El numerador se achica.</div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Moraleja</div>Dos ratios de liquidez pueden moverse en direcciones distintas con la misma operación. Por eso nunca se analiza un indicador aislado (es uno de los errores frecuentes del formulario).</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Una empresa tiene US$1,2M en activos circulantes y US$1M en pasivos circulantes. Usa US$0,5M de tesorería para pagar cuentas por pagar. ¿Ratio circulante y fondo de maniobra? <span class="tag">pregunta de clase</span></summary>
+      <div class="body">
+        <div class="step"><span class="n">1</span><strong>Antes:</strong> \(RC = 1{,}2/1{,}0 = 1{,}2\). Fondo de maniobra \(= 1{,}2 - 1{,}0 = 0{,}2\).</div>
+        <div class="step"><span class="n">2</span><strong>Después:</strong> AC \(= 1{,}2 - 0{,}5 = 0{,}7\); PC \(= 1{,}0 - 0{,}5 = 0{,}5\).</div>
+        <div class="step"><span class="n">a</span><strong>Ratio circulante: SUBE</strong> → \(0{,}7/0{,}5 = 1{,}4\). Cuando el ratio ya era mayor a 1, pagar deuda lo <em>mejora</em>.</div>
+        <div class="step"><span class="n">b</span><strong>Fondo de maniobra: NO CAMBIA</strong> → \(0{,}7 - 0{,}5 = 0{,}2\). Restaste lo mismo arriba y abajo.</div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Idea</div>Una <em>razón</em> (división) y una <em>diferencia</em> (resta) reaccionan distinto ante la misma operación. Ojo con eso.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Una empresa recompra 10M de deuda a la par y emite 10M de deuda nueva a una tasa menor. ¿Qué pasa con el endeudamiento y la cobertura de intereses? <span class="tag">pregunta de clase</span></summary>
+      <div class="body">
+        <div class="step"><span class="n">1</span><strong>Ratio de endeudamiento a largo plazo: NO CAMBIA.</strong> Cambió 10M de deuda por otros 10M de deuda — el monto total es idéntico (por eso el enunciado aclara "a la par": se compra al mismo valor que se emitió).</div>
+        <div class="step"><span class="n">2</span><strong>Cobertura de intereses: MEJORA.</strong> La nueva deuda paga <em>menos</em> interés, así que el denominador (gastos financieros) baja y el ratio \(\frac{EBIT}{\text{intereses}}\) sube.</div>
+        <div class="step"><span class="n">3</span><strong>Liquidez: prácticamente no se afecta</strong> (la operación es de largo plazo y se financia sola).</div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Lección</div>Refinanciar no te hace deber menos: te hace <em>pagar menos por lo mismo</em>. El endeudamiento mide el <strong>stock</strong> de deuda; la cobertura mide el <strong>costo</strong> de esa deuda.</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== 14 ===== -->
+  <section id="c14">
+    <h2>14 · Cómo se conectan los estados financieros</h2>
+
+    <p>Esta sección viene del <strong>Resumen y Formulario IMAFI</strong> y es lo que separa una respuesta buena de una excelente: entender que los estados <strong>no son documentos independientes</strong>.</p>
+
+    <div class="box formula">
+      <div class="bt">Movimiento de las ganancias acumuladas</div>
+      $$GA_f = GA_i + U - D + A$$
+      \(U\): utilidad atribuible · \(D\): dividendos · \(A\): otros ajustes patrimoniales.<br>
+      <strong>El patrimonio es un saldo acumulado; la utilidad es un resultado del período.</strong> Por eso no son equivalentes.
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Documento</th><th>Su rol en la cadena</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Estado de Situación Financiera</strong></td><td>Muestra los <strong>saldos finales</strong> de activos, pasivos y patrimonio.</td></tr>
+          <tr><td><strong>Estado de Resultados</strong></td><td>La utilidad del período <strong>alimenta</strong> las ganancias acumuladas.</td></tr>
+          <tr><td><strong>Estado de Flujos de Efectivo</strong></td><td>Explica el <strong>cambio del efectivo</strong> inicial al final.</td></tr>
+          <tr><td><strong>Estado de Cambios en el Patrimonio</strong></td><td>Explica utilidad, dividendos, reservas, aportes y otros movimientos patrimoniales.</td></tr>
+          <tr><td><strong>Notas explicativas</strong></td><td><strong>Desagregan</strong> las cuentas y sustentan causas, políticas, riesgos y vencimientos.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: una venta a crédito recorre los cuatro estados</div>
+      Sigue una sola venta a crédito y verás toda la maquinaria funcionando a la vez:
+      <ol style="margin:8px 0 0">
+        <li><strong>Estado de Resultados:</strong> reconoce el ingreso y la utilidad. ✔️</li>
+        <li><strong>Situación Financiera:</strong> aumentan las cuentas por cobrar y el patrimonio. ✔️</li>
+        <li><strong>Cambios en el Patrimonio:</strong> incorpora esa utilidad. ✔️</li>
+        <li><strong>Flujo de Efectivo:</strong> <strong>no reconoce nada</strong>, porque todavía no te pagan. ❌</li>
+      </ol>
+      Y cuando el cliente por fin paga: bajan las cuentas por cobrar, sube el efectivo, y <strong>el ingreso NO se registra de nuevo</strong> (ya se había reconocido). Si entiendes este párrafo, entendiste el 70% del ramo.
+    </div>
+
+    <h3>El Estado de Flujos de Efectivo</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Actividad</th><th>Movimientos principales</th><th>Analogía personal</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Operación (FCO)</strong></td><td>Cobros a clientes; pagos a proveedores, trabajadores e impuestos.</td><td>Tu sueldo y tus gastos del día a día.</td></tr>
+          <tr><td><strong>Inversión (FCI)</strong></td><td>Compras y ventas de activos de largo plazo e inversiones.</td><td>Comprar o vender el auto.</td></tr>
+          <tr><td><strong>Financiamiento (FCF)</strong></td><td>Préstamos, bonos, pagos de deuda, dividendos y arrendamientos.</td><td>Pedir o pagar un crédito.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box formula">
+      <div class="bt">La ecuación del efectivo</div>
+      $$E_f = E_i + FCO + FCI + FCF + ETC$$
+      Una empresa puede tener <strong>utilidad y menos efectivo</strong> por: ventas no cobradas, compras de inventario o PPE, amortización de deuda o dividendos.
+    </div>
+
+    <div class="box warn">
+      <div class="bt">Utilidad ≠ Efectivo (el concepto que más cae)</div>
+      La <strong>utilidad</strong> se determina con base <strong>devengada</strong>: reconoce ingresos cuando se <em>generan</em> y gastos cuando se <em>incurren</em>, aunque todavía no exista cobro ni pago. El <strong>flujo de efectivo</strong> registra entradas y salidas <strong>reales de caja</strong>. Por eso una venta a crédito aumenta la utilidad y las cuentas por cobrar <strong>sin aumentar el efectivo</strong> del mismo período.
+    </div>
+
+    <h3>Qué buscar en las notas explicativas</h3>
+    <p>El balance entrega <strong>saldos resumidos</strong>; las <strong>notas</strong> muestran composición, movimientos, políticas, deterioros, garantías y vencimientos. Guía rápida:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Partida</th><th>Qué conviene buscar en la nota</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Cuentas por cobrar</strong></td><td>Antigüedad de saldos, concentración de clientes, movimiento de la provisión, pérdidas crediticias esperadas.</td></tr>
+          <tr><td><strong>Inventarios</strong></td><td>Materias primas, productos en proceso y terminados; provisión por obsolescencia; inventarios en garantía.</td></tr>
+          <tr><td><strong>PPE</strong></td><td>Adiciones, bajas, obras en curso, depreciación, deterioro, vidas útiles, compromisos de compra.</td></tr>
+          <tr><td><strong>Deuda financiera</strong></td><td>Moneda, tasas, vencimientos, garantías, <em>covenants</em> y porción corriente.</td></tr>
+          <tr><td><strong>Patrimonio</strong></td><td>Dividendos, reservas, aportes, número de acciones, participaciones no controladoras.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Cuentas críticas: la lectura de doble filo</h3>
+    <p>Casi toda cuenta admite una lectura optimista y una advertencia. El certamen premia mostrar <em>las dos</em>:</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Cuenta</th><th>Lectura favorable</th><th>Riesgo o verificación</th></tr></thead>
+        <tbody>
+          <tr><td>Efectivo</td><td>Disponibilidad inmediata para pagos.</td><td>Su caída obliga a revisar el Estado de Flujos; efectivo no es igual a utilidad.</td></tr>
+          <tr><td>Cuentas por cobrar</td><td>Apoyo a las ventas y política comercial.</td><td>Incobrabilidad, antigüedad, concentración, mayor necesidad de financiamiento.</td></tr>
+          <tr><td>Inventarios</td><td>Preparación para ventas, continuidad de abastecimiento.</td><td>Recursos inmovilizados, almacenamiento, baja rotación, obsolescencia.</td></tr>
+          <tr><td>PPE</td><td>Expansión, modernización, capacidad productiva.</td><td>Revisar adiciones, obras en curso, depreciación, deterioro y <strong>fuente de financiamiento</strong>.</td></tr>
+          <tr><td>Intangibles</td><td>Marcas, licencias y software pueden crear ventajas competitivas.</td><td>Vida útil, amortización, pruebas de deterioro. <em>Vida indefinida no significa valor infinito.</em></td></tr>
+          <tr><td>Deuda de largo plazo</td><td>Permite financiar inversiones y alinear plazos.</td><td>Intereses, moneda, tasa, restricciones, refinanciamiento. <strong>Correlación entre deuda y PPE no prueba causalidad.</strong></td></tr>
+          <tr><td>Patrimonio</td><td>Capital y utilidades retenidas fortalecen recursos propios.</td><td>Revisar dividendos, reservas, conversión y participaciones no controladoras.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== 15 ===== -->
+  <section id="c15">
+    <h2>15 · Cómo redactar el análisis (la parte que da los puntos)</h2>
+
+    <div class="box formula">
+      <div class="bt">Método de 5 pasos</div>
+      <div class="tablewrap" style="margin:8px 0 0">
+        <table>
+          <thead><tr><th>1. Ubicar</th><th>2. Investigar</th><th>3. Calcular</th><th>4. Interpretar</th><th>5. Concluir</th></tr></thead>
+          <tbody><tr><td>Cuenta y clasificación</td><td>Nota y composición</td><td>Variación, peso e indicador</td><td>Efecto y relaciones</td><td>Fortaleza, riesgo o duda</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <p>Y toda respuesta debe integrar <strong>cuatro elementos</strong>:</p>
+    <ol>
+      <li><strong>Dirección:</strong> ¿la cuenta aumentó o disminuyó?</li>
+      <li><strong>Magnitud:</strong> la variación absoluta <em>y</em> porcentual.</li>
+      <li><strong>Importancia:</strong> comparar la cuenta con un total relevante.</li>
+      <li><strong>Explicación:</strong> conectar el movimiento con otras cuentas y con las notas, <strong>evitando afirmar una causa que no esté respaldada</strong>.</li>
+    </ol>
+
+    <div class="box tip">
+      <div class="bt">Plantilla de redacción (rellénala y tienes la respuesta)</div>
+      <p style="margin:6px 0"><em>"La cuenta <strong>________</strong> pasó de M$ <strong>________</strong> en 2024 a M$ <strong>________</strong> en 2025, equivalente a <strong>____</strong>%. Esto podría indicar <strong>________________</strong> y afectar <strong>________________</strong>. Sin embargo, antes de concluir se debe revisar <strong>________________</strong>."</em></p>
+    </div>
+
+    <div class="box ana">
+      <div class="bt">🎯 Analogía: no seas el titular sensacionalista</div>
+      Un titular malo dice: <strong>"¡El efectivo se desplomó 55%!"</strong>. Un análisis bueno dice: <em>"el efectivo cayó M$35.611.257 (55,2%); esto reduce la disponibilidad inmediata, pero no permite concluir un problema de solvencia por sí solo — hay que ver si se usó para pagar deuda, comprar PPE o repartir dividendos, y contrastarlo con la razón corriente y el flujo operacional"</em>. La diferencia entre ambos es <strong>la nota del certamen</strong>. Un dato sin contexto no es análisis; es un titular.
+    </div>
+
+    <div class="box formula">
+      <div class="bt">Ejemplo de respuesta desarrollada (del formulario)</div>
+      <em>"El efectivo disminuyó en M$35.611.257, equivalente a 55,2% respecto de 2024. La caída reduce la disponibilidad inmediata; sin embargo, no permite concluir por sí sola que exista un problema de solvencia. Debe compararse con la reducción o aumento de los pasivos corrientes, la razón corriente y los flujos de operación, inversión y financiamiento. También corresponde revisar si la empresa utilizó efectivo para adquirir PPE, pagar deuda o distribuir dividendos."</em>
+    </div>
+
+    <h3>Estructura de la conclusión ejecutiva (400–600 palabras)</h3>
+    <ol>
+      <li>Panorama general.</li>
+      <li><strong>Tres fortalezas con cifras.</strong></li>
+      <li><strong>Tres riesgos con cifras.</strong></li>
+      <li>Dos recomendaciones concretas.</li>
+      <li>Opinión final sobre capacidad de pago y nivel de riesgo.</li>
+    </ol>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Fortalezas posibles</th><th>Riesgos posibles</th></tr></thead>
+        <tbody>
+          <tr><td>
+            Capital de trabajo positivo y mejor razón corriente<br>
+            Menores obligaciones corrientes<br>
+            Inversión en capacidad productiva<br>
+            Flujo operacional positivo
+          </td><td>
+            Menor efectivo y mayor endeudamiento<br>
+            Concentración en inventarios y cuentas por cobrar<br>
+            Riesgo de obsolescencia o incobrabilidad<br>
+            Mayor carga financiera o menor patrimonio
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Cómo lo hace una empresa real</h3>
+    <p>Mira la evolución de la respuesta de Polpaico en las láminas — el profesor muestra primero la versión incompleta y después la buena:</p>
+    <div class="box warn">
+      <div class="bt">❌ Versión incompleta</div>
+      "La liquidez corriente mostró una disminución de un 7,3% en comparación con el cierre de diciembre 2021."
+    </div>
+    <div class="box formula">
+      <div class="bt">✔️ Versión completa</div>
+      "La liquidez corriente mostró una disminución de un 7,3% en comparación con el cierre de diciembre 2021, <strong>explicado principalmente por el aumento de pasivos corrientes en un 14,0%, el cual mostró un aumento superior que el activo corriente 4,5%</strong>."
+    </div>
+    <p>Lo mismo con la razón ácida: la buena agrega <em>"...que se explica principalmente por el aumento en inventarios de un 14,2%, por mayores niveles de materias primas y repuestos y materiales de mantención. Los activos corrientes excluyendo inventarios mostraron una disminución del 0,5%"</em>.</p>
+
+    <div class="box tip">
+      <div class="bt">La fórmula secreta del párrafo perfecto</div>
+      <strong>[Indicador] + [dirección y magnitud] + [comparado con qué período] + "explicado principalmente por" + [las dos cuentas que lo movieron, con sus propios porcentajes].</strong><br>
+      Cópiala tal cual y cambia los nombres. Es literalmente la estructura que usa Polpaico en sus informes oficiales.
+    </div>
+  </section>
+
+  <!-- ===== EJERCICIOS ===== -->
+  <section id="ejercicios">
+    <h2>Ejercicios resueltos</h2>
+
+    <details class="ex">
+      <summary>Ej. 1 · La ecuación contable con un auto <span class="tag">Fundamentos</span></summary>
+      <div class="body">
+        <p>Quieres comprar un auto que cuesta $5.000.000, para lo cual pedirás un crédito por el 40% del valor total. Si construyes un balance, ¿cuánto corresponde a activos, pasivos y capital?</p>
+        <div class="step"><span class="n">1</span><strong>Activo</strong> = el auto que ahora controlas = <strong>$5.000.000</strong>.</div>
+        <div class="step"><span class="n">2</span><strong>Pasivo</strong> = crédito = \(40\% \times 5.000.000\) = <strong>$2.000.000</strong>.</div>
+        <div class="step"><span class="n">3</span><strong>Capital</strong> = por diferencia (naturaleza residual) = \(5.000.000 - 2.000.000\) = <strong>$3.000.000</strong>.</div>
+        <div class="step"><span class="n">✓</span>\(5.000.000 = 2.000.000 + 3.000.000\). La ecuación se mantiene.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 2 · Seis transacciones seguidas manteniendo la ecuación <span class="tag">Partida doble</span></summary>
+      <div class="body">
+        <p>Registra: (1) el dueño aporta $800.000 en efectivo y muebles por $300.000; (2) se compran mercaderías por $300.000 al crédito simple; (3) se compra un terreno en $500.000 firmando letras por pagar; (4) se venden mercaderías por $200.000 cuyo costo es $150.000, al crédito; (5) se cancela al proveedor en efectivo; (6) se obtiene préstamo bancario por $1.000.000.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>#</th><th>Debe</th><th class="num">$</th><th>Haber</th><th class="num">$</th><th>Efecto en la ecuación</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Caja<br>Muebles</td><td class="num">800.000<br>300.000</td><td>Capital</td><td class="num">1.100.000</td><td>↑Activo 1.100.000 = ↑Patrimonio 1.100.000</td></tr>
+            <tr><td>2</td><td>Mercaderías</td><td class="num">300.000</td><td>Proveedores</td><td class="num">300.000</td><td>↑Activo = ↑Pasivo</td></tr>
+            <tr><td>3</td><td>Terreno</td><td class="num">500.000</td><td>Letras por Pagar</td><td class="num">500.000</td><td>↑Activo = ↑Pasivo</td></tr>
+            <tr><td>4a</td><td>Clientes (CxC)</td><td class="num">200.000</td><td>Ventas</td><td class="num">200.000</td><td>↑Activo = ↑Ingreso (↑Patrimonio)</td></tr>
+            <tr><td>4b</td><td>Costo de Venta</td><td class="num">150.000</td><td>Mercaderías</td><td class="num">150.000</td><td>↓Activo = ↑Gasto (↓Patrimonio)</td></tr>
+            <tr><td>5</td><td>Proveedores</td><td class="num">300.000</td><td>Caja</td><td class="num">300.000</td><td>↓Pasivo = ↓Activo</td></tr>
+            <tr><td>6</td><td>Caja / Banco</td><td class="num">1.000.000</td><td>Préstamo Bancario</td><td class="num">1.000.000</td><td>↑Activo = ↑Pasivo</td></tr>
+          </tbody>
+        </table></div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Nota sobre la venta (paso 4)</div>Una venta necesita <strong>dos asientos</strong>: uno reconoce el <em>ingreso</em> (lo que te van a pagar) y otro da de baja la <em>mercadería</em> a su costo. La utilidad de la operación es la diferencia: \(200.000 - 150.000 = \$50.000\), y ese es el aumento neto del patrimonio.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 3 · Compra con IVA y pago mixto (materias primas) <span class="tag">IVA</span></summary>
+      <div class="body">
+        <p>El 3 de agosto se adquieren materias primas por un valor <strong>bruto</strong> de $900.000, pagando un tercio al contado y el resto con dos letras iguales a 30 y 60 días. Proveedor XZY S.A., factura N°7871, letras N°127 y 128.</p>
+        <div class="step"><span class="n">1</span><strong>Separar el IVA.</strong> El monto es <em>bruto</em>, así que ya incluye IVA: \(\text{Neto} = \frac{900.000}{1{,}19} = 756.302\); \(\text{IVA} = 900.000 - 756.302 = 143.698\).</div>
+        <div class="step"><span class="n">2</span><strong>Repartir el pago.</strong> Un tercio al contado = \(900.000/3 = 300.000\); el resto = 600.000 en dos letras de 300.000 cada una.</div>
+        <div class="step"><span class="n">3</span><strong>Asiento:</strong></div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Cuenta</th><th class="num">Debe</th><th class="num">Haber</th></tr></thead>
+          <tbody>
+            <tr><td>Materias Primas (activo)</td><td class="num">756.302</td><td class="num"></td></tr>
+            <tr><td>IVA Crédito Fiscal (activo)</td><td class="num">143.698</td><td class="num"></td></tr>
+            <tr><td>Caja</td><td class="num"></td><td class="num">300.000</td></tr>
+            <tr><td>Letras por Pagar</td><td class="num"></td><td class="num">600.000</td></tr>
+            <tr><td><strong>Totales</strong></td><td class="num"><strong>900.000</strong></td><td class="num"><strong>900.000</strong></td></tr>
+          </tbody>
+        </table></div>
+        <div class="box warn" style="margin-top:8px"><div class="bt">El detalle que hace la diferencia</div>Si el monto es <strong>bruto</strong>, divides por 1,19 para sacar el neto. Si es <strong>neto</strong>, multiplicas por 0,19 para sacar el IVA. Lee bien el enunciado: es el error más caro de esta materia.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 4 · IVA del mes: ¿pagar o remanente? <span class="tag">IVA</span></summary>
+      <div class="body">
+        <p>ISIS Ltda. hizo su única compra de mercaderías por $250.000 <strong>neto</strong> en abril y una única venta afecta por $450.000 <strong>neto</strong>. Contabiliza ambas y determina el IVA a declarar y pagar.</p>
+        <div class="step"><span class="n">1</span><strong>IVA Crédito Fiscal</strong> (compra): \(19\% \times 250.000 = \$47.500\). Activo.</div>
+        <div class="step"><span class="n">2</span><strong>IVA Débito Fiscal</strong> (venta): \(19\% \times 450.000 = \$85.500\). Pasivo.</div>
+        <div class="step"><span class="n">3</span><strong>Asiento de compra:</strong> Debe Mercaderías 250.000 + IVA CF 47.500 · Haber Caja/Proveedores 297.500.</div>
+        <div class="step"><span class="n">4</span><strong>Asiento de venta:</strong> Debe Caja/Clientes 535.500 · Haber Ventas 450.000 + IVA DF 85.500.</div>
+        <div class="step"><span class="n">5</span><strong>Ajuste mensual:</strong> \(85.500 - 47.500 = \$38.000\) <strong>a pagar</strong>. Se salda el IVA CF contra el IVA DF y la diferencia queda como "IVA por Pagar".</div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">¿Y si fuera al revés?</div>Si hubiera comprado más de lo que vendió, el crédito superaría al débito y <em>no pagaría nada</em>: quedaría un <strong>remanente</strong> a favor, guardado en UTM para el mes siguiente.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 5 · Depreciación lineal completa <span class="tag">Depreciación</span></summary>
+      <div class="body">
+        <p>Un activo cuesta $100.000, tiene valor residual $10.000 y vida útil 5 años. Calcula la depreciación anual, arma la tabla y escribe el asiento.</p>
+        <div class="step"><span class="n">1</span><strong>Cuota:</strong> \(D_t = \frac{100.000 - 10.000}{5} = \$18.000\) por año.</div>
+        <div class="step"><span class="n">2</span><strong>Tabla:</strong></div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Año</th><th class="num">Cuota</th><th class="num">Dep. acumulada</th><th class="num">Valor libro</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td class="num">18.000</td><td class="num">18.000</td><td class="num">82.000</td></tr>
+            <tr><td>2</td><td class="num">18.000</td><td class="num">36.000</td><td class="num">64.000</td></tr>
+            <tr><td>3</td><td class="num">18.000</td><td class="num">54.000</td><td class="num">46.000</td></tr>
+            <tr><td>4</td><td class="num">18.000</td><td class="num">72.000</td><td class="num">28.000</td></tr>
+            <tr><td>5</td><td class="num">18.000</td><td class="num">90.000</td><td class="num"><strong>10.000</strong></td></tr>
+          </tbody>
+        </table></div>
+        <div class="step"><span class="n">3</span><strong>Asiento anual:</strong> Debe <em>Gasto por Depreciación</em> 18.000 · Haber <em>Depreciación Acumulada</em> 18.000.</div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Verificación</div>El valor libro del último año debe dar <strong>exactamente el valor residual</strong>. Si no da, revisa la fórmula: el error típico es dividir el costo completo sin restar el residual.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 6 · Ejercicio integrador: una operación completa por los cuatro estados <span class="tag">Formulario · integrador</span></summary>
+      <div class="body">
+        <p>Durante el período, una empresa vende mercaderías a crédito por M$80.000, cuyo costo era M$48.000. Después cobra M$50.000 al cliente y paga M$10.000 de una deuda financiera. Analiza el efecto en cada estado.</p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>Estado</th><th>Efecto principal</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Estado de Resultados</strong></td><td>Ingreso por M$80.000, costo por M$48.000 → aumento de la utilidad (antes de otros efectos) por <strong>M$32.000</strong>.</td></tr>
+            <tr><td><strong>Situación Financiera</strong></td><td>La venta aumenta CxC en M$80.000 y reduce inventarios en M$48.000. El cobro disminuye CxC y aumenta efectivo en M$50.000. El pago de deuda reduce efectivo y pasivo en M$10.000.</td></tr>
+            <tr><td><strong>Flujo de Efectivo</strong></td><td>Cobro operacional de M$50.000 y salida de financiamiento de M$10.000 → efecto neto en caja de <strong>+M$40.000</strong>.</td></tr>
+            <tr><td><strong>Cambios en Patrimonio</strong></td><td>La utilidad de M$32.000 aumenta las ganancias acumuladas (omitiendo impuestos y dividendos).</td></tr>
+          </tbody>
+        </table></div>
+        <div class="step"><span class="n">✓</span><strong>Comprobación (¡ojo con esta parte!):</strong> el movimiento de activos es efectivo \(+40.000\), CxC \(+30.000\) (subió 80.000 y bajó 50.000) e inventarios \(-48.000\). Total: \(40.000 + 30.000 - 48.000 = \textbf{M\$22.000}\).</div>
+        <div class="step"><span class="n">·</span>Y del otro lado: pasivo \(-10.000\) y patrimonio \(+32.000\) → \(-10.000 + 32.000 = \textbf{M\$22.000}\). <strong>La ecuación contable se mantiene.</strong></div>
+        <div class="box warn" style="margin-top:8px"><div class="bt">La trampa</div>Sería incorrecto decir que el aumento de activos es M$32.000 (solo la utilidad). Hay que <strong>incorporar el pago de la deuda</strong>: \(\Delta A = \Delta P + \Delta Pat = -10.000 + 32.000 = 22.000\). Este ejercicio está en el formulario justamente porque es fácil equivocarse aquí.</div>
+      </div>
+    </details>
+
+    <details class="ex">
+      <summary>Ej. 7 · Diagnóstico completo del caso Carozzi <span class="tag">Análisis · caso real</span></summary>
+      <div class="body">
+        <p>Datos 2025 (M$): Activos totales 1.634.630.735 · Pasivos 994.856.204 · Patrimonio 639.774.531 · Activos corrientes 607.983.692 · Pasivos corrientes 316.939.461 · Inventarios 291.183.724 · Efectivo 28.932.544 (2024: 64.543.801).</p>
+        <div class="step"><span class="n">1</span><strong>Verificar la ecuación:</strong> \(1.634.630.735 - 994.856.204 - 639.774.531 = 0\). ✔️ Siempre parte por aquí.</div>
+        <div class="step"><span class="n">2</span><strong>Liquidez:</strong> \(CT = 607.983.692 - 316.939.461 = \text{M\$}\,291.044.231\) y \(RC = 1{,}92\). Por cada M$1 de pasivo corriente hay M$1,92 de activos corrientes.</div>
+        <div class="step"><span class="n">3</span><strong>Endeudamiento:</strong> \(\frac{994.856.204}{1.634.630.735}\times 100 \approx 60{,}9\%\). Autonomía = 39,1% (suman 100% ✔️).</div>
+        <div class="step"><span class="n">4</span><strong>Deuda/Patrimonio:</strong> \(\frac{994.856.204}{639.774.531} \approx 1{,}56\). Por cada M$1 de patrimonio hay M$1,56 de deuda.</div>
+        <div class="step"><span class="n">5</span><strong>Composición:</strong> inventarios/activos corrientes \(= 47{,}9\%\) → casi la mitad de la liquidez está "congelada" en mercadería.</div>
+        <div class="step"><span class="n">6</span><strong>Diagnóstico redactado:</strong> "La empresa presenta capital de trabajo positivo y una razón corriente de 1,92, lo que sugiere cobertura contable del corto plazo. Sin embargo, el endeudamiento de 60,9% supera el umbral de referencia del 60%, y el efectivo cayó 55,2%. La liquidez además descansa fuertemente en inventarios (47,9% de los activos corrientes), que son menos líquidos. Antes de concluir, corresponde revisar la nota de inventarios (rotación y obsolescencia), la antigüedad de las cuentas por cobrar y los vencimientos de la deuda financiera."</div>
+        <div class="box tip" style="margin-top:8px"><div class="bt">Por qué esta respuesta es buena</div>Tiene <strong>dirección</strong>, <strong>magnitud</strong>, <strong>importancia relativa</strong> y <strong>explicación</strong>; menciona una fortaleza y un riesgo; y termina diciendo <em>qué habría que revisar</em> en vez de afirmar una causa sin respaldo. Eso es exactamente lo que pide el método de 5 pasos.</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===== MASTER ===== -->
+  <section id="master">
+    <h2>Formulario maestro</h2>
+    <p class="lead">Todo junto, para el repaso de la noche antes.</p>
+
+    <h4>Estructura y clasificación</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">Ecuación contable</span><span class="f">\(A = P + Pat\) &nbsp;⟺&nbsp; \(A - P - Pat = 0\)</span></div>
+      <div class="k"><span class="d">Patrimonio (residual)</span><span class="f">\(Pat = A - P\)</span></div>
+      <div class="k"><span class="d">Cuadre del asiento</span><span class="f">\(\sum\text{Débitos} = \sum\text{Créditos}\)</span></div>
+      <div class="k"><span class="d">Aumentan con Débito / Crédito</span><span class="f">"ADE" / "PPR"</span></div>
+      <div class="k"><span class="d">Criterio corriente/no corriente</span><span class="f">¿se realiza o paga en ≤ 12 meses?</span></div>
+      <div class="k"><span class="d">Saldo neto</span><span class="f">Neto = Bruto − ajustes acumulados</span></div>
+      <div class="k"><span class="d">CxC / Inventario netos</span><span class="f">\(CxC_n = CxC_b - Prov.\); \(Inv_n = Inv_b - Prov.\)</span></div>
+      <div class="k"><span class="d">Balance 8 columnas</span><span class="f">Resultado = Ganancias − Pérdidas; Resultado + Pasivo = Activo</span></div>
+    </div></div>
+
+    <h4>Resultados</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">Utilidad Bruta</span><span class="f">Ingresos Operacionales − Costo de Ventas</span></div>
+      <div class="k"><span class="d">Resultado Operacional</span><span class="f">Utilidad Bruta − Gastos de Adm. y Ventas</span></div>
+      <div class="k"><span class="d">Resultado antes de Impuesto</span><span class="f">R. Operacional ± R. No Operacional</span></div>
+      <div class="k"><span class="d">Impuesto</span><span class="f">\(\text{RAI}\times 27\%\) (cero si RAI ≤ 0)</span></div>
+      <div class="k"><span class="d">EBIT</span><span class="f">Ingresos − Costos Operativos</span></div>
+      <div class="k"><span class="d">EBITDA</span><span class="f">\(\text{EBIT} + \text{Dep.} + \text{Amort.}\)</span></div>
+      <div class="k"><span class="d">EBT</span><span class="f">\(\text{EBIT} - \text{Gastos Financieros}\)</span></div>
+      <div class="k"><span class="d">IVA</span><span class="f">19%; a pagar \(=\) Débito \(-\) Crédito (remanente en UTM)</span></div>
+      <div class="k"><span class="d">Bruto ↔ Neto</span><span class="f">\(\text{Neto} = \text{Bruto}/1{,}19\); \(\text{IVA} = \text{Neto}\times 0{,}19\)</span></div>
+    </div></div>
+
+    <h4>Depreciación, amortización, deterioro</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">Depreciación lineal</span><span class="f">\(D_t=\dfrac{\text{Costo}-\text{Valor residual}}{\text{Vida útil}}\)</span></div>
+      <div class="k"><span class="d">Valor libro</span><span class="f">Costo − Depreciación acumulada</span></div>
+      <div class="k"><span class="d">Deterioro</span><span class="f">Valor contable − Importe recuperable (si &gt; 0)</span></div>
+      <div class="k"><span class="d">Valor recuperable</span><span class="f">máx(valor neto realizable, valor en uso)</span></div>
+      <div class="k"><span class="d">VNR</span><span class="f">precio estimado − costos para vender</span></div>
+    </div></div>
+
+    <h4>Análisis</h4>
+    <div class="box formula"><div class="keys">
+      <div class="k"><span class="d">Variación absoluta / %</span><span class="f">\(\Delta X = X_{25}-X_{24}\); \(\dfrac{X_{25}-X_{24}}{X_{24}}\times 100\)</span></div>
+      <div class="k"><span class="d">Participación (vertical)</span><span class="f">\(\dfrac{\text{Cuenta}}{\text{Total}}\times 100\)</span></div>
+      <div class="k"><span class="d">Capital de trabajo / Razón corriente</span><span class="f">\(CT = AC-PC\); \(RC=\dfrac{AC}{PC}\)</span></div>
+      <div class="k"><span class="d">Ácida / Acidísima</span><span class="f">\(\dfrac{AC-\text{Inv}}{PC}\); \(\dfrac{\text{Caja}+\text{Banco}}{PC}\)</span></div>
+      <div class="k"><span class="d">Endeudamiento / Autonomía</span><span class="f">\(\dfrac{P}{AT}\times 100\); \(\dfrac{Pat}{AT}\times 100\) (suman 100%)</span></div>
+      <div class="k"><span class="d">Deuda/Patrimonio · Cobertura</span><span class="f">\(\dfrac{P}{Pat}\); \(\dfrac{EBIT}{\text{Gastos fin.}}\)</span></div>
+      <div class="k"><span class="d">%AC / %ANC</span><span class="f">\(\dfrac{AC}{AT}\times100\); \(\dfrac{ANC}{AT}\times100\) (suman 100%)</span></div>
+      <div class="k"><span class="d">Rotación inventario / clientes</span><span class="f">\(\dfrac{\text{Costo Vta}}{\text{Inv. prom.}}\); \(\dfrac{\text{Vtas Créd.}\times1{,}19}{\text{Clientes prom.}}\)</span></div>
+      <div class="k"><span class="d">Días (cobro, pago, permanencia)</span><span class="f">\(\dfrac{\text{Días período}}{\text{Rotación}}\) (365 calendario / 360 uniforme)</span></div>
+      <div class="k"><span class="d">Ciclo operacional</span><span class="f">Permanencia Inventario + Días Cobro</span></div>
+      <div class="k"><span class="d">ROS / ROA / ROE</span><span class="f">\(\dfrac{RN}{\text{Ventas}}\); \(\dfrac{RN}{AT}\); \(\dfrac{RN}{Pat}\)</span></div>
+      <div class="k"><span class="d">Du Pont</span><span class="f">\(ROA = \text{RT Operacional}\times\text{Rotación Activos}\)</span></div>
+      <div class="k"><span class="d">Efectivo final</span><span class="f">\(E_f = E_i + FCO + FCI + FCF + ETC\)</span></div>
+      <div class="k"><span class="d">Ganancias acumuladas</span><span class="f">\(GA_f = GA_i + U - D + A\)</span></div>
+    </div></div>
+  </section>
+
+  <!-- ===== ERRORES ===== -->
+  <section id="errores">
+    <h2>Errores frecuentes y checklist</h2>
+
+    <div class="box warn">
+      <div class="bt">Los 9 errores frecuentes (del formulario, tal cual)</div>
+      <ol style="margin:6px 0 0">
+        <li>Copiar cifras sin interpretarlas.</li>
+        <li>Usar 2025 como base de la variación porcentual (la base es el año <em>antiguo</em>).</li>
+        <li>Confundir efectivo, utilidad y patrimonio.</li>
+        <li>Afirmar que todo aumento es bueno o toda caída es mala.</li>
+        <li>Mezclar unidades monetarias (M$, $, MM$).</li>
+        <li>Omitir notas, fórmulas o fuentes.</li>
+        <li>Analizar indicadores de forma aislada.</li>
+        <li>Ignorar provisiones, depreciación o deterioro.</li>
+        <li>Afirmar causalidad solo por movimientos simultáneos.</li>
+      </ol>
+    </div>
+
+    <div class="box formula">
+      <div class="bt">Checklist mínimo antes de entregar</div>
+      Verificar \(A = P + Pat\) · clasificar corriente/no corriente · mantener M$ en todas las tablas · calcular variación absoluta, porcentual y participación · revisar notas · calcular liquidez y endeudamiento · analizar efectivo, CxC, inventarios, PPE, intangibles, deuda y patrimonio · identificar <strong>tres fortalezas, tres riesgos y dos recomendaciones</strong> · responder directamente la pregunta integradora.
+    </div>
+
+    <h3>Autoevaluación rápida (las cinco preguntas del formulario)</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Pregunta</th><th>Respuesta</th></tr></thead>
+        <tbody>
+          <tr><td>Si aumentan las cuentas por cobrar y las ventas, ¿el efectivo aumenta necesariamente?</td><td><strong>No.</strong> Depende de cuánto se haya <em>cobrado</em>.</td></tr>
+          <tr><td>¿Un capital de trabajo positivo asegura liquidez inmediata?</td><td><strong>No.</strong> Hay que revisar la calidad y realización de los activos corrientes.</td></tr>
+          <tr><td>¿Todo aumento de deuda es negativo?</td><td><strong>No.</strong> Puede financiar una inversión rentable, pero aumenta intereses, vencimientos y riesgo financiero.</td></tr>
+          <tr><td>¿La compra de una máquina es un gasto completo del período?</td><td><strong>No.</strong> Se reconoce como PPE y su costo se distribuye vía depreciación durante la vida útil.</td></tr>
+          <tr><td>¿Un intangible de vida indefinida nunca pierde valor?</td><td><strong>No.</strong> No se amortiza sistemáticamente, pero debe evaluarse por <em>deterioro</em>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="box tip">
+      <div class="bt">La regla final para responder cualquier pregunta del ramo</div>
+      No basta con decir que una cifra "subió" o "bajó". Toda conclusión debe indicar: <strong>el monto</strong>, <strong>el porcentaje</strong>, <strong>la cuenta relacionada</strong>, <strong>una explicación posible</strong> y <strong>la nota que habría que revisar para confirmarla</strong>.
+    </div>
+
+    <p style="text-align:center;font-size:19px;font-weight:700;color:var(--brand);margin:26px 0">Toda cifra debe terminar en una interpretación financiera.</p>
+
+    <hr>
+    <p style="color:var(--muted);font-size:13.5px">Guía hecha a partir de <strong>Primera Diapo.pdf</strong> (235 láminas, prof. Ricardo Henríquez Ávalos) y <strong>Resumen y Formulario IMAFI.pdf</strong> (Estado de Situación Financiera, caso Carozzi S.A., Francisco Álvarez G.), ambos en <code>material mio 2026-2</code>. Complementa el resumen general del ramo (<code>Resumen-IMAFI.html</code>) que cubre además la mitad de matemática financiera.</p>
+  </section>
+
+  </main>
+</div>
+
+<button class="btn backtop" id="backtop" title="Volver arriba">↑</button>
+
+<script>
+  const root=document.documentElement, themeBtn=document.getElementById('themeBtn');
+  function setTheme(t){root.setAttribute('data-theme',t);try{localStorage.setItem('imaficontabtheme',t)}catch(e){}}
+  (function(){try{const s=localStorage.getItem('imaficontabtheme');if(s)root.setAttribute('data-theme',s)}catch(e){}})();
+  themeBtn.addEventListener('click',()=>{
+    const cur=root.getAttribute('data-theme');
+    const isDark=cur? cur==='dark' : matchMedia('(prefers-color-scheme:dark)').matches;
+    setTheme(isDark?'light':'dark');
+  });
+
+  document.getElementById('printBtn').addEventListener('click',()=>window.print());
+
+  const sb=document.getElementById('sidebar'), sc=document.getElementById('scrim'),
+        mt=document.getElementById('menuToggle');
+  function closeMenu(){sb.classList.remove('open');sc.classList.remove('on')}
+  mt.addEventListener('click',()=>{sb.classList.toggle('open');sc.classList.toggle('on')});
+  sc.addEventListener('click',closeMenu);
+  document.querySelectorAll('#nav a').forEach(a=>a.addEventListener('click',closeMenu));
+
+  const links=[...document.querySelectorAll('#nav a')];
+  const map=new Map(links.map(a=>[a.getAttribute('href').slice(1),a]));
+  const obs=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        links.forEach(l=>l.classList.remove('active'));
+        const a=map.get(e.target.id); if(a)a.classList.add('active');
+      }
+    });
+  },{rootMargin:'-20% 0px -70% 0px',threshold:0});
+  document.querySelectorAll('section[id]').forEach(s=>obs.observe(s));
+
+  const bt=document.getElementById('backtop');
+  addEventListener('scroll',()=>{bt.classList.toggle('on',scrollY>600)});
+  bt.addEventListener('click',()=>scrollTo({top:0,behavior:'smooth'}));
+</script>
+</body>
+</html>

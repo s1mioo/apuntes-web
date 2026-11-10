@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IMAFI C1 · Ratios de liquidez y endeudamiento</title>
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+  --line:#e6e6ea; --brand:#0e7a5f; --brand-soft:#e3f4ee;
+  --accent:#3a5bd9; --accent-soft:#eaefff;
+  --warn:#c2410c; --warn-soft:#fdecdf;
+  --ex:#7c3aed; --ex-soft:#f1eafe;
+  --ana:#b4306e; --ana-soft:#fce8f1;
+  --cert:#a16207; --cert-soft:#fdf5d8;
+  --ok:#0e7a5f; --ok-soft:#dff3ea; --no:#c0392b; --no-soft:#fbe4e1;
+  --code:#f0f1f4;
+  --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+  --sidew:292px;
+}
+:root[data-theme="dark"]{
+  --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+  --line:#2a2e39; --brand:#4fd1ab; --brand-soft:#16302a;
+  --accent:#8aa2ff; --accent-soft:#20263a;
+  --warn:#f5a15f; --warn-soft:#3a2413;
+  --ex:#c4a6ff; --ex-soft:#271c3d;
+  --ana:#ff9ec4; --ana-soft:#3a1a2a;
+  --cert:#f2c94c; --cert-soft:#332a10;
+  --ok:#4fd1ab; --ok-soft:#153129; --no:#ff8a80; --no-soft:#3a1c1a;
+  --code:#232733;
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#4fd1ab; --brand-soft:#16302a;
+    --accent:#8aa2ff; --accent-soft:#20263a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --cert:#f2c94c; --cert-soft:#332a10;
+    --ok:#4fd1ab; --ok-soft:#153129; --no:#ff8a80; --no-soft:#3a1c1a;
+    --code:#232733;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.62;font-size:16.5px;-webkit-font-smoothing:antialiased}
+.layout{display:flex;align-items:flex-start}
+.sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--panel);border-right:1px solid var(--line);padding:22px 16px 60px}
+.content{flex:1 1 auto;min-width:0;padding:38px clamp(16px,4vw,64px) 120px;max-width:1020px;margin:0 auto}
+.brand{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+.brand .dot{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+  display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;flex:0 0 auto}
+.brand h1{font-size:15px;margin:0;line-height:1.2}
+.brand small{color:var(--muted);font-size:12px;display:block}
+nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 8px 6px;font-weight:700}
+nav a{display:block;color:var(--ink);text-decoration:none;padding:6px 10px;border-radius:7px;font-size:13.5px;opacity:.85}
+nav a:hover{background:var(--brand-soft);opacity:1}
+nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+nav a.page{display:flex;gap:8px;align-items:baseline}
+nav a.page .pn{font-size:11px;font-weight:700;color:var(--muted);min-width:14px}
+nav a.page.cur{background:var(--brand);color:#fff;opacity:1;font-weight:600}
+nav a.page.cur .pn{color:#fff}
+.toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:7px 10px;
+  font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;font-family:inherit}
+.btn:hover{background:var(--brand-soft)}
+.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn.primary:hover{filter:brightness(1.08)}
+h2{font-size:26px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+h3{font-size:20px;margin:30px 0 6px;scroll-margin-top:20px}
+h4{font-size:16px;margin:20px 0 4px;color:var(--brand)}
+p{margin:10px 0}
+.lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+.pagehead{margin-bottom:10px}
+.pagehead .kicker{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand)}
+.pagehead h1{font-size:32px;margin:4px 0 6px;letter-spacing:-.015em;line-height:1.15}
+section{border-top:1px solid var(--line);padding-top:34px;margin-top:46px}
+section:first-of-type{border-top:0;margin-top:10px}
+a{color:var(--brand)}
+ul,ol{margin:10px 0;padding-left:22px}
+li{margin:5px 0}
+code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;font-family:"SF Mono",Menlo,Consolas,monospace}
+hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--brand-soft);
+  color:var(--brand);margin-right:6px;vertical-align:middle;white-space:nowrap}
+.pill.a{background:var(--accent-soft);color:var(--accent)}
+.pill.w{background:var(--warn-soft);color:var(--warn)}
+.pill.e{background:var(--ex-soft);color:var(--ex)}
+.pill.c{background:var(--cert-soft);color:var(--cert)}
+.pill.hi{background:var(--no-soft);color:var(--no)}
+.box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;margin:16px 0;
+  background:var(--panel);box-shadow:var(--shadow)}
+.box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px}
+.box.formula{border-left-color:var(--brand);background:var(--brand-soft)} .box.formula .bt{color:var(--brand)}
+.box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+.box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+.box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+.box.cert{border-left-color:var(--cert);background:var(--cert-soft)} .box.cert .bt{color:var(--cert)}
+.box > :last-child{margin-bottom:0}
+.fx{display:block;text-align:center;font-size:17px;margin:14px 0;padding:10px 12px;background:var(--panel);
+  border:1px solid var(--line);border-radius:9px;font-variant-numeric:tabular-nums;overflow-x:auto}
+.fx b{color:var(--brand)}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 5px}
+.frac .top{border-bottom:1.5px solid currentColor;padding:0 6px;font-size:.9em}
+.frac .bot{padding:0 6px;font-size:.9em}
+details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;margin:16px 0;
+  background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;background:var(--ex-soft);color:var(--ex);flex-wrap:wrap;
+  display:flex;gap:10px;align-items:center}
+details.ex>summary::-webkit-details-marker{display:none}
+details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);padding:1px 8px;border-radius:999px;
+  border:1px solid var(--line);margin-left:auto}
+details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+details.ex[open]>summary::before{transform:rotate(90deg)}
+details.ex .body{padding:6px 18px 16px}
+.enun{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--panel);box-shadow:var(--shadow);margin:16px 0}
+.enun .et{font-weight:700;font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.step{margin:14px 0}
+.step .n{display:inline-block;background:var(--ex);color:#fff;border-radius:6px;font-size:11px;font-weight:700;padding:1px 7px;margin-right:6px}
+.tablewrap{overflow-x:auto;margin:16px 0;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:420px;background:var(--panel)}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--brand-soft);color:var(--brand);font-size:12.5px;text-transform:uppercase;letter-spacing:.03em}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.tot td{font-weight:700;border-top:2px solid var(--line);background:var(--code)}
+tr.sub td{font-weight:600;background:var(--code)}
+td.ind{padding-left:28px}
+.vf{font-weight:700} .vf.v{color:var(--ok)} .vf.f{color:var(--no)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0}
+.card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--panel);box-shadow:var(--shadow)}
+.card .num{font-size:12px;font-weight:700;color:var(--brand)}
+.card h4{margin:2px 0 4px;color:var(--ink)}
+.card p{margin:0;font-size:13.8px;color:var(--muted)}
+a.card{text-decoration:none;color:inherit;display:block}
+a.card:hover{border-color:var(--brand)}
+.videos{margin:18px 0}
+.video{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px 14px;
+  margin:8px 0;background:var(--panel)}
+.video .vi{flex:0 0 auto;width:30px;height:30px;border-radius:8px;background:var(--no);color:#fff;display:grid;place-items:center;
+  font-size:13px;margin-top:2px}
+.video a{font-weight:600;text-decoration:none}
+.video a:hover{text-decoration:underline}
+.video .meta{font-size:12.5px;color:var(--muted)}
+.video .why{font-size:14px;margin-top:2px}
+.tsec{font-size:12px;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.tacc{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+  max-width:420px;margin:12px 0;background:var(--panel);font-variant-numeric:tabular-nums}
+.tacc .h{grid-column:1/3;text-align:center;font-weight:700;padding:6px;border-bottom:2px solid var(--ink)}
+.tacc .d,.tacc .c{padding:6px 12px;min-height:30px}
+.tacc .d{border-right:2px solid var(--ink);text-align:right}
+.tacc .lab{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.plan{counter-reset:d}
+.day{border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0;background:var(--panel);box-shadow:var(--shadow)}
+.day h4{margin:0 0 4px;color:var(--ink)}
+.day .when{font-size:12px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.06em}
+/* quiz */
+.qz-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0;padding:12px 14px;border:1px solid var(--line);
+  border-radius:10px;background:var(--panel);position:sticky;top:0;z-index:5;box-shadow:var(--shadow)}
+.qz-bar select{font-family:inherit;font-size:13px;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.qz-score{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums}
+.qz{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:14px 0;background:var(--panel);box-shadow:var(--shadow)}
+.qz .qh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+.qz .qn{font-weight:800;color:var(--muted);font-size:13px}
+.qz .qt{font-weight:600;margin:0 0 8px}
+.qz .opt{display:flex;gap:10px;width:100%;text-align:left;border:1px solid var(--line);border-radius:9px;padding:9px 12px;margin:6px 0;
+  background:var(--panel);color:var(--ink);cursor:pointer;font-family:inherit;font-size:15px;line-height:1.45}
+.qz .opt:hover{border-color:var(--accent)}
+.qz .opt .l{font-weight:700;color:var(--muted);flex:0 0 auto}
+.qz .opt.ok{background:var(--ok-soft);border-color:var(--ok)}
+.qz .opt.ok .l{color:var(--ok)}
+.qz .opt.bad{background:var(--no-soft);border-color:var(--no)}
+.qz .opt.bad .l{color:var(--no)}
+.qz.done .opt{cursor:default}
+.qz .exp{display:none;margin-top:10px;padding:10px 12px;border-radius:9px;background:var(--code);font-size:14.5px}
+.qz.done .exp{display:block}
+.qz .src{font-size:12px;color:var(--muted);margin-top:4px}
+.menuToggle{display:none}
+@media (max-width:900px){
+  .sidebar{position:fixed;z-index:40;left:0;top:0;transform:translateX(-102%);transition:transform .22s;box-shadow:var(--shadow)}
+  .sidebar.open{transform:none}
+  .menuToggle{display:inline-flex;position:fixed;z-index:50;top:12px;left:12px}
+  .content{padding-top:64px}
+  .scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:35}
+  .scrim.on{display:block}
+  .qz-bar{top:52px}
+}
+.backtop{position:fixed;right:18px;bottom:18px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s}
+.backtop.on{opacity:1;pointer-events:auto}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:60px;border-top:1px solid var(--line);padding-top:20px;flex-wrap:wrap}
+.pager a{text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--panel);max-width:48%}
+.pager a small{display:block;color:var(--muted);font-size:12px}
+@media print{
+  .sidebar,.menuToggle,.backtop,.toolbar,.qz-bar,.pager{display:none}
+  details.ex{break-inside:avoid} details.ex:not([open]) .body{display:block}
+  body{font-size:11pt;background:#fff;color:#000}
+}
+</style>
+</head>
+<body>
+<button class="btn menuToggle" id="menuToggle">&#9776; Índice</button>
+<div class="scrim" id="scrim"></div>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="dot">C1</div><div><h1>IMAFI · Certamen 1</h1><small>ICN-270 · lunes 5 oct, 09:40, M-202</small></div></div>
+  <div class="toolbar">
+    <button class="btn" id="themeBtn">Claro / oscuro</button>
+    <button class="btn" id="printBtn">Imprimir</button>
+    <button class="btn" id="openAll">Abrir soluciones</button>
+  </div>
+  <nav>
+    <div class="grp">Páginas</div>
+    <a class="page" href="0-Guia-C1.html"><span class="pn">0</span><span>Guía del certamen</span></a><a class="page" href="1-Fundamentos-y-proceso-contable.html"><span class="pn">1</span><span>Fundamentos y proceso contable</span></a><a class="page" href="2-Estados-financieros.html"><span class="pn">2</span><span>Estados financieros</span></a><a class="page" href="3-IVA.html"><span class="pn">3</span><span>IVA</span></a><a class="page" href="4-Depreciacion-y-amortizacion.html"><span class="pn">4</span><span>Depreciación y amortización</span></a><a class="page cur" href="5-Ratios-liquidez-y-endeudamiento.html"><span class="pn">5</span><span>Ratios de liquidez y endeudamiento</span></a><a class="page" href="6-Banco-de-preguntas.html"><span class="pn">6</span><span>Banco de preguntas y simulacro</span></a>
+    <div class="grp">En esta página</div><a class="sec" href="#mapa">Por qué esta página primero</a><a class="sec" href="#analisis">Qué es un ratio</a><a class="sec" href="#liquidez">Ratios de liquidez</a><a class="sec" href="#efectos">¿Qué pasa si…? (efectos)</a><a class="sec" href="#endeudamiento">Ratios de endeudamiento</a><a class="sec" href="#polpaico">Cómo redactar (Polpaico)</a><a class="sec" href="#receta">Receta para el desarrollo</a><a class="sec" href="#ejercicios">Ejercicios resueltos</a><a class="sec" href="#quiz">Autoevaluación</a><a class="sec" href="#videos">Videos para reforzar</a>
+  </nav>
+</aside>
+<main class="content">
+<header class="pagehead"><div class="kicker">IMAFI · Certamen 1 · Página 5</div><h1>Ratios de liquidez y endeudamiento</h1><p class="lead">Lo de la Ayudantía 5: el desarrollo más probable</p></header>
+<section id="mapa" data-nav="Por qué esta página primero">
+<h2>Por qué esta página va primero</h2>
+<p>El corte de materia es “hasta ratios de liquidez”, o sea, hasta la lámina 201 de la Primera Diapo. Pero la Ayudantía 5, que el ayudante subió justo antes del certamen, mezcla <b>liquidez y endeudamiento</b>, y dijiste que uno de los dos desarrollos (30 pts) puede salir de ahí. Por eso acá está todo lo de la ayudantía, aunque endeudamiento venga un par de láminas después del corte.</p>
+<div class="cards">
+  <div class="card"><div class="num">Desarrollo probable</div><h4>Calcular e interpretar</h4><p>Capital de trabajo, razón circulante, prueba ácida, deuda/activos y deuda/patrimonio, con una conclusión de 2–3 líneas.</p></div>
+  <div class="card"><div class="num">Selección múltiple</div><h4>Efectos y conceptos</h4><p>“¿Qué pasa con la razón circulante si…?” (láminas 201 y 207), definiciones, y relaciones como “ácida ≤ circulante”.</p></div>
+  <div class="card"><div class="num">Lo que se olvida</div><h4>La ecuación contable</h4><p>Casi siempre falta un dato (el pasivo o el patrimonio) y hay que despejarlo con A = P + Pat antes de calcular.</p></div>
+</div>
+<div class="box cert"><div class="bt">Qué pesa en el certamen</div>
+<p>Los ejercicios de la Ayudantía 5 son cortos: calcular cinco números lo hace cualquiera. Lo que separa un 20 de un 30 en el desarrollo es la <b>interpretación</b>: decir qué significa cada número, compararlo con una referencia (1 vez, 2 a 1, 60 %) y cerrar con una conclusión que junte liquidez y endeudamiento. La pauta de la ayudantía siempre termina así.</p></div>
+<div class="box tip"><div class="bt">Lo que dice la grabación del ayudante (“Grabación ejercicios.mp4”)</div>
+<p>La cápsula cubre el formulario y los V/F de la Ayudantía 5; en el minuto 7:40 el ayudante la corta y no llega a los ejercicios (el resto del archivo no es materia). Tres cosas que agrega a la pauta:</p>
+<ul>
+<li><b>Referencia para la liquidez:</b> “cuando tengamos valores encima de 1 […] 1, 1,5 y 2, es que tiene buenos resultados. Igualmente hay que hacer un análisis comparándolo con la industria” (min 1:42). O sea: sobre 1 es aceptable, 2 es la holgura de la lámina 191, y lo ideal es comparar con empresas del mismo rubro.</li>
+<li><b>Pasivo exigible y no exigible:</b> “el patrimonio lo podemos ver como nuestro pasivo no exigible” (min 3:11). Por eso la lámina 123 habla de “pasivos exigibles”: son las deudas con terceros, sin el patrimonio.</li>
+<li><b>Dos lapsus a no copiar:</b> en el V/F 4 (min 4:59) dice “la prueba ácida siempre va a ser mayor o igual que la razón circulante”; es al revés, como él mismo explicó bien en el min 2:19 y como dice la pauta. Y en el V/F 3 lo formula como “qué porcentaje de nuestra deuda está financiado por nuestros activos”; lo correcto es qué porcentaje de los activos está financiado por deuda.</li>
+</ul></div>
+</section>
+
+<section id="analisis" data-nav="Qué es un ratio">
+<h2>Qué es el análisis financiero y qué es un ratio</h2>
+<p>Los estados financieros entregan montos sueltos. Un montón de millones no dice mucho por sí solo: $20 millones de deuda es poquísimo para Codelco y una catástrofe para un almacén. El análisis financiero compara cuentas entre sí para que el número tenga sentido.</p>
+<div class="box formula"><div class="bt">Definición del profe (lámina 187)</div>
+<p>Las <b>razones financieras</b> son operaciones aritméticas que comparan dos cuentas o grupos de cuentas de los estados financieros para analizar el manejo de la empresa en la toma de decisiones. La ayudantía agrega: son cocientes entre partidas que guardan <b>relación económica</b> entre sí.</p></div>
+<p>Para qué sirve, según las láminas 185 y 186: saber si hay capital de trabajo suficiente, si la empresa puede pagar sus pasivos corrientes, si genera recursos propios, cuánto necesita de financiamiento externo, si creció su patrimonio, cuál es la rentabilidad de las ventas y del patrimonio.</p>
+
+<h3>Conceptos previos (lámina 188)</h3>
+<div class="tablewrap"><table>
+<tr><th>Concepto</th><th>Qué es</th></tr>
+<tr><td>Capital de trabajo bruto</td><td>Activo circulante (corriente)</td></tr>
+<tr><td>Capital de trabajo neto</td><td>Activo circulante − Pasivo circulante. En la ayudantía se le dice simplemente “capital de trabajo”.</td></tr>
+<tr><td>Deuda total</td><td>Deuda ajena, fondos de terceros: pasivos exigibles corrientes y no corrientes. <b>No</b> incluye el patrimonio.</td></tr>
+<tr><td>Promedio</td><td>(saldo inicial + saldo final) / 2. Se usa en rotaciones, que vienen después del corte.</td></tr>
+<tr><td>Año calendario / uniforme</td><td>365 días / 360 días (todos los meses de 30).</td></tr>
+</table></div>
+
+<h3>Las familias de razones (lámina 189)</h3>
+<p>Liquidez, endeudamiento, gestión o eficiencia, rentabilidad, valor de mercado y Du Pont. Para este certamen importan las dos primeras. Circulante y corriente son sinónimos: las láminas y la ayudantía usan las dos palabras.</p>
+<div class="box ana"><div class="bt">Analogía para no confundirlas</div>
+<p>Piensa en alguien que pide un crédito de consumo. El banco hace dos preguntas distintas. La primera: <i>¿te alcanza lo que tienes a mano para pagar las cuentas de este mes?</i> Eso es liquidez, corto plazo. La segunda: <i>de todo lo que tienes, ¿cuánto es realmente tuyo y cuánto lo debes?</i> Eso es endeudamiento, estructura de financiamiento. Una persona puede tener una casa pagada (poco endeudada) y no tener un peso para la luz (ilíquida), o al revés.</p></div>
+</section>
+
+<section id="liquidez" data-nav="Ratios de liquidez">
+<h2>Ratios de liquidez</h2>
+<p class="lead">Miden la capacidad de la empresa para cumplir sus obligaciones de corto plazo con lo que tiene en el corto plazo.</p>
+<p>Todo sale de dos bloques del balance: el activo circulante (lo que se convierte en plata dentro de un año: caja, bancos, clientes, existencias) y el pasivo circulante (lo que hay que pagar dentro de un año: proveedores, préstamos de corto plazo, impuestos por pagar, anticipos de clientes).</p>
+
+<h3>1. Capital de trabajo (neto)</h3>
+<div class="fx"><b>CT</b> = Activo circulante − Pasivo circulante &nbsp; <span class="tsec">(en pesos)</span></div>
+<p>Es la holgura en pesos entre lo que la empresa tiene disponible en el corto plazo y lo que debe pagar en el corto plazo. Si es negativo, lo que tiene a mano no le alcanza para cubrir lo que vence dentro del año. Ojo: CT negativo <b>no</b> significa que no tenga activo circulante; significa que no le alcanza.</p>
+
+<h3>2. Razón circulante (razón corriente, liquidez corriente)</h3>
+<div class="fx"><b>RC</b> = <span class="frac"><span class="top">Activo circulante</span><span class="bot">Pasivo circulante</span></span> &nbsp; <span class="tsec">(en veces)</span></div>
+<p>Se lee “por cada $1 que debe en el corto plazo, tiene $RC de activo circulante”. La lámina 191 da la referencia del profe: <b>2 a 1 permite trabajar sin apuros</b>, dos pesos por cada peso que se debe. Bajo 1, el activo circulante no cubre el pasivo circulante.</p>
+<p>Nombres que usan las láminas para lo mismo: liquidez corriente, razón circulante, razón corriente, razón de funcionamiento (lámina 193).</p>
+
+<h3>3. Prueba ácida</h3>
+<div class="fx"><b>PA</b> = <span class="frac"><span class="top">Activo circulante − Existencias</span><span class="bot">Pasivo circulante</span></span> &nbsp; <span class="tsec">(en veces)</span></div>
+<p>¿Por qué sacar las existencias? Porque son el activo circulante menos líquido: hay que venderlas primero, y si hay que venderlas apurado, pierden valor (lámina 192). La ácida responde: <i>si mañana no pudiera vender nada de inventario, ¿podría pagar igual lo que vence?</i> Si da sobre 1, sí.</p>
+<div class="box formula"><div class="bt">Relación que siempre se cumple</div>
+<p>Como las existencias son mayores o iguales a cero: <b>prueba ácida ≤ razón circulante</b>. Son iguales solo si la empresa no tiene existencias (una empresa de servicios, por ejemplo). Es el V/F 4 de la ayudantía, y lo dan vuelta para que caigas.</p></div>
+
+<h3>4. Acidísima (razón de disponible o de caja)</h3>
+<div class="fx"><b>Acidísima</b> = <span class="frac"><span class="top">Caja + Bancos</span><span class="bot">Pasivo circulante</span></span> = <span class="frac"><span class="top">Efectivo y equivalentes</span><span class="bot">Pasivo circulante</span></span></div>
+<p>La más exigente: solo cuenta la plata que ya está en la mano. No está en la Ayudantía 5, pero sí en la lámina 193, así que puede aparecer en selección múltiple.</p>
+<div class="box warn"><div class="bt">Ojo con el nombre “tesorería”</div>
+<p>La lámina 192 dice que el “ratio de tesorería” mide la liquidez más inmediata, y la lámina 193 dice que a la prueba ácida “también se le llama razón de tesorería”. Las láminas se contradicen un poco. Si te preguntan por nombre, guíate por la fórmula que den; si no dan fórmula, ácida = (AC − existencias)/PC y acidísima = caja/PC.</p></div>
+
+<div class="box ana"><div class="bt">Analogía: tres exámenes de la misma materia</div>
+<p>La razón circulante es un examen generoso: te deja usar todo lo del corto plazo, incluso la mercadería que todavía no vendes. La prueba ácida es un examen realista: “la mercadería no vale, a ver si te alcanza igual”. La acidísima es el examen brutal: “solo lo que tienes en el bolsillo ahora mismo”. Una empresa sana aprueba los dos primeros; casi nadie saca nota alta en el tercero, y no es grave.</p></div>
+
+<h3>Cómo se interpreta cada uno</h3>
+<div class="tablewrap"><table>
+<tr><th>Resultado</th><th>Qué significa</th><th>Cómo lo escribes</th></tr>
+<tr><td>RC ≥ 2</td><td>Holgura según la referencia del profe</td><td>“Dispone de $2,5 de activo circulante por cada $1 de pasivo circulante, una posición holgada.”</td></tr>
+<tr><td>1 &lt; RC &lt; 2</td><td>Cubre, pero con menos margen</td><td>“Cubre sus obligaciones de corto plazo, aunque por debajo de la referencia de 2 a 1.”</td></tr>
+<tr><td>RC &lt; 1 (CT &lt; 0)</td><td>No alcanza</td><td>“Su activo circulante no alcanza a cubrir el pasivo circulante; podría tener problemas para pagar lo que vence en el año.”</td></tr>
+<tr><td>PA ≥ 1</td><td>Paga aunque no venda inventario</td><td>“Incluso sin vender sus existencias podría cubrir su pasivo circulante.”</td></tr>
+<tr><td>PA &lt; 1 con RC ≥ 1</td><td>Depende de vender inventario</td><td>“Su liquidez depende de vender existencias.”</td></tr>
+<tr><td>RC muy alta (5, 6…)</td><td>Posibles recursos ociosos</td><td>“Podría reflejar exceso de caja sin invertir o de inventario.” (V/F 9 de la ayudantía)</td></tr>
+</table></div>
+<p>Un matiz que suma en la conclusión: estos cortes son referencias generales. El ayudante insiste en que lo correcto es comparar con la industria (un supermercado vive con razones cercanas a 1 porque vende al contado y paga a 60 días; una constructora necesita más).</p>
+</section>
+
+<section id="efectos" data-nav="¿Qué pasa si…? (efectos)">
+<h2>¿Qué pasa con los ratios si…? (láminas 201 y 207)</h2>
+<p>Estas preguntas son ideales para selección múltiple porque no piden calcular nada grande, solo razonar. El método es siempre el mismo:</p>
+<ol>
+<li>Escribe la transacción como asiento y marca qué cuentas se mueven.</li>
+<li>Pregúntate: ¿cambia el activo circulante (numerador)? ¿cambia el pasivo circulante (denominador)? ¿cambian las existencias (solo para la ácida)?</li>
+<li>Recalcula con números simples o usa la regla de abajo.</li>
+</ol>
+<div class="box formula"><div class="bt">La regla que ahorra tiempo</div>
+<p>Si la razón es <b>mayor que 1</b>: restar el mismo monto arriba y abajo la <b>sube</b>; sumar el mismo monto arriba y abajo la <b>baja</b> (la acerca a 1). Si la razón es menor que 1, es al revés. El capital de trabajo (una resta) <b>no cambia</b> cuando AC y PC se mueven en el mismo monto.</p></div>
+<p>Ejemplo de la lámina 207: AC = 1,2 millones, PC = 1 millón. Se usan 0,5 millones de caja para pagar cuentas por pagar. Queda AC = 0,7 y PC = 0,5 → RC sube de 1,2 a <b>1,4</b>. El fondo de maniobra (AC − PC) era 0,2 y sigue en 0,2.</p>
+<p>Ejemplo de la lámina 201: se usa efectivo para comprar existencias. El AC no cambia (sale caja, entra inventario) → RC igual. Pero AC − existencias baja → la ácida <b>disminuye</b>.</p>
+
+<h3>Tabla de casos típicos</h3>
+<p>Base: caja 10, clientes 12, existencias 18 (AC = 40) y PC = 20. RC = 2,0; ácida = 1,1; CT = 20 (en millones). Cada fila es independiente.</p>
+<div class="tablewrap"><table>
+<tr><th>Transacción</th><th>AC</th><th>PC</th><th class="num">RC</th><th class="num">Ácida</th><th class="num">CT</th></tr>
+<tr><td>Compra existencias por 5 al contado</td><td>=</td><td>=</td><td class="num">2,00 =</td><td class="num">0,85 ↓</td><td class="num">20 =</td></tr>
+<tr><td>Compra existencias por 5 a crédito</td><td>+5</td><td>+5</td><td class="num">1,80 ↓</td><td class="num">0,88 ↓</td><td class="num">20 =</td></tr>
+<tr><td>Paga 5 a proveedores con caja</td><td>−5</td><td>−5</td><td class="num">2,33 ↑</td><td class="num">1,13 ↑</td><td class="num">20 =</td></tr>
+<tr><td>Cobra 4 a clientes</td><td>=</td><td>=</td><td class="num">2,00 =</td><td class="num">1,10 =</td><td class="num">20 =</td></tr>
+<tr><td>Préstamo de <b>largo</b> plazo por 10, a caja</td><td>+10</td><td>=</td><td class="num">2,50 ↑</td><td class="num">1,60 ↑</td><td class="num">30 ↑</td></tr>
+<tr><td>Préstamo de <b>corto</b> plazo por 10, a caja</td><td>+10</td><td>+10</td><td class="num">1,67 ↓</td><td class="num">1,07 ↓</td><td class="num">20 =</td></tr>
+<tr><td>Compra una máquina por 6 al contado</td><td>−6</td><td>=</td><td class="num">1,70 ↓</td><td class="num">0,80 ↓</td><td class="num">14 ↓</td></tr>
+</table></div>
+<div class="box tip"><div class="bt">Fíjate en dos detalles</div>
+<p>El préstamo de corto plazo trae plata y aun así <b>empeora</b> la razón circulante, porque la base era mayor que 1. Y comprar un activo fijo con caja es lo único de la tabla que baja el capital de trabajo: la plata se va del corto al largo plazo.</p></div>
+</section>
+
+<section id="endeudamiento" data-nav="Ratios de endeudamiento">
+<h2>Ratios de endeudamiento</h2>
+<p class="lead">Miden qué proporción de la empresa está financiada con deuda de terceros. Mientras más alto, mayor riesgo financiero (apalancamiento).</p>
+<p>Vuelve la ecuación contable: el activo se financia con pasivo (terceros) y patrimonio (dueños). Estos ratios miran esa mezcla.</p>
+
+<h3>1. Razón deuda / activos totales (razón de endeudamiento)</h3>
+<div class="fx"><b>D/A</b> = <span class="frac"><span class="top">Deuda total</span><span class="bot">Activos totales</span></span> = <span class="frac"><span class="top">Pasivo circulante + Pasivo no corriente</span><span class="bot">Activo total</span></span> &nbsp;<span class="tsec">(en %)</span></div>
+<p>Se lee “el X % de los activos está financiado por terceros; el resto (100 − X) %, por el patrimonio”. La lámina 203 da la regla del profe: <b>debe ser inferior al 60 %</b>. Un 60 % significa que la empresa debe $60 por cada $100 de activos.</p>
+
+<h3>2. Razón deuda / patrimonio (razón de apalancamiento)</h3>
+<div class="fx"><b>D/P</b> = <span class="frac"><span class="top">Deuda total</span><span class="bot">Patrimonio</span></span> &nbsp;<span class="tsec">(en veces o en %)</span></div>
+<p>Se lee “por cada $1 que aportaron los dueños, la empresa mantiene $X de deuda con terceros”. El punto de corte es 1 (100 %): sobre 1, la empresa está financiada más por terceros que por sus dueños; bajo 1, más por sus dueños.</p>
+<p>La lámina 209 (Polpaico) dice “la razón de endeudamiento alcanzó 1,71 veces”: un número mayor que 1 solo puede ser deuda/patrimonio, porque deuda/activos nunca supera 100 % salvo patrimonio negativo. O sea, en ese análisis “razón de endeudamiento” se usa para D/P. Si en el certamen te dicen “razón de endeudamiento” sin fórmula, fíjate si el número está en % bajo 100 o en veces.</p>
+
+<h3>3. Autonomía financiera y desagregación</h3>
+<p>La lámina 202 nombra tres: razón de endeudamiento, razón pasivo-capital y autonomía financiera. La autonomía es la parte que falta:</p>
+<div class="fx"><b>Autonomía</b> = <span class="frac"><span class="top">Patrimonio</span><span class="bot">Activos totales</span></span> &nbsp; → &nbsp; <b>D/A + Autonomía = 100 %</b></div>
+<p>La lámina 205 agrega la desagregación de la deuda: qué parte es de corto plazo (PC/deuda total) y qué parte de largo plazo (PNC/deuda total). Las dos suman 100 %.</p>
+
+<h3>Cómo se relacionan D/A y D/P</h3>
+<p>No hace falta memorizar una fórmula, sale del sentido común. Si D/A = 50 %, la mitad del activo es deuda y la otra mitad patrimonio: deuda = patrimonio, D/P = 100 %. Si D/A = 40 %, el patrimonio es 60 % y D/P = 40/60 = 66,7 %. En general:</p>
+<div class="fx"><b>D/P</b> = <span class="frac"><span class="top">D/A</span><span class="bot">1 − D/A</span></span></div>
+<p>Truco para verificar: D/P siempre es mayor que D/A (el patrimonio es más chico que el activo), y D/A = 50 % coincide con D/P = 100 %.</p>
+
+<div class="box ana"><div class="bt">Analogía: comprar un departamento</div>
+<p>Compras un depto de 100 millones con 20 de pie y 80 de crédito hipotecario. Tu D/A es 80 % (el banco financió 80 % de lo que tienes) y tu D/P es 80/20 = 4 veces (por cada peso tuyo debes cuatro). Si el depto baja de precio 20 %, tu patrimonio desaparece entero. Eso es el riesgo del apalancamiento: la deuda no baja cuando bajan tus activos.</p></div>
+
+<h3>Lo que el ratio no dice</h3>
+<p>Dos empresas con la misma D/A no tienen necesariamente el mismo riesgo (V/F 10 de la ayudantía). El ratio no ve el plazo de la deuda, la tasa de interés ni si la empresa genera caja para pagarla. Si te piden una conclusión crítica, este matiz suma.</p>
+<p>Las láminas 206 y 213 (cobertura de intereses, fondo de maniobra sobre activos, recompra de deuda) vienen después del corte y no aparecen en la Ayudantía 5. Basta con saber que la cobertura de intereses compara el resultado antes de intereses e impuestos (BAII = EBIT) con los intereses.</p>
+</section>
+
+<section id="polpaico" data-nav="Cómo redactar (Polpaico)">
+<h2>Cómo redactar la interpretación: el caso Polpaico</h2>
+<p>Las láminas 194 a 200 muestran el Análisis Razonado real de Cemento Polpaico (31-03-2022 contra 31-12-2021). Es la plantilla del profe para interpretar: <b>qué pasó con el indicador, cuánto cambió y por qué</b>.</p>
+<div class="tablewrap"><table>
+<tr><th>Componente (M$)</th><th class="num">31-03-2022</th><th class="num">31-12-2021</th><th class="num">Var. %</th></tr>
+<tr><td>Efectivo y equivalentes</td><td class="num">19.261.175</td><td class="num">27.897.978</td><td class="num">−31 %</td></tr>
+<tr><td>Deudores comerciales</td><td class="num">61.584.101</td><td class="num">54.559.570</td><td class="num">+13 %</td></tr>
+<tr><td>Inventarios</td><td class="num">51.897.715</td><td class="num">45.432.499</td><td class="num">+14 %</td></tr>
+<tr><td>Otros activos corrientes</td><td class="num">7.173.869</td><td class="num">5.979.063</td><td class="num">+20 %</td></tr>
+<tr class="sub"><td>Total activos corrientes</td><td class="num">139.916.860</td><td class="num">133.869.110</td><td class="num">+4,5 %</td></tr>
+<tr class="sub"><td>Total pasivos corrientes</td><td class="num">110.504.207</td><td class="num">96.919.581</td><td class="num">+14,0 %</td></tr>
+<tr><td>Razón circulante</td><td class="num">1,27</td><td class="num">1,38</td><td class="num">−8,3 %</td></tr>
+<tr><td>Prueba ácida</td><td class="num">0,80</td><td class="num">0,91</td><td class="num">−12,7 %</td></tr>
+</table></div>
+<p>La redacción del profe (láminas 196 y 198):</p>
+<div class="enun"><div class="et">Liquidez</div><p>“La liquidez corriente mostró una disminución de un 7,3 % en comparación con el cierre de diciembre 2021, explicado principalmente por el aumento de pasivos corrientes en un 14,0 %, el cual mostró un aumento superior que el activo corriente 4,5 %.”</p>
+<div class="et" style="margin-top:10px">Razón ácida</div><p>“La razón ácida mostró una disminución de un 12,6 % […], que se explica principalmente por el aumento en inventarios de un 14,2 %, por mayores niveles de materias primas y repuestos. Los activos corrientes excluyendo inventarios mostraron una disminución del 0,5 %.”</p></div>
+<div class="box warn"><div class="bt">Un detalle numérico</div><p>Con los montos de la tabla de la lámina 199, la razón circulante pasa de 1,381 a 1,266, que es una caída de 8,3 %, no de 7,3 %. La ácida sí calza (−12,7 %, la lámina dice 12,6 por redondeo). Si en el certamen te dan una tabla, calcula tú; no copies el porcentaje de la lámina.</p></div>
+
+<h3>La plantilla</h3>
+<div class="box formula"><div class="bt">Estructura de una buena interpretación</div>
+<ol>
+<li><b>Dato:</b> “La razón circulante es 1,5 veces (2,0 el año anterior), una caída de 25 %.”</li>
+<li><b>Lectura:</b> “Por cada $1 de deuda de corto plazo, la empresa tiene $1,5 de activo circulante.”</li>
+<li><b>Referencia:</b> “Sigue sobre 1, pero bajo la referencia de 2 a 1.”</li>
+<li><b>Causa:</b> “El pasivo circulante creció 60 %, más que el activo circulante (20 %).”</li>
+<li><b>Conclusión:</b> una frase que junte liquidez y endeudamiento.</li>
+</ol></div>
+<p>La conclusión de la Ayudantía 5 (Coihue) es el modelo: “la empresa presenta una posición de liquidez sólida (RC de 2,5 veces y PA de 1,25 veces, ambas sobre 1), por lo que puede cubrir holgadamente sus obligaciones de corto plazo incluso sin considerar sus existencias. En cuanto al endeudamiento, el financiamiento está distribuido equilibradamente entre terceros y dueños […] un nivel de apalancamiento moderado que debe ser monitoreado si la empresa buscara endeudarse aún más.”</p>
+</section>
+
+<section id="receta" data-nav="Receta para el desarrollo">
+<h2>Receta para el desarrollo</h2>
+<p>Los seis pasos del “Resumen ratios” que subió el ayudante, con lo que conviene hacer en cada uno:</p>
+<div class="tablewrap"><table>
+<tr><th>Paso</th><th>Qué haces</th><th>Error típico</th></tr>
+<tr><td>1. Identificar datos</td><td>Separa las cuentas en AC, ANC, PC, PNC y patrimonio. Suma cada bloque.</td><td>Meter el préstamo de largo plazo en el pasivo circulante, o dejar fuera “otros pasivos circulantes”.</td></tr>
+<tr><td>2. Qué se pide</td><td>Lista las letras. Anota la unidad de cada una: CT en $, RC y PA en veces, D/A y D/P en %.</td><td>Dar el CT “en veces”.</td></tr>
+<tr><td>3. Despejar lo que falta</td><td>A = P + Pat. Pasivo = Activo − Patrimonio o Patrimonio = Activo − Pasivo.</td><td>Olvidar que el patrimonio incluye la utilidad del ejercicio (si piden “capital”, réstala).</td></tr>
+<tr><td>4. Elegir fórmula</td><td>Escríbela antes de reemplazar: da puntaje aunque te equivoques en la cuenta.</td><td>Usar “deuda” como solo el préstamo bancario. Deuda total = todo el pasivo.</td></tr>
+<tr><td>5. Reemplazar y calcular</td><td>Dos decimales en veces, un decimal en %.</td><td>Dividir al revés (PC/AC).</td></tr>
+<tr><td>6. Interpretar</td><td>Lectura + referencia + conclusión. Una o dos frases por ratio y una conclusión final.</td><td>Dejarlo en “la razón es 2,5”. Sin interpretación se pierde buena parte del puntaje.</td></tr>
+</table></div>
+<div class="box tip"><div class="bt">Clasificar cuentas rápido (láminas 85, 86, 113 y 117)</div>
+<p><b>PC:</b> proveedores, cuentas y documentos por pagar, préstamos bancarios de corto plazo o porción corriente, impuestos por pagar (incluido el impuesto a la renta), remuneraciones por pagar, dividendos por pagar, anticipos de clientes, ingresos recibidos por anticipado, provisiones. <b>PNC:</b> préstamos y documentos de largo plazo, hipotecas, bonos. <b>Restan del activo:</b> depreciación acumulada, provisión de incobrables, provisión de inventarios.</p></div>
+</section>
+
+<section id="ejercicios" data-nav="Ejercicios resueltos">
+<h2>Ejercicios resueltos</h2>
+<p>Primero los de la Ayudantía 5 (con la pauta del ayudante), después cuatro nuevos del mismo estilo, un poco más difíciles. Intenta cada uno en papel antes de abrir la solución.</p>
+
+<h3>Ayudantía 5 · Verdadero o falso</h3>
+<details class="ex"><summary>Los 10 V/F de la Ayudantía 5 <span class="tag">Ayudantía 5 · Ej. 1</span></summary><div class="body">
+<div class="tablewrap"><table>
+<tr><th>#</th><th>Afirmación</th><th></th><th>Por qué</th></tr>
+<tr><td>1</td><td>La RC se calcula dividiendo AC por PC.</td><td class="vf v">V</td><td>Es la definición.</td></tr>
+<tr><td>2</td><td>El CT es AC − PC.</td><td class="vf v">V</td><td>Es la definición.</td></tr>
+<tr><td>3</td><td>D/A muestra qué % de los activos está financiado por terceros.</td><td class="vf v">V</td><td>Deuda (terceros) sobre activos.</td></tr>
+<tr><td>4</td><td>La PA siempre es ≥ RC.</td><td class="vf f">F</td><td>Al revés: PA ≤ RC, porque le resta las existencias al numerador.</td></tr>
+<tr><td>5</td><td>Si CT = 0, entonces RC = 1.</td><td class="vf v">V</td><td>AC = PC → AC/PC = 1.</td></tr>
+<tr><td>6</td><td>Si sube el PC con el AC constante, mejora la RC.</td><td class="vf f">F</td><td>Sube el denominador: la RC baja, empeora.</td></tr>
+<tr><td>7</td><td>D/P &gt; 1 indica más financiamiento de terceros que de dueños.</td><td class="vf v">V</td><td>Deuda &gt; Patrimonio.</td></tr>
+<tr><td>8</td><td>Con CT negativo la empresa no tiene activo circulante.</td><td class="vf f">F</td><td>Tiene, pero es menor que el PC.</td></tr>
+<tr><td>9</td><td>Mientras mayor la RC, siempre mejor, sin excepción.</td><td class="vf f">F</td><td>Muy alta puede ser caja ociosa o exceso de inventario.</td></tr>
+<tr><td>10</td><td>Misma D/A implica mismo riesgo financiero.</td><td class="vf f">F</td><td>Importan plazos, tasas y capacidad de generar flujos.</td></tr>
+</table></div>
+</div></details>
+
+<details class="ex"><summary>Comercial Rioclaro Ltda. · liquidez <span class="tag">Ayudantía 5 · Ej. 2</span></summary><div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Caja y banco $9.000.000; clientes $11.000.000; existencias $16.000.000; proveedores $8.000.000; otros pasivos circulantes $4.000.000. Pide: a) CT, b) RC, c) PA, d) interpretar si puede cubrir sus obligaciones aun sin vender existencias.</p></div>
+<div class="step"><span class="n">1</span>Datos: AC = 9 + 11 + 16 = <b>$36.000.000</b>; PC = 8 + 4 = <b>$12.000.000</b>.</div>
+<div class="step"><span class="n">a</span>CT = 36.000.000 − 12.000.000 = <b>$24.000.000</b>.</div>
+<div class="step"><span class="n">b</span>RC = 36.000.000 / 12.000.000 = <b>3,0 veces</b>.</div>
+<div class="step"><span class="n">c</span>PA = (36.000.000 − 16.000.000) / 12.000.000 = 20.000.000 / 12.000.000 = <b>1,67 veces</b>.</div>
+<div class="step"><span class="n">d</span>Dispone de $3,0 de activo circulante por cada $1 de pasivo circulante: posición holgada, sobre la referencia de 2 a 1. Incluso excluyendo las existencias, la prueba ácida de 1,67 se mantiene sobre 1, así que podría cubrir sus obligaciones de corto plazo aunque no vendiera su inventario.</div>
+</div></details>
+
+<details class="ex"><summary>Manufacturas Andina S.A. · endeudamiento <span class="tag">Ayudantía 5 · Ej. 3</span></summary><div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Activos totales $160.000.000 y patrimonio $100.000.000. El pasivo no está disponible. Pide: a) deuda total, b) D/A, c) D/P, d) interpretar qué % de los activos financian terceros, e) interpretar D/P.</p></div>
+<div class="step"><span class="n">a</span>Pasivo = Activo − Patrimonio = 160.000.000 − 100.000.000 = <b>$60.000.000</b>.</div>
+<div class="step"><span class="n">b</span>D/A = 60.000.000 / 160.000.000 = <b>0,375 = 37,5 %</b>.</div>
+<div class="step"><span class="n">c</span>D/P = 60.000.000 / 100.000.000 = <b>0,60 = 60 %</b>.</div>
+<div class="step"><span class="n">d</span>El 37,5 % de los activos está financiado con deuda de terceros; el 62,5 % restante con patrimonio. Está bajo el 60 % que el profe da como máximo razonable.</div>
+<div class="step"><span class="n">e</span>Por cada $1 aportado por los dueños hay $0,60 de deuda. Como la razón es menor que 1, el financiamiento de los dueños sigue siendo mayor que el de terceros.</div>
+</div></details>
+
+<details class="ex"><summary>Inversiones Coihue Ltda. · integrado <span class="tag">Ayudantía 5 · Ej. 4</span></summary><div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Caja y banco $6.000.000; clientes $14.000.000; existencias $20.000.000; activo no corriente $110.000.000; proveedores $10.000.000; otros pasivos circulantes $6.000.000; préstamo bancario de largo plazo $59.000.000. El patrimonio no se entrega. Pide: a) patrimonio, b) CT, c) RC, d) PA, e) D/A, f) D/P, g) conclusión de 2–3 líneas.</p></div>
+<div class="step"><span class="n">1</span>AC = 6 + 14 + 20 = $40.000.000. Activos totales = 40 + 110 = <b>$150.000.000</b>. PC = 10 + 6 = $16.000.000. Pasivo total = 16 + 59 = <b>$75.000.000</b>.</div>
+<div class="step"><span class="n">a</span>Patrimonio = 150.000.000 − 75.000.000 = <b>$75.000.000</b>.</div>
+<div class="step"><span class="n">b</span>CT = 40.000.000 − 16.000.000 = <b>$24.000.000</b>.</div>
+<div class="step"><span class="n">c</span>RC = 40.000.000 / 16.000.000 = <b>2,5 veces</b>.</div>
+<div class="step"><span class="n">d</span>PA = (40.000.000 − 20.000.000) / 16.000.000 = <b>1,25 veces</b>.</div>
+<div class="step"><span class="n">e</span>D/A = 75.000.000 / 150.000.000 = <b>50 %</b>.</div>
+<div class="step"><span class="n">f</span>D/P = 75.000.000 / 75.000.000 = <b>1,0 = 100 %</b>.</div>
+<div class="step"><span class="n">g</span>Liquidez sólida: RC de 2,5 y PA de 1,25, ambas sobre 1, así que cubre sus obligaciones de corto plazo aun sin vender existencias. En endeudamiento, la mitad de los activos está financiada con deuda y la deuda iguala al patrimonio: un apalancamiento moderado, bajo el 60 %, que habría que vigilar si la empresa quisiera endeudarse más.</div>
+</div></details>
+
+<h3>Nuevos, estilo certamen</h3>
+
+<details class="ex"><summary>N1 · Comercial Los Ulmos SpA: dos años y variaciones <span class="tag">Nuevo · 30 pts estimados</span></summary><div class="body">
+<div class="enun"><div class="et">Enunciado</div>
+<div class="tablewrap"><table>
+<tr><th>Cuenta ($ millones)</th><th class="num">2026</th><th class="num">2025</th></tr>
+<tr><td>Caja y bancos</td><td class="num">8</td><td class="num">12</td></tr>
+<tr><td>Clientes</td><td class="num">22</td><td class="num">18</td></tr>
+<tr><td>Existencias</td><td class="num">30</td><td class="num">20</td></tr>
+<tr><td>Activo no corriente</td><td class="num">140</td><td class="num">130</td></tr>
+<tr><td>Proveedores</td><td class="num">26</td><td class="num">16</td></tr>
+<tr><td>Préstamo bancario corto plazo</td><td class="num">14</td><td class="num">9</td></tr>
+<tr><td>Préstamo bancario largo plazo</td><td class="num">50</td><td class="num">47</td></tr>
+</table></div>
+<p>a) Determine el patrimonio de cada año. b) Calcule CT, RC, PA y acidísima para ambos años. c) Calcule D/A y D/P para ambos años. d) Calcule la variación porcentual de RC, PA y D/P. e) Redacte un análisis de liquidez y endeudamiento al estilo del análisis razonado.</p></div>
+<div class="step"><span class="n">a</span>2026: AC = 60; AT = 200; PC = 40; PT = 90 → Patrimonio = <b>110</b>. 2025: AC = 50; AT = 180; PC = 25; PT = 72 → Patrimonio = <b>108</b>.</div>
+<div class="step"><span class="n">b–c</span></div>
+<div class="tablewrap"><table>
+<tr><th>Indicador</th><th class="num">2026</th><th class="num">2025</th><th class="num">Var.</th></tr>
+<tr><td>Capital de trabajo</td><td class="num">20</td><td class="num">25</td><td class="num">−20 %</td></tr>
+<tr><td>Razón circulante</td><td class="num">1,50</td><td class="num">2,00</td><td class="num">−25 %</td></tr>
+<tr><td>Prueba ácida</td><td class="num">0,75</td><td class="num">1,20</td><td class="num">−37,5 %</td></tr>
+<tr><td>Acidísima</td><td class="num">0,20</td><td class="num">0,48</td><td class="num">−58 %</td></tr>
+<tr><td>Deuda / activos</td><td class="num">45,0 %</td><td class="num">40,0 %</td><td class="num">+5 pp</td></tr>
+<tr><td>Deuda / patrimonio</td><td class="num">81,8 %</td><td class="num">66,7 %</td><td class="num">+22,7 %</td></tr>
+</table></div>
+<div class="step"><span class="n">d</span>Variación % = (valor 2026 / valor 2025 − 1) × 100. RC: 1,5/2,0 − 1 = −25 %. PA: 0,75/1,20 − 1 = −37,5 %. D/P: 0,818/0,667 − 1 = +22,7 %. (En D/A, que ya es un porcentaje, conviene decir “sube 5 puntos porcentuales”, o +12,5 % relativo.)</div>
+<div class="step"><span class="n">e</span>Una redacción posible:</div>
+<div class="enun"><p>La razón circulante bajó de 2,0 a 1,5 veces (−25 %), explicado principalmente porque el pasivo circulante creció 60 % (proveedores +62,5 % y préstamos de corto plazo +55,6 %), bastante más que el activo circulante (+20 %). La prueba ácida cayó con más fuerza, de 1,20 a 0,75 veces (−37,5 %), porque el aumento del activo circulante se concentró en existencias (+50 %) mientras la caja disminuyó un tercio. Con una ácida bajo 1, hoy la empresa depende de vender inventario para cubrir sus obligaciones de corto plazo.</p>
+<p>El endeudamiento subió de 40 % a 45 % de los activos y la deuda/patrimonio de 66,7 % a 81,8 %. Sigue bajo el 60 % de referencia y bajo 1 vez el patrimonio, así que el financiamiento propio todavía predomina, pero la tendencia y el deterioro de la liquidez sugieren moderar el endeudamiento de corto plazo.</p></div>
+</div></details>
+
+<details class="ex"><summary>N2 · Efectos de transacciones sobre los ratios <span class="tag">Nuevo · tipo selección múltiple</span></summary><div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Una empresa tiene caja 10, clientes 12, existencias 18 y pasivo circulante 20 (millones). Para cada transacción, por separado, indique el efecto sobre RC, PA y CT: a) compra existencias por 5 al contado; b) compra existencias por 5 a crédito; c) paga 5 a proveedores; d) cobra 4 a clientes; e) obtiene un préstamo de largo plazo por 10; f) obtiene un préstamo de corto plazo por 10; g) compra una máquina por 6 al contado.</p></div>
+<p>Base: RC = 40/20 = 2,0; PA = 22/20 = 1,1; CT = 20. Resultados en la <a href="#efectos">tabla de efectos</a>. Lo que tienes que poder justificar en una línea cada uno:</p>
+<ul>
+<li><b>a)</b> Cambia la composición del AC, no su total: RC igual. Suben las existencias: PA baja a 0,85.</li>
+<li><b>b)</b> Suben AC y PC en 5. Con RC &gt; 1, sumar lo mismo arriba y abajo baja la razón: 45/25 = 1,8. CT igual.</li>
+<li><b>c)</b> Bajan AC y PC en 5: 35/15 = 2,33, sube. CT igual.</li>
+<li><b>d)</b> Sale clientes, entra caja: nada cambia.</li>
+<li><b>e)</b> Sube el AC, el PC no (la deuda es de largo plazo): 50/20 = 2,5; CT sube a 30.</li>
+<li><b>f)</b> Sube AC y PC en 10: 50/30 = 1,67, baja. CT igual.</li>
+<li><b>g)</b> La caja se va al activo no corriente: 34/20 = 1,7; CT baja a 14.</li>
+</ul>
+</div></details>
+
+<details class="ex"><summary>N3 · Reconstruir el balance a partir de los ratios <span class="tag">Nuevo · razonamiento inverso</span></summary><div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Una empresa informa: razón circulante 2,4 veces; prueba ácida 1,5 veces; capital de trabajo $28.000.000; deuda/activos 40 %; activos totales $150.000.000. Determine AC, PC, existencias, pasivo total, pasivo no corriente, patrimonio y D/P.</p></div>
+<div class="step"><span class="n">1</span>Dos ecuaciones con AC y PC: AC − PC = 28 y AC = 2,4·PC. Reemplazando: 2,4·PC − PC = 28 → 1,4·PC = 28 → <b>PC = 20</b>; <b>AC = 48</b> (millones).</div>
+<div class="step"><span class="n">2</span>Ácida: (48 − Ex)/20 = 1,5 → 48 − Ex = 30 → <b>Existencias = 18</b>.</div>
+<div class="step"><span class="n">3</span>Pasivo total = 40 % × 150 = <b>60</b>. Pasivo no corriente = 60 − 20 = <b>40</b>.</div>
+<div class="step"><span class="n">4</span>Patrimonio = 150 − 60 = <b>90</b>. D/P = 60/90 = <b>66,7 %</b>. (Comprobación con la fórmula: 0,4/0,6 = 0,667.)</div>
+</div></details>
+
+<details class="ex"><summary>N4 · Distribuidora Pehuén Ltda.: clasificar y calcular <span class="tag">Nuevo · con trampas de clasificación</span></summary><div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Al 31/12/2026 la empresa presenta (en millones): caja 4; banco 7; clientes 15; provisión de incobrables (1); existencias 18; maquinaria 60; depreciación acumulada maquinaria (12); terreno 25; marcas 5; proveedores 12; impuesto a la renta por pagar 3; anticipo de clientes 2; préstamo bancario, porción corriente 5; préstamo bancario, porción largo plazo 30; utilidad del ejercicio 9; capital ¿?</p>
+<p>a) Clasifique y totalice AC, ANC, PC y PNC. b) Determine patrimonio y capital. c) Calcule CT, RC, PA, acidísima, D/A y D/P. d) Concluya.</p></div>
+<div class="step"><span class="n">a</span>AC = 4 + 7 + 15 − 1 + 18 = <b>43</b> (la provisión resta). ANC = 60 − 12 + 25 + 5 = <b>78</b> (la depreciación acumulada resta; terreno y marcas son no corrientes). AT = <b>121</b>. PC = 12 + 3 + 2 + 5 = <b>22</b> (impuesto por pagar y anticipo de clientes son deudas de corto plazo, y la porción corriente del préstamo también). PNC = <b>30</b>. Pasivo total = <b>52</b>.</div>
+<div class="step"><span class="n">b</span>Patrimonio = 121 − 52 = <b>69</b>. Capital = 69 − 9 = <b>60</b> (el patrimonio incluye la utilidad del ejercicio).</div>
+<div class="step"><span class="n">c</span>CT = 43 − 22 = <b>21</b>. RC = 43/22 = <b>1,95</b>. PA = (43 − 18)/22 = <b>1,14</b>. Acidísima = 11/22 = <b>0,50</b>. D/A = 52/121 = <b>43,0 %</b>. D/P = 52/69 = <b>75,4 %</b>.</div>
+<div class="step"><span class="n">d</span>La empresa cubre casi dos veces su pasivo circulante y, sin vender existencias, 1,14 veces: liquidez adecuada, prácticamente en la referencia de 2 a 1. El 43 % de sus activos está financiado con deuda, bajo el 60 %, y la deuda es 0,75 veces el patrimonio, así que predomina el financiamiento de los dueños.</div>
+<div class="box warn"><div class="bt">Las trampas de este ejercicio</div>
+<p>Sumar la provisión y la depreciación acumulada en vez de restarlas; poner el impuesto por pagar o el anticipo de clientes fuera del pasivo; dejar toda la deuda bancaria como largo plazo; responder 69 cuando piden capital.</p></div>
+</div></details>
+</section>
+
+<section id="quiz" data-nav="Autoevaluación">
+<h2>Autoevaluación de liquidez y endeudamiento</h2>
+<p>Haz clic en una alternativa: se marca la correcta y aparece la explicación. Las que falles quedan guardadas para repasarlas en la página 6.</p>
+<div class="quiz" data-tags="liq,end"></div>
+</section>
+
+<section id="videos" data-nav="Videos para reforzar">
+<h2>Videos para reforzar</h2>
+<div class="videos"><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=HgZjdFYEQ1I" target="_blank" rel="noopener">Razones de liquidez: razón circulante, prueba ácida y capital neto de trabajo</a> <span class="pill hi">prioridad</span><div class="meta">Finanzas 24x7 · 6:18 · español</div><div class="why">Los tres indicadores de la Ayudantía 5 y cómo leer una razón mayor, igual o menor que 1.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=nVM-pe6HgZM" target="_blank" rel="noopener">¿Cuál es la diferencia entre la razón corriente y la ácida?</a> <span class="pill hi">prioridad</span><div class="meta">Finanzas a la Par (Tu Ayudante) · 5:45 · español</div><div class="why">Las dos razones sobre la misma empresa, con un caso que queda bajo 1 (0,7 y 0,3) y cómo se interpreta “por cada peso de pasivo” (min 3:12). Buen modelo de redacción.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=xLHy57zVRQI" target="_blank" rel="noopener">Ejercicio de prueba ácida con interpretación</a> <div class="meta">Felipe Delgado · 4:17 · español</div><div class="why">Por qué se sacan los inventarios y un ejercicio completo con su interpretación.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=DmIcWQGvDiQ" target="_blank" rel="noopener">Ejercicio de índice de endeudamiento: cómo calcular e interpretar</a> <span class="pill hi">prioridad</span><div class="meta">Felipe Delgado · 3:06 · español</div><div class="why">Pasivo total / activo total = 45,68 % y qué significa. Es la razón deuda/activos de la Ayudantía 5.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=1-nz5RckuJ8" target="_blank" rel="noopener">Razones de endeudamiento / apalancamiento</a> <div class="meta">Finanzas 24x7 · 8:27 · español</div><div class="why">Deuda sobre activos y, desde el min 3:59, deuda sobre patrimonio (apalancamiento). Muestra también indicadores que no entran, como la concentración de deuda.</div></div></div><div class="video"><div class="vi">&#9654;</div><div><a href="https://www.youtube.com/watch?v=UQfdqQY9VVc" target="_blank" rel="noopener">Interpretación de los ratios de liquidez bien explicado</a> <div class="meta">Dr. Edilberto Mejía Díaz · 7:23 · español</div><div class="why">Insiste en mirar el giro del negocio antes de interpretar (comercial, industrial, servicios), que es lo mismo que dice el ayudante de comparar con la industria.</div></div></div></div>
+</section>
+
+<div class="pager"><a href="4-Depreciacion-y-amortizacion.html"><small>Anterior</small>4 · Depreciación y amortización</a><a href="6-Banco-de-preguntas.html" style="text-align:right"><small>Siguiente</small>6 · Banco de preguntas y simulacro</a></div>
+</main>
+</div>
+<button class="btn backtop" id="backtop">&#8593; Arriba</button>
+<script>
+(function(){
+  var root=document.documentElement;
+  function setTheme(t){ if(t){root.setAttribute('data-theme',t);} try{localStorage.setItem('imafi-c1-theme',t||'');}catch(e){} }
+  try{var st=localStorage.getItem('imafi-c1-theme'); if(st) root.setAttribute('data-theme',st);}catch(e){}
+  var tb=document.getElementById('themeBtn');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    if(!cur){cur=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}
+    setTheme(cur==='dark'?'light':'dark');
+  });
+  var pb=document.getElementById('printBtn'); if(pb) pb.addEventListener('click',function(){
+    document.querySelectorAll('details').forEach(function(d){d.setAttribute('open','');}); window.print();});
+  var ob=document.getElementById('openAll'); if(ob) ob.addEventListener('click',function(){
+    var ds=document.querySelectorAll('details.ex'); var anyClosed=[].some.call(ds,function(d){return !d.open;});
+    ds.forEach(function(d){d.open=anyClosed;}); ob.textContent=anyClosed?'Cerrar soluciones':'Abrir soluciones';});
+  var sb=document.getElementById('sidebar'), sc=document.getElementById('scrim'), mt=document.getElementById('menuToggle');
+  function closeM(){sb.classList.remove('open');sc.classList.remove('on');}
+  if(mt) mt.addEventListener('click',function(){sb.classList.toggle('open');sc.classList.toggle('on');});
+  if(sc) sc.addEventListener('click',closeM);
+  document.querySelectorAll('nav a.sec').forEach(function(a){a.addEventListener('click',closeM);});
+  var bt=document.getElementById('backtop');
+  window.addEventListener('scroll',function(){ if(bt) bt.classList.toggle('on',window.scrollY>900); });
+  if(bt) bt.addEventListener('click',function(){window.scrollTo({top:0});});
+  var links=[].slice.call(document.querySelectorAll('nav a.sec'));
+  var secs=links.map(function(a){return document.getElementById(a.getAttribute('href').slice(1));}).filter(Boolean);
+  if('IntersectionObserver' in window && secs.length){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){ if(e.isIntersecting){
+      links.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id);});}});},
+      {rootMargin:'-20% 0px -70% 0px'});
+    secs.forEach(function(s){io.observe(s);});
+  }
+})();
+</script>
+<script>window.QTAGS={"conceptos": "Conceptos y EEFF", "ecuacion": "Ecuación contable", "partida": "Partida doble y cuentas", "ciclo": "Diario, mayor y cierre", "balance": "Cuentas del balance", "eerr": "Estado de Resultados", "ebitda": "EBITDA / EBIT / EBT", "iva": "IVA", "depre": "Depreciación y amortización", "soc": "Sociedades y patrimonio", "liq": "Ratios de liquidez", "end": "Ratios de endeudamiento"};window.QBANK=[{"id": "c1", "t": "conceptos", "q": "Según las láminas, la <b>función</b> de la contabilidad es:", "o": ["Medir y registrar los hechos económicos", "Apoyar las decisiones de los administradores", "Cuantificar las actividades futuras de la empresa", "Informar exclusivamente al Servicio de Impuestos Internos"], "a": 0, "e": "La función es medir y registrar (por eso se relaciona con la Economía). Apoyar las decisiones es el <b>objetivo</b> (por eso se relaciona con la Administración). Es una distinción que se presta perfecto para una alternativa tramposa.", "l": "Lámina 23"}, {"id": "c2", "t": "conceptos", "q": "El <b>objetivo</b> de la contabilidad, que la relaciona con la Administración, es:", "o": ["Registrar sistemáticamente las transacciones en orden cronológico", "Registrar la información y controlar los hechos económicos para apoyar las decisiones de los administradores", "Calcular el impuesto a la renta del ejercicio", "Estudiar cómo satisfacer necesidades múltiples con recursos escasos"], "a": 1, "e": "Objetivo = registrar y controlar para apoyar decisiones. La d) es la definición de Economía (lámina 17), no de contabilidad.", "l": "Lámina 23"}, {"id": "c3", "t": "conceptos", "q": "Una <b>persona jurídica</b> se caracteriza por:", "o": ["Comenzar su existencia legal al nacer y terminarla con la muerte", "Ser un ente ficticio creado por la ley, independiente y distinto de los miembros que la forman", "Responder siempre con el patrimonio personal de sus miembros", "Ser cualquier individuo de la especie humana, sin importar su edad o condición"], "a": 1, "e": "Las alternativas a) y d) describen a la persona natural (Código Civil). La c) es justamente lo contrario de la idea de persona jurídica, donde en general se responde hasta lo aportado.", "l": "Láminas 20, 21 y 160"}, {"id": "c4", "t": "conceptos", "q": "¿Qué acepción de la contabilidad tiene el foco en <b>cuantificar actividades futuras</b>?", "o": ["Contabilidad de costo", "Contabilidad administrativa", "Contabilidad gubernamental", "Contabilidad presupuestaria"], "a": 3, "e": "Costo: producción y comercialización. Administrativa: informar a usuarios. Gubernamental: entidades del Estado. Presupuestaria: actividades futuras.", "l": "Lámina 24"}, {"id": "c5", "t": "conceptos", "q": "¿Cuál de los siguientes <b>no</b> es un estado financiero básico?", "o": ["Estado de Situación Financiera (Balance General)", "Estado de Resultados", "Estado de Flujos de Efectivo", "Libro Mayor"], "a": 3, "e": "El Libro Mayor es un registro contable, no un estado financiero. Los básicos son Balance, Resultados, Flujos de Efectivo y Cambios en el Patrimonio.", "l": "Láminas 30 y 82"}, {"id": "c6", "t": "conceptos", "q": "La principal diferencia entre el Balance General y el Estado de Resultados es que:", "o": ["El Balance muestra un período y el Estado de Resultados un momento del tiempo", "El Balance es una foto en una fecha (estático) y el Estado de Resultados muestra lo ocurrido durante un período", "Ambos muestran lo mismo, pero el Estado de Resultados incluye el IVA", "El Balance solo lo preparan las sociedades anónimas"], "a": 1, "e": "Balance = fotografía en un momento (activos, pasivos, patrimonio). Estado de Resultados = película de un período (ingresos contra costos y gastos). Y el EERR va <b>sin</b> IVA.", "l": "Láminas 31 y 58"}, {"id": "c7", "t": "conceptos", "q": "La contabilidad que usan las entidades que adquieren materia prima y la transforman en productos terminados es la:", "o": ["Comercial", "Industrial", "Gubernamental", "De entidades no lucrativas"], "a": 1, "e": "Comercial: compra y vende mercancías sin transformarlas. Industrial: transforma materia prima. Gubernamental: Estado (NIC SP). No lucrativas: beneficio social.", "l": "Lámina 29"}, {"id": "c8", "t": "conceptos", "q": "Según las láminas, las operaciones que afectan económicamente a una entidad incluyen:", "o": ["Solo las compras y ventas con factura", "Las transacciones, las transformaciones internas y otros eventos", "Solo los movimientos de efectivo", "Solo las operaciones con terceros relacionados"], "a": 1, "e": "La definición del profe: transacciones, transformaciones internas y otros eventos. Pasan por registro, valuación, presentación y revelación para producir información financiera.", "l": "Láminas 26 y 27"}, {"id": "e1", "t": "ecuacion", "star": true, "q": "El Activo de una empresa es de $40.000.000, los Pasivos Exigibles $22.000.000 y el Resultado del Ejercicio $6.000.000. Por lo tanto, el Capital es de:", "o": ["$18.000.000", "$12.000.000", "$24.000.000", "$28.000.000"], "a": 1, "e": "Patrimonio = Activo − Pasivo = 40 − 22 = 18 millones. Pero el patrimonio incluye el resultado del ejercicio: Capital = 18 − 6 = <b>12 millones</b>. Es la misma trampa que la pregunta de ejemplo de la lámina 123 (25 − 15 − 7 = 3). La a) es el patrimonio total, no el capital.", "l": "Lámina 123 (misma estructura)"}, {"id": "e2", "t": "ecuacion", "q": "Si una empresa no posee pasivos, entonces:", "o": ["Su activo es cero", "Su activo es igual a su patrimonio", "Su patrimonio es cero", "No puede tener utilidades"], "a": 1, "e": "A = P + Pat. Si P = 0, entonces A = Pat.", "l": "Ayudantía 1, V/F 6"}, {"id": "e3", "t": "ecuacion", "q": "Una empresa compra un equipo computacional al contado. El efecto sobre el Activo Total es:", "o": ["Aumenta", "Disminuye", "No cambia, porque un activo aumenta y otro disminuye", "Aumenta junto con el pasivo"], "a": 2, "e": "Entra Equipo y sale Caja por el mismo monto: cambia la composición del activo, no su total.", "l": "Ayudantía 2, transacción 3"}, {"id": "e4", "t": "ecuacion", "q": "La empresa obtiene un préstamo bancario que se deposita en su cuenta corriente. Efecto:", "o": ["Aumenta el activo y aumenta el pasivo", "Aumenta el activo y aumenta el patrimonio", "Aumenta el pasivo y disminuye el patrimonio", "No afecta la ecuación contable"], "a": 0, "e": "Entra Banco (activo) y nace la deuda Préstamo bancario (pasivo). La ecuación sigue cuadrando.", "l": "Ayudantía 2, transacción 4"}, {"id": "e5", "t": "ecuacion", "q": "Desde una perspectiva externa a la empresa, el pasivo y el patrimonio muestran:", "o": ["La forma en que se invirtieron los recursos", "Las fuentes de financiamiento de donde se obtuvieron los recursos", "Los ingresos del período", "La liquidez de la empresa"], "a": 1, "e": "Pasivo + Patrimonio = de dónde vino la plata (terceros y dueños). Activo = en qué se invirtió. Por eso siempre son iguales.", "l": "Lámina 81"}, {"id": "e6", "t": "ecuacion", "q": "Por su naturaleza residual, el capital contable (patrimonio) se calcula como:", "o": ["Activo + Pasivo", "Pasivo − Activo", "Activo − Pasivo", "Ingresos − Gastos"], "a": 2, "e": "Capital = Activo − Pasivo: es lo que queda para los dueños después de pagar a todos los terceros.", "l": "Lámina 54"}, {"id": "e7", "t": "ecuacion", "q": "Activos $150.000.000; Pasivo circulante $16.000.000; Pasivo no corriente $59.000.000. El patrimonio es:", "o": ["$134.000.000", "$91.000.000", "$75.000.000", "$59.000.000"], "a": 2, "e": "Pasivo total = 16 + 59 = 75. Patrimonio = 150 − 75 = <b>75 millones</b>. La a) olvida el pasivo no corriente y la b) olvida el circulante.", "l": "Ayudantía 5, ejercicio 4"}, {"id": "e8", "t": "ecuacion", "q": "Una venta a crédito de mercaderías (sin considerar IVA ni costo de venta) produce:", "o": ["Aumento de Caja y de Ventas", "Aumento de Cuentas por Cobrar y de Ventas", "Aumento de Cuentas por Cobrar y de Proveedores", "Aumento de Ventas y disminución de Caja"], "a": 1, "e": "Nace el derecho a cobrar (Clientes) y se reconoce el ingreso (devengado). La caja sube recién cuando el cliente paga.", "l": "Ayudantía 1, V/F 7"}, {"id": "p1", "t": "partida", "q": "Según las láminas, para identificar la cuenta <b>deudora</b> de una transacción hay que preguntarse:", "o": ["¿Qué se entrega?", "¿Qué se recibe?", "¿Qué se debe?", "¿Qué se paga?"], "a": 1, "e": "¿Qué se recibe? → deudor (Debe). ¿Qué se entrega? → acreedor (Haber). Siempre poniéndose en el lugar del empresario: yo compro, yo vendo, yo recibo, yo entrego.", "l": "Láminas 34, 41 y 42"}, {"id": "p2", "t": "partida", "q": "¿Cuál de las siguientes <b>no</b> es uno de los tres principios fundamentales de la partida doble?", "o": ["Las cuentas tienen que ser personalizadas", "No hay deudor sin acreedor, ni acreedor sin deudor", "Toda cuenta primero ingresa para después salir, salvo las que representan obligaciones", "El total de activos debe ser mayor que el total de pasivos"], "a": 3, "e": "Los tres principios son los de a), b) y c). La d) no es un principio: una empresa puede tener patrimonio negativo.", "l": "Lámina 36"}, {"id": "p3", "t": "partida", "q": "¿Cuál de estas cuentas tiene naturaleza <b>acreedora</b>?", "o": ["Caja", "Costo de ventas", "Ventas", "Gastos de administración"], "a": 2, "e": "Acreedoras: pasivo, patrimonio e ingresos. Deudoras: activos, gastos y costos. Ventas es ingreso.", "l": "Láminas 43 y 46"}, {"id": "p4", "t": "partida", "q": "Según las reglas del cargo y del abono, ¿qué se registra en el <b>Debe</b>?", "o": ["Los aumentos de pasivo", "Las disminuciones de activo", "Los movimientos en costos y gastos", "Los movimientos en ingresos"], "a": 2, "e": "Debe: aumentos de activo, disminuciones de pasivo, costos y gastos. Haber: disminuciones de activo, aumentos de pasivo, ingresos.", "l": "Lámina 71"}, {"id": "p5", "t": "partida", "q": "Se paga a proveedores $12.000 en efectivo. El asiento correcto es:", "o": ["Debe Caja 12.000 / Haber Proveedores 12.000", "Debe Proveedores 12.000 / Haber Caja 12.000", "Debe Gastos 12.000 / Haber Caja 12.000", "Debe Proveedores 12.000 / Haber Ventas 12.000"], "a": 1, "e": "Disminuye un pasivo (se carga) y disminuye un activo (se abona). ¿Qué recibo? Me libero de la deuda. ¿Qué entrego? Caja.", "l": "Lámina 77"}, {"id": "p6", "t": "partida", "q": "Una cuenta tiene cargos por $60.000 y abonos por $20.000. Su saldo es:", "o": ["Deudor de $40.000", "Acreedor de $40.000", "Deudor de $80.000", "Acreedor de $20.000"], "a": 0, "e": "Saldo = diferencia entre movimientos. Movimiento deudor (suma del Debe) 60.000 mayor que el acreedor (suma del Haber) 20.000 → saldo deudor 40.000.", "l": "Láminas 65 y 66"}, {"id": "p7", "t": "partida", "q": "El <b>movimiento acreedor</b> de una cuenta corresponde a:", "o": ["La suma de los cargos", "La suma de los abonos", "La diferencia entre cargos y abonos", "El saldo inicial de la cuenta"], "a": 1, "e": "Movimiento deudor = suma de cargos (Debe). Movimiento acreedor = suma de abonos (Haber). La diferencia entre ambos es el saldo.", "l": "Lámina 65"}, {"id": "p8", "t": "partida", "q": "Si la cuenta Inventario presenta saldo acreedor:", "o": ["Pasa a ser una cuenta de pasivo", "Cambia su naturaleza a acreedora", "Sigue siendo de naturaleza deudora; el saldo acreedor indica un error o una situación excepcional", "Debe trasladarse al patrimonio"], "a": 2, "e": "La naturaleza de una cuenta no cambia por su saldo. Un inventario con saldo acreedor delata un error o ajuste.", "l": "Ayudantía 1, V/F 8"}, {"id": "p9", "t": "partida", "q": "Las cuentas de <b>capital</b> empiezan con:", "o": ["Un cargo", "Un abono", "Un saldo deudor", "Una anotación en el Debe"], "a": 1, "e": "Activo empieza con cargo (Debe). Pasivo y capital empiezan con abono (Haber).", "l": "Lámina 70"}, {"id": "p10", "t": "partida", "q": "Los gastos de administración del período quedan pendientes de pago por $18.000. El asiento correcto es:", "o": ["Debe Gastos de administración / Haber Caja", "Debe Gastos de administración / Haber Gastos (cuentas) por pagar", "Debe Cuentas por pagar / Haber Gastos de administración", "No se registra hasta que se pague"], "a": 1, "e": "El gasto se reconoce aunque no se haya pagado (devengado) y nace una obligación. Ojo: la lámina 79 escribe “Pasivo en la cuenta de Bancos”, que es un error de la lámina; lo correcto es una cuenta de pasivo como Gastos por pagar.", "l": "Lámina 79 y Ayudantía 2, transacción 8"}, {"id": "p11", "t": "partida", "q": "Un aporte de capital del dueño en efectivo por $8.000 se registra:", "o": ["Debe Capital / Haber Caja", "Debe Caja / Haber Capital", "Debe Caja / Haber Ventas", "Debe Caja / Haber Proveedores"], "a": 1, "e": "Aumenta un activo (se carga Caja) y aumenta el capital (se abona Capital).", "l": "Lámina 76"}, {"id": "p12", "t": "partida", "q": "En toda transacción registrada por partida doble se cumple que:", "o": ["El total de débitos es igual al total de créditos", "El total de débitos es mayor que el de créditos", "Solo intervienen dos cuentas", "Siempre interviene la cuenta Caja"], "a": 0, "e": "Débitos (debe, cargos) = créditos (haber, abonos). Pueden intervenir más de dos cuentas (por ejemplo una venta con IVA usa tres o cuatro).", "l": "Láminas 33 y 41"}, {"id": "l1", "t": "ciclo", "q": "La diferencia principal entre el Libro Diario y el Libro Mayor es que:", "o": ["El Diario agrupa los movimientos por cuenta y el Mayor los registra en orden cronológico", "El Diario registra cronológicamente todas las operaciones y el Mayor agrupa los movimientos de cada cuenta con su saldo", "El Diario solo registra ventas y el Mayor solo compras", "Son el mismo libro con distinto nombre"], "a": 1, "e": "Diario: orden cronológico, asiento por asiento. Mayor: una hoja (cuenta T) por cuenta, donde se ve su evolución y saldo de un vistazo. Del Diario se “postea” al Mayor.", "l": "Láminas 144 a 146"}, {"id": "l2", "t": "ciclo", "q": "Las tres fases del ciclo contable según las láminas son:", "o": ["Compra, venta y cobro", "Apertura, desarrollo (gestión) y conclusión (cierre)", "Diario, mayor y balance", "Inventario, resultado y balance"], "a": 1, "e": "Apertura: se abren los libros. Desarrollo o gestión: se registran las operaciones del año. Conclusión o cierre: ajustes y síntesis en los estados financieros.", "l": "Lámina 148"}, {"id": "l3", "t": "ciclo", "q": "El balance de 8 columnas también se conoce como:", "o": ["Balance consolidado", "Balance pro-forma", "Balance tabulado o balance tributario", "FECU"], "a": 2, "e": "Es una extensión del balance de comprobación de sumas y saldos. Tiene tres secciones: comprobación y saldos, inventario y resultado.", "l": "Lámina 149"}, {"id": "l4", "t": "ciclo", "q": "En un balance de 8 columnas, las ganancias suman 1.500, las pérdidas 1.000 y el pasivo (columna inventario) 10.000. El activo debe sumar:", "o": ["9.500", "10.000", "10.500", "11.500"], "a": 2, "e": "Resultado del ejercicio = 1.500 − 1.000 = 500 (utilidad). Pasivo + resultado = 10.000 + 500 = 10.500 = Activo. Esa es la prueba de que el balance cuadra.", "l": "Lámina 150"}, {"id": "l5", "t": "ciclo", "q": "¿Cuál de las siguientes <b>no</b> es una operación habitual de regularización al cierre?", "o": ["Regularización de existencias", "Reclasificación de cuentas", "Periodificación de ingresos y gastos", "Emisión de nuevas acciones"], "a": 3, "e": "Las habituales son: existencias, reclasificación, periodificación y correcciones valorativas (amortizaciones y deterioros). Emitir acciones es una operación de financiamiento, no un ajuste de cierre.", "l": "Lámina 157"}, {"id": "l6", "t": "ciclo", "q": "Para calcular un deterioro, el <b>valor recuperable</b> de un activo es:", "o": ["El menor entre el valor neto realizable y el valor en uso", "El mayor entre el valor neto realizable y el valor en uso", "El precio de adquisición menos la amortización acumulada", "El valor residual del activo"], "a": 1, "e": "Valor recuperable = el <b>mayor</b> entre (venta − costos de venta) y (valor actual de los flujos por usarlo). Si el valor contable (costo − amortización acumulada, la c) supera al recuperable, hay deterioro.", "l": "Lámina 158"}, {"id": "l7", "t": "ciclo", "q": "¿Cuál de estos <b>no</b> aparece como tipo de balance en las láminas?", "o": ["Balance de comprobación y saldos", "Balance clasificado", "Balance pro-forma", "Balance de caja diaria"], "a": 3, "e": "Los que menciona el profe: 8 columnas, comprobación y saldos, clasificado, consolidado, pro-forma y FECU.", "l": "Lámina 154"}, {"id": "l8", "t": "ciclo", "q": "En el balance de comprobación siempre se cumple que:", "o": ["Total movimientos del Debe = total movimientos del Haber, y total saldos deudores = total saldos acreedores", "El total de activos es igual al total de ingresos", "Los saldos deudores superan a los acreedores", "Solo aparecen las cuentas de balance"], "a": 0, "e": "Es la consecuencia directa de la partida doble. Si no cuadra, hay un error de registro o de traspaso.", "l": "Ayudantía 4, formulario"}, {"id": "b1", "t": "balance", "q": "En el balance, las cuentas del activo corriente se ordenan:", "o": ["Alfabéticamente", "De menor a mayor monto", "De mayor a menor liquidez", "De mayor a menor antigüedad"], "a": 2, "e": "Liquidez = facilidad con que un activo se convierte en efectivo. Primero Caja y Bancos, al final Inventarios.", "l": "Lámina 87"}, {"id": "b2", "t": "balance", "q": "¿Cuál de estos es un activo tangible <b>no depreciable</b>?", "o": ["Maquinaria y equipo", "Edificios", "Terrenos", "Vehículos"], "a": 2, "e": "No depreciables: terrenos, construcciones en curso y maquinaria en montaje (estas dos últimas porque aún no se usan). El resto de la PPE se deprecia.", "l": "Lámina 97"}, {"id": "b3", "t": "balance", "q": "La cuenta “Construcciones en curso” es:", "o": ["Un gasto del período", "Un activo depreciable desde el primer día", "Una cuenta transitoria, no depreciable, que luego se traslada a Edificios u otro depreciable", "Un pasivo con el contratista"], "a": 2, "e": "Mientras la obra no está terminada no se usa, y lo que no se usa no se deprecia. Al terminar se reclasifica.", "l": "Lámina 98"}, {"id": "b4", "t": "balance", "q": "¿Cuál de los siguientes <b>no</b> es un activo intangible?", "o": ["Marcas", "Patentes", "Software", "Maquinaria en montaje"], "a": 3, "e": "Maquinaria en montaje es PPE tangible (no depreciable mientras se monta). Intangibles: goodwill, marcas, patentes, franquicias, software, derechos de autor.", "l": "Láminas 97 y 101"}, {"id": "b5", "t": "balance", "q": "Un seguro pagado por anticipado por un año se clasifica, al momento del pago, como:", "o": ["Gasto del período en que se paga", "Otros activos (gasto pagado por anticipado), que se va convirtiendo en gasto a medida que se devenga", "Pasivo corriente", "Patrimonio"], "a": 1, "e": "Todavía no se ha “consumido”: es un activo. Diferir = proyectar en el tiempo su conversión de activo a gasto (amortización).", "l": "Láminas 62, 104 y 105"}, {"id": "b6", "t": "balance", "q": "La “Provisión para cuentas por cobrar” representa:", "o": ["Las cuentas por cobrar que vencen en menos de un año", "El valor de las cuentas por cobrar que se estima no podrá ser recaudado, y se presenta restando", "Un pasivo con los clientes", "Un ingreso no operacional"], "a": 1, "e": "Es una estimación de incobrables. Rebaja el valor presentado de Clientes. Lo mismo pasa con la provisión para inventarios (obsolescencia).", "l": "Láminas 91 y 95"}, {"id": "b7", "t": "balance", "q": "Los pasivos se clasifican en el balance según el criterio de:", "o": ["Liquidez", "Exigibilidad (prioridad de pago)", "Antigüedad", "Tamaño del acreedor"], "a": 1, "e": "Activos por liquidez; pasivos por exigibilidad. Corriente: vence en un año o menos desde la fecha del balance.", "l": "Láminas 111 y 112"}, {"id": "b8", "t": "balance", "q": "¿Cuál de estas es una cuenta de <b>pasivo corriente</b>?", "o": ["Anticipos de clientes", "Bonos en circulación", "Inversiones permanentes", "Capital"], "a": 0, "e": "Anticipo de clientes = te pagaron por algo que aún no entregas: le debes el bien. Bonos en circulación es pasivo no corriente; inversiones permanentes es otro activo; capital es patrimonio.", "l": "Láminas 113, 116 y 117"}, {"id": "b9", "t": "balance", "q": "Los “ingresos recibidos por anticipado” son:", "o": ["Ingresos del período", "Un activo corriente", "Un pasivo, porque corresponden a servicios aún no prestados", "Parte del patrimonio"], "a": 2, "e": "Se cobró antes de cumplir: mientras no se preste el servicio, es una obligación con el cliente.", "l": "Lámina 116"}, {"id": "b10", "t": "balance", "q": "Un activo se clasifica como corriente cuando:", "o": ["Se espera convertir en efectivo, vender o consumir dentro del ciclo de operación, normalmente no mayor a un año", "Tiene un costo mayor a dos sueldos mínimos", "No está destinado a la venta", "Tiene sustancia física"], "a": 0, "e": "Criterio de los 12 meses desde la fecha del balance. Las alternativas b) y c) son requisitos de la Propiedad, Planta y Equipo.", "l": "Láminas 87 y 96"}, {"id": "b11", "t": "balance", "q": "Una deuda bancaria a 5 años, de la cual se pagan cuotas este año:", "o": ["Va completa en pasivo corriente", "Va completa en pasivo no corriente", "Se separa: la porción que vence en 12 meses es corriente y el resto no corriente", "Va en patrimonio"], "a": 2, "e": "Algunas deudas tienen porción corriente y porción no corriente.", "l": "Láminas 112 y 117"}, {"id": "b12", "t": "balance", "q": "Los “bienes recibidos en pago” son:", "o": ["Activos recibidos de clientes por deudas que no pudieron pagar en dinero", "Mercaderías compradas a crédito", "Anticipos entregados a proveedores", "Intangibles adquiridos"], "a": 0, "e": "Se reciben por acuerdo con el deudor o por decisión judicial. Si la empresa decide usarlos, se trasladan a PPE.", "l": "Lámina 109"}, {"id": "r1", "t": "eerr", "q": "Según las láminas, los valores del Estado de Resultados se registran:", "o": ["Con IVA incluido", "Netos, es decir, sin IVA", "Solo cuando se cobran o pagan", "En UTM"], "a": 1, "e": "El EERR va neto de IVA: el IVA no es ingreso ni gasto de la empresa, es del Fisco. Además registra facturas emitidas, no lo que entra a caja.", "l": "Lámina 124"}, {"id": "r2", "t": "eerr", "q": "Una empresa tiene un Resultado Antes de Impuesto de −$2.000.000. El impuesto a la renta del período es:", "o": ["−$540.000", "$540.000", "$0", "$2.000.000"], "a": 2, "e": "El profe lo dice explícito: el impuesto es cero si no hay resultado positivo en el período.", "l": "Lámina 125"}, {"id": "r3", "t": "eerr", "q": "¿Cuál de los siguientes es un ingreso <b>no operacional</b> para una empresa comercial?", "o": ["Venta de mercaderías", "Intereses ganados por inversiones financieras", "Ventas a crédito del mes", "Prestación de servicios del giro"], "a": 1, "e": "No operacionales: los que no vienen del objeto social (intereses, arriendos, dividendos, utilidad en venta de activo fijo, venta de desechos…).", "l": "Lámina 134"}, {"id": "r4", "t": "eerr", "q": "¿Cuál es un gasto <b>no operacional</b>?", "o": ["Remuneraciones", "Arriendo de la oficina", "Gastos financieros (intereses)", "Depreciación"], "a": 2, "e": "No operacionales: gastos financieros, pérdida en venta de bienes, extraordinarios y diversos. Remuneraciones, arriendos y depreciación son operacionales.", "l": "Láminas 137 y 138"}, {"id": "r5", "t": "eerr", "q": "Una venta a crédito facturada en septiembre y cobrada en octubre se reconoce como ingreso en:", "o": ["Septiembre", "Octubre", "La mitad en cada mes", "No se reconoce hasta el cierre del año"], "a": 0, "e": "Principio de devengado: el ingreso se reconoce cuando se genera, no cuando entra la plata.", "l": "Lámina 124 y Ayudantía 2"}, {"id": "r6", "t": "eerr", "q": "Ingresos $100.000.000, costo de ventas $40.000.000, gastos operacionales $15.000.000, resultado no operacional +$3.000.000 y tasa de impuesto 27%. El resultado neto es:", "o": ["$35.040.000", "$32.850.000", "$48.000.000", "$36.000.000"], "a": 0, "e": "Margen bruto 60 → resultado operacional 45 → RAI 45 + 3 = 48 → impuesto 48 × 27% = 12,96 → neto <b>35,04 millones</b>. La d) es el resultado con el 25% de la lámina 139 (tasa antigua). La b) aplica el impuesto al resultado operacional y olvida el no operacional.", "l": "Lámina 139 (con 27%)"}, {"id": "r7", "t": "eerr", "q": "El resultado operacional se obtiene como:", "o": ["Ingresos − costo de ventas", "Margen bruto − gastos de administración y ventas", "Resultado antes de impuesto − impuesto", "Margen bruto + resultado no operacional"], "a": 1, "e": "Utilidad bruta = ingresos − costo de ventas. Resultado operacional = margen bruto − GAV. RAI = operacional ± no operacional.", "l": "Lámina 125"}, {"id": "r8", "t": "eerr", "q": "Si la utilidad bruta es $48.000.000 y los ingresos son $120.000.000, el costo de ventas es:", "o": ["$168.000.000", "$72.000.000", "$48.000.000", "$40.000.000"], "a": 1, "e": "UB = Ingresos − Costo → Costo = 120 − 48 = 72 millones.", "l": "Ayudantía 1, ejercicio 5"}, {"id": "r9", "t": "eerr", "q": "Un estudiante arma el EERR considerando solo las ventas cobradas y los gastos pagados. Su error es no aplicar el principio de:", "o": ["Partida doble", "Devengado", "Liquidez", "Empresa en marcha"], "a": 1, "e": "Devengado: ingresos y gastos se reconocen cuando se generan, independiente de cuándo se cobran o pagan.", "l": "Ayudantía 2, ejercicio 2 f)"}, {"id": "r10", "t": "eerr", "q": "Una empresa con utilidad positiva:", "o": ["Necesariamente tiene efectivo suficiente para pagar sus deudas", "Puede tener poco efectivo, por ejemplo si vendió mucho a crédito", "No puede tener patrimonio negativo", "Tiene siempre EBITDA negativo"], "a": 1, "e": "Utilidad ≠ efectivo. El EERR no muestra si las facturas se cobraron.", "l": "Ayudantía 1, V/F 10 y lámina 124"}, {"id": "r11", "t": "eerr", "q": "Según la lámina 125, bajo IFRS la depreciación y la amortización se presentan en:", "o": ["Gastos no operacionales", "Costo de venta", "Patrimonio", "No se presentan en el Estado de Resultados"], "a": 1, "e": "Así lo dice la lámina. En los ejercicios de la ayudantía, igual, aparecen como línea aparte para poder calcular EBITDA y EBIT, que es lo que piden.", "l": "Lámina 125"}, {"id": "t1", "t": "ebitda", "q": "El EBITDA se calcula como:", "o": ["EBIT − Depreciación − Amortización", "EBIT + Depreciación + Amortización", "EBT + Impuestos", "Utilidad neta − Intereses"], "a": 1, "e": "EBITDA es el que está más “arriba”: antes de intereses, impuestos, depreciación y amortización. Para bajar al EBIT hay que restar D y A.", "l": "Láminas 130 y 132"}, {"id": "t2", "t": "ebitda", "q": "De los tres indicadores, ¿cuál está más cerca del beneficio neto?", "o": ["EBITDA", "EBIT", "EBT", "Los tres están a la misma distancia"], "a": 2, "e": "Al EBT solo le faltan los impuestos. Al EBIT le faltan intereses e impuestos. El EBITDA es el más alejado.", "l": "Lámina 132"}, {"id": "t3", "t": "ebitda", "q": "Un aumento de los intereses pagados por una deuda bancaria:", "o": ["Disminuye el EBITDA", "Disminuye el EBIT", "Disminuye el EBT, pero no cambia el EBIT ni el EBITDA", "No afecta ningún resultado"], "a": 2, "e": "Los intereses se restan entre el EBIT y el EBT. Por eso el EBIT y el EBITDA sirven para comparar empresas con distinta forma de financiarse.", "l": "Ayudantía 3, V/F 3"}, {"id": "t4", "t": "ebitda", "q": "Si una empresa no tiene activos depreciables ni amortizables:", "o": ["Su EBITDA es cero", "Su EBIT es igual a su EBITDA", "Su EBT es igual a su EBITDA", "No paga impuestos"], "a": 1, "e": "EBITDA = EBIT + D + A. Si D = A = 0, son iguales. El EBT solo sería igual además si no hay intereses.", "l": "Ayudantía 4, V/F 5"}, {"id": "t5", "t": "ebitda", "q": "Ingresos 200, costo de ventas 90, gastos de administración y ventas (sin depreciación) 40, depreciación 15, amortización 5, intereses 10. El EBIT es:", "o": ["70", "50", "40", "60"], "a": 1, "e": "EBITDA = 200 − 90 − 40 = 70. EBIT = 70 − 15 − 5 = <b>50</b>. EBT = 50 − 10 = 40.", "l": "Lámina 126 (estructura)"}, {"id": "t6", "t": "ebitda", "q": "¿Cuál afirmación sobre el EBITDA es <b>falsa</b>?", "o": ["Mide la rentabilidad operativa antes de intereses, impuestos, depreciación y amortización", "Sirve para evaluar la capacidad de generar caja de la operación", "Siempre coincide con el flujo de caja del período", "Excluye el efecto de las decisiones de financiamiento"], "a": 2, "e": "El EBITDA es una medida contable: no considera capital de trabajo, inversiones ni el momento real de cobros y pagos. No es el flujo de caja.", "l": "Ayudantía 4, V/F 4"}, {"id": "t7", "t": "ebitda", "q": "El indicador “útil para comparar empresas en diferentes regímenes fiscales” según la tabla del profe es:", "o": ["EBT", "EBIT", "EBITDA", "Utilidad neta"], "a": 0, "e": "Así aparece en la tabla de la lámina 132: el EBT (antes de impuestos) sirve para comparar empresas con distintos regímenes tributarios; el EBIT indica rentabilidad operativa; el EBITDA, capacidad de generar caja.", "l": "Lámina 132"}, {"id": "t8", "t": "ebitda", "q": "El EBIT es 38 millones, la depreciación 8 millones y la amortización 12 millones. El EBITDA es:", "o": ["18 millones", "30 millones", "58 millones", "46 millones"], "a": 2, "e": "EBITDA = 38 + 8 + 12 = 58 millones.", "l": "Ayudantía 3, ejercicio 4"}, {"id": "i1", "t": "iva", "q": "El IVA Crédito Fiscal es una cuenta de:", "o": ["Pasivo", "Activo", "Ingreso", "Gasto"], "a": 1, "e": "Crédito fiscal = IVA que pagaste en tus compras y que puedes descontar: es un derecho (activo, deudora). Débito fiscal = IVA cobrado en tus ventas que le debes al Fisco (pasivo, acreedora).", "l": "Lámina 141"}, {"id": "i2", "t": "iva", "q": "Respecto de las compras respaldadas con <b>boleta</b>:", "o": ["Dan derecho a crédito fiscal igual que las facturas", "No dan derecho a crédito fiscal", "Generan débito fiscal", "Dan derecho a la mitad del crédito fiscal"], "a": 1, "e": "Solo las facturas dan derecho a crédito fiscal. En cambio, todas las ventas (con boleta o factura) generan débito fiscal.", "l": "Lámina 141"}, {"id": "i3", "t": "iva", "q": "Una factura por $2.380.000 IVA incluido. El IVA de la operación es:", "o": ["$452.200", "$380.000", "$2.000.000", "$238.000"], "a": 1, "e": "Neto = 2.380.000 / 1,19 = 2.000.000. IVA = 380.000. La a) aplica 19% sobre el bruto, que es el error clásico.", "l": "Ayudantía 4, transacción 3"}, {"id": "i4", "t": "iva", "q": "En un mes el IVA débito fiscal es $3.000.000 y el crédito fiscal $4.200.000. Entonces:", "o": ["Se paga $1.200.000 al Fisco", "El Fisco devuelve $1.200.000 en efectivo", "Queda un remanente de crédito fiscal de $1.200.000 a favor de la empresa, que se usa en el mes siguiente", "Se pierde el crédito no utilizado"], "a": 2, "e": "Si CF > DF hay remanente: un saldo a favor que se arrastra al período siguiente (reajustado en UTM), no un pago.", "l": "Lámina 141 y Ayudantía 4"}, {"id": "i5", "t": "iva", "q": "Un remanente de $5.580.000 se convierte a UTM con una UTM de $62.000, y al mes siguiente la UTM vale $63.000. El remanente que se suma al crédito fiscal del mes siguiente es:", "o": ["$5.580.000", "$5.490.000", "$5.670.000", "$5.766.000"], "a": 2, "e": "5.580.000 / 62.000 = 90 UTM. 90 × 63.000 = <b>5.670.000</b>. Es exactamente el caso de la lámina 142 (Retornos Ltda.), que viene de un certamen anterior.", "l": "Lámina 142"}, {"id": "i6", "t": "iva", "q": "El pago de remuneraciones del mes:", "o": ["Genera IVA crédito fiscal", "Genera IVA débito fiscal", "No genera IVA", "Genera crédito fiscal solo si se paga con cheque"], "a": 2, "e": "Las remuneraciones no están afectas a IVA. Es una de las trampas fijas de los ejercicios integradores.", "l": "Ayudantía 4, operación 5"}, {"id": "i7", "t": "iva", "q": "Se cobran a clientes $2.500.000 por ventas del mes anterior. En el mes actual esto:", "o": ["Genera un ingreso por ventas de $2.100.840 más IVA", "Genera débito fiscal por $399.160", "Solo aumenta Caja y disminuye Clientes; no hay ingreso ni IVA nuevo", "Genera crédito fiscal"], "a": 2, "e": "La venta y su IVA se reconocieron cuando se facturó. Cobrar es solo un cambio de composición del activo.", "l": "Ayudantía 4, operación 6"}, {"id": "i8", "t": "iva", "q": "Según la estructura tributaria chilena de la lámina 140, el IVA es un impuesto:", "o": ["Directo", "Indirecto", "Territorial", "De segunda categoría"], "a": 1, "e": "Indirectos: IVA, suntuarios, alcoholes, tabacos, combustibles, timbres, comercio exterior. Directos: primera categoría (renta), segunda categoría (sueldos), global complementario, adicional.", "l": "Lámina 140"}, {"id": "i9", "t": "iva", "q": "Se vende un vehículo usado de la empresa (activo fijo, valor libro cero) en $1.190.000 IVA incluido, considerando la operación afecta. Entonces:", "o": ["Se registran $1.000.000 como Ventas del giro", "Se registran $1.000.000 como ingreso por venta de activo fijo y $190.000 de débito fiscal", "No se registra IVA porque no es mercadería", "Se registran $1.190.000 como ingreso"], "a": 1, "e": "Genera débito fiscal, pero no es venta del giro: va como ingreso por venta de activo fijo (no operacional).", "l": "Ayudantía 4, operación 4"}, {"id": "i10", "t": "iva", "q": "Se compra mercadería por $8.000.000 neto más IVA, pagando 25% al contado. El monto que queda con Proveedores es:", "o": ["$6.000.000", "$7.140.000", "$2.380.000", "$7.520.000"], "a": 1, "e": "Bruto = 8.000.000 × 1,19 = 9.520.000. El porcentaje se aplica sobre el bruto: 75% × 9.520.000 = <b>7.140.000</b>. La a) aplica el 75% sobre el neto.", "l": "Ayudantía 4, operación 2"}, {"id": "d1", "t": "depre", "q": "La norma que regula la Propiedad, Planta y Equipo es:", "o": ["NIC 8", "NIC 16", "NIC 36", "NIC 38"], "a": 1, "e": "NIC 16: PPE. NIC 36: deterioro del valor de los activos. NIC 8: políticas contables, cambios en estimaciones y errores.", "l": "Lámina 166"}, {"id": "d2", "t": "depre", "q": "Una máquina cuesta $100.000, su valor residual es $10.000 y su vida útil 5 años. Con el método lineal, la depreciación anual es:", "o": ["$20.000", "$18.000", "$22.000", "$10.000"], "a": 1, "e": "(100.000 − 10.000) / 5 = 18.000. La a) olvida restar el valor residual.", "l": "Láminas 170 y 171"}, {"id": "d3", "t": "depre", "q": "El asiento de depreciación del ejercicio es:", "o": ["Debe Depreciación acumulada / Haber Gasto por depreciación", "Debe Gasto por depreciación / Haber Depreciación acumulada", "Debe Maquinaria / Haber Caja", "Debe Gasto por depreciación / Haber Caja"], "a": 1, "e": "Se reconoce el gasto (Debe) y se acumula en la cuenta complementaria de activo (Haber). No sale plata: por eso nunca va Caja.", "l": "Lámina 171"}, {"id": "d4", "t": "depre", "q": "La depreciación acumulada:", "o": ["Es el gasto de depreciación del período actual", "Es el total depreciado desde la compra y se presenta en el balance restando al costo del activo", "Es un pasivo", "Aumenta el valor libro del activo"], "a": 1, "e": "Acumulada (balance, cuenta complementaria de activo) vs del ejercicio (gasto del EERR). Analogía: odómetro vs trip meter.", "l": "Lámina 173"}, {"id": "d5", "t": "depre", "q": "¿Cuál <b>no</b> es una variable clave en el cálculo de la depreciación?", "o": ["Costo inicial del activo", "Valor residual", "Vida útil estimada", "Tasa de interés de mercado"], "a": 3, "e": "Las cuatro variables: costo inicial, valor residual, vida útil y método.", "l": "Lámina 168"}, {"id": "d6", "t": "depre", "q": "Una maquinaria de $96.000.000, valor residual $12.000.000 y vida útil 7 años se compra el 1 de abril. La depreciación lineal de ese primer año (al 31 de diciembre) es:", "o": ["$12.000.000", "$9.000.000", "$13.714.286", "$10.285.714"], "a": 1, "e": "Anual = (96 − 12)/7 = 12 millones. Se usó 9 meses: 12 × 9/12 = <b>9 millones</b>.", "l": "Ayudantía 3, ejercicio 3"}, {"id": "d7", "t": "depre", "q": "El valor libro de un activo depreciable es:", "o": ["Costo + depreciación acumulada", "Costo − depreciación acumulada", "Costo − valor residual", "Depreciación anual × vida útil"], "a": 1, "e": "Valor libro (valor neto en libros) = costo − depreciación acumulada. Al final de la vida útil queda igual al valor residual.", "l": "Lámina 172 y Ayudantía 3"}, {"id": "d8", "t": "depre", "q": "La amortización se aplica a:", "o": ["Activos tangibles como maquinaria", "Activos intangibles (y también a deudas)", "Terrenos", "Inventarios"], "a": 1, "e": "Depreciación: tangibles, puede haber valor residual. Amortización: intangibles o deudas, valor residual generalmente cero.", "l": "Láminas 178 y 181"}, {"id": "d9", "t": "depre", "q": "¿Cuál <b>no</b> es requisito para que un activo se considere intangible?", "o": ["Ser identificable", "Producir beneficios económicos futuros", "Que exista control sobre los beneficios", "Tener sustancia física"], "a": 3, "e": "Justamente un intangible NO tiene sustancia física. Los tres requisitos son a), b) y c).", "l": "Lámina 176"}, {"id": "d10", "t": "depre", "q": "El efecto de la amortización sobre el flujo de efectivo es que:", "o": ["Disminuye directamente la caja", "No afecta directamente la caja (gasto no desembolsable), pero reduce la base imponible", "Aumenta la caja", "Se paga al Fisco"], "a": 1, "e": "En el EERR aumenta los gastos, en el balance rebaja el activo, y en el flujo no mueve caja, aunque al bajar la utilidad baja el impuesto.", "l": "Lámina 183"}, {"id": "d11", "t": "depre", "q": "Los métodos de depreciación que muestra el profe son:", "o": ["Lineal, saldo decreciente y unidades de producción", "FIFO, LIFO y PPP", "Lineal, francés y alemán", "Solo el método lineal"], "a": 0, "e": "FIFO, LIFO y PPP son métodos de valorización de existencias, no de depreciación. Francés y alemán son sistemas de amortización de préstamos.", "l": "Lámina 169"}, {"id": "d12", "t": "depre", "q": "Normalmente los terrenos:", "o": ["Se deprecian en 20 años", "Se amortizan", "No se deprecian", "Se deprecian con saldo decreciente"], "a": 2, "e": "No se desgastan con el uso. Por eso en el balance el terreno va separado del edificio.", "l": "Láminas 97, 99 y 165"}, {"id": "d13", "t": "depre", "q": "Un software de $30.000.000 con vida útil de 5 años y valor residual cero se amortiza linealmente. La amortización anual es:", "o": ["$5.000.000", "$6.000.000", "$7.500.000", "$30.000.000"], "a": 1, "e": "30.000.000 / 5 = 6.000.000.", "l": "Ayudantía 3, ejercicio 4"}, {"id": "s1", "t": "soc", "star": true, "q": "Dentro de las siguientes cuentas, ¿cuál <b>no</b> corresponde a una cuenta de Patrimonio?", "o": ["Cuenta obligada", "Resultado del ejercicio", "Impuesto a la renta por pagar", "Cuenta particular"], "a": 2, "e": "El impuesto a la renta por pagar es una deuda con el Fisco: pasivo corriente. Es literalmente la pregunta de ejemplo de la lámina 123.", "l": "Lámina 123"}, {"id": "s2", "t": "soc", "q": "La sociedad de responsabilidad limitada se conforma por:", "o": ["Una sola persona", "Dos o más socios, hasta 50", "Un mínimo de 100 accionistas", "Socios gestores y comanditarios"], "a": 1, "e": "Ltda.: 2 a 50 socios (naturales o jurídicas), que responden hasta el monto aportado.", "l": "Lámina 162"}, {"id": "s3", "t": "soc", "q": "En la sociedad colectiva comercial, la responsabilidad de los socios es:", "o": ["Limitada a su aporte", "Ilimitada: responden con su patrimonio personal", "Solo de los gestores", "Inexistente"], "a": 1, "e": "Es la única de la lámina con responsabilidad ilimitada para todos los socios.", "l": "Lámina 162"}, {"id": "s4", "t": "soc", "q": "En la sociedad en comandita:", "o": ["Todos los socios administran y responden ilimitadamente", "Los comanditarios solo aportan capital y responden por sus aportes; los gestores administran y responden por la sociedad", "Hay un solo dueño", "Las acciones se transan en bolsa"], "a": 1, "e": "Dos tipos de socio: comanditarios (capital) y gestores (administración).", "l": "Lámina 162"}, {"id": "s5", "t": "soc", "q": "Una persona quiere formar una empresa sola, sin socios, y limitar su responsabilidad. Según las láminas, puede constituir una:", "o": ["Sociedad colectiva", "Sociedad en comandita", "EIRL (Empresa Individual de Responsabilidad Limitada)", "Sociedad de responsabilidad limitada"], "a": 2, "e": "EIRL: una persona natural o jurídica, sin socios. (La SpA también puede tener un solo accionista, pero la lámina que describe “sin socios” es la EIRL.)", "l": "Lámina 162"}, {"id": "s6", "t": "soc", "q": "Las sociedades anónimas abiertas:", "o": ["Se rigen por una ley especial, como la de bancos", "Inscriben sus acciones en el Registro de Valores y son fiscalizadas por la CMF", "No tienen responsabilidad limitada", "Tienen como máximo 50 accionistas"], "a": 1, "e": "Abiertas: Registro de Valores y CMF. Especiales: ley especial (bancos, aseguradoras). Cerradas: responsabilidad limitada, sin esa fiscalización.", "l": "Lámina 161"}, {"id": "s7", "t": "soc", "q": "El retiro de dinero de un socio se contabiliza:", "o": ["Como un gasto del Estado de Resultados", "Con un cargo a la cuenta particular (retiros), que es una cuenta de patrimonio", "Como un pasivo con el socio", "Como un abono a Capital"], "a": 1, "e": "La cuenta particular refleja movimientos entre empresa y socio: retiro = cargo (saldo deudor), aporte extraordinario = abono.", "l": "Láminas 122 y 163"}, {"id": "s8", "t": "soc", "q": "Las <b>reservas</b> del patrimonio representan:", "o": ["Dinero guardado en la caja fuerte", "Utilidades de ejercicios anteriores que permanecen en el patrimonio con una destinación específica (ley, estatutos o decisión de la dirección)", "Deudas con los accionistas", "Provisiones para incobrables"], "a": 1, "e": "Las utilidades de ejercicios anteriores <i>sin</i> destinación específica son “utilidades de ejercicios anteriores”; con destinación, “reservas”.", "l": "Láminas 120 y 121"}, {"id": "s9", "t": "soc", "q": "Capital social $60.000.000; cuentas obligadas $12.000.000; resultado del ejercicio $9.000.000; resultados acumulados $6.000.000; retiros $4.000.000. El patrimonio total es:", "o": ["$71.000.000", "$59.000.000", "$75.000.000", "$48.000.000"], "a": 1, "e": "Capital enterado = 60 − 12 = 48. Utilidades por distribuir = 9 + 6 − 4 = 11. Patrimonio = 48 + 11 = <b>59 millones</b>.", "l": "Ayudantía 2, extra"}, {"id": "s10", "t": "soc", "q": "La diferencia clave entre constituir la empresa como persona natural o como persona jurídica es que:", "o": ["La persona natural no paga impuestos", "En la persona jurídica, quienes la forman responden solo por el monto aportado; en la natural, la persona asume todas las obligaciones (incluidas las deudas)", "La persona jurídica no puede tener deudas", "No hay diferencia"], "a": 1, "e": "Así lo plantean las láminas: la persona natural asume todo; en la jurídica los miembros no arriesgan su patrimonio personal (más allá de lo aportado).", "l": "Lámina 160"}, {"id": "q1", "t": "liq", "q": "Activo circulante $50.000.000 y pasivo circulante $20.000.000. La razón circulante es:", "o": ["0,4 veces", "2,5 veces", "$30.000.000", "1,5 veces"], "a": 1, "e": "RC = AC/PC = 50/20 = 2,5 veces: por cada $1 que debe en el corto plazo tiene $2,5 de activo circulante. Los $30 millones son el capital de trabajo.", "l": "Resumen ratios, ejemplo"}, {"id": "q2", "t": "liq", "q": "La prueba ácida se diferencia de la razón circulante en que excluye del numerador:", "o": ["La caja", "Las cuentas por cobrar", "Las existencias (inventarios)", "Los activos fijos"], "a": 2, "e": "Las existencias son lo menos líquido del activo circulante y, frente a una venta rápida, pueden perder valor.", "l": "Láminas 192 y 193"}, {"id": "q3", "t": "liq", "q": "La razón “acidísima” se calcula como:", "o": ["(AC − Existencias) / PC", "(Caja + Bancos) / PC", "AC / Activo total", "PC / AC"], "a": 1, "e": "Acidísima = (Caja + Banco) / PC = (efectivo + equivalentes) / PC. También llamada razón de disponible, de efectivo o real de caja.", "l": "Lámina 193"}, {"id": "q4", "t": "liq", "q": "Según el profesor, una liquidez corriente de 2 a 1:", "o": ["Indica que la empresa está en quiebra", "Permite a la empresa trabajar sin apuros: tiene dos pesos por cada peso que debe", "Significa que el pasivo duplica al activo", "Es siempre excesiva"], "a": 1, "e": "Es la referencia de la lámina 191.", "l": "Lámina 191"}, {"id": "q5", "t": "liq", "q": "Una empresa usa efectivo para comprar existencias adicionales. ¿Qué ocurre con la razón circulante y la prueba ácida?", "o": ["Ambas aumentan", "La razón circulante no cambia y la prueba ácida disminuye", "La razón circulante disminuye y la prueba ácida no cambia", "Ambas disminuyen"], "a": 1, "e": "El AC total no cambia (sale caja, entra inventario) y el PC tampoco: RC igual. Pero el numerador de la ácida (AC − existencias) baja: ácida disminuye. Es la pregunta de la lámina 201.", "l": "Lámina 201"}, {"id": "q6", "t": "liq", "q": "Una empresa tiene AC de US$1,2 millones y PC de US$1 millón. Usa US$0,5 millones de tesorería para pagar cuentas por pagar. Entonces:", "o": ["La razón circulante baja de 1,2 a 0,7 y el fondo de maniobra baja", "La razón circulante sube de 1,2 a 1,4 y el fondo de maniobra no cambia", "La razón circulante no cambia y el fondo de maniobra sube", "Ambos bajan"], "a": 1, "e": "AC = 0,7 y PC = 0,5 → RC = 1,4. Fondo de maniobra (AC − PC) antes 0,2 y después 0,2: no cambia. Cuando RC > 1, pagar deuda corriente con caja sube la razón. Es la pregunta de la lámina 207.", "l": "Lámina 207"}, {"id": "q7", "t": "liq", "q": "Si el capital de trabajo de una empresa es igual a cero, su razón circulante es:", "o": ["0", "1", "Indefinida", "Mayor que 1"], "a": 1, "e": "CT = AC − PC = 0 → AC = PC → RC = 1.", "l": "Ayudantía 5, V/F 5"}, {"id": "q8", "t": "liq", "q": "Según los conceptos previos del profe, el capital de trabajo <b>bruto</b> es:", "o": ["AC − PC", "El activo circulante", "El patrimonio", "AC / PC"], "a": 1, "e": "Bruto = AC. Neto = AC − PC. En la ayudantía se le llama simplemente “Capital de Trabajo” al neto.", "l": "Lámina 188"}, {"id": "q9", "t": "liq", "q": "¿Cuál relación se cumple siempre?", "o": ["Prueba ácida ≥ Razón circulante", "Prueba ácida ≤ Razón circulante", "Prueba ácida = Razón circulante − 1", "No hay relación entre ellas"], "a": 1, "e": "Como las existencias son ≥ 0, el numerador de la ácida nunca supera al de la razón circulante. Son iguales solo si no hay existencias (por ejemplo, una empresa de servicios).", "l": "Ayudantía 5, V/F 4"}, {"id": "q10", "t": "liq", "q": "Una razón circulante muy alta, por ejemplo 6 veces:", "o": ["Siempre es la mejor situación posible", "Puede reflejar activos circulantes ociosos o mal gestionados, como exceso de caja sin invertir o de inventario", "Indica sobreendeudamiento", "Significa que la empresa no tiene pasivos"], "a": 1, "e": "Más liquidez no es “mejor sin excepción”: plata parada no rinde.", "l": "Ayudantía 5, V/F 9"}, {"id": "q11", "t": "liq", "q": "Un aumento del pasivo circulante, manteniendo constante el activo circulante:", "o": ["Mejora la razón circulante", "Empeora (disminuye) la razón circulante", "No afecta la razón circulante", "Aumenta el capital de trabajo"], "a": 1, "e": "Aumenta el denominador → la razón baja. Y el capital de trabajo también baja.", "l": "Ayudantía 5, V/F 6"}, {"id": "q12", "t": "liq", "q": "En el análisis razonado de Polpaico, la liquidez corriente disminuyó principalmente porque:", "o": ["Los activos corrientes cayeron un 14%", "Los pasivos corrientes aumentaron un 14,0%, más que el activo corriente (4,5%)", "Los inventarios disminuyeron", "La empresa pagó toda su deuda"], "a": 1, "e": "Si el denominador crece más rápido que el numerador, la razón cae. Así se redacta una interpretación: qué pasó con el indicador y por qué.", "l": "Lámina 196"}, {"id": "q13", "t": "liq", "q": "En Polpaico la razón ácida cayó más (12,6%) que la corriente. La explicación es que:", "o": ["Aumentaron los inventarios un 14,2%, y la ácida los excluye", "Disminuyó la caja un 50%", "Aumentó el patrimonio", "Bajaron los pasivos corrientes"], "a": 0, "e": "El AC creció, pero ese crecimiento vino de inventarios; sin ellos, el activo corriente bajó 0,5%. Por eso la ácida empeora más.", "l": "Lámina 198"}, {"id": "q14", "t": "liq", "q": "El profe define el “año uniforme” como:", "o": ["365 días", "360 días (todos los meses de 30 días)", "12 meses calendario", "52 semanas"], "a": 1, "e": "Período calendario = 365 días; período uniforme = 360. Sirve para rotaciones y días de cobro (materia que viene después, pero la definición está en los conceptos previos).", "l": "Lámina 188"}, {"id": "q15", "t": "liq", "q": "Una empresa tiene capital de trabajo negativo. Esto significa que:", "o": ["No tiene activo circulante", "Su pasivo circulante es mayor que su activo circulante", "Su patrimonio es negativo", "Su razón circulante es mayor que 1"], "a": 1, "e": "Puede tener activo circulante, pero no le alcanza para cubrir el pasivo circulante (RC < 1).", "l": "Ayudantía 5, V/F 8"}, {"id": "q16", "t": "liq", "q": "AC = $36.000.000, existencias = $16.000.000, PC = $12.000.000. La prueba ácida es:", "o": ["3,0 veces", "1,67 veces", "1,33 veces", "0,6 veces"], "a": 1, "e": "(36 − 16)/12 = 20/12 = 1,67 veces. Aun sin vender sus existencias cubre su pasivo circulante.", "l": "Ayudantía 5, ejercicio 2"}, {"id": "n1", "t": "end", "q": "Deuda total $60.000.000 y activos totales $160.000.000. La razón deuda/activos es:", "o": ["60%", "37,5%", "62,5%", "266,7%"], "a": 1, "e": "60/160 = 0,375 = 37,5%: ese porcentaje de los activos está financiado por terceros; el 62,5% restante por el patrimonio.", "l": "Ayudantía 5, ejercicio 3"}, {"id": "n2", "t": "end", "q": "Una razón Deuda/Patrimonio mayor que 1 indica que:", "o": ["La empresa tiene más activos que pasivos", "La empresa está financiada en mayor proporción por terceros que por sus dueños", "La empresa no tiene deudas", "La empresa tiene buena liquidez"], "a": 1, "e": "Deuda > Patrimonio → la deuda con terceros supera el aporte de los dueños.", "l": "Ayudantía 5, V/F 7"}, {"id": "n3", "t": "end", "q": "Según la lámina del profesor, la razón de endeudamiento (pasivo total / activo total) debe ser:", "o": ["Superior al 60%", "Inferior al 60%", "Exactamente 100%", "Superior a 2 veces"], "a": 1, "e": "“Debe ser inferior al 60%. Si el endeudamiento es 60%, la empresa debe $60 por cada $100 de sus activos.”", "l": "Lámina 203"}, {"id": "n4", "t": "end", "q": "La “Deuda Total” en los ratios de endeudamiento corresponde a:", "o": ["Solo los préstamos bancarios", "El pasivo exigible de corto y largo plazo con terceros", "El pasivo más el patrimonio", "Solo el pasivo circulante"], "a": 1, "e": "Deuda total = pasivo circulante + pasivo no corriente. No incluye el patrimonio.", "l": "Láminas 188 y 205"}, {"id": "n5", "t": "end", "q": "Dos empresas tienen la misma razón deuda/activos. Entonces:", "o": ["Necesariamente tienen el mismo riesgo financiero", "No necesariamente tienen el mismo riesgo: también importan el plazo de la deuda, las tasas y la capacidad de generar flujos", "Tienen el mismo patrimonio", "Tienen la misma liquidez"], "a": 1, "e": "El ratio agregado no captura plazos, tasas ni flujos.", "l": "Ayudantía 5, V/F 10"}, {"id": "n6", "t": "end", "q": "Activos totales $200.000.000 y patrimonio $160.000.000. La razón deuda/patrimonio es:", "o": ["20%", "25%", "80%", "125%"], "a": 1, "e": "Deuda = 200 − 160 = 40. Deuda/Patrimonio = 40/160 = 25%: por cada $1 de los dueños hay $0,25 de deuda. (La a) es deuda/activos.)", "l": "Resumen ratios, ejemplo"}, {"id": "n7", "t": "end", "q": "Si la razón deuda/activos es 40%, la autonomía financiera (patrimonio/activos) es:", "o": ["40%", "60%", "66,7%", "150%"], "a": 1, "e": "Como Activo = Pasivo + Patrimonio, dividiendo por el activo: D/A + Pat/A = 100%. Autonomía = 100% − 40% = 60%.", "l": "Lámina 202 y ecuación contable"}, {"id": "n8", "t": "end", "q": "Si la razón deuda/activos es 50%, la razón deuda/patrimonio es:", "o": ["50%", "100%", "200%", "25%"], "a": 1, "e": "D/A = 50% → la mitad del activo es deuda y la otra mitad patrimonio → D = Pat → D/P = 100%. Es el caso de Inversiones Coihue en la Ayudantía 5.", "l": "Ayudantía 5, ejercicio 4"}, {"id": "n9", "t": "end", "q": "Mientras mayor es el endeudamiento de una empresa:", "o": ["Menor es su riesgo financiero", "Mayor es el riesgo financiero (apalancamiento) que asume", "Mayor es su liquidez", "Mayor es su patrimonio"], "a": 1, "e": "Una mayor proporción de sus activos depende de terceros, con obligaciones de pago fijas.", "l": "Ayudantía 5, formulario"}, {"id": "n10", "t": "end", "q": "Una empresa toma un préstamo bancario de largo plazo y deja el dinero en caja. ¿Qué pasa con la razón deuda/activos (si era menor que 100%) y con la razón circulante?", "o": ["Deuda/activos sube y la razón circulante sube", "Deuda/activos baja y la razón circulante baja", "Ambas se mantienen", "Deuda/activos sube y la razón circulante no cambia"], "a": 0, "e": "Deuda y activo suben en el mismo monto: si D/A < 1, la razón sube (ejemplo: 40/100 → 60/120 = 50%). La caja sube el AC pero el préstamo es de largo plazo, no toca el PC: la razón circulante sube.", "l": "Aplicación de láminas 193 y 205"}];
+(function(){
+  if(!window.QBANK) return;
+  var TAGS=window.QTAGS||{};
+  var LET='abcde';
+  function loadWrong(){ try{return JSON.parse(localStorage.getItem('imafi-c1-wrong')||'{}');}catch(e){return {};} }
+  function saveWrong(w){ try{localStorage.setItem('imafi-c1-wrong',JSON.stringify(w));}catch(e){} }
+  function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+  function render(box, list, state){
+    var cont=box.querySelector('.qz-list'); cont.innerHTML='';
+    state.ok=0; state.done=0; state.total=list.length; upd(box,state);
+    list.forEach(function(q,i){
+      var d=document.createElement('div'); d.className='qz';
+      var h='<div class="qh"><span class="qn">'+(i+1)+'.</span><span class="pill a">'+(TAGS[q.t]||q.t)+'</span>'+
+        (q.star?'<span class="pill c">estilo del profe</span>':'')+'</div><p class="qt">'+q.q+'</p>';
+      q.o.forEach(function(o,k){ h+='<button class="opt" data-k="'+k+'"><span class="l">'+LET[k]+')</span><span>'+o+'</span></button>'; });
+      h+='<div class="exp"><b>Respuesta: '+LET[q.a]+')</b> '+q.e+(q.l?'<div class="src">Fuente: '+q.l+'</div>':'')+'</div>';
+      d.innerHTML=h;
+      d.querySelectorAll('.opt').forEach(function(b){ b.addEventListener('click',function(){
+        if(d.classList.contains('done')) return;
+        var k=+b.getAttribute('data-k'); d.classList.add('done');
+        d.querySelectorAll('.opt')[q.a].classList.add('ok');
+        var w=loadWrong();
+        if(k!==q.a){ b.classList.add('bad'); w[q.id]=1; } else { state.ok++; delete w[q.id]; }
+        saveWrong(w); state.done++; upd(box,state);
+      });});
+      cont.appendChild(d);
+    });
+  }
+  function upd(box,st){ var s=box.querySelector('.qz-score'); if(s) s.textContent=st.ok+' / '+st.done+' correctas'+(st.total?'  ·  '+st.total+' preguntas':''); }
+  document.querySelectorAll('.quiz').forEach(function(box){
+    var tags=(box.getAttribute('data-tags')||'all').split(',');
+    var n=+(box.getAttribute('data-n')||0);
+    var controls=box.hasAttribute('data-controls');
+    var state={ok:0,done:0,total:0};
+    function pool(tag){ return window.QBANK.filter(function(q){ return tag==='all'? (tags[0]==='all'||tags.indexOf(q.t)>=0) : q.t===tag; }); }
+    var bar='<div class="qz-bar">';
+    if(controls){
+      bar+='<select class="qz-tag"><option value="all">Todos los temas</option>';
+      Object.keys(TAGS).forEach(function(k){ var c=window.QBANK.filter(function(q){return q.t===k;}).length; if(c) bar+='<option value="'+k+'">'+TAGS[k]+' ('+c+')</option>'; });
+      bar+='</select><button class="btn qz-all">Mostrar</button><button class="btn primary qz-sim">Simulacro: 20 al azar</button><button class="btn qz-wrong">Solo las que fallé</button>';
+    } else {
+      bar+='<button class="btn qz-re">Reiniciar</button>';
+    }
+    bar+='<span class="qz-score"></span></div><div class="qz-list"></div>';
+    box.innerHTML=bar;
+    var base=pool('all'); if(n) base=base.slice(0,n);
+    render(box, base, state);
+    if(controls){
+      var sel=box.querySelector('.qz-tag');
+      box.querySelector('.qz-all').addEventListener('click',function(){ render(box,pool(sel.value),state); });
+      sel.addEventListener('change',function(){ render(box,pool(sel.value),state); });
+      box.querySelector('.qz-sim').addEventListener('click',function(){ render(box,shuffle(window.QBANK).slice(0,20),state); box.scrollIntoView(); });
+      box.querySelector('.qz-wrong').addEventListener('click',function(){ var w=loadWrong();
+        var l=window.QBANK.filter(function(q){return w[q.id];}); if(!l.length){ alert('No tienes preguntas falladas guardadas (o tu navegador no guarda datos locales).'); return;} render(box,l,state); });
+    } else {
+      box.querySelector('.qz-re').addEventListener('click',function(){ render(box,base,state); });
+    }
+  });
+})();
+</script>
+</body>
+</html>
