@@ -48,7 +48,12 @@
 
             <div class="topbar-acciones">
                 <a id="btn-pestana" class="btn-icono" href="#" target="_blank" rel="noopener" title="Abrir en pestaña nueva" hidden>↗</a>
-                <button id="btn-tema" class="btn-icono" title="Cambiar tema" aria-label="Cambiar tema">🌙</button>
+                <button id="btn-indice" class="btn-icono" title="Ocultar el índice del apunte" aria-label="Ocultar el índice del apunte" aria-pressed="false" hidden>◧</button>
+                <select id="sel-tema" aria-label="Tema" title="Tema">
+                    <option value="light">Claro</option>
+                    <option value="dark">Oscuro</option>
+                    <option value="black">Negro</option>
+                </select>
             </div>
         </header>
 
@@ -59,12 +64,35 @@
                 <p>Selecciona un ramo para acceder a sus resúmenes, guías y ejercicios.</p>
             </header>
 
+            <!-- Se llena desde certamenes.json; se oculta si no queda ninguna evaluación por venir -->
+            <section id="proximas" class="proximas" hidden>
+                <div class="proximas-titulo">
+                    <h2>Próximas evaluaciones</h2>
+                    <span id="fecha-hoy"></span>
+                </div>
+                <ul id="lista-proximas"></ul>
+            </section>
+
             <!-- Se llena desde apuntes.json -->
             <div id="grid-ramos" class="grid-ramos"></div>
 
             <section class="recientes">
                 <h2>Agregados recientemente</h2>
                 <ul id="lista-recientes"></ul>
+            </section>
+
+            <section class="externo">
+                <h2>Material externo</h2>
+                <div class="grid-ramos">
+                    <a class="card" target="_blank" rel="noopener" href="https://onedrive.live.com/?id=D89F52375DFA1E84%21s42502d503c51443eb7f51d6029653369&amp;cid=D89F52375DFA1E84&amp;redeem=aHR0cHM6Ly8xZHJ2Lm1zL2YvYy9EODlGNTIzNzVERkExRTg0L0VsQXRVRUpSUEQ1RXRfVWRZQ2xsTTJrQnhHb0c4V1l3bkgxMC0wQmZuRWczbnc">
+                        <h3>Almacén Camello ↗</h3>
+                        <p>Repositorio de material de estudio hecho por estudiantes de la USM.</p>
+                    </a>
+                    <a class="card" target="_blank" rel="noopener" href="https://onedrive.live.com/?id=4B834E9512402066%21164&amp;cid=4B834E9512402066&amp;redeem=aHR0cHM6Ly8xZHJ2Lm1zL2YvYy80YjgzNGU5NTEyNDAyMDY2L0VtWWdRQktWVG9NZ2dFdWtBQUFBQUFBQjAzX3haX2hjNVN5bC04UlJPZm41UEE%5FZT1BQ3NTZzM">
+                        <h3>Drive de Informática ↗</h3>
+                        <p>Material compartido de los ramos de Informática.</p>
+                    </a>
+                </div>
             </section>
 
             <p class="aportar">¿Tienes un apunte en HTML? <a href="https://github.com/s1mioo/apuntes-web/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Así puedes aportar</a>.</p>

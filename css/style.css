@@ -28,6 +28,25 @@
     color-scheme: dark;
 }
 
+:root[data-theme="black"] {
+    --bg-body: #000000;
+    --bg-sidebar: #000000;
+    --text-sidebar: #d4d6dc;
+    --text-sidebar-muted: #7d818c;
+    --primary: #60a5fa;
+    --primary-hover: #93c5fd;
+    --card-bg: #0c0c0e;
+    --text-main: #d4d6dc;
+    --text-muted: #8b8f9a;
+    --border-color: #26262b;
+    color-scheme: dark;
+}
+
+/* En negro el menú y el contenido tienen el mismo fondo: los separa una línea */
+:root[data-theme="black"] .sidebar {
+    border-right: 1px solid var(--border-color);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -235,6 +254,11 @@ body.sidebar-oculto .sidebar {
     display: none;
 }
 
+.btn-icono[aria-pressed="true"] {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
 .view-section {
     display: none;
     flex: 1;
@@ -269,6 +293,100 @@ body.sidebar-oculto .sidebar {
 
 .aportar {
     margin-top: 28px;
+}
+
+.proximas {
+    margin-bottom: 36px;
+}
+
+.proximas-titulo {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-bottom: 12px;
+}
+
+.proximas h2,
+.externo h2 {
+    font-size: 1.2rem;
+}
+
+.proximas-titulo span {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.proximas ul {
+    list-style: none;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background-color: var(--card-bg);
+    overflow: hidden;
+}
+
+.proximas li + li {
+    border-top: 1px solid var(--border-color);
+}
+
+.proximas li > * {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr auto;
+    align-items: center;
+    gap: 4px 16px;
+    padding: 12px 16px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.proximas a:hover {
+    background-color: var(--bg-body);
+}
+
+.proxima-fecha {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.proxima-nombre small {
+    display: block;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.proximas a .proxima-nombre small {
+    color: var(--primary);
+}
+
+.proxima-falta {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+/* La evaluación más cercana */
+.proximas li.siguiente > * {
+    box-shadow: inset 4px 0 0 var(--primary);
+}
+
+.proximas li.siguiente .proxima-falta {
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.externo {
+    margin: 44px 0 28px;
+}
+
+.externo h2 {
+    margin-bottom: 12px;
+}
+
+.externo .card h3 {
+    font-size: 1.1rem;
 }
 
 .grid-ramos {
@@ -401,5 +519,14 @@ body.sidebar-oculto .sidebar {
 
     .home-header h1 {
         font-size: 1.7rem;
+    }
+
+    .proximas li > * {
+        grid-template-columns: 1fr auto;
+    }
+
+    .proxima-nombre {
+        grid-column: 1 / -1;
+        grid-row: 2;
     }
 }
