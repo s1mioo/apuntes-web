@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Caleb Baez">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teoría · AlgoCo · Certamen 2</title>
+<style>
+:root{
+  --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+  --line:#e0e0e6; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+  --accent:#0e7a5f; --accent-soft:#e2f4ee; --warn:#b4400b; --warn-soft:#fdecdf;
+  --code:#f3f4f6; --codeink:#1f2330; --cm:#5f6673; --kw:#0b4f80; --st:#0e6b53;
+  --sidew:290px;
+}
+:root[data-theme="dark"]{
+  --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+  --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+  --accent:#4fd1ab; --accent-soft:#12302a; --warn:#f5a15f; --warn-soft:#3a2413;
+  --code:#20242e; --codeink:#e8eaf0; --cm:#9aa3b5; --kw:#7cc0ef; --st:#6fd9bb;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#12302a; --warn:#f5a15f; --warn-soft:#3a2413;
+    --code:#20242e; --codeink:#e8eaf0; --cm:#9aa3b5; --kw:#7cc0ef; --st:#6fd9bb;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.6;font-size:16px}
+.layout{display:flex;align-items:flex-start}
+.sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--panel);border-right:1px solid var(--line);padding:20px 14px 60px}
+.content{flex:1 1 auto;min-width:0;padding:34px clamp(16px,4vw,56px) 110px;max-width:980px;margin:0 auto}
+.brand{display:flex;gap:10px;align-items:center}
+.brand .dot{width:34px;height:34px;border-radius:9px;background:var(--brand);display:grid;place-items:center;
+  color:#fff;font-weight:800;font-size:12px;flex:0 0 auto}
+.brand h1{font-size:15px;margin:0;line-height:1.2}
+.brand small{color:var(--muted);font-size:12px;display:block;font-weight:400}
+.toolbar{display:flex;gap:8px;margin:12px 0 4px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 10px;font-size:12.5px;cursor:pointer}
+.btn:hover{background:var(--brand-soft)}
+nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:16px 8px 5px;font-weight:700}
+nav a{display:flex;gap:8px;align-items:center;color:var(--ink);text-decoration:none;padding:5px 9px;border-radius:7px;font-size:13.2px}
+nav a:hover{background:var(--brand-soft)}
+nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600}
+.dots{display:inline-flex;gap:2px;vertical-align:middle;flex:0 0 auto}
+.dots i{width:6px;height:6px;border-radius:50%;border:1px solid var(--muted);display:block}
+.dots i.on{background:var(--brand);border-color:var(--brand)}
+h1,h2,h3,h4{line-height:1.25}
+.portada h1{font-size:30px;margin:4px 0 8px}
+.eyebrow{color:var(--muted);font-size:13px;margin:0;letter-spacing:.02em}
+.lead{color:var(--muted);font-size:17px;margin:4px 0 12px}
+section{margin-top:46px;scroll-margin-top:14px}
+h2{font-size:25px;margin:0 0 6px;border-bottom:3px solid var(--brand);padding-bottom:5px}
+h3{font-size:18.5px;margin:26px 0 6px;color:var(--brand)}
+h4{font-size:16px;margin:16px 0 4px}
+p{margin:8px 0}
+ul,ol{margin:6px 0;padding-left:22px}
+li{margin:4px 0}
+a{color:var(--brand)}
+code{background:var(--code);color:var(--codeink);border-radius:4px;padding:0 4px;font-size:.9em;font-family:Consolas,"SF Mono",Menlo,monospace}
+pre.code{background:var(--code);color:var(--codeink);border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:6px;
+  padding:10px 12px;overflow-x:auto;font-size:13.3px;line-height:1.45;font-family:Consolas,"SF Mono",Menlo,monospace;margin:10px 0;tab-size:4}
+pre.code code{background:none;padding:0;font-size:inherit;border-radius:0}
+.c{color:var(--cm);font-style:italic}
+.k{color:var(--kw);font-weight:600}
+.s{color:var(--st)}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14.4px;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+th{background:var(--brand-soft);font-weight:700}
+.mini{width:auto}
+.mini td,.mini th{text-align:center;min-width:42px}
+.mini td.hit{background:var(--accent-soft);font-weight:700}
+.mini th.lat{text-align:left}
+.nw{white-space:nowrap}
+.prob{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;color:var(--muted);font-size:14px;
+  border-left:3px solid var(--accent);padding-left:10px;margin:6px 0 12px}
+.prob b{color:var(--ink)}
+.tag{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:0 8px;color:var(--muted);white-space:nowrap}
+.tag.fuera{border-color:var(--warn);color:var(--warn);font-weight:700}
+.frase{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);border-radius:6px;padding:9px 13px;margin:10px 0;font-size:16.5px}
+.nota{background:var(--warn-soft);border-left:3px solid var(--warn);padding:7px 11px;margin:10px 0;border-radius:4px}
+.clave{background:var(--accent-soft);border-left:3px solid var(--accent);padding:7px 11px;margin:10px 0;border-radius:4px}
+.formula{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:9px 13px;margin:10px 0;
+  font-family:Cambria,"Times New Roman",serif;font-size:17.5px;overflow-x:auto;white-space:nowrap}
+.formula small{font-family:"Segoe UI",sans-serif;font-size:13px;color:var(--muted);white-space:normal}
+details.q{background:var(--panel);border:1px solid var(--line);border-radius:7px;margin:7px 0;padding:0}
+details.q summary{cursor:pointer;padding:8px 12px;font-weight:600;list-style-position:inside}
+details.q[open] summary{border-bottom:1px solid var(--line)}
+details.q .r{padding:8px 12px}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px;margin:10px 0;overflow-x:auto;text-align:center}
+.fig svg{max-width:100%;height:auto}
+.fig figcaption,.fig .cap{font-size:13px;color:var(--muted);margin-top:4px}
+svg text{fill:var(--ink);font-family:"Segoe UI",sans-serif;font-size:13px}
+svg .ar{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .ok{stroke:var(--accent);stroke-width:3.2;fill:none}
+svg .nodo{fill:var(--panel);stroke:var(--brand);stroke-width:1.8}
+svg .hoja{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .peso{fill:var(--warn);font-weight:700;font-size:12.5px}
+svg .tenue{fill:var(--muted);font-size:12px}
+.pasos{counter-reset:p;list-style:none;padding-left:0}
+.pasos li{counter-increment:p;position:relative;padding-left:34px;margin:8px 0}
+.pasos li::before{content:counter(p);position:absolute;left:0;top:1px;width:23px;height:23px;border-radius:50%;
+  background:var(--brand);color:#fff;font-size:12.5px;font-weight:700;display:grid;place-items:center}
+@media (max-width:900px){
+  .layout{display:block}
+  .sidebar{position:static;width:100%;height:auto;border-right:0;border-bottom:1px solid var(--line);max-height:46vh}
+  .content{width:100%;padding:20px 16px 80px}
+  table{display:block;overflow-x:auto}
+}
+@media print{
+  :root,:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--ink:#111;--muted:#333;--line:#999;--brand:#0b4f80;--brand-soft:#ececec;
+    --accent:#1d5c48;--accent-soft:#eee;--warn:#7a2b00;--warn-soft:#f1f1f1;--code:#fff;--codeink:#000;--cm:#555;--kw:#000;--st:#222}
+  body{font-size:10pt;line-height:1.35}
+  .sidebar,.toolbar{display:none}
+  .layout{display:block}
+  .content{padding:0;max-width:none}
+  section{margin-top:14pt}
+  section.tec{break-before:page}
+  h2,h3,h4{break-after:avoid}
+  pre.code,table,.fig,details.q{break-inside:avoid}
+  details.q .r{display:block}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+<div class="brand"><div class="dot">C2</div><h1>AlgoCo · Certamen 2<small>Teoría explicada simple</small></h1></div>
+<div class="toolbar"><button class="btn" id="tema">Tema</button><button class="btn" id="resp">Abrir respuestas</button><button class="btn" onclick="window.print()">Imprimir</button></div>
+<nav id="menu">
+<div class="grp">Inicio</div>
+<a href="#inicio"><span>Portada</span></a>
+<a href="#mapa"><span>Mapa de técnicas</span></a>
+<div class="grp">Buscar entre todas las opciones</div>
+<a href="#back"><span class="dots" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span>Fuerza bruta y backtracking</span></a>
+<a href="#poda"><span class="dots" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span>Poda y branch and bound</span></a>
+<a href="#masc"><span class="dots" title="Probabilidad media"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span>Máscaras y TSP</span></a>
+<div class="grp">Voraces</div>
+<a href="#voraz"><span class="dots" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span>Qué es un voraz</span></a>
+<a href="#ratio"><span class="dots" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span>Planificación (GreedyRatio)</span></a>
+<a href="#huff"><span class="dots" title="Probabilidad media"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span>Huffman</span></a>
+<a href="#mst"><span class="dots" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span>MST: Prim y Kruskal</span></a>
+<div class="grp">Programación dinámica</div>
+<a href="#pd"><span class="dots" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span>El método y MWIS</span></a>
+<a href="#moch"><span class="dots" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span>Mochila</span></a>
+<a href="#alin"><span class="dots" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span>Alineamiento</span></a>
+<a href="#abb"><span class="dots" title="Probabilidad baja"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><span>ABB óptimo</span></a>
+<div class="grp">Caminos mínimos</div>
+<a href="#bf"><span class="dots" title="Probabilidad muy alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><span>Bellman-Ford</span></a>
+<a href="#fw"><span class="dots" title="Probabilidad alta"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><span>Floyd-Warshall</span></a>
+<div class="grp">Teoría para el control</div>
+<a href="#np"><span>P, NP y reducciones</span></a>
+<a href="#aprox"><span>Aproximar la mochila</span></a>
+<div class="grp">Cierre</div>
+<a href="#resumen"><span>Resumen en una tabla</span></a>
+</nav>
+</aside>
+
+<main class="content">
+
+<section id="inicio" class="portada">
+<p class="eyebrow">INF-221 · Algoritmos y Complejidad · 2026-2</p>
+<h1>Teoría del Certamen 2, explicada simple</h1>
+<p class="lead">Qué hace cada técnica, por qué funciona y cómo se aplica, con un ejemplo chico resuelto a mano.</p>
+<p>Esta página complementa las otras dos del certamen. La <a href="Guia-C2-AlgoCo.html">Guía</a> tiene las plantillas completas y los problemas resueltos; la <a href="Practica-diaria-C2-AlgoCo.html">Práctica diaria</a> tiene los ejercicios. Aquí está lo que falta en ambas: entender la idea antes de copiar la plantilla.</p>
+
+<h3>Cómo está armada</h3>
+<p>Todas las técnicas siguen el mismo orden, para que sepas dónde buscar:</p>
+<ol>
+<li><strong>Qué resuelve</strong>, en una frase.</li>
+<li><strong>La idea</strong>, con un caso cotidiano.</li>
+<li><strong>Ejemplo a mano</strong>, paso a paso.</li>
+<li><strong>El núcleo del código</strong>: solo las líneas que hacen el trabajo. El programa completo está en la plantilla de la Guía, enlazada en cada sección, y usa los mismos nombres de variables.</li>
+<li><strong>Cuánto cuesta y cuándo no sirve.</strong></li>
+<li><strong>Comprueba que entendiste</strong>: preguntas con la respuesta oculta. Respóndelas en papel antes de abrirlas.</li>
+</ol>
+
+<h3>De dónde sale el contenido</h3>
+<ul>
+<li>De las slides de las clases 13 a 24 y de las tres de complejidad. Los ejemplos numéricos son los de las slides cuando eran claros.</li>
+<li><strong>Floyd-Warshall</strong> y la <strong>PD con máscara</strong> no están en las slides que tengo. Las explico igual porque la Guía las marca como evaluables. Están señaladas, para que las compares con la clase cuando la tengas.</li>
+<li>La etiqueta de probabilidad de cada técnica es la misma que usa la Guía, estimada con los cuatro C2 anteriores.</li>
+<li>Todos los números de los ejemplos se calcularon con un programa, no a ojo.</li>
+</ul>
+</section>
+
+<section id="mapa">
+<h2>Mapa de técnicas</h2>
+<p>Las técnicas del certamen son tres maneras distintas de enfrentar el mismo tipo de problema: <em>elegir la mejor entre muchísimas opciones</em>. Conviene verlas como una escalera.</p>
+<table>
+<thead><tr><th>Manera</th><th>Qué hace</th><th>Cuándo sirve</th><th>Precio</th></tr></thead>
+<tbody>
+<tr><td><strong>Backtracking</strong></td><td>Prueba todas las opciones, ordenadamente, y descarta temprano las que ya no sirven.</td><td>Siempre es correcto. Solo cabe cuando la entrada es chica (n hasta 10 a 25).</td><td>Exponencial</td></tr>
+<tr><td><strong>Voraz</strong></td><td>En cada paso toma lo que se ve mejor en ese momento y nunca se arrepiente.</td><td>Solo cuando se puede demostrar que el criterio es correcto. Si lo es, es lo más rápido.</td><td>Casi siempre O(n log n)</td></tr>
+<tr><td><strong>Programación dinámica</strong></td><td>Prueba todas las opciones, pero guarda las respuestas de los problemas chicos para no recalcularlas.</td><td>Cuando el voraz falla y el problema se puede partir en subproblemas que se repiten.</td><td>Polinomial: O(n), O(n·C), O(n·m), O(n³)</td></tr>
+</tbody>
+</table>
+<p>Frente a un problema, la pregunta es en qué escalón cae. El tamaño de la entrada casi siempre lo dice: con n ≤ 20 se espera backtracking o máscaras; con n = 10⁵ tiene que ser un voraz o una PD lineal.</p>
+
+<h3>Probabilidad de cada técnica</h3>
+<table>
+<thead><tr><th>Técnica</th><th>Probabilidad</th><th>Evidencia</th><th>¿Está en las slides?</th></tr></thead>
+<tbody>
+<tr><td><a href="#back">Backtracking y poda</a></td><td class="nw"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span> muy alta</td><td>3 de 4 certámenes</td><td>Sí</td></tr>
+<tr><td><a href="#pd">PD lineal y MWIS</a></td><td class="nw"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span> muy alta</td><td>3 de 4 certámenes</td><td>Sí</td></tr>
+<tr><td><a href="#bf">Bellman-Ford</a></td><td class="nw"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span> muy alta</td><td>2 de 4, casi idéntico</td><td>Sí</td></tr>
+<tr><td><a href="#ratio">Planificación (GreedyRatio)</a></td><td class="nw"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span> muy alta</td><td>2 de 4, de la profesora</td><td>Sí</td></tr>
+<tr><td><a href="#moch">Mochila</a></td><td class="nw"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> alta</td><td>1 de 4 y clase propia</td><td>Sí</td></tr>
+<tr><td><a href="#alin">Alineamiento</a></td><td class="nw"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> alta</td><td>1 de 4 y ayudantía</td><td>Sí</td></tr>
+<tr><td><a href="#mst">MST (Kruskal, Prim)</a></td><td class="nw"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> alta</td><td>2 de 4</td><td>Sí</td></tr>
+<tr><td><a href="#voraz">Voraces por orden</a></td><td class="nw"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> alta</td><td>2 de 4 y Listado 4</td><td>La idea general</td></tr>
+<tr><td><a href="#fw">Floyd-Warshall</a></td><td class="nw"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span> alta</td><td>En temario</td><td>No</td></tr>
+<tr><td><a href="#masc">Máscaras y TSP</a></td><td class="nw"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span> media</td><td>1 de 4</td><td>Solo las máscaras, no la PD</td></tr>
+<tr><td><a href="#huff">Huffman</a></td><td class="nw"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span> media</td><td>En temario, 0 de 4</td><td>Sí</td></tr>
+<tr><td><a href="#abb">ABB óptimo</a></td><td class="nw"><span class="dots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span> baja</td><td>En temario, 0 de 4</td><td>Sí</td></tr>
+<tr><td><a href="#np">P, NP, reducciones y aproximación</a></td><td class="nw"><span class="tag fuera">no se programa</span></td><td>Teoría: apunta al control del 26</td><td>Sí</td></tr>
+</tbody>
+</table>
+</section>
+
+<!-- ====================================================== BACKTRACKING -->
+<section id="back" class="tec">
+<h2>Fuerza bruta y backtracking</h2>
+<div class="prob"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><b>Probabilidad muy alta</b><span>3 de 4 certámenes</span><span>Slides: clases 13 y 14</span></div>
+
+<div class="frase"><strong>Qué resuelve.</strong> Recorrer todas las formas de elegir u ordenar elementos, para contar las que cumplen una condición o quedarse con la mejor.</div>
+
+<h3>La idea</h3>
+<p><strong>Fuerza bruta</strong> es probar todo. Es la única técnica que nunca se equivoca: si existe una solución, la encuentra. Su problema es la cantidad de candidatos, y por eso lo primero es contarlos.</p>
+<table>
+<thead><tr><th>Qué se genera con n elementos</th><th>¿Importa el orden?</th><th>Cantidad</th><th>Hasta qué n cabe</th></tr></thead>
+<tbody>
+<tr><td>Todos los subconjuntos</td><td>No</td><td>2<sup>n</sup></td><td>n ≈ 20 a 25</td></tr>
+<tr><td>Subconjuntos de tamaño k (combinaciones)</td><td>No</td><td>C(n, k) = n! / (k!·(n−k)!)</td><td>n ≈ 25 a 30</td></tr>
+<tr><td>Todos los órdenes (permutaciones)</td><td>Sí</td><td>n!</td><td>n ≈ 10 u 11</td></tr>
+</tbody>
+</table>
+<p>Para un mismo n, la mayor cantidad de combinaciones aparece cuando k está cerca de n/2. Por eso el peor caso de «elegir k de 25» es k = 12 o 13, con unos 5,2 millones de grupos, que todavía cabe.</p>
+
+<p><strong>Backtracking</strong> es la forma ordenada de hacer fuerza bruta. Piensa en un laberinto: avanzas por un pasillo; si llegas a un punto sin salida, vuelves al último cruce y pruebas el pasillo siguiente. No dejas nada sin revisar y nunca revisas dos veces lo mismo.</p>
+<p>En vez de escribir un <code>for</code> anidado por cada elemento que eliges (lo que no se puede si k es un dato de entrada), se construye la solución <em>de a un elemento</em> con una función recursiva. Cada llamada hace tres cosas:</p>
+<div class="clave"><strong>Elegir → Explorar → Deshacer.</strong> Agrego un elemento a la solución parcial, llamo a la función para que complete el resto, y al volver lo quito para probar con otro.</div>
+<p>El «deshacer» es lo que le da el nombre. Si no quitas el elemento, la siguiente opción se construye encima de la anterior y la solución parcial queda con basura.</p>
+
+<h3>Ejemplo a mano: subconjuntos de tamaño 2 de {1, 2, 3, 4}</h3>
+<p>El recorrido se dibuja como un árbol. Cada nodo es una solución parcial; bajar es <em>elegir</em>, subir es <em>deshacer</em>. El recorrido es en profundidad (DFS): baja todo lo que puede antes de pasar al hermano.</p>
+<figure class="fig">
+<svg viewBox="0 0 640 196" width="640" role="img" aria-label="Árbol de decisiones para subconjuntos de tamaño 2">
+<line class="ar" x1="320" y1="34" x2="110" y2="78"/><line class="ar" x1="320" y1="34" x2="290" y2="78"/><line class="ar" x1="320" y1="34" x2="440" y2="78"/><line class="ar" x1="320" y1="34" x2="560" y2="78"/>
+<line class="ar" x1="110" y1="102" x2="40" y2="148"/><line class="ar" x1="110" y1="102" x2="110" y2="148"/><line class="ar" x1="110" y1="102" x2="180" y2="148"/>
+<line class="ar" x1="290" y1="102" x2="255" y2="148"/><line class="ar" x1="290" y1="102" x2="325" y2="148"/>
+<line class="ar" x1="440" y1="102" x2="440" y2="148"/>
+<rect class="nodo" x="296" y="10" width="48" height="24" rx="6"/><text x="320" y="27" text-anchor="middle">{ }</text>
+<rect class="nodo" x="86" y="78" width="48" height="24" rx="6"/><text x="110" y="95" text-anchor="middle">{1}</text>
+<rect class="nodo" x="266" y="78" width="48" height="24" rx="6"/><text x="290" y="95" text-anchor="middle">{2}</text>
+<rect class="nodo" x="416" y="78" width="48" height="24" rx="6"/><text x="440" y="95" text-anchor="middle">{3}</text>
+<rect class="nodo" x="536" y="78" width="48" height="24" rx="6"/><text x="560" y="95" text-anchor="middle">{4}</text>
+<rect class="hoja" x="12" y="148" width="56" height="24" rx="6"/><text x="40" y="165" text-anchor="middle">{1,2}</text>
+<rect class="hoja" x="82" y="148" width="56" height="24" rx="6"/><text x="110" y="165" text-anchor="middle">{1,3}</text>
+<rect class="hoja" x="152" y="148" width="56" height="24" rx="6"/><text x="180" y="165" text-anchor="middle">{1,4}</text>
+<rect class="hoja" x="227" y="148" width="56" height="24" rx="6"/><text x="255" y="165" text-anchor="middle">{2,3}</text>
+<rect class="hoja" x="297" y="148" width="56" height="24" rx="6"/><text x="325" y="165" text-anchor="middle">{2,4}</text>
+<rect class="hoja" x="412" y="148" width="56" height="24" rx="6"/><text x="440" y="165" text-anchor="middle">{3,4}</text>
+<text class="tenue" x="560" y="124" text-anchor="middle">no quedan</text><text class="tenue" x="560" y="139" text-anchor="middle">elementos</text>
+<text class="tenue" x="40" y="190" text-anchor="middle">1.º</text><text class="tenue" x="110" y="190" text-anchor="middle">2.º</text><text class="tenue" x="180" y="190" text-anchor="middle">3.º</text><text class="tenue" x="255" y="190" text-anchor="middle">4.º</text><text class="tenue" x="325" y="190" text-anchor="middle">5.º</text><text class="tenue" x="440" y="190" text-anchor="middle">6.º</text>
+</svg>
+<figcaption>Las hojas verdes son las 6 soluciones, C(4, 2) = 6, en el orden en que aparecen.</figcaption>
+</figure>
+<p>Fíjate en que debajo de {2} no aparece {2,1}. Eso es por el parámetro <code>inicio</code>: después de elegir el elemento de la posición i, solo se puede seguir eligiendo desde i + 1. Así no se repite un elemento y tampoco se genera el mismo grupo en otro orden.</p>
+
+<h3>El núcleo del código</h3>
+<p><strong>Combinaciones</strong> (no importa el orden): el ciclo parte en <code>inicio</code>.</p>
+<pre class="code"><code>void generar(const vector&lt;int&gt;&amp; c, vector&lt;int&gt;&amp; actual, int inicio, int k){
+    if ((int)actual.size() == k){        // caso base: la solucion esta completa
+        // aqui se cuenta, se imprime o se compara con la mejor
+        return;
+    }
+    for (int i = inicio; i &lt; (int)c.size(); i++){
+        actual.push_back(c[i]);          // ELEGIR
+        generar(c, actual, i + 1, k);    // EXPLORAR (desde i + 1)
+        actual.pop_back();               // DESHACER
+    }
+}</code></pre>
+<p><strong>Permutaciones</strong> (sí importa el orden): el ciclo parte siempre en 0, y un arreglo <code>usado</code> evita repetir.</p>
+<pre class="code"><code>void permutar(const vector&lt;int&gt;&amp; a, vector&lt;int&gt;&amp; actual, vector&lt;bool&gt;&amp; usado){
+    if (actual.size() == a.size()){ /* solucion completa */ return; }
+    for (int i = 0; i &lt; (int)a.size(); i++){
+        if (usado[i]) continue;
+        usado[i] = true;  actual.push_back(a[i]);    // ELEGIR
+        permutar(a, actual, usado);                  // EXPLORAR
+        actual.pop_back(); usado[i] = false;         // DESHACER
+    }
+}</code></pre>
+<p><strong>Todos los subconjuntos</strong> (conjunto potencia): es el código de combinaciones sin la condición de tamaño. Cada nodo del árbol, no solo las hojas, es un subconjunto válido, así que se procesa <code>actual</code> al entrar a la función.</p>
+<p>Programa completo: <a href="Guia-C2-AlgoCo.html#p-back">plantilla de Backtracking</a> en la Guía.</p>
+
+<h3>Cuánto cuesta y cuándo no sirve</h3>
+<ul>
+<li><strong>Tiempo:</strong> cantidad de soluciones × trabajo por solución. Combinaciones: O(k · C(n, k)). Permutaciones: O(n · n!). Subconjuntos: O(n · 2<sup>n</sup>).</li>
+<li><strong>Memoria:</strong> O(n). Solo se guarda la solución parcial y la pila de llamadas, que nunca es más profunda que la solución.</li>
+<li><strong>No sirve</strong> cuando n es grande. Con n = 10⁵, ni siquiera 2<sup>n</sup> es imaginable: ahí el problema pide un voraz o una PD.</li>
+</ul>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>¿Por qué combinaciones usa <code>i + 1</code> y permutaciones usa <code>usado</code>?</summary><div class="r">En combinaciones {1,3} y {3,1} son lo mismo, así que basta con elegir siempre «hacia adelante»: <code>i + 1</code> lo garantiza. En permutaciones 1,3 y 3,1 son distintas: después de elegir el 3 hay que poder volver a elegir el 1, por eso el ciclo parte en 0 y solo se salta lo que ya está puesto.</div></details>
+<details class="q"><summary>Te dan 10 letras, algunas repetidas, y debes contar las contraseñas distintas. ¿Qué falla si usas <code>usado</code> por posición?</summary><div class="r">Las dos <code>b</code> de «b c d b» son posiciones distintas, así que el código genera la misma contraseña dos veces (una con cada <code>b</code> primero). La solución es recorrer <em>letras distintas</em> con un contador de cuántas quedan de cada una, en vez de recorrer posiciones. Es el problema Anti-Hacking de la Práctica.</div></details>
+<details class="q"><summary>¿Cuántos nodos hoja tiene el árbol de permutaciones de 4 elementos? ¿Y el de subconjuntos de tamaño 3 de 6 elementos?</summary><div class="r">4! = 24 y C(6, 3) = 20.</div></details>
+</section>
+
+<!-- ====================================================== PODA -->
+<section id="poda" class="tec">
+<h2>Poda y branch and bound</h2>
+<div class="prob"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><b>Probabilidad muy alta</b><span>Va junto con backtracking</span><span>Slides: clases 13 y 15</span></div>
+
+<div class="frase"><strong>Qué resuelve.</strong> Hace que el backtracking revise menos, cortando ramas enteras del árbol apenas se sabe que no llevan a nada.</div>
+
+<h3>La idea</h3>
+<p>Podar es dejar de explorar una rama <em>y todos sus descendientes</em>. Hay dos motivos para cortar:</p>
+<table>
+<thead><tr><th>Tipo</th><th>Pregunta que hace</th><th>Corta cuando…</th></tr></thead>
+<tbody>
+<tr><td><strong>Poda por factibilidad</strong></td><td>¿Esta solución parcial todavía puede llegar a ser válida?</td><td>ya rompió una restricción y agregar más elementos no lo puede arreglar.</td></tr>
+<tr><td><strong>Branch and bound</strong> (poda por cota)</td><td>¿Esta rama todavía puede ganarle a la mejor solución que ya tengo?</td><td>ni en el caso más optimista supera a la mejor conocida.</td></tr>
+</tbody>
+</table>
+<div class="nota"><strong>La trampa de la poda.</strong> Solo se puede podar cuando estás <em>seguro</em> de que la rama no sirve. «Todavía no cumple» no es lo mismo que «ya no puede cumplir». Si pides subconjuntos con al menos un número primo y llevas {4}, no puedes cortar: {4, 7} sí cumple.</div>
+
+<h3>Ejemplo a mano: poda por factibilidad</h3>
+<p>Subconjuntos de tamaño 3 de {2, 3, 4, 7}, de números positivos, con suma ≤ 10.</p>
+<ul>
+<li>{2} → {2, 3} → {2, 3, 4}: suma 9. <strong>Solución.</strong></li>
+<li>{2, 3, 7}: suma 12. No sirve.</li>
+<li>{2, 4}: suma 6, sigue. {2, 4, 7}: suma 13. No sirve.</li>
+<li>{2, 7}: suma 9, sigue, pero no quedan elementos.</li>
+<li>{3} → {3, 4}: suma 7. {3, 4, 7}: suma 14. No sirve.</li>
+<li>{3, 7}: suma 10, no quedan elementos. {4, 7}: <strong>suma 11 &gt; 10, se poda</strong> sin mirar nada debajo.</li>
+</ul>
+<p>La poda es válida porque todos los números son positivos: la suma solo puede crecer. Con números negativos esa poda sería incorrecta.</p>
+
+<h3>El núcleo del código</h3>
+<p>El patrón pasa a ser <strong>Elegir → Verificar → Explorar → Deshacer</strong>. Lo más cómodo es llevar la suma como parámetro, en vez de recalcularla.</p>
+<pre class="code"><code>void generar(const vector&lt;int&gt;&amp; c, vector&lt;int&gt;&amp; actual, int inicio, int k, long long suma, long long S){
+    if (suma &gt; S) return;                       // PODA por factibilidad
+    if ((int)actual.size() == k){ /* solucion */ return; }
+    for (int i = inicio; i &lt; (int)c.size(); i++){
+        actual.push_back(c[i]);
+        generar(c, actual, i + 1, k, suma + c[i], S);
+        actual.pop_back();
+    }
+}</code></pre>
+<p>Otra poda que casi siempre aplica: si los elementos que quedan no alcanzan para completar los k que faltan, se corta. En el ciclo se escribe <code>i &lt; n &amp;&amp; n - i &gt;= faltan</code>.</p>
+
+<h4>Branch and bound, con el vendedor viajero (TSP)</h4>
+<p>El TSP pide el recorrido más corto que pasa por todas las ciudades una vez y vuelve al inicio. Con backtracking se prueban todas las permutaciones. Para podar se guarda <code>mejor</code>, el costo del mejor recorrido completo encontrado hasta ahora, y se agregan dos cortes:</p>
+<ol>
+<li><strong>Costo parcial:</strong> si lo que llevo recorrido ya cuesta <code>mejor</code> o más, corto. Es válido porque las distancias son positivas.</li>
+<li><strong>Cota optimista:</strong> calculo lo mínimo que <em>podría</em> costar terminar. Por ejemplo, sumando la arista más barata que sale de cada ciudad que falta (<code>minOut</code>). Si <code>costo + cota ≥ mejor</code>, corto.</li>
+</ol>
+<p>La cota tiene que ser <em>optimista</em>: nunca mayor que el costo real de terminar. Si se pasa de pesimista, podría cortar la rama donde estaba el óptimo.</p>
+
+<h3>Cuánto cuesta y cuándo no sirve</h3>
+<ul>
+<li>En el peor caso sigue siendo exponencial: la poda no cambia el orden de magnitud garantizado, solo lo que pasa en la práctica.</li>
+<li>Un detalle del TSP: como el recorrido es un ciclo, se fija la ciudad de inicio. Así se prueban (n − 1)! órdenes y no n!.</li>
+</ul>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>Buscas subconjuntos cuya suma sea <em>exactamente</em> S, con números positivos. ¿Puedes podar cuando la suma parcial es menor que S?</summary><div class="r">No. Una suma menor todavía puede crecer hasta S. Solo puedes podar cuando la suma parcial ya <em>superó</em> S, porque de ahí no baja.</div></details>
+<details class="q"><summary>En un problema de <em>maximizar</em>, ¿hacia qué lado debe equivocarse la cota para ser válida?</summary><div class="r">Hacia arriba. Debe decir «desde aquí se puede conseguir, como mucho, tanto». Si ese máximo optimista no supera a la mejor solución conocida, la rama se descarta sin riesgo. En un problema de minimizar es al revés: la cota dice «como mínimo costará tanto».</div></details>
+</section>
+
+<!-- ====================================================== MASCARAS -->
+<section id="masc" class="tec">
+<h2>Máscaras de bits y PD sobre subconjuntos</h2>
+<div class="prob"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><b>Probabilidad media</b><span>1 de 4 certámenes</span><span>Slides: clase 14 (solo las máscaras)</span></div>
+<div class="nota">La PD sobre subconjuntos (segunda mitad de esta sección) <strong>no está en las slides</strong>. Conviene leerla después de la sección de programación dinámica.</div>
+
+<div class="frase"><strong>Qué resuelve.</strong> Representa un subconjunto con un solo número entero, para recorrer todos los subconjuntos sin recursión o para usarlos como índice de una tabla.</div>
+
+<h3>La idea</h3>
+<p>Un subconjunto de n elementos se describe con n respuestas de sí o no: ¿está el elemento 0?, ¿está el 1?… Eso es exactamente un número binario de n bits. El bit j vale 1 si el elemento j está dentro.</p>
+<table class="mini">
+<thead><tr><th>Número</th><th>Binario (c b a)</th><th>Subconjunto de {a, b, c}</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>000</td><td>∅</td></tr>
+<tr><td>1</td><td>001</td><td>{a}</td></tr>
+<tr><td>2</td><td>010</td><td>{b}</td></tr>
+<tr><td>3</td><td>011</td><td>{a, b}</td></tr>
+<tr><td>4</td><td>100</td><td>{c}</td></tr>
+<tr><td>5</td><td>101</td><td>{a, c}</td></tr>
+<tr><td>6</td><td>110</td><td>{b, c}</td></tr>
+<tr><td>7</td><td>111</td><td>{a, b, c}</td></tr>
+</tbody>
+</table>
+<p>Contar de 0 a 2<sup>n</sup> − 1 es, entonces, pasar por todos los subconjuntos. Las operaciones que se necesitan son cuatro:</p>
+<table>
+<thead><tr><th>Quiero</th><th>Se escribe</th><th>Por qué</th></tr></thead>
+<tbody>
+<tr><td>El número con solo el bit j encendido</td><td><code>1 &lt;&lt; j</code></td><td>Corre el 1 j lugares a la izquierda: vale 2<sup>j</sup>.</td></tr>
+<tr><td>Saber si j está en el conjunto</td><td><code>mask &amp; (1 &lt;&lt; j)</code></td><td>El «y» bit a bit deja solo ese bit; si da distinto de 0, está.</td></tr>
+<tr><td>Agregar j</td><td><code>mask | (1 &lt;&lt; j)</code></td><td>El «o» enciende ese bit.</td></tr>
+<tr><td>Cuántos elementos tiene</td><td><code>__builtin_popcount(mask)</code></td><td>Cuenta los bits en 1.</td></tr>
+</tbody>
+</table>
+
+<h3>El núcleo del código: recorrer todos los subconjuntos</h3>
+<pre class="code"><code>for (int mask = 0; mask &lt; (1 &lt;&lt; n); mask++){     // cada mask es un subconjunto
+    long long suma = 0;
+    for (int j = 0; j &lt; n; j++)
+        if (mask &amp; (1 &lt;&lt; j)) suma += a[j];        // el elemento j esta dentro
+    // aqui se usa el subconjunto
+}</code></pre>
+<p>Cuesta O(n · 2<sup>n</sup>) y cabe hasta n ≈ 20. Con n ≥ 31 hay que escribir <code>1LL &lt;&lt; n</code>, porque <code>1 &lt;&lt; 31</code> no cabe en un <code>int</code>.</p>
+
+<h3>PD sobre subconjuntos: el TSP sin probar n! órdenes</h3>
+<p>Cuando el orden importa, lo natural es probar las n! permutaciones, y eso solo cabe hasta n ≈ 10. La observación que lo mejora: para decidir cómo seguir un recorrido no importa <em>en qué orden</em> visité las ciudades anteriores. Solo importan dos cosas: <strong>cuáles ya visité</strong> y <strong>en cuál estoy</strong>.</p>
+<p>Muchos órdenes distintos llegan a la misma situación, y de todos ellos solo interesa el más barato. Así que se guarda una tabla:</p>
+<div class="formula">dp[mask][j] = menor costo de partir en la ciudad 0, visitar exactamente las ciudades de <i>mask</i> y terminar en j</div>
+<p>Para llenarla se piensa en el último paso. Si estoy en j habiendo visitado <i>mask</i>, puedo ir a cualquier ciudad k que no esté en <i>mask</i>:</p>
+<div class="formula">dp[mask | (1 &lt;&lt; k)][k] = mín( dp[mask | (1 &lt;&lt; k)][k] , dp[mask][j] + dist[j][k] )</div>
+<pre class="code"><code>vector&lt;vector&lt;long long&gt;&gt; dp(1 &lt;&lt; n, vector&lt;long long&gt;(n, INF));
+dp[1][0] = 0;                                        // solo la ciudad 0, parado en ella
+for (int mask = 1; mask &lt; (1 &lt;&lt; n); mask++)
+    for (int j = 0; j &lt; n; j++){
+        if (!(mask &amp; (1 &lt;&lt; j)) || dp[mask][j] == INF) continue;
+        for (int k = 0; k &lt; n; k++){
+            if (mask &amp; (1 &lt;&lt; k)) continue;           // k ya fue visitada
+            int nueva = mask | (1 &lt;&lt; k);
+            dp[nueva][k] = min(dp[nueva][k], dp[mask][j] + dist[j][k]);
+        }
+    }
+long long mejor = INF;                               // cerrar el ciclo volviendo a 0
+for (int j = 0; j &lt; n; j++) mejor = min(mejor, dp[(1 &lt;&lt; n) - 1][j] + dist[j][0]);</code></pre>
+<p>Recorrer <i>mask</i> en orden creciente funciona porque agregar una ciudad siempre da un número mayor: cuando se usa <code>dp[mask]</code>, ya está terminado. Programa completo: <a href="Guia-C2-AlgoCo.html#p-masc">plantilla de Máscaras y TSP</a>.</p>
+
+<h3>Cuánto cuesta y cuándo no sirve</h3>
+<ul>
+<li><strong>Tiempo:</strong> O(2<sup>n</sup> · n²). <strong>Memoria:</strong> O(2<sup>n</sup> · n).</li>
+<li>Con n = 20 son unos 4 × 10⁸ pasos simples: es el límite. Con n = 15 es instantáneo. Con n = 25 ya no cabe.</li>
+<li>La señal en el enunciado: el orden importa, n está entre 12 y 20, y lo único que hace falta recordar es «qué usé» y «lo último».</li>
+</ul>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>Con n = 5, ¿qué subconjunto es <code>mask = 22</code>?</summary><div class="r">22 en binario es 10110: están encendidos los bits 1, 2 y 4. El subconjunto es {1, 2, 4} (contando los elementos desde 0).</div></details>
+<details class="q"><summary>¿Por qué la PD con máscara es correcta si «olvida» el orden en que se visitaron las ciudades?</summary><div class="r">Porque el costo de lo que falta solo depende de qué ciudades quedan y de dónde estoy. Dos recorridos que visitaron las mismas ciudades y terminan en la misma tienen exactamente las mismas opciones por delante, así que el más caro de los dos nunca puede ser parte del óptimo y se puede descartar.</div></details>
+</section>
+
+<!-- ====================================================== VORACES -->
+<section id="voraz" class="tec">
+<h2>Qué es un algoritmo voraz</h2>
+<div class="prob"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><b>Probabilidad alta</b><span>Voraces por orden: 2 de 4 y Listado 4</span><span>Slides: clase 16</span></div>
+
+<div class="frase"><strong>Qué resuelve.</strong> Problemas donde basta con ordenar los datos con un buen criterio y recorrerlos una sola vez, tomando decisiones que nunca se revisan.</div>
+
+<h3>La idea</h3>
+<p>Un voraz (<em>greedy</em>) construye la solución paso a paso. En cada paso toma lo que se ve mejor <em>en ese momento</em> y no vuelve atrás. La diferencia con backtracking es justamente esa:</p>
+<table>
+<thead><tr><th>Backtracking</th><th>Voraz</th></tr></thead>
+<tbody><tr><td>Elijo → exploro → puedo volver atrás.</td><td>Elijo lo mejor ahora → sigo, sin volver atrás.</td></tr></tbody>
+</table>
+<p>Es rápido y fácil de programar. Su problema es otro: <strong>casi siempre está mal</strong>. Elegir lo mejor ahora no garantiza lo mejor al final.</p>
+<div class="nota"><strong>El contraejemplo de la clase.</strong> Hay que elegir números de la fila 1, 4, 5, 4 sin tomar dos vecinos, maximizando la suma. El voraz «tomo siempre el mayor disponible» elige el 5, queda sin poder tomar los dos 4, agrega el 1 y obtiene 6. Lo óptimo es 4 + 4 = 8. Este problema no es voraz: es programación dinámica (<a href="#pd">MWIS</a>).</div>
+
+<h3>Cómo saber si un criterio voraz es correcto</h3>
+<ol class="pasos">
+<li><strong>Casos extremos.</strong> Simplifica el problema hasta que la respuesta sea obvia (todos los pesos iguales, todas las duraciones iguales). El criterio general debe dar la respuesta obvia en esos casos.</li>
+<li><strong>Busca un contraejemplo chico.</strong> Con dos o tres elementos, compara tu criterio contra todas las opciones a mano. Un solo caso donde pierda lo descarta.</li>
+<li><strong>Argumento de intercambio.</strong> Si no encuentras contraejemplo, convéncete de que es correcto: toma una solución que <em>no</em> respeta tu criterio, intercambia dos elementos vecinos que están «al revés» y comprueba que el resultado no empeora. Está explicado completo en la <a href="#ratio">sección siguiente</a>.</li>
+</ol>
+<p>Que un criterio funcione en los ejemplos del enunciado no demuestra nada; que falle en uno sí lo descarta.</p>
+
+<h3>Los voraces por orden más comunes</h3>
+<table>
+<thead><tr><th>Situación</th><th>Criterio</th><th>Por qué es seguro</th></tr></thead>
+<tbody>
+<tr><td>Emparejar dos listas («cuántas tareas caben en cuántos espacios»)</td><td>Ordenar ambas. A cada espacio, de menor a mayor, darle la tarea más chica que quede.</td><td>Si la más chica no cabe, ninguna cabe. Si cabe, usarla deja las grandes para los espacios grandes.</td></tr>
+<tr><td>Formar el mínimo de grupos con diferencia acotada</td><td>Ordenar. Abrir un grupo con el menor que quede y meter todos los que estén dentro del margen.</td><td>El menor tiene que ir en algún grupo; alargar ese grupo lo más posible nunca perjudica.</td></tr>
+<tr><td>Tareas con duración y peso, minimizar suma ponderada</td><td>Ordenar por peso / duración, de mayor a menor.</td><td>Argumento de intercambio (sección siguiente).</td></tr>
+<tr><td>Fusionar de a dos pagando la suma</td><td>Unir siempre los dos menores (<a href="#huff">Huffman</a>).</td><td>Lo que se une primero se paga más veces.</td></tr>
+<tr><td>Conectar todo al menor costo</td><td>Tomar la arista más barata que no cierre un ciclo (<a href="#mst">Kruskal</a>).</td><td>Propiedad de corte.</td></tr>
+</tbody>
+</table>
+
+<h3>Cuánto cuesta</h3>
+<p>Ordenar, O(n log n), más un recorrido lineal. Por eso son la respuesta esperada cuando n llega a 10⁵ o 10⁶ y el enunciado habla de «ordenar», «emparejar» o «el mínimo de grupos».</p>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>Para dar vuelto con la menor cantidad de monedas, el voraz «uso siempre la moneda más grande que quepa» funciona con monedas de 1, 5, 10 y 25. ¿Funciona con monedas de 1, 3 y 4 para dar 6?</summary><div class="r">No. El voraz da 4 + 1 + 1 (tres monedas) y lo óptimo es 3 + 3 (dos). Que un voraz sea correcto depende de los datos del problema, no solo de la idea.</div></details>
+</section>
+
+<!-- ====================================================== GREEDY RATIO -->
+<section id="ratio" class="tec">
+<h2>Planificación de tareas: GreedyRatio</h2>
+<div class="prob"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><b>Probabilidad muy alta</b><span>2 de 4 certámenes, escritos por la profesora</span><span>Slides: clases 16 y 17</span></div>
+
+<div class="frase"><strong>Qué resuelve.</strong> Decidir en qué orden ejecutar tareas que tienen duración y peso, para que la suma de «peso × instante en que termina» sea la menor posible.</div>
+
+<h3>El problema, con calma</h3>
+<p>Una máquina ejecuta n tareas (<em>jobs</em>), una a la vez y sin pausas. Cada tarea j tiene:</p>
+<ul>
+<li><strong>l<sub>j</sub></strong>: su duración (<em>length</em>).</li>
+<li><strong>w<sub>j</sub></strong>: su peso o importancia (<em>weight</em>).</li>
+</ul>
+<p>El <strong>tiempo de finalización C<sub>j</sub></strong> es el instante en que la tarea j termina: la suma de las duraciones de todas las anteriores más la suya. El costo de un orden es:</p>
+<div class="formula">costo = w<sub>1</sub>·C<sub>1</sub> + w<sub>2</sub>·C<sub>2</sub> + … + w<sub>n</sub>·C<sub>n</sub></div>
+<p>Ejemplo de las slides: duraciones 1, 2, 3 y pesos 3, 2, 1, en ese orden. Terminan en los instantes 1, 3 y 6, y el costo es 3·1 + 2·3 + 1·6 = <strong>15</strong>. Los otros cinco órdenes cuestan 19, 19, 27, 27 y 31: ese era el mejor.</p>
+<p>Piensa en clientes esperando: el peso es cuánto «duele» cada minuto que ese cliente espera. Quieres despachar pronto a los que más duele hacer esperar, y también a los que se atienden rápido, porque no retrasan mucho al resto.</p>
+
+<h3>Cómo se llega al criterio</h3>
+<p>Se aplican los tres pasos de la sección anterior.</p>
+<p><strong>1. Casos extremos.</strong></p>
+<ul>
+<li>Si todas duran lo mismo: primero la de <strong>mayor peso</strong>.</li>
+<li>Si todas pesan lo mismo: primero la <strong>más corta</strong>.</li>
+</ul>
+<p>Hace falta un puntaje que suba con el peso y baje con la duración. Hay dos candidatos naturales:</p>
+<table class="mini">
+<thead><tr><th>Nombre</th><th>Puntaje</th></tr></thead>
+<tbody><tr><td>GreedyDiff</td><td>w − l</td></tr><tr><td>GreedyRatio</td><td>w / l</td></tr></tbody>
+</table>
+<p><strong>2. Contraejemplo chico.</strong> Dos tareas: la 1 con l = 5, w = 3; la 2 con l = 2, w = 1.</p>
+<table>
+<thead><tr><th>Criterio</th><th>Puntaje tarea 1</th><th>Puntaje tarea 2</th><th>Orden</th><th>Costo</th></tr></thead>
+<tbody>
+<tr><td>GreedyDiff (w − l)</td><td>−2</td><td>−1</td><td>2, luego 1</td><td>1·2 + 3·7 = <strong>23</strong></td></tr>
+<tr><td>GreedyRatio (w / l)</td><td>0,6</td><td>0,5</td><td>1, luego 2</td><td>3·5 + 1·7 = <strong>22</strong></td></tr>
+</tbody>
+</table>
+<p>GreedyDiff queda descartado. Pero ojo: esto <em>no</em> demuestra que GreedyRatio sea correcto, solo que el otro no lo es.</p>
+
+<h3>3. Por qué GreedyRatio siempre es óptimo: el argumento de intercambio</h3>
+<p>La idea completa cabe en una frase: <em>en cualquier orden que no respete el criterio hay dos tareas vecinas «al revés», y al intercambiarlas el costo baja</em>. Paso a paso:</p>
+<ol class="pasos">
+<li><strong>Tomo un orden cualquiera que no sea el de GreedyRatio.</strong> Entonces en algún lugar hay dos tareas <em>pegadas</em>, primero i y después j, donde j tiene mejor razón que i (w<sub>j</sub>/l<sub>j</sub> &gt; w<sub>i</sub>/l<sub>i</sub>). Si no hubiera ningún par así, el orden ya estaría ordenado por razón.</li>
+<li><strong>Las intercambio y miro qué cambia.</strong> Las tareas de antes terminan igual. Las de después también, porque i y j juntas duran lo mismo en cualquier orden. Solo cambian los tiempos de i y de j.</li>
+<li><strong>Cuánto cambia cada una.</strong> Ahora j va antes: termina l<sub>i</sub> antes, y eso ahorra w<sub>j</sub>·l<sub>i</sub>. En cambio i termina l<sub>j</sub> más tarde, y eso cuesta w<sub>i</sub>·l<sub>j</sub>.</li>
+<li><strong>El saldo.</strong> <div class="formula">cambio en el costo = w<sub>i</sub>·l<sub>j</sub> − w<sub>j</sub>·l<sub>i</sub></div></li>
+<li><strong>Ese saldo es negativo.</strong> Como w<sub>i</sub>/l<sub>i</sub> &lt; w<sub>j</sub>/l<sub>j</sub> y las duraciones son positivas, multiplicando cruzado queda w<sub>i</sub>·l<sub>j</sub> &lt; w<sub>j</sub>·l<sub>i</sub>. El intercambio <em>mejora</em> el costo.</li>
+<li><strong>Repito.</strong> Cada intercambio arregla un par y no empeora nada. Corrigiendo pares uno por uno, cualquier orden termina convertido en el de GreedyRatio sin que el costo haya subido nunca. Entonces ningún orden es mejor que el de GreedyRatio.</li>
+</ol>
+<p>Si dos tareas tienen la misma razón, el saldo es 0: da lo mismo cuál va primero. Por eso puede haber más de un orden óptimo, todos con el mismo costo.</p>
+<div class="clave"><strong>Lo que hay que llevarse.</strong> El argumento de intercambio sirve para cualquier voraz por orden: compara dos vecinos, calcula cuánto cambia el costo al darlos vuelta, y despeja qué condición hace que el cambio no convenga. Esa condición es tu comparador. Aquí la fórmula del paso 4 <em>es</em> el comparador.</div>
+
+<h3>El núcleo del código</h3>
+<pre class="code"><code>struct Tarea { long long l, w; };
+
+bool antes(const Tarea&amp; a, const Tarea&amp; b){
+    return a.w * b.l &gt; b.w * a.l;      // a.w/a.l &gt; b.w/b.l, sin dividir
+}
+
+sort(t.begin(), t.end(), antes);
+long long tiempo = 0, costo = 0;
+for (const Tarea&amp; x : t){
+    tiempo += x.l;                     // instante en que termina x
+    costo  += x.w * tiempo;
+}</code></pre>
+<p>Tres detalles que cuestan el problema completo:</p>
+<ul>
+<li><strong>No dividas.</strong> Comparar <code>w / l</code> con <code>double</code> trae errores de redondeo. La multiplicación cruzada es exacta.</li>
+<li><strong>Usa <code>&gt;</code>, nunca <code>&gt;=</code>.</strong> <code>sort</code> exige un orden estricto; con <code>&gt;=</code> el programa se puede caer.</li>
+<li><strong><code>long long</code></strong> en tiempo y costo: con 10⁵ tareas el costo pasa de 10¹⁷.</li>
+</ul>
+<p>Programa completo: <a href="Guia-C2-AlgoCo.html#p-greedy">plantilla de Greedy</a>.</p>
+
+<h3>Cuánto cuesta y cuándo no sirve</h3>
+<ul>
+<li>O(n log n) por el ordenamiento.</li>
+<li>El criterio vale para <em>una</em> máquina y este costo exacto. Si el enunciado agrega una restricción (dos tipos de tarea con un tiempo de cambio, por ejemplo), lo usual es que el problema se parta en pocos casos y dentro de cada uno siga valiendo el mismo orden.</li>
+</ul>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>Tareas (l, w): A = (3, 6), B = (1, 1), C = (2, 5). ¿En qué orden van y cuánto cuesta?</summary><div class="r">Razones: A = 2, B = 1, C = 2,5. Orden C, A, B. Terminan en 2, 5 y 6. Costo = 5·2 + 6·5 + 1·6 = <strong>46</strong>.</div></details>
+<details class="q"><summary>¿Por qué al intercambiar dos tareas vecinas no cambian los tiempos de las tareas que vienen después?</summary><div class="r">Porque lo que una tarea posterior espera es la suma de las duraciones de todas las anteriores, y esa suma no depende del orden en que se ejecuten.</div></details>
+<details class="q"><summary>Si todas las tareas pesan 1, ¿a qué se reduce GreedyRatio?</summary><div class="r">A ordenar por 1/l de mayor a menor, es decir, primero la más corta. Es el caso extremo que se usó para encontrar el criterio.</div></details>
+</section>
+
+<!-- ====================================================== HUFFMAN -->
+<section id="huff" class="tec">
+<h2>Códigos de Huffman</h2>
+<div class="prob"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><b>Probabilidad media</b><span>En temario, 0 de 4 certámenes</span><span>Slides: Códigos de Huffman</span></div>
+
+<div class="frase"><strong>Qué resuelve.</strong> Asignar a cada símbolo un código binario, más corto mientras más frecuente sea, para que el texto ocupe lo menos posible. En el juez suele aparecer disfrazado: «fusionar de a dos pagando la suma».</div>
+
+<h3>La idea</h3>
+<p>Con 4 símbolos, un código de largo fijo usa 2 bits para cada uno. Si la A aparece el 60 % de las veces, conviene darle un código de 1 bit y alargar los de las letras raras.</p>
+<p>El riesgo es la ambigüedad. Con A = 0, B = 01, C = 10, D = 1, la cadena 001 se puede leer como «AB» o como «AAD». Pasa porque el código de A es el <em>comienzo</em> del código de B.</p>
+<div class="clave"><strong>Código libre de prefijo:</strong> ningún código es el comienzo de otro. Así, leyendo de izquierda a derecha, siempre se sabe dónde termina cada símbolo.</div>
+<p>Un código binario se dibuja como un árbol: ir a la izquierda es 0, a la derecha es 1, y el código de un símbolo es el camino desde la raíz. El código es libre de prefijo exactamente cuando <strong>los símbolos están solo en las hojas</strong> (una hoja no puede ser ancestro de otra). Y el largo del código de un símbolo es la profundidad de su hoja.</p>
+<p>El problema queda así: construir el árbol donde la <em>profundidad promedio</em> de las hojas, ponderada por frecuencia, sea mínima.</p>
+
+<h3>El algoritmo</h3>
+<p>Huffman construye el árbol de abajo hacia arriba:</p>
+<ol>
+<li>Cada símbolo parte como un árbol de un solo nodo, con su frecuencia como peso.</li>
+<li>Se sacan los <strong>dos árboles de menor peso</strong> y se cuelgan de una raíz nueva, cuyo peso es la suma.</li>
+<li>Se repite hasta que queda un solo árbol. Son siempre n − 1 fusiones.</li>
+</ol>
+<p><strong>Por qué los dos menores.</strong> Al fusionar dos árboles, todas sus hojas bajan un nivel: cada uno de esos símbolos gana un bit. El costo de la fusión es entonces la suma de los pesos de ambos árboles. Lo que se fusiona primero queda más abajo y vuelve a pagar en cada fusión posterior, así que conviene que abajo queden los menos frecuentes.</p>
+
+<h3>Ejemplo a mano</h3>
+<p>Frecuencias: A = 0,60, B = 0,25, C = 0,10, D = 0,05.</p>
+<table>
+<thead><tr><th>Fusión</th><th>Se unen</th><th>Costo</th><th>Bosque que queda</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>D (0,05) y C (0,10)</td><td>0,15</td><td>A 0,60 · B 0,25 · CD 0,15</td></tr>
+<tr><td>2</td><td>CD (0,15) y B (0,25)</td><td>0,40</td><td>A 0,60 · BCD 0,40</td></tr>
+<tr><td>3</td><td>BCD (0,40) y A (0,60)</td><td>1,00</td><td>ABCD 1,00</td></tr>
+</tbody>
+</table>
+<figure class="fig">
+<svg viewBox="0 0 420 220" width="420" role="img" aria-label="Árbol de Huffman del ejemplo">
+<line class="ar" x1="180" y1="30" x2="90" y2="80"/><line class="ar" x1="180" y1="30" x2="260" y2="80"/>
+<line class="ar" x1="260" y1="100" x2="190" y2="140"/><line class="ar" x1="260" y1="100" x2="320" y2="140"/>
+<line class="ar" x1="320" y1="160" x2="270" y2="190"/><line class="ar" x1="320" y1="160" x2="375" y2="190"/>
+<text class="peso" x="125" y="50">0</text><text class="peso" x="228" y="50">1</text>
+<text class="peso" x="213" y="116">0</text><text class="peso" x="297" y="116">1</text>
+<text class="peso" x="282" y="174">0</text><text class="peso" x="355" y="174">1</text>
+<circle class="nodo" cx="180" cy="22" r="17"/><text x="180" y="27" text-anchor="middle">1,00</text>
+<circle class="nodo" cx="260" cy="92" r="17"/><text x="260" y="97" text-anchor="middle">0,40</text>
+<circle class="nodo" cx="320" cy="152" r="17"/><text x="320" y="157" text-anchor="middle">0,15</text>
+<rect class="hoja" x="55" y="80" width="70" height="24" rx="6"/><text x="90" y="97" text-anchor="middle">A · 0,60</text>
+<rect class="hoja" x="155" y="140" width="70" height="24" rx="6"/><text x="190" y="157" text-anchor="middle">B · 0,25</text>
+<rect class="hoja" x="235" y="190" width="70" height="24" rx="6"/><text x="270" y="207" text-anchor="middle">C · 0,10</text>
+<rect class="hoja" x="340" y="190" width="70" height="24" rx="6"/><text x="375" y="207" text-anchor="middle">D · 0,05</text>
+</svg>
+<figcaption>Códigos: A = 0, B = 10, C = 110, D = 111.</figcaption>
+</figure>
+<p>Largo promedio: 0,60·1 + 0,25·2 + 0,10·3 + 0,05·3 = <strong>1,55 bits por símbolo</strong>, contra 2 del código fijo.</p>
+<div class="clave"><strong>El atajo que sirve en el juez.</strong> El largo promedio es igual a la suma de los costos de las fusiones: 0,15 + 0,40 + 1,00 = 1,55. No hace falta construir el árbol; basta con ir sumando lo que cuesta cada unión.</div>
+
+<h3>El núcleo del código</h3>
+<p>Sacar el mínimo muchas veces es el trabajo de un <strong>min-heap</strong> (cola de prioridad): inserta y extrae el menor en O(log n).</p>
+<pre class="code"><code>priority_queue&lt;long long, vector&lt;long long&gt;, greater&lt;long long&gt;&gt; h;   // min-heap
+for (long long x : frecuencias) h.push(x);
+
+long long total = 0;
+while (h.size() &gt; 1){
+    long long a = h.top(); h.pop();      // el menor
+    long long b = h.top(); h.pop();      // el segundo menor
+    total += a + b;                      // costo de esta fusion
+    h.push(a + b);                       // el arbol nuevo vuelve al bosque
+}</code></pre>
+<p>Sin el <code>greater</code>, <code>priority_queue</code> es un max-heap y entrega el mayor. Programa completo: <a href="Guia-C2-AlgoCo.html#p-huff">plantilla de Huffman</a>.</p>
+
+<h3>Cuánto cuesta</h3>
+<ul>
+<li>Con heap: O(n log n). Buscando los dos mínimos a mano en cada vuelta: O(n²).</li>
+<li>Con un solo símbolo no hay fusiones y el costo es 0: es el caso borde típico.</li>
+</ul>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>Ejercicio de la clase: A = 0,30, B = 0,25, C = 0,20, D = 0,15, E = 0,10. ¿Cuál es el largo promedio?</summary><div class="r">Fusiones: E + D = 0,25. Luego C (0,20) con uno de los 0,25 = 0,45. Luego 0,25 + A (0,30) = 0,55. Al final 0,45 + 0,55 = 1,00. Suma de costos: 0,25 + 0,45 + 0,55 + 1,00 = <strong>2,25 bits</strong>. Un código fijo para 5 símbolos necesita 3 bits.</div></details>
+<details class="q"><summary>«Hay n archivos; unir dos de tamaños a y b cuesta a + b. ¿Costo mínimo de dejar uno solo?» ¿Por qué es Huffman?</summary><div class="r">Porque cada unión paga la suma y produce un elemento nuevo de ese tamaño: es exactamente una fusión de Huffman. Se unen siempre los dos más chicos con un min-heap y se suman los costos.</div></details>
+<details class="q"><summary>¿El código A = 0, B = 10, C = 11 es libre de prefijo? ¿Y A = 1, B = 10, C = 00?</summary><div class="r">El primero sí. El segundo no: el código de A (1) es el comienzo del de B (10).</div></details>
+</section>
+
+<!-- ====================================================== MST -->
+<section id="mst" class="tec">
+<h2>Árbol de expansión mínima: Prim y Kruskal</h2>
+<div class="prob"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><b>Probabilidad alta</b><span>2 de 4 certámenes</span><span>Slides: clases 18 y 19</span></div>
+
+<div class="frase"><strong>Qué resuelve.</strong> Conectar todos los puntos de una red gastando lo menos posible en conexiones.</div>
+
+<h3>La idea</h3>
+<p>Hay n puntos (vértices) y m conexiones posibles (aristas), cada una con un costo. Se quiere elegir un grupo de aristas que cumpla dos cosas:</p>
+<ul>
+<li><strong>Conecta todo:</strong> desde cualquier punto se puede llegar a cualquier otro. Eso es «expansión».</li>
+<li><strong>No tiene ciclos:</strong> si hubiera un ciclo, se podría quitar una de sus aristas y todo seguiría conectado, más barato. Eso es «árbol».</li>
+</ul>
+<p>Un árbol que conecta n vértices tiene siempre <strong>n − 1 aristas</strong>. El de menor costo total es el árbol de expansión mínima (MST). Solo tiene sentido si el grafo es conexo.</p>
+<div class="clave"><strong>Por qué un voraz funciona aquí (propiedad de corte).</strong> Separa los vértices en dos grupos cualesquiera. Alguna arista tiene que cruzar de un grupo al otro, o no quedarían conectados. La más barata de las que cruzan siempre se puede usar: si un árbol usara otra más cara para cruzar, cambiarla por la barata lo mantiene conectado y no lo encarece. Prim y Kruskal son dos formas de aplicar esta misma idea.</div>
+
+<h3>Ejemplo a mano</h3>
+<figure class="fig">
+<svg viewBox="0 0 400 170" width="400" role="img" aria-label="Grafo de ejemplo con su árbol de expansión mínima">
+<line class="ok" x1="60" y1="40" x2="180" y2="40"/><line class="ok" x1="180" y1="40" x2="120" y2="130"/>
+<line class="ar" x1="60" y1="40" x2="120" y2="130"/><line class="ok" x1="120" y1="130" x2="260" y2="130"/>
+<line class="ar" x1="180" y1="40" x2="260" y2="130"/><line class="ok" x1="260" y1="130" x2="340" y2="40"/>
+<line class="ar" x1="180" y1="40" x2="340" y2="40"/>
+<text class="peso" x="118" y="33">1</text><text class="peso" x="160" y="90">2</text><text class="peso" x="74" y="92">3</text>
+<text class="peso" x="186" y="148">4</text><text class="peso" x="228" y="82">5</text><text class="peso" x="310" y="92">2</text><text class="peso" x="256" y="33">6</text>
+<circle class="nodo" cx="60" cy="40" r="15"/><text x="60" y="45" text-anchor="middle">A</text>
+<circle class="nodo" cx="180" cy="40" r="15"/><text x="180" y="45" text-anchor="middle">B</text>
+<circle class="nodo" cx="120" cy="130" r="15"/><text x="120" y="135" text-anchor="middle">C</text>
+<circle class="nodo" cx="260" cy="130" r="15"/><text x="260" y="135" text-anchor="middle">D</text>
+<circle class="nodo" cx="340" cy="40" r="15"/><text x="340" y="45" text-anchor="middle">E</text>
+</svg>
+<figcaption>5 vértices y 7 aristas. En verde, el MST: costo 1 + 2 + 2 + 4 = 9.</figcaption>
+</figure>
+
+<h4>Kruskal: las aristas de menor a mayor</h4>
+<p>Ordena todas las aristas por costo y las revisa una por una. Una arista entra si une dos grupos que todavía estaban separados; si sus dos extremos ya están en el mismo grupo, cerraría un ciclo y se descarta.</p>
+<table>
+<thead><tr><th>Arista</th><th>Costo</th><th>¿Entra?</th><th>Grupos después</th></tr></thead>
+<tbody>
+<tr><td>A–B</td><td>1</td><td>Sí</td><td>{A, B} {C} {D} {E}</td></tr>
+<tr><td>B–C</td><td>2</td><td>Sí</td><td>{A, B, C} {D} {E}</td></tr>
+<tr><td>D–E</td><td>2</td><td>Sí</td><td>{A, B, C} {D, E}</td></tr>
+<tr><td>A–C</td><td>3</td><td><strong>No</strong>: A y C ya están juntos</td><td>igual</td></tr>
+<tr><td>C–D</td><td>4</td><td>Sí</td><td>{A, B, C, D, E}</td></tr>
+<tr><td>B–D, B–E</td><td>5, 6</td><td>No: ya está todo unido</td><td>igual</td></tr>
+</tbody>
+</table>
+
+<h4>Prim: hacer crecer un solo árbol</h4>
+<p>Parte de un vértice cualquiera. En cada paso mira las aristas que salen del árbol hacia un vértice de afuera (la «frontera») y toma la más barata.</p>
+<table>
+<thead><tr><th>Árbol</th><th>Aristas en la frontera</th><th>Se toma</th></tr></thead>
+<tbody>
+<tr><td>{A}</td><td>A–B 1, A–C 3</td><td>A–B (1)</td></tr>
+<tr><td>{A, B}</td><td>A–C 3, B–C 2, B–D 5, B–E 6</td><td>B–C (2)</td></tr>
+<tr><td>{A, B, C}</td><td>C–D 4, B–D 5, B–E 6</td><td>C–D (4)</td></tr>
+<tr><td>{A, B, C, D}</td><td>D–E 2, B–E 6</td><td>D–E (2)</td></tr>
+</tbody>
+</table>
+<p>Los dos llegan al mismo costo, 9. Prim da el mismo resultado sin importar el vértice de partida.</p>
+
+<h3>Union-Find: la pieza que hace rápido a Kruskal</h3>
+<p>Kruskal necesita responder muchas veces «¿estos dos vértices ya están en el mismo grupo?». Recorrer el grafo cada vez sería lento. <strong>Union-Find</strong> mantiene los grupos con un arreglo <code>p</code> donde <code>p[x]</code> es el «padre» de x. Cada grupo es un árbol y su raíz (el que es su propio padre) es el representante del grupo.</p>
+<ul>
+<li><strong>buscar(x):</strong> sube de padre en padre hasta la raíz. Dos vértices están en el mismo grupo si tienen la misma raíz.</li>
+<li><strong>unir(a, b):</strong> cuelga la raíz de un grupo debajo de la raíz del otro.</li>
+</ul>
+<p>Dos mejoras lo dejan casi instantáneo:</p>
+<ul>
+<li><strong>Unión por tamaño:</strong> siempre se cuelga el grupo chico debajo del grande. Así, cada vez que un vértice baja un nivel su grupo al menos se duplica, y eso solo puede pasar log n veces. Ningún vértice queda a más de log n pasos de la raíz.</li>
+<li><strong>Compresión de caminos:</strong> al buscar la raíz de x, se aprovecha el viaje para colgar directamente de la raíz a todos los vértices del camino. La próxima búsqueda es de un solo paso.</li>
+</ul>
+
+<h3>El núcleo del código</h3>
+<pre class="code"><code>int buscar(vector&lt;int&gt;&amp; p, int x){
+    if (p[x] != x) p[x] = buscar(p, p[x]);     // compresion de caminos
+    return p[x];
+}
+
+bool unir(vector&lt;int&gt;&amp; p, vector&lt;int&gt;&amp; tam, int a, int b){
+    a = buscar(p, a);  b = buscar(p, b);
+    if (a == b) return false;                  // ya estaban juntos: seria un ciclo
+    if (tam[a] &lt; tam[b]) swap(a, b);           // a es el grupo grande
+    p[b] = a;                                  // el chico se cuelga del grande
+    tam[a] += tam[b];
+    return true;
+}
+
+// Kruskal
+sort(e.begin(), e.end(), [](const Arista&amp; a, const Arista&amp; b){ return a.c &lt; b.c; });
+vector&lt;int&gt; p(n + 1), tam(n + 1, 1);
+iota(p.begin(), p.end(), 0);                   // cada vertice parte solo: p[i] = i
+long long total = 0;
+for (const Arista&amp; x : e)
+    if (unir(p, tam, x.u, x.v)) total += x.c;</code></pre>
+<p>Programa completo y versión de Prim con heap: <a href="Guia-C2-AlgoCo.html#p-mst">plantilla de MST</a>.</p>
+
+<h3>Cuánto cuesta y cuál usar</h3>
+<table>
+<thead><tr><th>Algoritmo</th><th>Costo</th><th>Cuándo</th></tr></thead>
+<tbody>
+<tr><td>Kruskal con Union-Find</td><td>O(m log m), que es lo que cuesta ordenar</td><td>Cuando la entrada es una lista de aristas. Es el caso normal en el juez.</td></tr>
+<tr><td>Prim con min-heap</td><td>O((m + n) log n)</td><td>Cuando ya tienes listas de adyacencia.</td></tr>
+<tr><td>Cualquiera sin estructuras</td><td>O(m · n)</td><td>Solo con grafos chicos.</td></tr>
+</tbody>
+</table>
+<ul>
+<li>Para el árbol de expansión <strong>máximo</strong> basta ordenar de mayor a menor.</li>
+<li>Los costos negativos no molestan a ninguno de los dos.</li>
+<li>Si al terminar se unieron menos de n − 1 aristas, el grafo no era conexo.</li>
+</ul>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>Un grafo conexo tiene 8 vértices y 20 aristas. ¿Cuántas aristas tiene su MST? ¿Cuántas rechaza Kruskal, como máximo?</summary><div class="r">El MST tiene 8 − 1 = 7 aristas. Las otras 13 quedan fuera (rechazadas por cerrar un ciclo o porque ya no hacían falta).</div></details>
+<details class="q"><summary>¿Por qué en <code>unir</code> se comparan las raíces y no los vértices a y b directamente?</summary><div class="r">Porque a y b pueden ser vértices distintos y aun así pertenecer al mismo grupo. Lo único que identifica a un grupo es su raíz. Además, lo que se cuelga es una raíz de la otra: colgar un vértice del medio rompería el árbol.</div></details>
+<details class="q"><summary>Dos personas deben recorrer todos los puntos de un mapa usando solo calles que llevan a un punto no visitado, y ganan las fichas de las calles que cruzan. ¿Qué estructura forman las calles que usa cada una?</summary><div class="r">Un árbol de expansión: llega a todos los puntos y nunca cierra un ciclo. La mayor diferencia posible es (árbol de expansión máximo) − (árbol de expansión mínimo). Es Juego del Destino, de la Práctica.</div></details>
+</section>
+
+<!-- ====================================================== PD -->
+<section id="pd" class="tec">
+<h2>Programación dinámica: el método y MWIS</h2>
+<div class="prob"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><b>Probabilidad muy alta</b><span>PD lineal: 3 de 4 certámenes</span><span>Slides: clase 20</span></div>
+
+<div class="frase"><strong>Qué resuelve.</strong> Problemas de «el mejor», «el mínimo» o «cuántas formas» donde el voraz falla y probar todo es demasiado lento, pero el problema grande se arma con respuestas de problemas más chicos.</div>
+
+<h3>La idea</h3>
+<p>La programación dinámica (PD) es fuerza bruta <em>con memoria</em>. Sigue considerando todas las opciones, pero se da cuenta de que la misma pregunta chica aparece muchísimas veces, y la responde una sola vez.</p>
+<p>Es como calcular el precio de una torre de Lego sabiendo el precio de cada piso: no vuelves a sumar el piso 3 cada vez que alguien pregunta por el piso 7. Lo anotas una vez y lo consultas.</p>
+<p>Para que funcione, el problema debe tener <strong>subestructura óptima</strong>: una solución óptima del problema grande contiene soluciones óptimas de problemas más chicos. La forma de descubrirla es siempre la misma pregunta:</p>
+<div class="clave"><strong>La pregunta de la PD: ¿qué pasa con el último elemento?</strong> Hay pocas posibilidades (se usa o no se usa; viene de aquí o de allá). En cada una, lo que queda es el mismo problema, más chico.</div>
+
+<h3>La receta, en cinco pasos</h3>
+<ol class="pasos">
+<li><strong>Define el subproblema con una frase.</strong> «A[i] es el mejor valor usando solo los primeros i elementos». Si no puedes escribir la frase, no puedes programarlo.</li>
+<li><strong>Escribe la recurrencia</strong> mirando la última decisión: A[i] en función de celdas anteriores.</li>
+<li><strong>Fija los casos base:</strong> los subproblemas tan chicos que se responden solos.</li>
+<li><strong>Decide el orden de llenado,</strong> de modo que cada celda se calcule después de las que necesita.</li>
+<li><strong>Di dónde queda la respuesta:</strong> casi siempre la última celda.</li>
+</ol>
+<p>El costo es (cantidad de subproblemas) × (trabajo por subproblema).</p>
+
+<h3>Ejemplo a mano: MWIS en un camino</h3>
+<p>MWIS es el conjunto independiente de peso máximo. En un camino (una fila), el problema es: elegir elementos de una fila de modo que <strong>nunca haya dos vecinos elegidos</strong>, maximizando la suma. Es el modelo de todos los enunciados con «no consecutivos» o «no adyacentes».</p>
+<p>Fila de pesos: <strong>1, 4, 5, 4</strong>. Ya vimos que el voraz da 6 y lo óptimo es 8.</p>
+<p><strong>Paso 1.</strong> A[i] = mejor suma posible usando solo los primeros i elementos.</p>
+<p><strong>Paso 2.</strong> ¿Qué pasa con el elemento i? Solo hay dos casos:</p>
+<ul>
+<li><strong>No lo uso.</strong> Entonces la respuesta es la misma que con los primeros i − 1: A[i − 1].</li>
+<li><strong>Lo uso.</strong> Gano su peso w<sub>i</sub>, pero el vecino i − 1 queda prohibido. Lo mejor que puedo hacer con el resto es A[i − 2].</li>
+</ul>
+<div class="formula">A[i] = máx( A[i − 1] , A[i − 2] + w<sub>i</sub> )</div>
+<p><strong>Paso 3.</strong> A[0] = 0 (sin elementos no se gana nada) y A[1] = w<sub>1</sub>.</p>
+<p><strong>Pasos 4 y 5.</strong> Se llena de izquierda a derecha y la respuesta es A[n].</p>
+<table class="mini">
+<thead><tr><th class="lat">i</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+<tbody>
+<tr><th class="lat">peso w<sub>i</sub></th><td>–</td><td>1</td><td>4</td><td>5</td><td>4</td></tr>
+<tr><th class="lat">no lo uso: A[i−1]</th><td>–</td><td>–</td><td>1</td><td>4</td><td>6</td></tr>
+<tr><th class="lat">lo uso: A[i−2] + w<sub>i</sub></th><td>–</td><td>–</td><td>0 + 4 = 4</td><td>1 + 5 = 6</td><td>4 + 4 = 8</td></tr>
+<tr><th class="lat">A[i]</th><td>0</td><td>1</td><td class="hit">4</td><td class="hit">6</td><td class="hit">8</td></tr>
+</tbody>
+</table>
+
+<h4>Reconstrucción: saber <em>cuáles</em> se eligieron</h4>
+<p>La tabla entrega el valor, no los elementos. Para recuperarlos se recorre la tabla hacia atrás, preguntando en cada celda cuál de los dos casos ganó:</p>
+<ul>
+<li>i = 4: «lo uso» da 8 y «no lo uso» da 6. <strong>Se usó el 4.º</strong>; salto a i = 2.</li>
+<li>i = 2: «lo uso» da 4 y «no lo uso» da 1. <strong>Se usó el 2.º</strong>; salto a i = 0 y termino.</li>
+</ul>
+<p>Se eligieron el 2.º y el 4.º: 4 + 4 = 8.</p>
+
+<h3>El núcleo del código</h3>
+<pre class="code"><code>vector&lt;long long&gt; A(n + 1, 0);
+A[1] = w[0];                                        // el elemento numero i esta en w[i - 1]
+for (int i = 2; i &lt;= n; i++)
+    A[i] = max(A[i - 1], A[i - 2] + w[i - 1]);
+// respuesta: A[n]
+
+// reconstruccion
+vector&lt;int&gt; elegidos;
+for (int i = n; i &gt;= 1; ){
+    if (i == 1 || A[i - 2] + w[i - 1] &gt; A[i - 1]){ elegidos.push_back(i); i -= 2; }
+    else i -= 1;
+}</code></pre>
+<p>Programa completo: <a href="Guia-C2-AlgoCo.html#p-pd">plantilla de PD y MWIS</a>.</p>
+
+<h3>Dos formas de escribir la misma PD</h3>
+<table>
+<thead><tr><th></th><th>De arriba hacia abajo (memoización)</th><th>De abajo hacia arriba (tabla)</th></tr></thead>
+<tbody>
+<tr><td>Cómo es</td><td>Función recursiva que, antes de calcular, revisa si ya guardó la respuesta.</td><td>Un ciclo que llena el arreglo desde los casos base.</td></tr>
+<tr><td>Ventaja</td><td>Se parece a la recurrencia tal cual.</td><td>Sin recursión: no hay riesgo de agotar la pila.</td></tr>
+<tr><td>En el juez</td><td>Peligrosa con n = 10⁵ por la profundidad.</td><td><strong>La recomendada.</strong></td></tr>
+</tbody>
+</table>
+<p>Sin la memoria, la recursión directa de MWIS es exponencial: cada llamada abre dos y la profundidad es n. Con la memoria hay solo n + 1 subproblemas distintos y cada uno cuesta O(1).</p>
+
+<h3>Cuánto cuesta y cuándo no sirve</h3>
+<ul>
+<li>MWIS: O(n) en tiempo y en memoria. Como cada celda solo mira las dos anteriores, se puede hacer con dos variables y memoria O(1), pero entonces no se puede reconstruir.</li>
+<li>Esta recurrencia vale solo en una fila. En un grafo cualquiera, el mismo problema es NP-difícil.</li>
+<li>Variantes del mismo molde: «avanzar 1, 2 o 3 peldaños» es A[i] = costo[i] + mín(A[i−1], A[i−2], A[i−3]). La pregunta sigue siendo «¿desde dónde pude llegar a i?».</li>
+</ul>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>Llena A para los pesos 3, 2, 7, 10. ¿Cuánto vale A[4] y qué elementos se eligen?</summary><div class="r">A = [0, 3, 3, 10, 13]. A[2] = máx(3, 0 + 2) = 3. A[3] = máx(3, 3 + 7) = 10. A[4] = máx(10, 3 + 10) = 13. Reconstrucción: en i = 4 gana «lo uso» (13 &gt; 10), salto a 2; en i = 2 gana «no lo uso» (3 &gt; 2), paso a 1; en i = 1 se usa. Se eligen el 1.º y el 4.º: 3 + 10 = 13.</div></details>
+<details class="q"><summary>¿Por qué al usar el elemento i se suma A[i − 2] y no A[i − 1]?</summary><div class="r">Porque A[i − 1] podría incluir al elemento i − 1, que es vecino de i. A[i − 2] es lo mejor que se puede lograr sin tocar a ese vecino.</div></details>
+<details class="q"><summary>Una escalera de n peldaños con penalización; desde cada peldaño se salta 1, 2 o 3. ¿Cuál es la frase del paso 1?</summary><div class="r">«A[i] es la menor penalización acumulada para llegar pisando el peldaño i». Recurrencia: A[i] = p[i] + mín(A[i−1], A[i−2], A[i−3]), cuidando que los índices existan. Es Escaleras, de la Práctica.</div></details>
+</section>
+
+<!-- ====================================================== MOCHILA -->
+<section id="moch" class="tec">
+<h2>Mochila 0/1</h2>
+<div class="prob"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><b>Probabilidad alta</b><span>1 de 4 certámenes y clase propia</span><span>Slides: clase 21</span></div>
+
+<div class="frase"><strong>Qué resuelve.</strong> Elegir objetos, cada uno a lo más una vez, sin pasarse de una capacidad, de modo que el valor total sea máximo.</div>
+
+<h3>La idea</h3>
+<p>Hay n objetos; el objeto i tiene valor v<sub>i</sub> y tamaño s<sub>i</sub>. La mochila aguanta una capacidad C. En el enunciado, «capacidad» puede ser peso, calorías, dinero o tiempo.</p>
+<p>El voraz por «valor por unidad de tamaño» falla, porque puede dejar espacio sin usar. Así que se aplica la pregunta de la PD: <em>¿qué pasa con el último objeto?</em></p>
+<ul>
+<li><strong>No lo llevo.</strong> Tengo que resolver lo mismo con los i − 1 objetos anteriores y la misma capacidad.</li>
+<li><strong>Lo llevo</strong> (solo si cabe). Gano v<sub>i</sub>, y me queda resolver lo mismo con los i − 1 anteriores y una capacidad reducida en s<sub>i</sub>.</li>
+</ul>
+<p>Aparece algo nuevo respecto de MWIS: la capacidad cambia de un subproblema a otro. Por eso el subproblema necesita <strong>dos índices</strong>.</p>
+<div class="formula">A[i][c] = mejor valor usando los primeros i objetos con capacidad c<br><br>
+A[i][c] = máx( A[i − 1][c] , A[i − 1][c − s<sub>i</sub>] + v<sub>i</sub> ) &nbsp; <small>(el segundo caso solo si s<sub>i</sub> ≤ c)</small></div>
+<p>Casos base: A[0][c] = 0 para toda c (sin objetos no hay valor). La respuesta es A[n][C].</p>
+
+<h3>Ejemplo a mano</h3>
+<p>El de la clase: capacidad C = 6 y cuatro objetos.</p>
+<table class="mini">
+<thead><tr><th class="lat">Objeto</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+<tbody><tr><th class="lat">valor v</th><td>3</td><td>2</td><td>4</td><td>4</td></tr><tr><th class="lat">tamaño s</th><td>4</td><td>3</td><td>2</td><td>3</td></tr></tbody>
+</table>
+<p>La tabla se llena fila por fila. Cada celda mira la de arriba y la de arriba corrida s<sub>i</sub> lugares a la izquierda.</p>
+<table class="mini">
+<thead><tr><th class="lat">objetos \ capacidad</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead>
+<tbody>
+<tr><th class="lat">i = 0 (ninguno)</th><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><th class="lat">i = 1 (v 3, s 4)</th><td>0</td><td>0</td><td>0</td><td>0</td><td>3</td><td>3</td><td>3</td></tr>
+<tr><th class="lat">i = 2 (v 2, s 3)</th><td>0</td><td>0</td><td>0</td><td>2</td><td>3</td><td>3</td><td>3</td></tr>
+<tr><th class="lat">i = 3 (v 4, s 2)</th><td>0</td><td>0</td><td>4</td><td class="hit">4</td><td>4</td><td>6</td><td>7</td></tr>
+<tr><th class="lat">i = 4 (v 4, s 3)</th><td>0</td><td>0</td><td>4</td><td>4</td><td>4</td><td>8</td><td class="hit">8</td></tr>
+</tbody>
+</table>
+<p>Una celda en detalle, A[4][6]: no llevar el objeto 4 da A[3][6] = 7; llevarlo da A[3][6 − 3] + 4 = 4 + 4 = 8. Gana 8.</p>
+<p><strong>Reconstrucción</strong>, desde A[4][6] hacia arriba: si la celda es igual a la de arriba, el objeto no se llevó; si es distinta, se llevó y la capacidad baja en su tamaño.</p>
+<ul>
+<li>A[4][6] = 8 ≠ A[3][6] = 7 → se lleva el objeto 4. Capacidad restante: 3.</li>
+<li>A[3][3] = 4 ≠ A[2][3] = 2 → se lleva el objeto 3. Capacidad restante: 1.</li>
+<li>A[2][1] = A[1][1] = A[0][1] = 0 → los objetos 2 y 1 no se llevan.</li>
+</ul>
+<p>Respuesta: objetos 3 y 4, valor 8, tamaño 5.</p>
+
+<h3>El núcleo del código: una sola fila</h3>
+<p>Cada fila solo depende de la anterior, así que basta un arreglo A[c] que se va sobrescribiendo. La condición es recorrer la capacidad <strong>de mayor a menor</strong>.</p>
+<pre class="code"><code>vector&lt;long long&gt; A(C + 1, 0);
+for (int i = 0; i &lt; n; i++)
+    for (int c = C; c &gt;= s[i]; c--)                 // de MAYOR a MENOR
+        A[c] = max(A[c], A[c - s[i]] + v[i]);
+// respuesta: A[C]</code></pre>
+<div class="nota"><strong>Por qué hacia atrás.</strong> Al calcular A[c] se necesita A[c − s] <em>de la fila anterior</em>, es decir, todavía sin el objeto i. Bajando, las celdas de la izquierda aún no se tocan y conservan el valor viejo. Si se sube, A[c − s] ya incluye al objeto i y se lo estaría llevando dos veces. Subir es, de hecho, la solución de la mochila <em>con repetición</em>.</div>
+<p>Programa completo, con la versión de dos dimensiones para reconstruir: <a href="Guia-C2-AlgoCo.html#p-moch">plantilla de Mochila</a>.</p>
+
+<h3>Cuánto cuesta y cuándo no sirve</h3>
+<ul>
+<li><strong>Tiempo:</strong> O(n · C). <strong>Memoria:</strong> O(C) con una fila, O(n · C) con la tabla completa.</li>
+<li>Sirve cuando n · C llega hasta unos 10⁷ o 10⁸. Si la capacidad es 10⁹, la tabla no cabe.</li>
+<li>Ese costo depende del <em>valor</em> de C y no de cuántos dígitos tiene. A eso se le llama <strong>pseudopolinomial</strong>, y es la razón por la que esta PD no contradice que la mochila sea NP-difícil (<a href="#np">más abajo</a>).</li>
+</ul>
+<table>
+<thead><tr><th>Versión</th><th>Regla</th><th>Cómo se resuelve</th></tr></thead>
+<tbody>
+<tr><td>0/1</td><td>Cada objeto, a lo más una vez</td><td>PD, capacidad de mayor a menor</td></tr>
+<tr><td>Con repetición</td><td>Cada objeto, las veces que quieras</td><td>PD, capacidad de menor a mayor</td></tr>
+<tr><td>Fraccionaria</td><td>Se pueden llevar pedazos</td><td>Voraz por valor / tamaño</td></tr>
+</tbody>
+</table>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>En la tabla del ejemplo, ¿por qué A[3][5] vale 6?</summary><div class="r">No llevar el objeto 3 da A[2][5] = 3. Llevarlo (v 4, s 2) da A[2][5 − 2] + 4 = A[2][3] + 4 = 2 + 4 = 6. Corresponde a llevar los objetos 2 y 3, que ocupan justo 5.</div></details>
+<details class="q"><summary>Un objeto tiene tamaño 0. ¿El ciclo <code>for (c = C; c &gt;= s[i]; c--)</code> sigue funcionando?</summary><div class="r">Sí: recorre desde C hasta 0 y en cada celda hace A[c] = máx(A[c], A[c] + v), o sea, suma su valor en todas. Es lo correcto, porque un objeto que no ocupa espacio siempre conviene llevarlo.</div></details>
+<details class="q"><summary>«Elegir alimentos sin superar C calorías, maximizando la sabrosidad». ¿Quién es el valor y quién el tamaño?</summary><div class="r">El tamaño es lo que se gasta del presupuesto: las calorías. El valor es lo que se maximiza: la sabrosidad. Es El oso negro, de la Práctica.</div></details>
+</section>
+
+<!-- ====================================================== ALINEAMIENTO -->
+<section id="alin" class="tec">
+<h2>Alineamiento de secuencias</h2>
+<div class="prob"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><b>Probabilidad alta</b><span>1 de 4 certámenes y ayudantía</span><span>Slides: clase 22</span></div>
+
+<div class="frase"><strong>Qué resuelve.</strong> Medir qué tan parecidas son dos secuencias, buscando la forma más barata de hacerlas calzar. La distancia de edición es el caso más conocido.</div>
+
+<h3>La idea</h3>
+<p>Alinear dos secuencias es escribirlas una sobre la otra, insertando espacios (<em>gaps</em>) donde haga falta para que queden del mismo largo. Cada columna tiene un costo:</p>
+<ul>
+<li>dos símbolos iguales: 0;</li>
+<li>dos símbolos distintos: una penalización α por la discordancia;</li>
+<li>un símbolo frente a un espacio: una penalización α<sub>gap</sub>.</li>
+</ul>
+<p>Se busca el alineamiento de costo total mínimo. Ese mínimo se llama puntaje NW (por Needleman y Wunsch). Ejemplo de las slides, con costo 1 por espacio y 2 por discordancia:</p>
+<pre class="code"><code>A - G T A C G
+A C A T A - G      -&gt; 2 espacios (2) + 1 discordancia G/A (2) = 4</code></pre>
+<p>La <strong>distancia de edición</strong> es el mismo problema con todos los costos en 1: un espacio abajo es «borrar», un espacio arriba es «insertar», y una discordancia es «reemplazar».</p>
+
+<p>Ahora la pregunta de la PD: <em>¿cómo es la última columna del alineamiento?</em> Solo hay tres posibilidades.</p>
+<table>
+<thead><tr><th>Última columna</th><th>Qué queda por alinear</th><th>Costo</th></tr></thead>
+<tbody>
+<tr><td>El último de X frente al último de Y</td><td>X sin su último, Y sin su último</td><td>A[i−1][j−1] + costo(x<sub>i</sub>, y<sub>j</sub>)</td></tr>
+<tr><td>El último de X frente a un espacio</td><td>X sin su último, Y completa</td><td>A[i−1][j] + gap</td></tr>
+<tr><td>Un espacio frente al último de Y</td><td>X completa, Y sin su último</td><td>A[i][j−1] + gap</td></tr>
+</tbody>
+</table>
+<div class="formula">A[i][j] = costo mínimo de alinear los primeros i símbolos de X con los primeros j de Y<br><br>
+A[i][j] = mín( A[i−1][j−1] + costo(x<sub>i</sub>, y<sub>j</sub>) , A[i−1][j] + gap , A[i][j−1] + gap )</div>
+<p>Casos base: alinear i símbolos contra nada exige i espacios, así que A[i][0] = i · gap y A[0][j] = j · gap.</p>
+
+<h3>Ejemplo a mano: de GATO a PATIO</h3>
+<p>Todos los costos valen 1. Cada celda es el mínimo entre la diagonal (más 0 si las letras coinciden, más 1 si no), la de arriba más 1 y la de la izquierda más 1.</p>
+<table class="mini">
+<thead><tr><th></th><th>∅</th><th>P</th><th>A</th><th>T</th><th>I</th><th>O</th></tr></thead>
+<tbody>
+<tr><th>∅</th><td class="hit">0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+<tr><th>G</th><td>1</td><td class="hit">1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+<tr><th>A</th><td>2</td><td>2</td><td class="hit">1</td><td>2</td><td>3</td><td>4</td></tr>
+<tr><th>T</th><td>3</td><td>3</td><td>2</td><td class="hit">1</td><td class="hit">2</td><td>3</td></tr>
+<tr><th>O</th><td>4</td><td>4</td><td>3</td><td>2</td><td>2</td><td class="hit">2</td></tr>
+</tbody>
+</table>
+<p>La respuesta es la esquina inferior derecha: <strong>2</strong>. Las celdas marcadas son el camino de la reconstrucción, leído desde el final:</p>
+<ul>
+<li>O frente a O: diagonal, costo 0.</li>
+<li>La I de PATIO frente a un espacio: movimiento horizontal, costo 1 (insertar I).</li>
+<li>T frente a T y A frente a A: diagonales, costo 0.</li>
+<li>G frente a P: diagonal con letras distintas, costo 1 (reemplazar).</li>
+</ul>
+<pre class="code"><code>G A T - O
+P A T I O</code></pre>
+
+<h3>El núcleo del código</h3>
+<pre class="code"><code>int m = x.size(), n = y.size();
+vector&lt;vector&lt;int&gt;&gt; A(m + 1, vector&lt;int&gt;(n + 1, 0));
+for (int i = 1; i &lt;= m; i++) A[i][0] = i * gap;
+for (int j = 1; j &lt;= n; j++) A[0][j] = j * gap;
+
+for (int i = 1; i &lt;= m; i++)
+    for (int j = 1; j &lt;= n; j++)
+        A[i][j] = min({ A[i - 1][j - 1] + costo(x[i - 1], y[j - 1]),   // enfrentar
+                        A[i - 1][j] + gap,                             // x[i] con espacio
+                        A[i][j - 1] + gap });                          // y[j] con espacio
+// respuesta: A[m][n]</code></pre>
+<p>Dos cuidados: la tabla mide (m + 1) × (n + 1), y el símbolo de la fila i es <code>x[i - 1]</code> porque los strings parten en 0. Programa completo: <a href="Guia-C2-AlgoCo.html#p-alin">plantilla de Alineamiento</a>.</p>
+
+<h3>Cuánto cuesta y cuándo no sirve</h3>
+<ul>
+<li><strong>Tiempo y memoria:</strong> O(m · n). Con largos de hasta unos 5000 cabe.</li>
+<li>Las secuencias no tienen que ser letras: pueden ser listas de palabras o de códigos. Si el enunciado cambia los costos («ignorar cuesta 2, emparejar distintos cuesta 5, un comodín cuesta 1»), la tabla es la misma y solo cambian <code>gap</code> y la función <code>costo</code>.</li>
+<li>Exige que el orden de ambas secuencias se respete. Si se pueden reordenar, es otro problema.</li>
+</ul>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>¿Cuánto vale A[3][0] si el espacio cuesta 2? ¿Qué significa?</summary><div class="r">Vale 6: alinear los 3 primeros símbolos de X contra una secuencia vacía obliga a poner 3 espacios, a 2 cada uno.</div></details>
+<details class="q"><summary>En la celda (A, A) de la tabla del ejemplo, ¿de qué tres valores sale el 1?</summary><div class="r">Diagonal: A[1][1] + 0 = 1 (las letras coinciden). Arriba: A[1][2] + 1 = 3. Izquierda: A[2][1] + 1 = 3. El mínimo es 1.</div></details>
+<details class="q"><summary>Ignorar un elemento cuesta 2 y emparejar dos distintos cuesta 5. ¿Conviene alguna vez emparejar dos distintos?</summary><div class="r">No: ignorar ambos cuesta 2 + 2 = 4, que es menos que 5. No hace falta programar nada especial; la tabla elige sola la opción más barata.</div></details>
+</section>
+
+<!-- ====================================================== ABB -->
+<section id="abb" class="tec">
+<h2>Árbol binario de búsqueda óptimo</h2>
+<div class="prob"><span class="dots"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span><b>Probabilidad baja</b><span>En temario, 0 de 4 certámenes</span><span>Slides: árboles de búsqueda óptimos</span></div>
+
+<div class="frase"><strong>Qué resuelve.</strong> Dadas unas claves y la frecuencia con que se busca cada una, armar el árbol de búsqueda donde las búsquedas cuesten lo menos posible en promedio.</div>
+
+<h3>La idea</h3>
+<p>En un árbol binario de búsqueda (ABB), lo menor queda a la izquierda y lo mayor a la derecha. Buscar una clave cuesta tantos pasos como su nivel (la raíz es el nivel 1). Si todas las claves se buscaran igual de seguido, convendría el árbol balanceado. Pero si una clave se busca muchísimo, conviene acercarla a la raíz aunque el árbol quede chueco.</p>
+<p>El costo de un árbol es el tiempo promedio de búsqueda: la suma de (frecuencia × nivel) de cada clave.</p>
+<p>No se pueden probar todos los árboles: su cantidad (los números de Catalan) crece exponencialmente. La pregunta de la PD aquí es: <em>¿qué clave va en la raíz?</em></p>
+<p>Si la raíz es la clave r, entonces todas las claves menores quedan obligadas a ir a la izquierda y todas las mayores a la derecha. Cada lado es el mismo problema sobre un <strong>rango seguido de claves</strong>. Por eso el subproblema tiene dos índices, el inicio y el fin del rango:</p>
+<div class="formula">W[i][j] = menor costo de un ABB con las claves i, i+1, …, j<br><br>
+W[i][j] = (p<sub>i</sub> + … + p<sub>j</sub>) + mín sobre r de ( W[i][r−1] + W[r+1][j] )</div>
+<p>El primer término es la suma de las frecuencias del rango. Aparece porque, al colgar los dos subárboles debajo de la raíz, <em>todas</em> las claves del rango quedan un nivel más abajo de lo que estaban, y la raíz misma cuenta un nivel. Es la misma idea de Huffman: bajar un nivel cuesta la frecuencia. Un rango vacío cuesta 0.</p>
+
+<h3>Ejemplo a mano</h3>
+<p>Claves A, B, C con frecuencias 0,2, 0,3 y 0,5.</p>
+<table>
+<thead><tr><th>Rango</th><th>Suma de frecuencias</th><th>Opciones de raíz</th><th>W</th></tr></thead>
+<tbody>
+<tr><td>A</td><td>0,2</td><td>solo A</td><td>0,2</td></tr>
+<tr><td>B</td><td>0,3</td><td>solo B</td><td>0,3</td></tr>
+<tr><td>C</td><td>0,5</td><td>solo C</td><td>0,5</td></tr>
+<tr><td>A–B</td><td>0,5</td><td>raíz A: 0 + 0,3 · raíz B: 0,2 + 0</td><td>0,5 + 0,2 = 0,7</td></tr>
+<tr><td>B–C</td><td>0,8</td><td>raíz B: 0 + 0,5 · raíz C: 0,3 + 0</td><td>0,8 + 0,3 = 1,1</td></tr>
+<tr><td>A–C</td><td>1,0</td><td>raíz A: 0 + 1,1 · raíz B: 0,2 + 0,5 · raíz C: 0,7 + 0</td><td>1,0 + 0,7 = <strong>1,7</strong></td></tr>
+</tbody>
+</table>
+<p>El óptimo cuesta 1,7 y se logra con B o con C en la raíz. Comprobación con B en la raíz: 0,3·1 + 0,2·2 + 0,5·2 = 1,7.</p>
+
+<h3>El núcleo del código</h3>
+<p>Lo delicado es el orden de llenado: un rango necesita rangos <em>más cortos</em>, así que se llena por largo creciente.</p>
+<pre class="code"><code>// claves 1..n; W[i][j] = 0 cuando i &gt; j (rango vacio); pref[] = sumas acumuladas de p
+for (int s = 0; s &lt; n; s++)                    // s = largo del rango - 1
+    for (int i = 1; i + s &lt;= n; i++){
+        int j = i + s;
+        double mejor = 1e18;
+        for (int r = i; r &lt;= j; r++)           // probar cada clave como raiz
+            mejor = min(mejor, W[i][r - 1] + W[r + 1][j]);
+        W[i][j] = (pref[j] - pref[i - 1]) + mejor;
+    }
+// respuesta: W[1][n]</code></pre>
+<p>La tabla se declara de (n + 2) × (n + 2) para que <code>W[i][i - 1]</code> y <code>W[j + 1][j]</code> existan y valgan 0. Programa completo: <a href="Guia-C2-AlgoCo.html#p-abb">plantilla de ABB óptimo</a>.</p>
+
+<h3>Cuánto cuesta</h3>
+<ul>
+<li>O(n²) subproblemas, y en cada uno se prueban hasta n raíces: <strong>O(n³)</strong> en tiempo y O(n²) en memoria. Cabe con n de unos pocos cientos.</li>
+<li>Es el modelo de «PD sobre intervalos»: el subproblema es un tramo [i, j] y se prueba dónde partirlo.</li>
+</ul>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>Con las mismas claves, ¿cuánto cuesta el árbol que tiene a A en la raíz?</summary><div class="r">1,0 + W[B–C] = 1,0 + 1,1 = 2,1. Tiene sentido que sea el peor: deja a C, la más buscada, lejos de la raíz.</div></details>
+<details class="q"><summary>¿Por qué no sirve el voraz «poner en la raíz la clave más frecuente»?</summary><div class="r">Porque la raíz también decide cómo se reparten las demás claves entre izquierda y derecha. Una clave muy frecuente en un extremo puede obligar a que todas las otras queden en una sola rama larga. En el ejemplo, con B en la raíz se logra el mismo costo que con C, la más frecuente; con otras frecuencias, la más frecuente puede incluso perder.</div></details>
+</section>
+
+<!-- ====================================================== BELLMAN-FORD -->
+<section id="bf" class="tec">
+<h2>Bellman-Ford</h2>
+<div class="prob"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span><b>Probabilidad muy alta</b><span>2 de 4 certámenes, casi idéntico</span><span>Slides: clase 24</span></div>
+
+<div class="frase"><strong>Qué resuelve.</strong> La distancia más corta desde un vértice de origen a todos los demás, en un grafo dirigido donde las aristas pueden tener peso negativo. Además avisa si hay un ciclo negativo.</div>
+
+<h3>La idea</h3>
+<p>Con pesos negativos, Dijkstra deja de ser correcto, porque da por cerrado un vértice que después podría mejorar gracias a una arista negativa. Bellman-Ford no cierra nada: revisa todo, varias veces.</p>
+<p><strong>El problema de los ciclos negativos.</strong> Si desde el origen se alcanza un ciclo cuya suma es negativa, se le puede dar vueltas indefinidamente y la distancia baja sin límite: «el camino más corto» deja de existir. Lo único razonable es detectarlo y avisar.</p>
+<p><strong>El subproblema.</strong> No es obvio qué significa un camino «más chico» si los largos pueden ser negativos. Bellman-Ford mide el tamaño por la <em>cantidad de aristas</em>:</p>
+<div class="formula">L[i][v] = largo del camino más corto del origen a v que usa <b>a lo más i aristas</b> <small>(+∞ si no existe)</small></div>
+<p>La pregunta de la PD: <em>¿cuál es la última arista del camino?</em></p>
+<ul>
+<li>El mejor camino con a lo más i aristas en realidad usa i − 1 o menos: vale L[i−1][v].</li>
+<li>O bien su última arista es (w → v), y lo anterior es el mejor camino a w con a lo más i − 1 aristas.</li>
+</ul>
+<div class="formula">L[i][v] = mín( L[i−1][v] , mín sobre las aristas (w → v) de L[i−1][w] + largo(w, v) )</div>
+<p>Caso base: L[0][origen] = 0 y L[0][v] = +∞ para el resto.</p>
+<div class="clave"><strong>Por qué bastan n − 1 pasadas.</strong> Un camino que no repite vértices tiene a lo más n − 1 aristas. Si no hay ciclos negativos, repetir un vértice nunca ayuda. Entonces con i = n − 1 ya están todas las distancias definitivas, y permitir una arista más no debería cambiar nada. <strong>Si la pasada n todavía mejora algo, hay un ciclo negativo alcanzable.</strong></div>
+
+<h3>Ejemplo a mano</h3>
+<figure class="fig">
+<svg viewBox="0 0 440 180" width="440" role="img" aria-label="Grafo dirigido de ejemplo para Bellman-Ford">
+<defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+<g style="color:var(--muted)">
+<line class="ar" x1="54" y1="82" x2="146" y2="42" marker-end="url(#fl)"/><line class="ar" x1="54" y1="98" x2="146" y2="138" marker-end="url(#fl)"/>
+<line class="ar" x1="176" y1="35" x2="274" y2="35" marker-end="url(#fl)"/><line class="ar" x1="304" y1="42" x2="386" y2="82" marker-end="url(#fl)"/>
+<line class="ar" x1="176" y1="143" x2="386" y2="98" marker-end="url(#fl)"/>
+</g>
+<text class="peso" x="92" y="52">2</text><text class="peso" x="92" y="136">1</text><text class="peso" x="222" y="27">2</text><text class="peso" x="352" y="52">−1</text><text class="peso" x="282" y="136">3</text>
+<circle class="nodo" cx="40" cy="90" r="15"/><text x="40" y="95" text-anchor="middle">s</text>
+<circle class="nodo" cx="160" cy="35" r="15"/><text x="160" y="40" text-anchor="middle">u</text>
+<circle class="nodo" cx="160" cy="145" r="15"/><text x="160" y="150" text-anchor="middle">v</text>
+<circle class="nodo" cx="290" cy="35" r="15"/><text x="290" y="40" text-anchor="middle">w</text>
+<circle class="nodo" cx="400" cy="90" r="15"/><text x="400" y="95" text-anchor="middle">t</text>
+</svg>
+<figcaption>Origen s. Hay dos caminos a t: s → v → t (2 aristas, largo 4) y s → u → w → t (3 aristas, largo 3).</figcaption>
+</figure>
+<table class="mini">
+<thead><tr><th class="lat">aristas permitidas</th><th>s</th><th>u</th><th>v</th><th>w</th><th>t</th></tr></thead>
+<tbody>
+<tr><th class="lat">i = 0</th><td>0</td><td>∞</td><td>∞</td><td>∞</td><td>∞</td></tr>
+<tr><th class="lat">i = 1</th><td>0</td><td class="hit">2</td><td class="hit">1</td><td>∞</td><td>∞</td></tr>
+<tr><th class="lat">i = 2</th><td>0</td><td>2</td><td>1</td><td class="hit">4</td><td class="hit">4</td></tr>
+<tr><th class="lat">i = 3</th><td>0</td><td>2</td><td>1</td><td>4</td><td class="hit">3</td></tr>
+<tr><th class="lat">i = 4</th><td>0</td><td>2</td><td>1</td><td>4</td><td>3</td></tr>
+</tbody>
+</table>
+<p>Mira la columna de t: con 2 aristas la mejor ruta mide 4; al permitir 3 aparece la ruta por w y baja a 3. Con n = 5 vértices, i = 4 = n − 1 es la última pasada necesaria. Como la fila 4 quedó igual a la 3, ya se puede parar: nada más va a cambiar.</p>
+
+<h3>El núcleo del código</h3>
+<p>En la práctica no se guarda la tabla completa: basta un arreglo <code>dist</code> que se mejora en el lugar. «Relajar» una arista (u → v) es preguntar si llegar a v pasando por u mejora lo que se tenía.</p>
+<pre class="code"><code>const long long INF = LLONG_MAX / 2;
+vector&lt;long long&gt; dist(n + 1, INF);
+dist[s] = 0;
+
+bool hayCiclo = false;
+for (int i = 1; i &lt;= n; i++){                       // n pasadas: la ultima es solo para detectar
+    bool cambio = false;
+    for (const Arista&amp; e : aristas)
+        if (dist[e.u] != INF &amp;&amp; dist[e.u] + e.w &lt; dist[e.v]){
+            dist[e.v] = dist[e.u] + e.w;            // relajar
+            cambio = true;
+        }
+    if (!cambio) break;                             // se estabilizo: no hay ciclo
+    if (i == n) hayCiclo = true;                    // la pasada n todavia mejoro algo
+}</code></pre>
+<ul>
+<li><strong><code>dist[e.u] != INF</code></strong> no es opcional. Sin esa revisión se relaja desde vértices que el origen no alcanza, y un ciclo negativo inalcanzable se detecta por error.</li>
+<li><strong><code>LLONG_MAX / 2</code></strong> como infinito, para que una suma accidental no se dé vuelta.</li>
+<li>Actualizar en el mismo arreglo puede adelantar mejoras de pasadas futuras. No hace daño: <code>dist</code> nunca baja de la distancia real, y n − 1 pasadas siguen bastando.</li>
+<li>Para <strong>recuperar el camino o el ciclo</strong>, se guarda <code>padre[e.v] = e.u</code> cada vez que se relaja, y después se camina hacia atrás por los padres.</li>
+<li>Si el grafo es no dirigido, cada arista se agrega en los dos sentidos. Ojo: una arista no dirigida de peso negativo es por sí sola un ciclo negativo.</li>
+</ul>
+<p>Programa completo, con la recuperación del ciclo: <a href="Guia-C2-AlgoCo.html#p-bf">plantilla de Bellman-Ford</a>.</p>
+
+<h3>Cuánto cuesta y cuándo no sirve</h3>
+<ul>
+<li><strong>Tiempo:</strong> O(n · m): n pasadas sobre las m aristas. <strong>Memoria:</strong> O(n) con el arreglo, además de la lista de aristas.</li>
+<li>Cabe mientras n · m no pase de unos 10⁷ a 10⁸.</li>
+<li>Da las distancias desde <em>un</em> origen. Si se piden entre todos los pares y hay pocos vértices, es <a href="#fw">Floyd-Warshall</a>.</li>
+</ul>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>Un grafo tiene 6 vértices. ¿Cuántas pasadas garantizan las distancias correctas si no hay ciclos negativos? ¿Para qué sirve una más?</summary><div class="r">5 pasadas (n − 1). La sexta no debería cambiar nada; si cambia algo, hay un ciclo negativo alcanzable desde el origen.</div></details>
+<details class="q"><summary>Grafo con aristas 2 → 3 (peso −1) y 3 → 2 (peso −1), y origen 1 sin aristas de salida. ¿Qué debe responder el programa?</summary><div class="r">Distancia 0 al vértice 1 e «inalcanzable» a 2 y 3. Existe un ciclo negativo, pero no se alcanza desde el origen, así que no afecta. La revisión <code>dist[e.u] != INF</code> es la que evita reportarlo.</div></details>
+<details class="q"><summary>¿Por qué el subproblema usa «a lo más i aristas» y no «exactamente i aristas»?</summary><div class="r">Porque así los valores solo pueden mejorar o quedarse igual al aumentar i, lo que permite parar cuando una pasada no cambia nada, y la respuesta final queda directamente en la última fila.</div></details>
+</section>
+
+<!-- ====================================================== FLOYD -->
+<section id="fw" class="tec">
+<h2>Floyd-Warshall</h2>
+<div class="prob"><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span><b>Probabilidad alta</b><span>En temario; apareció en el Torneo 2025-2</span></div>
+<div class="nota">Esta técnica <strong>no está en las slides que tengo</strong> (la clase es posterior). La explicación sigue el mismo libro en que se basan las demás clases de PD. Compárala con la clase cuando la tengas.</div>
+
+<div class="frase"><strong>Qué resuelve.</strong> La distancia más corta entre <em>todos los pares</em> de vértices, de una sola vez, también con pesos negativos.</div>
+
+<h3>La idea</h3>
+<p>Se podría correr Bellman-Ford desde cada vértice, pero costaría O(n² · m). Floyd-Warshall lo hace en O(n³) con tres ciclos anidados, usando otro modo de definir «más chico»: <em>qué vértices se permiten como escala intermedia</em>.</p>
+<div class="formula">d<sub>k</sub>[i][j] = camino más corto de i a j cuyas escalas intermedias están solo entre los vértices 1, 2, …, k</div>
+<p>Con k = 0 no se permite ninguna escala: d<sub>0</sub>[i][j] es la arista directa (o ∞ si no existe, o 0 si i = j). Con k = n se permiten todas: es la respuesta.</p>
+<p>La pregunta de la PD: <em>¿el mejor camino de i a j pasa por el vértice k, o no?</em></p>
+<ul>
+<li><strong>No pasa por k:</strong> es el mismo que ya se tenía sin permitir k.</li>
+<li><strong>Pasa por k:</strong> se parte en dos tramos, de i a k y de k a j, y ninguno de los dos usa a k como escala.</li>
+</ul>
+<div class="formula">d<sub>k</sub>[i][j] = mín( d<sub>k−1</sub>[i][j] , d<sub>k−1</sub>[i][k] + d<sub>k−1</sub>[k][j] )</div>
+<p>Piensa en vuelos: primero solo vuelos directos; luego permites hacer escala en la ciudad 1 y ves qué rutas mejoran; luego agregas la ciudad 2 como escala posible, y así hasta permitir todas.</p>
+
+<h3>Ejemplo a mano</h3>
+<p>Aristas dirigidas: 1 → 2 (3), 1 → 3 (8), 2 → 3 (2), 2 → 4 (7), 3 → 4 (1), 4 → 1 (2).</p>
+<table class="mini" style="display:inline-table;margin-right:22px">
+<thead><tr><th>inicio</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+<tbody>
+<tr><th>1</th><td>0</td><td>3</td><td>8</td><td>∞</td></tr>
+<tr><th>2</th><td>∞</td><td>0</td><td>2</td><td>7</td></tr>
+<tr><th>3</th><td>∞</td><td>∞</td><td>0</td><td>1</td></tr>
+<tr><th>4</th><td>2</td><td>∞</td><td>∞</td><td>0</td></tr>
+</tbody>
+</table>
+<table class="mini" style="display:inline-table">
+<thead><tr><th>final</th><th>1</th><th>2</th><th>3</th><th>4</th></tr></thead>
+<tbody>
+<tr><th>1</th><td>0</td><td>3</td><td class="hit">5</td><td class="hit">6</td></tr>
+<tr><th>2</th><td class="hit">5</td><td>0</td><td>2</td><td class="hit">3</td></tr>
+<tr><th>3</th><td class="hit">3</td><td class="hit">6</td><td>0</td><td>1</td></tr>
+<tr><th>4</th><td>2</td><td class="hit">5</td><td class="hit">7</td><td>0</td></tr>
+</tbody>
+</table>
+<p>Cómo cambia la matriz, escala por escala:</p>
+<ul>
+<li><strong>k = 1</strong> (se permite pasar por 1): 4 → 2 pasa de ∞ a 2 + 3 = 5, y 4 → 3 de ∞ a 2 + 8 = 10.</li>
+<li><strong>k = 2:</strong> 1 → 3 baja de 8 a 3 + 2 = 5; 1 → 4 pasa a 3 + 7 = 10; 4 → 3 baja a 5 + 2 = 7.</li>
+<li><strong>k = 3:</strong> 1 → 4 baja a 5 + 1 = 6; 2 → 4 baja de 7 a 2 + 1 = 3.</li>
+<li><strong>k = 4:</strong> aparecen los caminos de vuelta: 2 → 1 = 3 + 2 = 5, 3 → 1 = 1 + 2 = 3, 3 → 2 = 1 + 5 = 6.</li>
+</ul>
+
+<h3>El núcleo del código</h3>
+<pre class="code"><code>// d[i][j]: 0 en la diagonal, el peso si hay arista, INF si no
+for (int k = 0; k &lt; n; k++)                 // k AFUERA: la escala que se habilita
+    for (int i = 0; i &lt; n; i++)
+        for (int j = 0; j &lt; n; j++)
+            if (d[i][k] != INF &amp;&amp; d[k][j] != INF)
+                d[i][j] = min(d[i][j], d[i][k] + d[k][j]);</code></pre>
+<ul>
+<li><strong>El ciclo de k va afuera.</strong> Es el error clásico. Si k va adentro, se usan tramos que todavía no están calculados y el resultado es incorrecto.</li>
+<li>Se puede trabajar sobre una sola matriz: durante la vuelta k, la fila k y la columna k no cambian, así que no hace falta guardar la versión anterior.</li>
+<li>Al leer las aristas, si vienen repetidas hay que quedarse con la más barata: <code>d[a][b] = min(d[a][b], c)</code>.</li>
+<li><strong>Ciclo negativo:</strong> si al terminar algún <code>d[i][i]</code> es menor que 0, el vértice i está en un ciclo negativo.</li>
+</ul>
+<p>Programa completo: <a href="Guia-C2-AlgoCo.html#p-fw">plantilla de Floyd-Warshall</a>.</p>
+
+<h3>Cuánto cuesta y cuál elegir</h3>
+<table>
+<thead><tr><th>Algoritmo</th><th>Qué entrega</th><th>Pesos negativos</th><th>Costo</th><th>Cuándo</th></tr></thead>
+<tbody>
+<tr><td>Bellman-Ford</td><td>Desde un origen a todos</td><td>Sí, y detecta ciclos</td><td>O(n · m)</td><td>Un origen, pesos negativos o piden detectar ciclo negativo.</td></tr>
+<tr><td>Floyd-Warshall</td><td>Entre todos los pares</td><td>Sí, y detecta ciclos</td><td>O(n³)</td><td>Pocos vértices (hasta unos 400) y muchas consultas, o «encadenar» transformaciones.</td></tr>
+<tr><td>Dijkstra</td><td>Desde un origen a todos</td><td><strong>No</strong></td><td>O((n + m) log n)</td><td>Fuera del temario del C2. Solo recordar que con negativos es incorrecto.</td></tr>
+</tbody>
+</table>
+<p>Una señal frecuente de Floyd-Warshall: el grafo no se menciona. Por ejemplo, «convertir una letra en otra tiene un costo y las conversiones se pueden encadenar»: los vértices son las 26 letras y se pregunta por muchos pares.</p>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>¿Cuánto vale <code>d[i][i]</code> antes de empezar y por qué?</summary><div class="r">0: ir de un vértice a sí mismo sin moverse no cuesta nada. Si se deja en INF, las consultas de «misma letra a misma letra» dan imposible.</div></details>
+<details class="q"><summary>En el ejemplo, ¿por qué 1 → 4 recién llega a 6 con k = 3 y no antes?</summary><div class="r">Porque el camino 1 → 2 → 3 → 4 necesita hacer escala en el 2 y en el 3. Con k = 2 solo se permite el 2 como escala y lo mejor es 1 → 2 → 4 = 10. Al habilitar el 3 se puede usar el tramo 1 → 3 (que ya valía 5, pasando por el 2) más 3 → 4 = 1.</div></details>
+<details class="q"><summary>Con n = 26 letras y 10⁴ consultas, ¿cuántas operaciones cuesta Floyd-Warshall más las consultas?</summary><div class="r">26³ ≈ 17 600 para la matriz, más una lectura O(1) por consulta: unas 10⁴. Es instantáneo.</div></details>
+</section>
+
+<!-- ====================================================== NP -->
+<section id="np" class="tec">
+<h2>P, NP y reducciones</h2>
+<div class="prob"><span class="tag fuera">No se programa en el juez</span><span>Teoría de las últimas clases: apunta al control del 26 de noviembre</span><span>Slides: Problemas P y NP; SAT, Subset Sum y Knapsack</span></div>
+
+<div class="frase"><strong>Qué resuelve.</strong> No es una técnica para programar: es el vocabulario para decir qué tan difícil es un problema y para justificar que no se le va a encontrar un algoritmo rápido.</div>
+
+<h3>Tres versiones del mismo problema</h3>
+<table>
+<thead><tr><th>Tipo</th><th>Qué responde</th><th>Ejemplo con el vendedor viajero</th></tr></thead>
+<tbody>
+<tr><td>Decisión</td><td>Sí o no</td><td>¿Existe una ruta de costo ≤ 1000?</td></tr>
+<tr><td>Búsqueda</td><td>Una solución, o «no hay»</td><td>Dame una ruta de costo ≤ 1000.</td></tr>
+<tr><td>Optimización</td><td>La mejor solución</td><td>¿Cuál es la ruta más barata?</td></tr>
+</tbody>
+</table>
+
+<h3>Las clases, con la idea de cada una</h3>
+<p>«Fácil» significa aquí que existe un algoritmo de tiempo <strong>polinomial</strong> en el tamaño de la entrada (n, n², n³…), por oposición a exponencial (2<sup>n</sup>, n!).</p>
+<table>
+<thead><tr><th>Clase</th><th>En simple</th><th>Ejemplos</th></tr></thead>
+<tbody>
+<tr><td><strong>P</strong></td><td>Se puede <em>resolver</em> rápido.</td><td>MST, camino más corto, alineamiento, ordenar.</td></tr>
+<tr><td><strong>NP</strong></td><td>Se puede <em>verificar</em> rápido una solución que alguien te entrega.</td><td>Sudoku: resolverlo cuesta, revisar uno resuelto es inmediato. También SAT, TSP (versión de búsqueda), coloreo de grafos.</td></tr>
+<tr><td><strong>NP-difícil</strong> (NP-hard)</td><td>Al menos tan difícil como <em>todos</em> los de NP: cualquier problema de NP se puede reducir a él.</td><td>TSP, mochila, Subset Sum, SAT.</td></tr>
+<tr><td><strong>NP-completo</strong></td><td>Las dos cosas: está en NP <em>y</em> es NP-difícil. Son los más difíciles dentro de NP.</td><td>SAT, 3-SAT, Subset Sum, mochila (versión de decisión).</td></tr>
+</tbody>
+</table>
+<ul>
+<li>NP <strong>no</strong> significa «no polinomial». Viene de <em>nondeterministic polynomial time</em>.</li>
+<li>Todo problema de P está en NP: si lo puedo resolver rápido, también puedo verificarlo rápido. P ⊆ NP.</li>
+<li>Todo problema de NP se puede resolver probando todas las soluciones candidatas, pero eso es exponencial.</li>
+<li><strong>¿P = NP?</strong> No se sabe. Nadie ha demostrado que verificar rápido implique resolver rápido, ni lo contrario. Se cree que P ≠ NP. Es uno de los Problemas del Milenio.</li>
+<li>Si a <em>un solo</em> problema NP-difícil se le encontrara un algoritmo polinomial, todos los de NP lo tendrían, y sería P = NP.</li>
+<li>Un NP-difícil puede no estar en NP. Y existen problemas peores aún: los <strong>indecidibles</strong>, que ningún algoritmo resuelve siempre, como el problema de la detención (decidir si un programa termina o se queda en un ciclo infinito).</li>
+</ul>
+
+<h3>Reducciones: el sentido de la flecha</h3>
+<p><strong>A se reduce a B</strong> (se escribe A ≤ B) si puedo resolver A usando un algoritmo para B como subrutina, con solo trabajo polinomial adicional: transformo la entrada de A en una entrada de B, resuelvo B y traduzco la respuesta.</p>
+<div class="clave">Lee A ≤ B como «<strong>A no es más difícil que B</strong>». De ahí salen los dos usos:
+<ul>
+<li>Si B es fácil, entonces A es fácil. (La facilidad viaja de derecha a izquierda.)</li>
+<li>Si A es difícil, entonces B es difícil. (La dificultad viaja de izquierda a derecha.)</li>
+</ul></div>
+<p><strong>Para demostrar que un problema B es NP-difícil:</strong></p>
+<ol>
+<li>Elige un problema A que ya se sepa NP-difícil.</li>
+<li>Muestra cómo transformar, en tiempo polinomial, cualquier entrada de A en una de B con la misma respuesta. Es decir, <strong>reduce el conocido al nuevo</strong>, A ≤ B.</li>
+</ol>
+<div class="nota"><strong>El error típico</strong> es hacerlo al revés. Reducir B a un problema difícil no dice nada: cualquier cosa fácil se puede resolver usando una herramienta más poderosa.</div>
+<p>El punto de partida de toda la cadena es el <strong>teorema de Cook-Levin</strong>: SAT es NP-completo. SAT pregunta si se pueden asignar valores verdadero/falso a unas variables para que se cumplan todas las cláusulas de una fórmula; 3-SAT es lo mismo con a lo más tres literales por cláusula.</p>
+
+<h3>Las dos reducciones de la clase</h3>
+<h4>SAT ≤ Subset Sum</h4>
+<p><strong>Subset Sum:</strong> dados unos enteros positivos y un objetivo t, ¿hay un subconjunto que sume exactamente t?</p>
+<p>La idea es convertir condiciones lógicas en condiciones de suma, usando números escritos por dígitos. Cada dígito es una «columna» independiente:</p>
+<ul>
+<li>Hay una columna por variable y una columna por cláusula.</li>
+<li>Por cada variable X<sub>i</sub> se crean dos números: uno que representa «X<sub>i</sub> = verdadero» y otro «X<sub>i</sub> = falso». Ambos tienen un 1 en la columna de su variable. Además tienen un 1 en la columna de cada cláusula que esa elección satisface.</li>
+<li>El objetivo t tiene un 1 en cada columna de variable. Eso obliga a escoger <em>exactamente uno</em> de los dos números de cada variable: una asignación.</li>
+<li>En las columnas de cláusula, t pide el tamaño de la cláusula. Se agregan números de relleno (uno menos que el tamaño de la cláusula) que solo suman en esa columna. Como el relleno solo no alcanza, al menos un literal verdadero tiene que aportar: la cláusula queda satisfecha.</li>
+</ul>
+<p>Resultado: la fórmula se puede satisfacer exactamente cuando existe un subconjunto que suma t. Como SAT es NP-difícil, Subset Sum también.</p>
+
+<h4>Subset Sum ≤ Mochila</h4>
+<p>Esta es directa. Por cada número a<sub>i</sub> se crea un objeto con <strong>valor = tamaño = a<sub>i</sub></strong>. La capacidad es t y se pregunta si se puede lograr un valor de al menos t.</p>
+<p>Como valor y tamaño son el mismo número, «valor ≥ t» y «tamaño ≤ t» juntos obligan a que la suma sea exactamente t. Entonces la mochila es NP-difícil.</p>
+
+<h3>¿Y la PD de la mochila, que es O(n · C)?</h3>
+<p>No contradice nada. El tamaño de la entrada se mide en bits, y el número C se escribe con apenas log C bits. Si C ocupa b bits, puede valer 2<sup>b</sup>, y entonces O(n · C) = O(n · 2<sup>b</sup>): exponencial en el tamaño de la entrada.</p>
+<p>A un costo así, polinomial en el <em>valor</em> de un número pero no en su cantidad de dígitos, se le llama <strong>pseudopolinomial</strong>. En el juez, C viene chico (10⁴, 10⁵), y por eso la PD funciona.</p>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>Para demostrar que mi problema nuevo X es NP-difícil, ¿reduzco X a SAT o SAT a X?</summary><div class="r">SAT a X (SAT ≤ X): muestro que, si tuviera un algoritmo para X, podría resolver SAT. Como SAT es difícil, X tiene que serlo.</div></details>
+<details class="q"><summary>¿Verdadero o falso? «Si un problema está en NP, no tiene algoritmo polinomial.»</summary><div class="r">Falso. Todos los problemas de P están en NP. NP solo dice que las soluciones se verifican rápido.</div></details>
+<details class="q"><summary>¿Cuál es la diferencia entre NP-difícil y NP-completo?</summary><div class="r">NP-completo exige además estar en NP (que una solución se pueda verificar en tiempo polinomial). Un problema NP-difícil puede estar fuera de NP.</div></details>
+<details class="q"><summary>Alguien dice: «La mochila se resuelve en O(n · C), así que P = NP». ¿Dónde está el error?</summary><div class="r">O(n · C) no es polinomial en el tamaño de la entrada, porque C se escribe con log C bits. Es pseudopolinomial.</div></details>
+</section>
+
+<!-- ====================================================== APROX -->
+<section id="aprox" class="tec">
+<h2>Aproximar la mochila con un voraz</h2>
+<div class="prob"><span class="tag fuera">No se programa en el juez</span><span>Teoría: apunta al control</span><span>Slides: Knapsack, aproximación constante</span></div>
+
+<div class="frase"><strong>Qué resuelve.</strong> Cuando un problema es NP-difícil y la entrada es grande, se renuncia al óptimo y se busca un algoritmo rápido que garantice quedar cerca.</div>
+
+<h3>La idea</h3>
+<p>Un algoritmo de <strong>2-aproximación</strong> para un problema de maximizar garantiza un valor de al menos la mitad del óptimo: valor ≥ OPT / 2. Siempre, para toda entrada.</p>
+<p>Para la mochila (capacidad B, y suponiendo que cada objeto cabe solo):</p>
+<ol>
+<li>Calcula la razón valor / peso de cada objeto y ordena de mayor a menor.</li>
+<li>Mete objetos en ese orden hasta que el siguiente no quepa. Llama A a lo que alcanzó a entrar.</li>
+<li>Responde <strong>lo mejor entre A y el objeto de mayor valor por sí solo</strong>.</li>
+</ol>
+<p><strong>Por qué hace falta el paso 3.</strong> Con B = 100, un objeto de valor 2 y peso 1 (razón 2) y otro de valor 100 y peso 100 (razón 1): el voraz toma el primero, el segundo ya no cabe, y se queda con 2. El óptimo era 100. Comparar con el objeto más valioso lo arregla.</p>
+<p><strong>Por qué garantiza la mitad.</strong> Sea j el primer objeto que no cupo. Si se pudieran llevar pedazos, lo óptimo sería justamente A más un trozo de j, así que valor(A) + valor(j) ≥ OPT. Si dos números suman al menos OPT, alguno de los dos vale al menos OPT / 2. Y el algoritmo devuelve algo que es al menos tan bueno como cualquiera de los dos.</p>
+
+<h3>Ejemplo de la clase (caso uniforme: valor = peso)</h3>
+<p>B = 50 y objetos de 30, 15 y 10. El voraz toma 30 y 15 (suma 45); el de 10 no cabe porque 45 + 10 &gt; 50. Respuesta: 45, que supera B / 2 = 25. Como en este caso el óptimo no puede pasar de B, 45 está garantizadamente por sobre la mitad del óptimo.</p>
+
+<h3>Comprueba que entendiste</h3>
+<details class="q"><summary>¿Una 2-aproximación puede devolver el óptimo exacto?</summary><div class="r">Sí. La garantía es un piso (nunca menos de la mitad), no una descripción de lo que pasa siempre. En muchas entradas el resultado es óptimo o casi.</div></details>
+<details class="q"><summary>¿En qué se diferencia este voraz del de la mochila fraccionaria?</summary><div class="r">En el orden, en nada: ambos ordenan por valor / peso. La fraccionaria puede cortar el objeto que no cabe y por eso el voraz es exactamente óptimo. En la 0/1 no se puede cortar, y lo más que se garantiza es la mitad.</div></details>
+</section>
+
+<!-- ====================================================== RESUMEN -->
+<section id="resumen" class="tec">
+<h2>Resumen en una tabla</h2>
+<table>
+<thead><tr><th>Técnica</th><th>La pregunta que la define</th><th>Recurrencia o criterio</th><th>Costo</th></tr></thead>
+<tbody>
+<tr><td><a href="#back">Backtracking</a></td><td>¿Qué elijo ahora? (y después lo deshago)</td><td>Elegir → verificar → explorar → deshacer</td><td>C(n,k), 2<sup>n</sup> o n!</td></tr>
+<tr><td><a href="#masc">PD con máscara</a></td><td>¿Qué ya usé y dónde estoy?</td><td>dp[mask][j] → dp[mask + k][k]</td><td>O(2<sup>n</sup> · n²)</td></tr>
+<tr><td><a href="#ratio">GreedyRatio</a></td><td>¿Qué tarea va antes?</td><td>Mayor w / l primero; comparar a.w·b.l &gt; b.w·a.l</td><td>O(n log n)</td></tr>
+<tr><td><a href="#huff">Huffman</a></td><td>¿Qué dos fusiono?</td><td>Los dos de menor peso, con min-heap</td><td>O(n log n)</td></tr>
+<tr><td><a href="#mst">Kruskal</a></td><td>¿Esta arista une dos grupos distintos?</td><td>Aristas de menor a mayor, con Union-Find</td><td>O(m log m)</td></tr>
+<tr><td><a href="#pd">MWIS</a></td><td>¿Uso el último elemento?</td><td>A[i] = máx(A[i−1], A[i−2] + w<sub>i</sub>)</td><td>O(n)</td></tr>
+<tr><td><a href="#moch">Mochila</a></td><td>¿Llevo el último objeto?</td><td>A[c] = máx(A[c], A[c − s] + v), con c bajando</td><td>O(n · C)</td></tr>
+<tr><td><a href="#alin">Alineamiento</a></td><td>¿Cómo es la última columna?</td><td>mín de diagonal + costo, arriba + gap, izquierda + gap</td><td>O(m · n)</td></tr>
+<tr><td><a href="#abb">ABB óptimo</a></td><td>¿Qué clave va en la raíz?</td><td>W[i][j] = suma(p) + mín(W[i][r−1] + W[r+1][j])</td><td>O(n³)</td></tr>
+<tr><td><a href="#bf">Bellman-Ford</a></td><td>¿Cuál es la última arista?</td><td>Relajar todas las aristas n − 1 veces; la pasada n detecta ciclo</td><td>O(n · m)</td></tr>
+<tr><td><a href="#fw">Floyd-Warshall</a></td><td>¿Paso por el vértice k?</td><td>d[i][j] = mín(d[i][j], d[i][k] + d[k][j]), con k afuera</td><td>O(n³)</td></tr>
+</tbody>
+</table>
+<p>Lo que sigue es practicar: cada técnica tiene su ejercicio en la <a href="Practica-diaria-C2-AlgoCo.html">Práctica diaria</a> y su plantilla completa en la <a href="Guia-C2-AlgoCo.html">Guía</a>.</p>
+</section>
+
+</main>
+</div>
+
+<script>
+(function(){
+  var raiz = document.documentElement;
+  var boton = document.getElementById('tema');
+  try {
+    var guardado = localStorage.getItem('tema-teoria-c2-algoco');
+    if (guardado) raiz.setAttribute('data-theme', guardado);
+  } catch (e) {}
+  if (boton) boton.addEventListener('click', function(){
+    var oscuro = raiz.getAttribute('data-theme') === 'dark' ||
+      (!raiz.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var nuevo = oscuro ? 'light' : 'dark';
+    raiz.setAttribute('data-theme', nuevo);
+    try { localStorage.setItem('tema-teoria-c2-algoco', nuevo); } catch (e) {}
+  });
+
+  // Abrir o cerrar todas las respuestas
+  var resp = document.getElementById('resp');
+  var abiertas = false;
+  if (resp) resp.addEventListener('click', function(){
+    abiertas = !abiertas;
+    Array.prototype.forEach.call(document.querySelectorAll('details.q'), function(d){ d.open = abiertas; });
+    resp.textContent = abiertas ? 'Cerrar respuestas' : 'Abrir respuestas';
+  });
+
+  // Coloreado simple del codigo
+  var claves = /^(int|long|bool|void|double|char|for|while|if|else|return|const|auto|struct|continue|break|true|false|vector|string|swap|min|max|sort)$/;
+  function esc(t){ return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  Array.prototype.forEach.call(document.querySelectorAll('pre.code code'), function(el){
+    var texto = el.textContent;
+    var re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("(?:[^"\\]|\\.)*")|([A-Za-z_][A-Za-z0-9_]*)/g;
+    var salida = '', ultimo = 0, m;
+    while ((m = re.exec(texto))){
+      salida += esc(texto.slice(ultimo, m.index));
+      if (m[1]) salida += '<span class="c">' + esc(m[1]) + '</span>';
+      else if (m[2]) salida += '<span class="s">' + esc(m[2]) + '</span>';
+      else if (claves.test(m[3])) salida += '<span class="k">' + m[3] + '</span>';
+      else salida += m[3];
+      ultimo = re.lastIndex;
+    }
+    el.innerHTML = salida + esc(texto.slice(ultimo));
+  });
+
+  // Marcar en el menu la seccion visible
+  var enlaces = Array.prototype.slice.call(document.querySelectorAll('#menu a'));
+  var secciones = enlaces.map(function(a){ return document.getElementById(a.getAttribute('href').slice(1)); });
+  var barra = document.querySelector('.sidebar');
+  var actual = -1;
+  function marcar(){
+    var y = window.scrollY + 80, idx = 0;
+    for (var i = 0; i < secciones.length; i++)
+      if (secciones[i] && secciones[i].offsetTop <= y) idx = i;
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) idx = secciones.length - 1;
+    if (idx === actual) return;
+    actual = idx;
+    enlaces.forEach(function(a, i){ a.classList.toggle('active', i === idx); });
+    if (window.innerWidth > 900 && barra){
+      var r = enlaces[idx].getBoundingClientRect(), s = barra.getBoundingClientRect();
+      if (r.top < s.top + 40 || r.bottom > s.bottom - 40) barra.scrollTop += r.top - s.top - s.height / 2;
+    }
+  }
+  window.addEventListener('scroll', marcar, {passive:true});
+  window.addEventListener('resize', marcar);
+  marcar();
+})();
+</script>
+</body>
+</html>
