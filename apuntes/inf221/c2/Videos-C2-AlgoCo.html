@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Videos · AlgoCo · Certamen 2</title>
+<style>:root{
+  --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+  --line:#e0e0e6; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+  --accent:#0e7a5f; --warn:#b4400b; --warn-soft:#fdecdf;
+  --code:#f3f4f6; --codeink:#1f2330; --cm:#5f6673; --kw:#0b4f80; --st:#0e6b53; --pp:#7a4a00;
+  --sidew:290px;
+}
+:root[data-theme="dark"]{
+  --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+  --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+  --accent:#4fd1ab; --warn:#f5a15f; --warn-soft:#3a2413;
+  --code:#20242e; --codeink:#e8eaf0; --cm:#9aa3b5; --kw:#7cc0ef; --st:#6fd9bb; --pp:#e0c073;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --warn:#f5a15f; --warn-soft:#3a2413;
+    --code:#20242e; --codeink:#e8eaf0; --cm:#9aa3b5; --kw:#7cc0ef; --st:#6fd9bb; --pp:#e0c073;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.55;font-size:16px}
+.layout{display:flex;align-items:flex-start}
+.sidebar{width:var(--sidew);flex:0 0 var(--sidew);position:sticky;top:0;height:100vh;overflow-y:auto;
+  background:var(--panel);border-right:1px solid var(--line);padding:20px 14px 60px}
+.content{flex:1 1 auto;min-width:0;padding:34px clamp(16px,4vw,56px) 110px;max-width:1040px;margin:0 auto}
+.brand{display:flex;gap:10px;align-items:center}
+.brand .dot{width:34px;height:34px;border-radius:9px;background:var(--brand);display:grid;place-items:center;
+  color:#fff;font-weight:800;font-size:12px;flex:0 0 auto}
+.brand h1{font-size:15px;margin:0;line-height:1.2}
+.brand small{color:var(--muted);font-size:12px;display:block;font-weight:400}
+.toolbar{display:flex;gap:8px;margin:12px 0 4px}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:6px 10px;font-size:12.5px;cursor:pointer}
+.btn:hover{background:var(--brand-soft)}
+nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:16px 8px 5px;font-weight:700}
+nav a{display:flex;gap:8px;align-items:center;color:var(--ink);text-decoration:none;padding:5px 9px;border-radius:7px;font-size:13.2px}
+nav a:hover{background:var(--brand-soft)}
+nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600}
+.dots{display:inline-flex;gap:2px;vertical-align:middle;flex:0 0 auto}
+.dots i{width:6px;height:6px;border-radius:50%;border:1px solid var(--muted);display:block}
+.dots i.on{background:var(--brand);border-color:var(--brand)}
+h1,h2,h3,h4{line-height:1.25}
+.portada h1{font-size:30px;margin:4px 0 8px}
+.eyebrow{color:var(--muted);font-size:13px;margin:0;letter-spacing:.02em}
+.lead{color:var(--muted);font-size:17px;margin:4px 0 12px}
+section{margin-top:40px;scroll-margin-top:14px}
+h2{font-size:24px;margin:0 0 8px;border-bottom:2px solid var(--line);padding-bottom:5px}
+h2.ph{font-size:27px;border-bottom:3px solid var(--brand)}
+h3{font-size:18px;margin:20px 0 6px}
+h3.plh{font-size:21px;margin:0 0 4px;color:var(--brand)}
+p{margin:8px 0}
+ul{margin:6px 0;padding-left:21px}
+li{margin:3px 0}
+code{background:var(--code);color:var(--codeink);border-radius:4px;padding:0 4px;font-size:.9em;font-family:Consolas,"SF Mono",Menlo,monospace}
+pre.code{background:var(--code);color:var(--codeink);border:1px solid var(--line);border-left:3px solid var(--brand);border-radius:6px;
+  padding:9px 11px;overflow-x:auto;font-size:13px;line-height:1.38;font-family:Consolas,"SF Mono",Menlo,monospace;margin:9px 0;tab-size:4}
+pre.code code{background:none;padding:0;font-size:inherit;border-radius:0}
+.c{color:var(--cm);font-style:italic}
+.k{color:var(--kw);font-weight:600}
+.s{color:var(--st)}
+.p{color:var(--pp)}
+table{border-collapse:collapse;width:100%;margin:9px 0;font-size:14.2px;background:var(--panel)}
+th,td{border:1px solid var(--line);padding:4px 7px;text-align:left;vertical-align:top}
+th{background:var(--brand-soft);font-weight:700}
+.nw{white-space:nowrap}
+.mini{width:auto}
+.mini td,.mini th{text-align:center;min-width:44px}
+.prio{color:var(--muted);font-size:14px;border-left:3px solid var(--accent);padding-left:9px;margin:4px 0 10px}
+.ficha{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:12px 15px;margin:14px 0;scroll-margin-top:12px}
+.fh{display:flex;flex-wrap:wrap;gap:4px 9px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:5px;margin-bottom:6px}
+.fh h4{margin:0;font-size:17px;flex:1 1 auto}
+.fid{font-weight:800;color:var(--brand);font-size:15px;font-family:Consolas,monospace}
+.tags{display:inline-flex;gap:5px;flex-wrap:wrap}
+.tag{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:0 7px;color:var(--muted);white-space:nowrap}
+.tag.sim{border-color:var(--warn);color:var(--warn);font-weight:700}
+.fb p{margin:5px 0}
+.tr{margin:5px 0}
+.tr ul{margin:1px 0 1px;padding-left:18px}
+.nota{background:var(--warn-soft);border-left:3px solid var(--warn);padding:6px 10px;margin:7px 0;border-radius:4px}
+.icols{columns:2;column-gap:18px}
+.igrupo{break-inside:avoid;margin-bottom:10px}
+.igrupo h4{margin:6px 0 2px;font-size:14.5px}
+.indice{font-size:12.8px;margin:2px 0}
+.indice a{color:var(--brand);text-decoration:none;font-weight:700;font-family:Consolas,monospace}
+.i-id,.i-n,.i-p{white-space:nowrap}
+.i-p{text-align:right}
+.indice .tag{font-size:10.5px;padding:0 4px}
+.pg{font-variant-numeric:tabular-nums}
+@media (max-width:900px){
+  .layout{display:block;align-items:stretch}
+  .sidebar{position:static;width:100%;height:auto;border-right:0;border-bottom:1px solid var(--line);max-height:46vh}
+  .content{width:100%;padding:20px 16px 80px}
+  .icols{columns:1}
+  table{display:block;overflow-x:auto}
+  .nw{white-space:normal}
+}
+@page{size:letter;margin:12mm 11mm 13mm 11mm;
+  @bottom-right{content:counter(page);font:9pt "Segoe UI",sans-serif;color:#444}
+  @bottom-left{content:"AlgoCo · Certamen 2";font:8pt "Segoe UI",sans-serif;color:#777}
+}
+@media print{
+  :root,:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--ink:#111;--muted:#333;--line:#999;--brand:#0b4f80;--brand-soft:#ececec;
+    --accent:#333;--warn:#7a2b00;--warn-soft:#f1f1f1;--code:#fff;--codeink:#000;--cm:#555;--kw:#000;--st:#222;--pp:#333}
+  html{scroll-behavior:auto}
+  body{font-size:9.7pt;line-height:1.32;background:#fff}
+  .sidebar,.toolbar{display:none}
+  .layout{display:block}
+  .content{padding:0;max-width:none;margin:0}
+  section{margin-top:12pt}
+  h2{font-size:15pt;margin:0 0 4pt}
+  h2.ph{font-size:18pt}
+  h3{font-size:11.5pt;margin:8pt 0 3pt}
+  h3.plh{font-size:13.5pt}
+  h2,h3,h4,.fh,.prio{break-after:avoid}
+  .portada h1{font-size:21pt}
+  .lead{font-size:10.5pt}
+  p{margin:3.5pt 0}
+  ul{margin:2.5pt 0;padding-left:14pt}
+  li{margin:1.5pt 0}
+  #que-leer,#mapa,#parte1,#parte2,section.tec{break-before:page}
+  section.pl{margin-top:13pt}
+  section#parte1,section#parte2{margin-top:0}
+  code{background:none;padding:0;font-size:.93em;font-weight:600}
+  pre.code{font-size:7.9pt;line-height:1.2;white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible;border:0;border-left:1.5pt solid #777;
+    border-radius:0;padding:1pt 0 1pt 6pt;margin:4pt 0}
+  pre.code code{font-weight:400}
+  .c{color:#555}
+  .k{font-weight:700}
+  table{font-size:8.7pt;margin:4pt 0}
+  th,td{padding:1.8pt 4pt}
+  tr{break-inside:avoid}
+  thead{display:table-header-group}
+  .ficha{border:0;border-top:1.2pt solid #333;border-radius:0;padding:4pt 0 0;margin:10pt 0 0;background:none}
+  .fh{border-bottom:0;padding-bottom:1pt;margin-bottom:2pt;gap:2pt 6pt}
+  .fh h4{font-size:11pt}
+  .fid{font-size:10.5pt}
+  .tag{font-size:7.6pt;padding:0 4pt;border-color:#888}
+  .tag.sim{border-color:#000;color:#000}
+  .fb p{margin:2.5pt 0}
+  .tr ul{padding-left:12pt}
+  .fb p,.tr,.nota{break-inside:avoid}
+  .nota{background:none;border:0;border-left:1.5pt solid #000;padding:1pt 0 1pt 6pt;margin:3pt 0}
+  .prio{font-size:8.8pt;margin:2pt 0 4pt;border-left:1.5pt solid #333;padding-left:6pt}
+  .dots i{width:5pt;height:5pt;border-color:#333}
+  .dots i.on{background:#333;border-color:#333}
+  .icols{columns:2;column-gap:10pt}
+  .indice{font-size:7.7pt}
+  .indice td,.indice th{padding:.8pt 2.5pt}
+  .igrupo h4{font-size:9pt;margin:3pt 0 1pt}
+  a{color:inherit;text-decoration:none}
+  .mapa,.qleer,.trampas,.erratas,.plan,.hist{font-size:8.6pt}
+}
+.kit td code{background:none;padding:0;font-size:12.6px;white-space:pre-wrap;overflow-wrap:anywhere}
+.pl h4{margin:14px 0 4px;font-size:15.5px}
+@media print{
+  #como-usar,#plan{break-before:page}
+  #que-leer{break-before:auto}
+  .kit,.stl{font-size:8.3pt}
+  .kit td code{font-size:7.9pt;font-weight:400}
+  .pl h4{font-size:10.5pt;margin:6pt 0 2pt;break-after:avoid}
+  .mapa{font-size:8.2pt}
+  .mapa td,.mapa th{padding:1.2pt 4pt}
+}
+
+.vtabla td:nth-child(2),.vtabla td:nth-child(3),.vtabla td:nth-child(4){white-space:nowrap}
+.vtabla a{color:var(--brand);font-weight:600;text-decoration:none}
+.vtabla a:hover{text-decoration:underline}
+.vsec{margin-top:30px}
+.vsec h2{font-size:21px}
+.vlistas a{color:var(--brand)}</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+<div class="brand"><div class="dot">C2</div><h1>Videos<small>AlgoCo · Certamen 2</small></h1></div>
+<div class="toolbar"><button class="btn" id="tema">Tema</button></div>
+<nav id="menu"><div class="grp">Videos</div><a href="#inicio"><span>Cómo usar esta lista</span></a><a href="#v-esenciales"><span>Si solo vas a ver unos pocos</span></a><div class="grp">Por tema</div><a href="#v-cpp"><span>Arranque</span></a><a href="#v-greedy"><span>Voraces y planificación con pesos</span></a><a href="#v-pd"><span>Programación dinámica</span></a><a href="#v-moch"><span>Mochila y sus variantes</span></a><a href="#v-alin"><span>Alineamiento y distancia de edición</span></a><a href="#v-bf"><span>Bellman-Ford y ciclos negativos</span></a><a href="#v-back"><span>Backtracking</span></a><a href="#v-mst"><span>Árbol de expansión mínima y Union-Find</span></a><a href="#v-fw"><span>Floyd-Warshall</span></a><a href="#v-huff"><span>Huffman</span></a><a href="#v-abb"><span>ABB óptimo</span></a><a href="#v-np"><span>NP-dificultad (para el control del 26 de noviembre)</span></a><a href="#v-largo"><span>Si después del certamen quieres profundizar</span></a><a href="#v-listas"><span>Listas completas</span></a></nav>
+</aside>
+<main class="content"><section id="inicio"><p class="eyebrow">INF-221 · Algoritmos y Complejidad · 2026-2</p><h1 style="font-size:30px;margin:4px 0 8px">Videos para el Certamen 2</h1><p>Videos por tema, en el orden de la ruta. Sirven cuando una idea no entra leyendo: mira uno, y vuelve al ejercicio. Ver videos no reemplaza escribir código.</p><ul><li>Los marcados con <strong>R</strong> son las clases de Tim Roughgarden, el autor del libro en que se basan tus láminas de voraces y de PD, así que el planteamiento es el mismo. El número es la sección del libro. Están en inglés.</li><li>Para los que están en inglés, YouTube traduce los subtítulos: Configuración, Subtítulos, Traducir automáticamente, Español.</li><li>El 15 de noviembre comprobé que cada enlace existe, con su título, canal y duración. <strong>No los vi completos</strong>: los elegí por tema, canal y duración. Si uno no te sirve, pasa al siguiente de la lista.</li></ul></section><section class="vsec" id="v-esenciales"><h2>Si solo vas a ver unos pocos</h2><p>Uno por tema de los que más salen. En total, 1 h 55.</p><table class="vtabla"><colgroup><col style="width:58%"><col style="width:20%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>Video y para qué sirve</th><th>Canal</th><th>Dura</th><th>Idioma</th></tr></thead><tbody><tr><td><a href="https://www.youtube.com/watch?v=zTUJFG34Tyw">Introducción a la Programación Competitiva en C++</a><br>Introducción a programar para un juez en C++, de un canal chileno. El mejor para partir.</td><td>Programación Competitiva CL</td><td>18 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=ALtJncFD8N8">Algoritmos Voraces | Programación Greedy</a><br>Qué es un algoritmo voraz y cuándo falla.</td><td>Chio Code</td><td>11 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=e5zaZEfHsIs">Programación Dinámica | Memoización | Explicado Paso a Paso</a><br>De la recursión a la memoización, paso a paso. Empieza por este.</td><td>Chio Code</td><td>19 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=IZHvQTx2bZ0">Programación dinámica. Problema de la Mochila.</a><br>La tabla de la mochila en 8 minutos.</td><td>Francisco David de la Peña Esteban</td><td>8 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=AzBum06VDrw">Programación Dinámica: Cálculo de la Distancia de Edición</a><br>Distancia de edición con la tabla completa.</td><td>Fernando López</td><td>23 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=CIz_8J6IuM0">Algoritmo Bellman-Ford</a><br>Bellman-Ford con un ejemplo corto.</td><td>Kevin Ortega</td><td>7 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=lyw4FaxrwHg">Bellman Ford Algorithm | Shortest path &amp; Negative cycles | Graph Theory</a><br>Bellman-Ford con ciclos negativos y cómo marcar los vértices afectados. Es lo que pide el problema G del Listado 5.</td><td>WilliamFiset</td><td>15 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=ip2jC_kXGtg">Explicando Backtracking | Fuerza Bruta Pero Elegante</a><br>Backtracking como fuerza bruta ordenada. Empieza por este.</td><td>Chio Code</td><td>10 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=OZKuWP1KxdY">Algoritmo de Kruskal</a><br>Kruskal con un ejemplo.</td><td>LCTutorialsS</td><td>5 min</td><td>español</td></tr></tbody></table></section><section class="vsec" id="v-cpp"><h2>Arranque: C++ y cómo se trabaja con un juez</h2><p class="prio">Sesión 1</p><table class="vtabla"><colgroup><col style="width:58%"><col style="width:20%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>Video y para qué sirve</th><th>Canal</th><th>Dura</th><th>Idioma</th></tr></thead><tbody><tr><td><a href="https://www.youtube.com/watch?v=zTUJFG34Tyw">Introducción a la Programación Competitiva en C++</a><br>Introducción a programar para un juez en C++, de un canal chileno. El mejor para partir.</td><td>Programación Competitiva CL</td><td>18 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=OldL5e5eGmY">Estructuras basicas en C++</a><br>Vector, string, pila, cola y mapa en C++. Largo: mira solo los tramos de lo que no manejes.</td><td>Programación Competitiva CL</td><td>1 h 32</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=R2zObBgWWa8">¡Aprende C++ desde cero en minutos!</a><br>Repaso exprés de la sintaxis de C++, si hace tiempo que no lo usas.</td><td>Carlos Azaustre - AprendiendoDEV</td><td>11 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=-_PksoQxRPA">24. Vectores STL (std::vector) - C++ de 0 a Experto!</a><br><code>vector</code> paso a paso.</td><td>Devs&#x27; Den</td><td>22 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=YwRjEOFxvO0">Recursividad | FÁCIL de entender y visualizar | Recursión</a><br>Recursión visualizada. Es la base del backtracking y de la PD.</td><td>Chio Code</td><td>12 min</td><td>español</td></tr></tbody></table></section><section class="vsec" id="v-greedy"><h2>Voraces y planificación con pesos</h2><p class="prio">Sesiones 1 y 2</p><table class="vtabla"><colgroup><col style="width:58%"><col style="width:20%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>Video y para qué sirve</th><th>Canal</th><th>Dura</th><th>Idioma</th></tr></thead><tbody><tr><td><a href="https://www.youtube.com/watch?v=ALtJncFD8N8">Algoritmos Voraces | Programación Greedy</a><br>Qué es un algoritmo voraz y cuándo falla.</td><td>Chio Code</td><td>11 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=jK3d_GLzKQA">A SCHEDULING APPLICATION: Problem Definition</a><br>R 13.2: el problema de planificación de las clases 16 y 17.</td><td>Stanford Algorithms</td><td>6 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=AJOTgHYjL6A">A SCHEDULING APPLICATION: Greedy Algorithm</a><br>R 13.3: por qué el criterio es w/l y no w − l.</td><td>Stanford Algorithms</td><td>13 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=oyLxydVkQwo">A SCHEDULING APPLICATION: Correctness Proof - Part I</a><br>R 13.4 (parte 1): la demostración por intercambio. Las partes 2 y 3 siguen en la misma lista.</td><td>Stanford Algorithms</td><td>7 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=ARvQcqJ_-NY">3. Greedy Method -  Introduction</a><br>Introducción al método voraz con ejemplos en pizarra.</td><td>Abdul Bari</td><td>12 min</td><td>inglés</td></tr></tbody></table></section><section class="vsec" id="v-pd"><h2>Programación dinámica: la idea y la PD lineal</h2><p class="prio">Sesión 3</p><table class="vtabla"><colgroup><col style="width:58%"><col style="width:20%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>Video y para qué sirve</th><th>Canal</th><th>Dura</th><th>Idioma</th></tr></thead><tbody><tr><td><a href="https://www.youtube.com/watch?v=e5zaZEfHsIs">Programación Dinámica | Memoización | Explicado Paso a Paso</a><br>De la recursión a la memoización, paso a paso. Empieza por este.</td><td>Chio Code</td><td>19 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=C240g6_Dsl4">¿En qué consiste REALMENTE la PROGRAMACIÓN DINÁMICA?</a><br>La idea de fondo: subproblemas que se repiten.</td><td>BettaTech</td><td>13 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=aPQY__2H3tE">5 Simple Steps for Solving Dynamic Programming Problems</a><br>Cinco pasos para plantear cualquier PD. Muy visual.</td><td>Reducible</td><td>21 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=0awkct8SkxA">INTRODUCTION TO DYNAMIC PROGRAMMING: Introduction - Weighted Independent Sets in Path Graphs</a><br>R 16.1: conjunto independiente con pesos, el problema de la clase de MWIS.</td><td>Stanford Algorithms</td><td>8 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=pLOkbHGRsv0">INTRODUCTION TO DYNAMIC PROGRAMMING: WIS in Path Graphs - Optimal Substructure</a><br>R 16.2 (parte 1): la recurrencia de MWIS. La parte 2 y la reconstrucción (16.3) vienen después.</td><td>Stanford Algorithms</td><td>9 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=27nK8C-GCPM">INTRODUCTION TO DYNAMIC PROGRAMMING: Principles of Dynamic Programming</a><br>R 16.4: los tres principios de la PD que usa el ramo.</td><td>Stanford Algorithms</td><td>8 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=YBSt1jYwVfU">Dynamic Programming lecture #1 - Fibonacci, iteration vs recursion</a><br>Iterativo contra recursivo, con Fibonacci. Bueno si la tabla todavía no te sale natural.</td><td>Errichto Algorithms</td><td>20 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=GSphYSWiHxU">Programación Dinámica</a><br>Clase completa de PD para competencias. Larga: sirve como segunda pasada.</td><td>Programación Competitiva CL</td><td>1 h 40</td><td>español</td></tr></tbody></table></section><section class="vsec" id="v-moch"><h2>Mochila y sus variantes</h2><p class="prio">Sesión 4</p><table class="vtabla"><colgroup><col style="width:58%"><col style="width:20%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>Video y para qué sirve</th><th>Canal</th><th>Dura</th><th>Idioma</th></tr></thead><tbody><tr><td><a href="https://www.youtube.com/watch?v=IZHvQTx2bZ0">Programación dinámica. Problema de la Mochila.</a><br>La tabla de la mochila en 8 minutos.</td><td>Francisco David de la Peña Esteban</td><td>8 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=2C2v2TT1fPc">Programación Dinámica: El problema de la Mochila</a><br>La mochila con más calma y ejemplo completo.</td><td>Fernando López</td><td>14 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=jlHIBaUizOU">THE KNAPSACK PROBLEM: The Knapsack Problem</a><br>R 16.5 (parte 1): la misma recurrencia de la clase de Knapsack. Siguen las partes 2 y 3.</td><td>Stanford Algorithms</td><td>10 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=nLmhmB6NzcM">4.5 0/1 Knapsack - Two Methods - Dynamic Programming</a><br>Mochila 0/1 a mano, con tabla y reconstrucción.</td><td>Abdul Bari</td><td>28 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=1mtvm2ubHCY">Dynamic Programming lecture #2 - Coin change, double counting</a><br>Cambio de monedas y el error de contar dos veces: es lo que pide Restaurant Orders.</td><td>Errichto Algorithms</td><td>19 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=cjWnW0hdF1Y">Longest Increasing Subsequence - Dynamic Programming - Leetcode 300</a><br>Subsecuencia creciente más larga, para Increasing Subsequence del Listado 5.</td><td>NeetCode</td><td>18 min</td><td>inglés</td></tr></tbody></table></section><section class="vsec" id="v-alin"><h2>Alineamiento y distancia de edición</h2><p class="prio">Sesión 5</p><table class="vtabla"><colgroup><col style="width:58%"><col style="width:20%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>Video y para qué sirve</th><th>Canal</th><th>Dura</th><th>Idioma</th></tr></thead><tbody><tr><td><a href="https://www.youtube.com/watch?v=AzBum06VDrw">Programación Dinámica: Cálculo de la Distancia de Edición</a><br>Distancia de edición con la tabla completa.</td><td>Fernando López</td><td>23 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=bLgkCPm5btY">SEQUENCE ALIGNMENT: Optimal Substructure</a><br>R 17.1 (parte 1): alineamiento de secuencias como en la clase. Sigue la parte 2.</td><td>Stanford Algorithms</td><td>14 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=XYi2-LPrwm4">Edit Distance - Dynamic Programming - Leetcode 72 - Python</a><br>Distancia de edición explicada sobre la grilla.</td><td>NeetCode</td><td>21 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=Ua0GhsJSlWM">Longest Common Subsequence - Dynamic Programming - Leetcode 1143</a><br>Subsecuencia común más larga, la variante más preguntada.</td><td>NeetCode</td><td>18 min</td><td>inglés</td></tr></tbody></table></section><section class="vsec" id="v-bf"><h2>Bellman-Ford y ciclos negativos</h2><p class="prio">Sesión 4</p><table class="vtabla"><colgroup><col style="width:58%"><col style="width:20%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>Video y para qué sirve</th><th>Canal</th><th>Dura</th><th>Idioma</th></tr></thead><tbody><tr><td><a href="https://www.youtube.com/watch?v=CIz_8J6IuM0">Algoritmo Bellman-Ford</a><br>Bellman-Ford con un ejemplo corto.</td><td>Kevin Ortega</td><td>7 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=18RaRWoqoJo">Grafos - Algoritmo de Bellman-Ford</a><br>Otro ejemplo paso a paso, en 6 minutos.</td><td>Pep Simo</td><td>6 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=lyw4FaxrwHg">Bellman Ford Algorithm | Shortest path &amp; Negative cycles | Graph Theory</a><br>Bellman-Ford con ciclos negativos y cómo marcar los vértices afectados. Es lo que pide el problema G del Listado 5.</td><td>WilliamFiset</td><td>15 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=06OK99Aak60">THE BELLMAN-FORD ALGORITHM: Optimal Substructure</a><br>R 18.2 (parte 1): la recurrencia por cantidad de aristas, igual que en la clase. Siguen 3 partes.</td><td>Stanford Algorithms</td><td>11 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=FtN3BYH2Zes">4.4 Bellman Ford Algorithm - Single Source Shortest Path - Dynamic Programming</a><br>Bellman-Ford relajando a mano.</td><td>Abdul Bari</td><td>17 min</td><td>inglés</td></tr></tbody></table></section><section class="vsec" id="v-back"><h2>Backtracking</h2><p class="prio">Sesión 6</p><table class="vtabla"><colgroup><col style="width:58%"><col style="width:20%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>Video y para qué sirve</th><th>Canal</th><th>Dura</th><th>Idioma</th></tr></thead><tbody><tr><td><a href="https://www.youtube.com/watch?v=ip2jC_kXGtg">Explicando Backtracking | Fuerza Bruta Pero Elegante</a><br>Backtracking como fuerza bruta ordenada. Empieza por este.</td><td>Chio Code</td><td>10 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=TtIPNrUdft0">Backtracking: Las 3 Claves Para Dominar</a><br>Elegir, explorar y deshacer en tres ideas.</td><td>Ingeniando101</td><td>13 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=DKCbsiDBN6c">6 Introduction to Backtracking - Brute Force Approach</a><br>El árbol de decisiones y qué es podar.</td><td>Abdul Bari</td><td>8 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=xFv_Hl4B83A">6.1 N Queens Problem using Backtracking</a><br>N reinas: colocar con restricciones.</td><td>Abdul Bari</td><td>14 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=kyLxTdsT8ws">6.2 Sum Of Subsets Problem - Backtracking</a><br>Suma de subconjuntos con poda.</td><td>Abdul Bari</td><td>12 min</td><td>inglés</td></tr></tbody></table></section><section class="vsec" id="v-mst"><h2>Árbol de expansión mínima y Union-Find</h2><p class="prio">Sesión 6</p><table class="vtabla"><colgroup><col style="width:58%"><col style="width:20%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>Video y para qué sirve</th><th>Canal</th><th>Dura</th><th>Idioma</th></tr></thead><tbody><tr><td><a href="https://www.youtube.com/watch?v=OZKuWP1KxdY">Algoritmo de Kruskal</a><br>Kruskal con un ejemplo.</td><td>LCTutorialsS</td><td>5 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=6pPSPYUbTlw">Grafos: árbol parcial mínimo con algoritmo de PRIM |  | UPV</a><br>Prim con un ejemplo.</td><td>Universitat Politècnica de València - UPV</td><td>5 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=JZBQLXgSGfs">Union Find Kruskal&#x27;s Algorithm</a><br>Kruskal con Union-Find en 6 minutos.</td><td>WilliamFiset</td><td>6 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=0jNmHPfA_yE">Union Find - Union and Find Operations</a><br>Cómo funcionan <code>find</code> y <code>union</code> por dentro.</td><td>WilliamFiset</td><td>11 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=SZuCspj5AJc">KRUSKAL&#x27;S MINIMUM SPANNING TREE ALGORITHM: Kruskals MST Algorithm</a><br>R 15.5: Kruskal como en la clase 19.</td><td>Stanford Algorithms</td><td>7 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=jsvOPssDVJA">PRIM&#x27;S MINIMUM SPANNING TREE ALGORITHM: Prims MST Algorithm</a><br>R 15.2: Prim como en la clase 18.</td><td>Stanford Algorithms</td><td>8 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=4ZlRH0eK-qQ">3.5 Prims and Kruskals Algorithms - Greedy Method</a><br>Prim y Kruskal comparados sobre el mismo grafo.</td><td>Abdul Bari</td><td>20 min</td><td>inglés</td></tr></tbody></table></section><section class="vsec" id="v-fw"><h2>Floyd-Warshall</h2><p class="prio">Sesión 7</p><table class="vtabla"><colgroup><col style="width:58%"><col style="width:20%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>Video y para qué sirve</th><th>Canal</th><th>Dura</th><th>Idioma</th></tr></thead><tbody><tr><td><a href="https://www.youtube.com/watch?v=DfgaBkp02HY">Algoritmo de Floyd</a><br>Floyd con las matrices paso a paso.</td><td>Jefferson Rivera</td><td>9 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=ogcvCr02gqM">ALL-PAIRS SHORTEST PATHS: Optimal Substructure</a><br>R 18.4 (parte 1): la recurrencia con los primeros k vértices. Sigue la parte 2.</td><td>Stanford Algorithms</td><td>12 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=4NQ3HnhyNfQ">Floyd Warshall All Pairs Shortest Path Algorithm | Graph Theory | Dynamic Programming</a><br>Floyd-Warshall, ciclos negativos y reconstrucción del camino.</td><td>WilliamFiset</td><td>16 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=oNI0rf2P9gE">4.2 All Pairs Shortest Path (Floyd-Warshall) - Dynamic Programming</a><br>Floyd a mano, matriz por matriz.</td><td>Abdul Bari</td><td>14 min</td><td>inglés</td></tr></tbody></table></section><section class="vsec" id="v-huff"><h2>Huffman</h2><p class="prio">Sesión 7</p><table class="vtabla"><colgroup><col style="width:58%"><col style="width:20%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>Video y para qué sirve</th><th>Canal</th><th>Dura</th><th>Idioma</th></tr></thead><tbody><tr><td><a href="https://www.youtube.com/watch?v=co4_ahEDCho">3.4 Huffman Coding - Greedy Method</a><br>Huffman con ejemplo completo y cálculo del largo promedio.</td><td>Abdul Bari</td><td>18 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=NM6FZB7IfS8">HUFFMAN CODES: A Greedy Algorithm</a><br>R 14.3 (parte 1): el algoritmo de la clase 18. Sigue la parte 2.</td><td>Stanford Algorithms</td><td>17 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=HESrV5VDu8c">HUFFMAN CODES: Problem Definition</a><br>R 14.2: por qué un código libre de prefijo es un árbol.</td><td>Stanford Algorithms</td><td>10 min</td><td>inglés</td></tr></tbody></table></section><section class="vsec" id="v-abb"><h2>ABB óptimo</h2><p class="prio">Solo si lo pasan en clases</p><table class="vtabla"><colgroup><col style="width:58%"><col style="width:20%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>Video y para qué sirve</th><th>Canal</th><th>Dura</th><th>Idioma</th></tr></thead><tbody><tr><td><a href="https://www.youtube.com/watch?v=oYlJUTVklc8">OPTIMAL BINARY SEARCH TREES: Problem Definition</a><br>R 17.2 (parte 1): la definición del problema. Son 5 partes en la misma lista.</td><td>Stanford Algorithms</td><td>12 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=vLS-zRCHo-Y">4.6 Optimal Binary Search Tree (Successful Search Only) - Dynamic Programming</a><br>ABB óptimo con la tabla llenada a mano.</td><td>Abdul Bari</td><td>30 min</td><td>inglés</td></tr></tbody></table></section><section class="vsec" id="v-np"><h2>NP-dificultad (para el control del 26 de noviembre)</h2><p class="prio">No entra en el juez</p><table class="vtabla"><colgroup><col style="width:58%"><col style="width:20%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>Video y para qué sirve</th><th>Canal</th><th>Dura</th><th>Idioma</th></tr></thead><tbody><tr><td><a href="https://www.youtube.com/watch?v=UR2oDYZ-Sao">¿Qué es eso del problema P versus NP?</a><br>P contra NP en 6 minutos.</td><td>Derivando</td><td>6 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=1x4VbYerGsA">El Mayor Problema de la Computación SIN RESOLVER</a><br>El mismo tema con más detalle.</td><td>Mates Mike</td><td>13 min</td><td>español</td></tr><tr><td><a href="https://www.youtube.com/watch?v=9uImnCfKMlA">Algorithms for NP-Hard Problems (Section 19.1: The Algorithmic Mystery of MST vs. TSP)</a><br>R 19.1: por qué el MST es fácil y el vendedor viajero no.</td><td>Tim Roughgarden Lectures</td><td>16 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=PEyRWZA3ESE">Algorithms for NP-Hard Problems (Section 19.3: Easy and Hard Problems)</a><br>R 19.3: problemas fáciles y difíciles.</td><td>Tim Roughgarden Lectures</td><td>23 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=ZqDT-tlIAyY">Algorithm for NP-Hard Problems (Section 19.5: A Simple Recipe for Proving NP-Hardness)</a><br>R 19.5: la receta para demostrar que un problema es NP-difícil con una reducción.</td><td>Tim Roughgarden Lectures</td><td>26 min</td><td>inglés</td></tr><tr><td><a href="https://www.youtube.com/watch?v=DbyXdvwE0G8">Algorithms for NP-Hard Problems (Section 23.6: NP-Completeness)</a><br>R 23.6: qué significa NP-completo.</td><td>Tim Roughgarden Lectures</td><td>19 min</td><td>inglés</td></tr></tbody></table></section><section class="vsec" id="v-largo"><h2>Si después del certamen quieres profundizar</h2><p class="prio">Opcional</p><table class="vtabla"><colgroup><col style="width:58%"><col style="width:20%"><col style="width:10%"><col style="width:12%"></colgroup><thead><tr><th>Video y para qué sirve</th><th>Canal</th><th>Dura</th><th>Idioma</th></tr></thead><tbody><tr><td><a href="https://www.youtube.com/watch?v=oBt53YbR9Kk">Dynamic Programming - Learn to Solve Algorithmic Problems &amp; Coding Challenges</a><br>Curso de 5 horas de PD desde cero, en JavaScript. La forma de pensar es la misma.</td><td>freeCodeCamp.org</td><td>5 h 10</td><td>inglés</td></tr></tbody></table></section><section class="vsec" id="v-listas"><h2>Listas completas</h2><ul class="vlistas"><li><a href="https://www.youtube.com/playlist?list=PLEGCF-WLh2RI5H8JBWxq0Q4AN7XVaj-h-">Clases de Roughgarden, parte 3 (voraces y PD)</a></li><li><a href="https://www.youtube.com/playlist?list=PLEGCF-WLh2RK6lq3iSsiU84rWVee3A-hz">Clases de Roughgarden, parte 4 (NP-dificultad)</a></li><li><a href="https://www.algorithmsilluminated.org/">Índice oficial de videos por capítulo del libro</a></li></ul></section></main>
+</div>
+<script>(function(){
+  var raiz = document.documentElement;
+  var boton = document.getElementById('tema');
+  try {
+    var guardado = localStorage.getItem('tema-c2-algoco');
+    if (guardado) raiz.setAttribute('data-theme', guardado);
+  } catch (e) {}
+  if (boton) boton.addEventListener('click', function(){
+    var oscuro = raiz.getAttribute('data-theme') === 'dark' ||
+      (!raiz.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    var nuevo = oscuro ? 'light' : 'dark';
+    raiz.setAttribute('data-theme', nuevo);
+    try { localStorage.setItem('tema-c2-algoco', nuevo); } catch (e) {}
+  });
+
+  var enlaces = Array.prototype.slice.call(document.querySelectorAll('#menu a'));
+  var secciones = enlaces.map(function(a){ return document.getElementById(a.getAttribute('href').slice(1)); });
+  var barra = document.querySelector('.sidebar');
+  var actual = -1;
+
+  function marcar(){
+    var y = window.scrollY + 70;
+    var idx = 0;
+    for (var i = 0; i < secciones.length; i++){
+      if (secciones[i] && secciones[i].offsetTop <= y) idx = i;
+    }
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) idx = secciones.length - 1;
+    if (idx === actual) return;
+    actual = idx;
+    enlaces.forEach(function(a, i){ a.classList.toggle('active', i === idx); });
+    if (window.innerWidth > 900 && barra){
+      var r = enlaces[idx].getBoundingClientRect();
+      var s = barra.getBoundingClientRect();
+      if (r.top < s.top || r.bottom > s.bottom){
+        barra.scrollTop += r.top - s.top - barra.clientHeight / 2;
+      }
+    }
+  }
+  window.addEventListener('scroll', marcar, {passive:true});
+  window.addEventListener('resize', marcar);
+  window.addEventListener('load', marcar);
+  marcar();
+})();
+</script>
+</body>
+</html>
