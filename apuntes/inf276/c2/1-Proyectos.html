@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proyectos · Infosoc C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+/*c2-extra*/
+  .pages .pgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:10px 4px 0}
+  .pages .pgrp:first-child{margin-top:0}
+  .pages span.off{display:flex;gap:9px;align-items:center;font-size:13px;padding:6px 9px;border-radius:8px;
+    border:1px dashed var(--line);line-height:1.25;opacity:.5;cursor:default}
+  .pages span.off b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--code);
+    color:var(--muted);font-size:11.5px}
+  .pages a b{font-size:11px}
+  .nc{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--no-soft);
+    color:var(--no);margin-left:2px;font-style:normal;vertical-align:1px;white-space:nowrap}
+  .soon{border-bottom:1px dashed var(--muted);color:var(--muted)}
+  .box.ana p+p{margin-top:6px}
+  .box.nc{border-left-color:var(--no);background:var(--no-soft)} .box.nc .bt{color:var(--no)}
+  .lic{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:700} .nope{color:var(--no);font-weight:700}
+  .mnemo{font-size:15px;background:var(--panel);border:1px dashed var(--brand);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .mnemo b{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T1</div>
+    <div><h1>Proyectos</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><div class="pgrp">Inicio</div><a href="0-Guia-de-estudio-C2.html"><b>★</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 21</small></span></a><div class="pgrp">Materia del C1</div><a href="1-Proyectos.html" class="cur"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></a><a href="2-Definiciones.html"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></a><a href="3-Falacias.html"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></a><a href="4-Sesgos-cognitivos.html"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></a><a href="5-Pensamiento-critico.html"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></a><a href="6-Resolver-problemas.html"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></a><a href="7-Etica-y-moral.html"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></a><a href="8-Etica-antiguedad.html"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></a><a href="9-Etica-moderna.html"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></a><a href="10-Sociedades.html"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></a><a href="11-Metodo-cientifico.html"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></a><a href="12-Ingenieria.html"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></a><a href="13-Computacion.html"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></a><a href="13b-Resumen-C1.html"><b>Σ</b><span>Resumen contenidos Certamen 1<br><small style="color:var(--muted)">lo esencial de 1 a 13</small></span></a><div class="pgrp">Materia nueva del C2</div><a href="14-Procesamiento-datos.html"><b>14</b><span>Procesamiento de datos<br><small style="color:var(--muted)">historia y minería de datos</small></span></a><a href="15-Impacto.html"><b>15</b><span>Impacto de la tecnología<br><small style="color:var(--muted)">lo bueno y lo malo</small></span></a><a href="16-Aspectos-eticos.html"><b>16</b><span>Aspectos éticos<br><small style="color:var(--muted)">códigos, dilemas, ética profesional</small></span></a><a href="16b-Inteligencia-artificial.html"><b>XX</b><span>Inteligencia artificial<br><small style="color:var(--muted)">expertos, genéticos, redes, LLM</small></span></a><a href="17-Propiedad-intelectual.html"><b>17</b><span>Propiedad intelectual<br><small style="color:var(--muted)">autor, patentes, marcas, secretos</small></span></a><a href="18-Codigo-abierto.html"><b>18</b><span>Código abierto<br><small style="color:var(--muted)">GPL, BSD, OSI, Creative Commons</small></span></a><a href="19-Proteccion-datos.html"><b>19</b><span>Protección de datos <i class="nc">no pasada</i><br><small style="color:var(--muted)">GDPR, leyes chilenas, CRA</small></span></a><a href="20-Desarrollo.html"><b>20</b><span>Desarrollo de software <i class="nc">no pasada</i><br><small style="color:var(--muted)">máximas y deuda técnica</small></span></a><a href="21-Codigo-ACM.html"><b>21</b><span>Código de ética ACM<br><small style="color:var(--muted)">las 4 secciones</small></span></a><div class="pgrp">Práctica</div><a href="22-Ejercicios.html"><b>✎</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a><a href="23-Flashcards.html"><b>⇄</b><span>Flashcards<br><small style="color:var(--muted)">toda la materia</small></span></a><div class="pgrp">Complemento</div><a href="24-Extra.html"><b>+</b><span>Extra<br><small style="color:var(--muted)">probablemente no entra</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 1</div><a href="#t1-inicio">Qué pesa y qué estudiar</a><a href="#fallas">Por qué fallan los proyectos</a><a href="#objetivos">El objetivo: SMART</a><a href="#grupo">Trabajo en grupo</a><a href="#reuniones">Reuniones exitosas</a><a href="#presentaciones">Presentaciones</a><div class="grp">Práctica</div><a href="#t1-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+<div class="box warn"><div class="bt">Página copiada del C1</div><p>Es la misma página que se usó para el C1, sin los videos. Lo que dice sobre el peso de cada tema y los certámenes se refiere al <b>C1</b>; para el C2 mira <a class="inl" href="0-Guia-de-estudio-C2.html#g-temario">qué entra y cuánto pesa</a>, el <a class="inl" href="13b-Resumen-C1.html">resumen del C1</a> y los <a class="inl" href="22-Ejercicios.html">ejercicios</a>, donde las preguntas tienen la numeración nueva.</p></div>
+<section id="t1-inicio">
+<h2>Tema 1 · Proyectos</h2>
+<p class="lead">Clase <code>01-proyectos-hnd.pdf</code>. Por qué fallan los proyectos, cómo trabajar en grupo, cómo hacer reuniones que sirvan y cómo preparar una presentación. Es la clase que acompaña al proyecto del ramo.</p>
+
+<div class="hero">
+  <div class="big">Peso en el certamen: alto</div>
+  <div class="sub">En el C1 2025-2 este tema valió <b>55 de los 125 puntos</b>: “tres razones por las que fallan los proyectos y cómo evitarlas” (30) y “qué criterios debe cumplir el objetivo de un proyecto” (25). Las razones de falla volvieron a salir en el recuperativo 2025-2 y en el C2 2025-1. Reuniones y presentaciones nunca se han preguntado.</div>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder escribir</h5>
+    <p>· Cuándo un proyecto se considera <b>fallido</b> (3 condiciones).</p>
+    <p>· Las <b>7 razones de falla</b>, cada una con su problema y su solución.</p>
+    <p>· Qué es un objetivo <b>SMART</b> y los criterios del objetivo según la pauta.</p>
+    <p>· En segundo plano: las claves de una reunión y un ítem de acción bien escrito.</p>
+  </div>
+  <div class="card"><h5>Dónde está</h5>
+    <p><b>Diapositivas</b> <code>01-proyectos-hnd.pdf</code>: “Fallas de proyectos” es lo importante (diapositivas 5 a 13).</p>
+    <p>Las 7 razones vienen casi textuales de un artículo de Asana (“Why projects fail: 7 causes”). Si quieres leer más, busca ese título.</p>
+  </div>
+  <div class="card"><h5>Plan para este tema</h5>
+    <p>1. Aprender la tabla de las 7 razones (20 min).</p>
+    <p>2. Escribir de memoria 3 razones con su medida, como en el certamen (10 min).</p>
+    <p>3. Leer rápido grupo, reuniones y presentaciones (15 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="fallas">
+<h2>Por qué fallan los proyectos</h2>
+<p class="lead">Fallar es normal: una encuesta de 2021 dice que el 12 % de los proyectos de 2020 fallaron, y aspirar a un 100 % de éxito es irreal. Pero muchas fallas son evitables, y casi todas por la misma causa: no planificar.</p>
+
+<div class="box def">
+  <div class="bt">Definición · proyecto fallido</div>
+  <p>Un proyecto se considera fallido si cumple al menos una de estas condiciones:</p>
+  <p><b>1.</b> No cumplió los objetivos. <b>2.</b> No se obtuvo el producto buscado. <b>3.</b> El trabajo no se completó a tiempo.</p>
+</div>
+
+<h3>Las 7 razones de falla</h3>
+<div class="tw">
+<table>
+<thead><tr><th>#</th><th>Razón</th><th>El problema</th><th>Cómo hace fallar el proyecto</th><th>Solución</th></tr></thead>
+<tbody>
+<tr><td><b>1</b></td><td><b>Objetivos poco claros</b></td><td>El grupo no está alineado con los objetivos; no hay cómo medir el avance.</td><td>Cada uno trabaja hacia algo distinto. Muchos trabajadores ni saben cómo su trabajo aporta a la meta general.</td><td>Poner <b>objetivos claros y medibles</b> como parte de la planificación: específicos, con plazos, evaluables al terminar.</td></tr>
+<tr><td><b>2</b></td><td><b>Ampliación del alcance</b> <span class="yrs">(scope creep, “síndrome del lavandero”)</span></td><td>Los entregables cambian conforme avanza el proyecto.</td><td>Es lenta y difícil de ver. Un 34 % de los proyectos de 2020 la sufrió. Termina en plazos sobrepasados y objetivos incumplidos.</td><td>Definir y <b>circular el alcance</b> antes de empezar. Un alcance documentado y compartido se defiende mejor. Usar un <b>proceso de control de cambios</b>: decidir si se justifica cada extensión y pedir recursos para ella.</td></tr>
+<tr><td><b>3</b></td><td><b>Expectativas poco realistas</b></td><td>El éxito es imposible.</td><td>Metas demasiado ambiciosas dejan al equipo estresado y con plazos que no se cumplen.</td><td>Objetivos <b>SMART</b>. Las metas inspiradoras sirven, pero tienen que ser alcanzables con los recursos que hay.</td></tr>
+<tr><td><b>4</b></td><td><b>Recursos limitados</b></td><td>No se cuenta con lo necesario para completar la tarea.</td><td>Recurso es todo lo que se necesita: presupuesto, personal, tiempo, espacio, herramientas. Si falta, el proyecto se retrasa o se para en seco.</td><td><b>Planificar la administración de recursos</b> de antemano. El cliente debe saber que el proyecto depende de esos recursos.</td></tr>
+<tr><td><b>5</b></td><td><b>Comunicaciones pobres</b></td><td>Nadie sabe cuándo ni cómo comunicar avances.</td><td>La gente salta entre muchas aplicaciones al día. Si no está claro qué canal usar, cuándo y quién comunica qué, la información se pierde. Peor en equipos distribuidos.</td><td>Un <b>plan de comunicación</b>: frecuencia, canales, audiencia y responsable de cada tipo de mensaje. Canales únicos que dejen registro.</td></tr>
+<tr><td><b>6</b></td><td><b>Retrasos de agenda</b></td><td>Hitos no cumplidos generan trabajo a presión.</td><td>Un hito atrasado acá y una reunión postergada allá parecen irrelevantes, pero se acumulan en retrasos grandes.</td><td>Una <b>programación detallada</b> con hitos intermedios. Ante cualquier retraso, aunque sea chico, reevaluar y ajustar.</td></tr>
+<tr><td><b>7</b></td><td><b>Falta de transparencia</b></td><td>Nadie encuentra la documentación del proyecto.</td><td>Si los planes son estáticos y difíciles de encontrar, cada cambio exige reuniones que gastan tiempo, y aun así la información se diluye.</td><td>Una <b>herramienta de gestión</b> que centralice documentos y planes, con <b>control de versiones</b> para ver los cambios rápido.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">C1 2025-2 · P1 · 30 pts</span></div>
+<p>“Discuta tres razones por las que los proyectos fracasan, explicando cómo hacen que el proyecto falle e indique posibles medidas para evitarlas.” La pauta da <b>5 puntos por cada razón y 5 por cada solución</b>. Es decir: la mitad del puntaje está en la medida. Si solo describes el problema, te quedas con 15 de 30.</p>
+<div class="pts"><span>Cada razón explicada</span><span>5</span><span>Cada solución propuesta</span><span>5</span><span>Total (3 razones)</span><span>30</span></div>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · la plantilla de tres líneas por razón</div>
+  <p><b>Nombre</b> (y el nombre en inglés si lo sabes) → <b>qué pasa y por qué hace fallar el proyecto</b> → <b>qué medida lo evita</b>. Las tres más fáciles de argumentar son <b>ampliación del alcance</b> (tiene un dato: 34 %), <b>objetivos poco claros</b> (conecta con SMART) y <b>comunicaciones pobres</b> (plan de comunicación con canal único).</p>
+</div>
+
+<div class="box ana">
+  <div class="bt">Analogía · la remodelación del baño</div>
+  <p>Contratas a alguien para cambiar la tina. A la semana le pides que ya que está cambie también los azulejos, después el lavamanos, después “de paso” la cocina. Ninguna petición parece grande, pero el presupuesto y el plazo originales ya no sirven. Eso es <b>ampliación del alcance</b>. La solución del maestro es la del ramo: un presupuesto escrito con lo que incluye, y cada cambio se cotiza aparte (<b>control de cambios</b>).</p>
+</div>
+
+<div class="box libro">
+  <div class="bt">El chiste de la primera diapositiva · “Etapas de todo proyecto”</div>
+  <p>1. Optimismo general. 2. Desorientación. 3. Inicio a trancazos. 4. Despelote. 5. Búsqueda implacable de culpables. 6. Sálvese quien pueda. 7. Castigo ejemplar a los inocentes. 8. Recuperación del optimismo. 9. Terminación inexplicable. 10. Condecoración a los no participantes. Es humor, no materia, pero muestra el punto de la clase: sin planificación, así terminan.</p>
+</div>
+
+<div class="box warn">
+  <div class="bt">Ojo · otras “causas de falla” que han aparecido en pautas</div>
+  <p>En el C2 2025-1 y el recuperativo 2025-1 la pauta usó una lista distinta, de una clase de “máximas” de desarrollo de software que <b>no está en el zip de este semestre</b>: causas <b>no técnicas</b> (políticas, interpersonales, falta de competencias), <b>exceso de ambición</b> (el síndrome del segundo sistema), no recortar funcionalidades a tiempo, complejidad excesiva y <b>deuda técnica</b>. Si te preguntan por proyectos de software, puedes sumar una de estas como complemento. El detalle está en <a class="inl" href="22-Ejercicios.html#e18">E18 de la página de ejercicios</a>.</p>
+</div>
+</section>
+
+<section id="objetivos">
+<h2>El objetivo de un proyecto</h2>
+<p class="lead">El objetivo es lo que se espera lograr al final. Dos razones de falla (objetivos poco claros y expectativas poco realistas) se resuelven escribiendo bien el objetivo.</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>Letra</th><th>En inglés</th><th>Significa</th><th>Pregunta para revisarlo</th></tr></thead>
+<tbody>
+<tr><td><b>S</b></td><td>Specific</td><td>Específico</td><td>¿Cualquiera del grupo entiende exactamente qué hay que lograr?</td></tr>
+<tr><td><b>M</b></td><td>Measurable</td><td>Medible</td><td>¿Hay un criterio objetivo para decir “se logró” o “no se logró”?</td></tr>
+<tr><td><b>A</b></td><td>Achievable</td><td>Alcanzable</td><td>¿Se puede hacer con las personas y herramientas que tenemos?</td></tr>
+<tr><td><b>R</b></td><td>Realistic</td><td>Realista</td><td>¿Es razonable dentro del contexto, sin heroísmos?</td></tr>
+<tr><td><b>T</b></td><td>Time-bound</td><td>Sujeto a un plazo</td><td>¿Tiene fecha límite?</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">C1 2025-2 · P4 · 25 pts</span></div>
+<p>“¿Qué criterios debe cumplir el objetivo de un proyecto? Explique.” La pauta no usó SMART, sino cuatro criterios propios:</p>
+<ul>
+<li><b>Claro y preciso:</b> todos los involucrados saben qué se quiere obtener y cómo evaluar si se logró.</li>
+<li><b>Medible:</b> consecuencia de lo anterior; se acuerdan criterios objetivos de medición.</li>
+<li><b>Realista:</b> se puede obtener en el plazo convenido con los recursos disponibles.</li>
+<li><b>Fijo:</b> hay que resistir la tentación de extender o redefinir los objetivos (es la defensa contra la ampliación del alcance).</li>
+</ul>
+<div class="pts"><span>Tres características, 7 puntos cada una</span><span>20</span></div>
+<p>Lo más seguro es responder con estos cuatro y mencionar SMART como la forma estándar de escribirlos.</p>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Objetivo malo</h5><p>“Mejorar la aplicación de la cafetería.”</p><p>No dice qué es mejorar, no se puede medir y no tiene plazo. Cada integrante entenderá algo distinto.</p></div>
+  <div class="card"><h5>Objetivo SMART</h5><p>“Que un alumno pueda pedir y pagar un almuerzo desde el celular en menos de 1 minuto, probado con 20 usuarios, antes del 25 de noviembre, con el equipo actual de 4 personas.”</p></div>
+</div>
+</section>
+
+<section id="grupo">
+<h2>Trabajo en grupo</h2>
+<p class="lead">Es un desafío, pero enseña comunicación, resolución de problemas y liderazgo. Todo parte por <b>establecer expectativas</b>.</p>
+<div class="tw">
+<table>
+<thead><tr><th>Expectativa</th><th>Para qué sirve</th></tr></thead>
+<tbody>
+<tr><td><b>Defina objetivos</b></td><td>Da una visión común del propósito; todos trabajan hacia la misma meta.</td></tr>
+<tr><td><b>Clarifique fechas límite</b></td><td>Con hitos definidos, el grupo prioriza y termina a tiempo con la calidad requerida.</td></tr>
+<tr><td><b>Asigne roles y responsabilidades</b></td><td>Evita errores, confusiones y trabajo duplicado. Cada cual se enfoca en lo suyo.</td></tr>
+<tr><td><b>Fomente la responsabilidad</b></td><td>Con expectativas claras y avances supervisados, todos cumplen sus compromisos.</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="reuniones">
+<h2>Reuniones exitosas</h2>
+<p class="lead">Una buena reunión termina con decisiones tomadas, responsabilidades asignadas y cada persona sabiendo qué tiene que hacer. La clase da siete claves.</p>
+<ol>
+<li><b>Ponga límites claros.</b> Empieza y termina a la hora. Esperar a los atrasados premia al que llega tarde y castiga al puntual.</li>
+<li><b>Defina una agenda</b> y repártala antes. “Una reunión que no es suficientemente importante para tener agenda no es suficientemente importante para atender.”</li>
+<li><b>Plantee los resultados esperados.</b> Si el líder no sabe qué busca, no puede saber si lo logró, y la reunión se desvía.</li>
+<li><b>Revise minutas e ítems de acción</b> de la reunión anterior. Da contexto a quien faltó y acostumbra a cumplir.</li>
+<li><b>Tome minutas por escrito.</b> Basta con las conclusiones y los ítems de acción con responsable y plazo.</li>
+<li><b>Ítems de acción claros:</b> empiezan con un <b>verbo</b>, especifican el <b>entregable</b>, tienen <b>un único responsable</b> y una <b>fecha</b>.</li>
+<li><b>Fije la siguiente reunión</b> al final, cuando todos están presentes con su agenda a mano.</li>
+</ol>
+<div class="cols">
+  <div class="card"><h5>Ítem de acción mal escrito</h5><p>“Ver lo del informe.”</p><p>No hay verbo concreto, entregable, responsable ni plazo.</p></div>
+  <div class="card"><h5>Ítem de acción bien escrito</h5><p>“<b>Redactar</b> la sección 3 (estado del arte) del informe de avance, 2 páginas · <b>Responsable:</b> Camila · <b>Plazo:</b> miércoles 21, 18:00.”</p></div>
+</div>
+</section>
+
+<section id="presentaciones">
+<h2>Presentaciones</h2>
+<p class="lead">Una presentación exitosa es pieza angular de un proyecto y se aprende practicando.</p>
+<div class="tw">
+<table>
+<thead><tr><th>Consejo</th><th>Qué dice la clase</th></tr></thead>
+<tbody>
+<tr><td><b>Prepárese con tiempo</b></td><td>Póngase en el lugar de la audiencia: ¿qué necesitan saber?, ¿qué quiere que recuerden? Estructura: <b>introducción</b> (capturar y presentar objetivos), <b>cuerpo</b> (puntos en orden lógico, con evidencia), <b>conclusión</b> (resumen, llamado a la acción).</td></tr>
+<tr><td><b>Imágenes con juicio</b></td><td>Diseño simple con poco texto, foco en los puntos clave, letra y colores consistentes, imágenes de calidad. Apoyan la presentación, no la reemplazan.</td></tr>
+<tr><td><b>Transparencias</b></td><td>Un concepto por diapositiva, tablas y gráficos simples, videos con subtítulos, pocas diapositivas, colores contrastantes, letra grande.</td></tr>
+<tr><td><b>Su audiencia</b></td><td>¿Cuánto saben del tema? Repetir lo que ya saben aburre; saltarse lo básico los pierde. Interactuar: preguntas, encuestas, anécdotas, humor.</td></tr>
+<tr><td><b>Planifique consultas</b></td><td>Anticipe cuatro tipos de preguntas: <b>obvias</b> (las comunes del área), <b>desafiantes</b> (puntos débiles o controversiales), <b>de curiosidad</b> (aplicaciones prácticas) y <b>específicas</b> (jerga, si la audiencia es experta).</td></tr>
+<tr><td><b>Practique con un amigo</b></td><td>Frente al espejo, grabándose o ante un colega. Fíjese en tono y ritmo, lenguaje corporal y transiciones. Pida que se sienten lejos para verificar que lo escuchan.</td></tr>
+<tr><td><b>Durante</b></td><td>Hable lento, mire a la audiencia, reserve tiempo para preguntas.</td></tr>
+<tr><td><b>No confíe en la tecnología</b></td><td>Conozca la sala antes y lleve respaldos. Si algo falla, manéjelo con calma: puede dejar mejor impresión que si todo funciona.</td></tr>
+</tbody>
+</table>
+</div>
+<div class="box warn"><div class="bt">Advertencia del propio profe</div><p>Al final de la clase dice que sus presentaciones “no deben considerarse ejemplos”: sirven de referencia de la materia, no como modelo de cómo presentar.</p></div>
+</section>
+
+<section id="t1-preguntas">
+<h2>Preguntas del tema</h2>
+<p class="lead">Contesta en voz alta antes de abrir. Las preguntas de certámenes anteriores, con su pauta y una respuesta modelo, están en la página de ejercicios: <a class="inl" href="22-Ejercicios.html#e15">E15 (razones de falla)</a>, <a class="inl" href="22-Ejercicios.html#e39">E39 (criterios del objetivo)</a> y <a class="inl" href="22-Ejercicios.html#e18">E18 (máximas)</a>.</p>
+
+<details class="ex"><summary>1 · ¿Cuándo se considera fallido un proyecto? <span class="tag">lista cerrada</span></summary>
+<div class="body"><p>Cuando <b>no cumplió los objetivos</b>, <b>no se obtuvo el producto buscado</b> o <b>el trabajo no se completó a tiempo</b>.</p></div></details>
+
+<details class="ex"><summary>2 · Nombre las 7 razones de falla <span class="tag">lista cerrada</span></summary>
+<div class="body"><p>Objetivos poco claros, ampliación del alcance, expectativas poco realistas, recursos limitados, comunicaciones pobres, retrasos de agenda y falta de transparencia. Regla para recordarlas: <b>qué</b> (objetivos, alcance, expectativas), <b>con qué</b> (recursos), <b>cómo nos coordinamos</b> (comunicación, agenda, transparencia).</p></div></details>
+
+<details class="ex"><summary>3 · ¿Qué es la ampliación del alcance y cómo se evita? <span class="tag">la más preguntable</span></summary>
+<div class="body"><p>Es que los entregables cambien a medida que avanza el proyecto (en inglés <i>scope creep</i>). Es difícil de ver porque suele ser lenta, y es causa importante de plazos sobrepasados: el 34 % de los proyectos de 2020 la sufrió. Se evita definiendo y circulando el alcance antes de partir, y con un proceso de control de cambios que decida si cada extensión se justifica y pida recursos adicionales para ella.</p></div></details>
+
+<details class="ex"><summary>4 · ¿Qué significa SMART? <span class="tag">sigla</span></summary>
+<div class="body"><p><b>S</b>pecific (específico), <b>M</b>easurable (medible), <b>A</b>chievable (alcanzable), <b>R</b>ealistic (realista), <b>T</b>ime-bound (sujeto a un plazo límite).</p></div></details>
+
+<details class="ex"><summary>5 · ¿Qué debe contener un plan de comunicación? <span class="tag">detalle</span></summary>
+<div class="body"><p>Para cada tipo de comunicación: <b>frecuencia</b>, <b>canal</b>, <b>audiencia</b> y <b>responsable</b>. Idealmente canales únicos que dejen registro, para poder revisar lo comunicado cuando haga falta.</p></div></details>
+
+<details class="ex"><summary>6 · ¿Cómo se escribe un buen ítem de acción? <span class="tag">reuniones</span></summary>
+<div class="body"><p>Empieza con un verbo (es un imperativo), especifica el entregable, tiene un único responsable y una fecha de entrega acordada.</p></div></details>
+
+<details class="ex"><summary>7 · ¿Qué cuatro tipos de preguntas conviene anticipar antes de presentar? <span class="tag">presentaciones</span></summary>
+<div class="body"><p>Obvias (temas cubiertos, preguntas comunes del área), desafiantes (aspectos controversiales, debilidades de los argumentos), de curiosidad (qué más le interesaría saber a la audiencia, aplicaciones prácticas) y específicas (jerga o conceptos si se presenta a especialistas).</p></div></details>
+</section>
+
+<div class="pnav"><a href="0-Guia-de-estudio-C2.html"><small>← Anterior</small>Guía de estudio</a><a class="nx" href="2-Definiciones.html"><small>Siguiente →</small>Definiciones</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c2-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>

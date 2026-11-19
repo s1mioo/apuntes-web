@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Caleb Baez">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flashcards · Infosoc C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+
+  .pages .pgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:10px 4px 0}
+  .pages .pgrp:first-child{margin-top:0}
+  .pages span.off{display:flex;gap:9px;align-items:center;font-size:13px;padding:6px 9px;border-radius:8px;
+    border:1px dashed var(--line);line-height:1.25;opacity:.5;cursor:default}
+  .pages span.off b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--code);
+    color:var(--muted);font-size:11.5px}
+  .pages a b{font-size:11px}
+  .nc{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--no-soft);
+    color:var(--no);margin-left:2px;font-style:normal;vertical-align:1px;white-space:nowrap}
+  .soon{border-bottom:1px dashed var(--muted);color:var(--muted)}
+  .box.ana p+p{margin-top:6px}
+  .box.nc{border-left-color:var(--no);background:var(--no-soft)} .box.nc .bt{color:var(--no)}
+  .lic{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:700} .nope{color:var(--no);font-weight:700}
+  .mnemo{font-size:15px;background:var(--panel);border:1px dashed var(--brand);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .mnemo b{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">FC</div>
+    <div><h1>Flashcards</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><div class="pgrp">Inicio</div><a href="0-Guia-de-estudio-C2.html"><b>★</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 21</small></span></a><div class="pgrp">Materia del C1</div><a href="1-Proyectos.html"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></a><a href="2-Definiciones.html"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></a><a href="3-Falacias.html"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></a><a href="4-Sesgos-cognitivos.html"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></a><a href="5-Pensamiento-critico.html"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></a><a href="6-Resolver-problemas.html"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></a><a href="7-Etica-y-moral.html"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></a><a href="8-Etica-antiguedad.html"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></a><a href="9-Etica-moderna.html"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></a><a href="10-Sociedades.html"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></a><a href="11-Metodo-cientifico.html"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></a><a href="12-Ingenieria.html"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></a><a href="13-Computacion.html"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></a><a href="13b-Resumen-C1.html"><b>Σ</b><span>Resumen contenidos Certamen 1<br><small style="color:var(--muted)">lo esencial de 1 a 13</small></span></a><div class="pgrp">Materia nueva del C2</div><a href="14-Procesamiento-datos.html"><b>14</b><span>Procesamiento de datos<br><small style="color:var(--muted)">historia y minería de datos</small></span></a><a href="15-Impacto.html"><b>15</b><span>Impacto de la tecnología<br><small style="color:var(--muted)">lo bueno y lo malo</small></span></a><a href="16-Aspectos-eticos.html"><b>16</b><span>Aspectos éticos<br><small style="color:var(--muted)">códigos, dilemas, ética profesional</small></span></a><a href="16b-Inteligencia-artificial.html"><b>XX</b><span>Inteligencia artificial<br><small style="color:var(--muted)">expertos, genéticos, redes, LLM</small></span></a><a href="17-Propiedad-intelectual.html"><b>17</b><span>Propiedad intelectual<br><small style="color:var(--muted)">autor, patentes, marcas, secretos</small></span></a><a href="18-Codigo-abierto.html"><b>18</b><span>Código abierto<br><small style="color:var(--muted)">GPL, BSD, OSI, Creative Commons</small></span></a><a href="19-Proteccion-datos.html"><b>19</b><span>Protección de datos <i class="nc">no pasada</i><br><small style="color:var(--muted)">GDPR, leyes chilenas, CRA</small></span></a><a href="20-Desarrollo.html"><b>20</b><span>Desarrollo de software <i class="nc">no pasada</i><br><small style="color:var(--muted)">máximas y deuda técnica</small></span></a><a href="21-Codigo-ACM.html"><b>21</b><span>Código de ética ACM<br><small style="color:var(--muted)">las 4 secciones</small></span></a><div class="pgrp">Práctica</div><a href="22-Ejercicios.html"><b>✎</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a><a href="23-Flashcards.html" class="cur"><b>⇄</b><span>Flashcards<br><small style="color:var(--muted)">toda la materia</small></span></a><div class="pgrp">Complemento</div><a href="24-Extra.html"><b>+</b><span>Extra<br><small style="color:var(--muted)">probablemente no entra</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Flashcards</div><a href="#fc-inicio">Cómo practicar</a><a href="#fc-practica">Práctica al azar</a><a href="#fc-avance">Tu avance</a><div class="grp">Leer las tarjetas</div><a href="#fc-todas">Todas las tarjetas</a></nav>
+</aside>
+<main class="content">
+<style>
+.tiny{font-size:12.5px;color:var(--muted)}
+  .fc-panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 14px;margin:14px 0;box-shadow:var(--shadow)}
+  .fc-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--line)}
+  .fc-row:last-child{border-bottom:0}
+  .fc-lab{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);min-width:62px}
+  .fc-chips{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 300px}
+  .fc-chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;
+    font-size:13.5px;cursor:pointer;background:var(--bg);color:var(--ink);user-select:none}
+  .fc-chip input{accent-color:var(--brand);margin:0}
+  .fc-chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:600}
+  .fc-chip small{color:var(--muted);font-weight:400}
+  .fc-status{font-size:13px;color:var(--muted);margin:10px 2px 6px;min-height:1.3em}
+  .fc-card{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--brand);border-radius:14px;padding:18px 20px;
+    min-height:230px;box-shadow:var(--shadow);cursor:pointer;outline:none;display:flex;flex-direction:column;gap:12px}
+  .fc-card:focus-visible{box-shadow:0 0 0 3px var(--brand-soft),var(--shadow)}
+  .fc-card.flipped{border-left-color:var(--accent);cursor:default}
+  .fc-card.fc-vacio{cursor:default;border-left-color:var(--line)}
+  .fc-meta{display:flex;flex-wrap:wrap;gap:6px}
+  .fc-tag{font-size:11.5px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .fc-tag.fc-salio{color:var(--no);border-color:var(--no);background:var(--no-soft);font-weight:700}
+  .fc-front{font-size:19px;font-weight:700;line-height:1.45;color:var(--ink)}
+  .fc-hint{font-size:14.5px;color:var(--warn);background:var(--warn-soft);border-radius:8px;padding:8px 12px}
+  .fc-back{border-top:1px dashed var(--line);padding-top:12px;font-size:16px;line-height:1.65}
+  .fc-back b{color:var(--accent)}
+  .fc-tr{background:var(--no-soft);border:1px solid var(--no);border-radius:10px;padding:8px 12px 6px;margin-top:12px;font-size:14.5px;line-height:1.55}
+  .fc-tr-tit{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--no)}
+  .fc-tr ul{margin:4px 0 2px;padding-left:18px}
+  .fc-tr li{margin:4px 0}
+  .fc-falsa{font-style:italic;color:var(--ink)}
+  .fc-de{font-size:12.5px;color:var(--muted)}
+  .fc-por{display:block;color:var(--ink)}
+  .fc-src{font-size:12.8px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .fc-src b{color:var(--muted)}
+  .fc-tap{font-size:12.5px;color:var(--muted);margin-top:auto}
+  .fc-actions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .fc-actions .btn{flex:1 1 150px;padding:11px 12px;font-size:14.5px;font-weight:600;text-align:center}
+  .fc-actions .btn:disabled{opacity:.45;cursor:default}
+  .fc-main{background:var(--brand-soft);color:var(--brand);border-color:var(--brand)}
+  .fc-no{border-color:var(--no);color:var(--no);background:var(--no-soft)}
+  .fc-mid{border-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+  .fc-yes{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .fc-end{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:12px 0;box-shadow:var(--shadow)}
+  .fc-score{font-size:26px;font-weight:800;color:var(--brand)}
+  .fc-end ul{margin:6px 0 10px}
+  table.mini tr.fc-tot td{font-weight:700}
+  details.fc-item .body b{color:var(--accent)}
+.fc-card{display:flex;flex-direction:column;gap:12px}
+  .fc-tag.fc-nueva{color:var(--accent);border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+
+</style>
+<section id="fc-inicio" data-grp="Flashcards" data-nav="Cómo practicar">
+<h2>Flashcards de toda la materia</h2>
+<p class="lead">119 tarjetas con lo que hay que poder decir de memoria: las clases nuevas del C2 (14 a 21 y XX) y lo más importante del C1. Se practican al azar, te calificas tú y la página recuerda cuáles te cuestan. Sirven para el repaso del sábado en la mañana y para el celular en los ratos muertos.</p>
+<div class="kpis">
+  <div class="kpi"><b>119 tarjetas</b><span>en 11 temas</span></div>
+  <div class="kpi"><b>94 nuevas</b><span>materia del C2 (temas 14 a 21 y XX)</span></div>
+  <div class="kpi"><b>61 ya salieron</b><span>en un C2, recuperativo o C1 anterior</span></div>
+  <div class="kpi"><b>3 modos</b><span>repaso inteligente, mazo al azar y examen de 10</span></div>
+  <div class="kpi"><b>Tu avance</b><span>queda guardado en este navegador</span></div>
+</div>
+<h3>Cómo practicar</h3>
+<div class="steps">
+<div class="step"><b>Responde antes de voltear.</b> Lee la pregunta y contéstala en voz alta o en 2 o 3 líneas en un papel. Lo que fija la materia es el esfuerzo de recordar sin mirar; releer la respuesta casi no sirve.</div>
+<div class="step"><b>Si te quedas en blanco, pide la pista</b> (botón o tecla P) antes de rendirte.</div>
+<div class="step"><b>Voltea y compara con lo que está en negrita.</b> Son los ítems que la pauta del profe premia.</div>
+<div class="step"><b>Califícate con honestidad.</b> “La sabía” solo si dijiste las ideas en negrita; “Más o menos” si te faltó una; “No la sabía” si no salía. Las que no sabes vuelven más seguido.</div>
+<div class="step"><b>Si una tarjeta no te sale dos veces, ve a su página:</b> cada una trae el enlace a la sección que la explica.</div>
+</div>
+<div class="box tip"><div class="bt">Qué filtro usar</div><p>Si ya estudiaste el C1, empieza con <b>“Solo las nuevas del C2”</b>. El sábado en la mañana, <b>“Solo las que ya salieron”</b> y después <b>“Solo las que me cuestan”</b>.</p></div>
+</section>
+
+<section id="fc-practica" data-nav="Práctica al azar">
+<h2>Práctica al azar</h2>
+<div class="fc-panel">
+  <div class="fc-row"><span class="fc-lab">Temas</span><div class="fc-chips" id="fc-temas"><label class="fc-chip"><input type="checkbox" value="pi" checked> Propiedad intelectual <small>20</small></label><label class="fc-chip"><input type="checkbox" value="oss" checked> Código abierto <small>18</small></label><label class="fc-chip"><input type="checkbox" value="etica" checked> Ética profesional y ACM <small>15</small></label><label class="fc-chip"><input type="checkbox" value="datos" checked> Protección de datos <small>12</small></label><label class="fc-chip"><input type="checkbox" value="dev" checked> Desarrollo de software <small>8</small></label><label class="fc-chip"><input type="checkbox" value="ia" checked> Inteligencia artificial <small>12</small></label><label class="fc-chip"><input type="checkbox" value="proc" checked> Datos e impacto <small>9</small></label><label class="fc-chip"><input type="checkbox" value="c1-razon" checked> C1 · Falacias y sesgos <small>7</small></label><label class="fc-chip"><input type="checkbox" value="c1-ciencia" checked> C1 · Ciencia e ingeniería <small>6</small></label><label class="fc-chip"><input type="checkbox" value="c1-etica" checked> C1 · Ética <small>5</small></label><label class="fc-chip"><input type="checkbox" value="c1-otros" checked> C1 · Proyectos, Pólya y más <small>7</small></label></div></div>
+  <div class="fc-row"><span class="fc-lab">Cuáles</span><div class="fc-chips" id="fc-cuales"><label class="fc-chip"><input type="radio" name="fc-cuales" value="todas" checked> Todas <small>119</small></label><label class="fc-chip"><input type="radio" name="fc-cuales" value="nuevas"> Solo las nuevas del C2 <small>94</small></label><label class="fc-chip"><input type="radio" name="fc-cuales" value="salio"> Solo las que ya salieron <small>61</small></label><label class="fc-chip"><input type="radio" name="fc-cuales" value="cuestan"> Solo las que me cuestan <small id="fc-n-cuestan">0</small></label></div></div>
+  <div class="fc-row"><span class="fc-lab">Modo</span><div class="fc-chips" id="fc-modos"><label class="fc-chip"><input type="radio" name="fc-modo" value="smart" checked> Repaso inteligente</label><label class="fc-chip"><input type="radio" name="fc-modo" value="deck"> Mazo al azar</label><label class="fc-chip"><input type="radio" name="fc-modo" value="exam"> Examen de 10</label></div></div>
+</div>
+<div class="fc-status" id="fc-status" aria-live="polite"></div>
+<div class="fc-card" id="fc-card" tabindex="0" aria-live="polite">
+  <div class="fc-meta"><span class="fc-tag" id="fc-tema"></span><span class="fc-tag" id="fc-tipo"></span><span class="fc-tag fc-salio" id="fc-salio" hidden>ya salió</span><span class="fc-tag fc-nueva" id="fc-nueva" hidden>nueva C2</span><span class="fc-tag" id="fc-caja"></span></div>
+  <div class="fc-front" id="fc-front">Cargando…</div>
+  <div class="fc-hint" id="fc-hint" hidden></div>
+  <div class="fc-back" id="fc-back" hidden><div id="fc-ans"></div><div class="fc-tr" id="fc-tr" hidden></div><div class="fc-src" id="fc-src"></div></div>
+  <div class="fc-tap" id="fc-tap"></div>
+</div>
+<div class="fc-actions" id="fc-actions-front">
+  <button class="btn" id="fc-btn-hint" type="button">Pista (P)</button>
+  <button class="btn fc-main" id="fc-btn-flip" type="button">Ver respuesta (espacio)</button>
+  <button class="btn" id="fc-btn-skip" type="button">Saltar (S)</button>
+</div>
+<div class="fc-actions" id="fc-actions-back" hidden>
+  <button class="btn fc-no" data-g="1" type="button">No la sabía (1)</button>
+  <button class="btn fc-mid" data-g="2" type="button">Más o menos (2)</button>
+  <button class="btn fc-yes" data-g="3" type="button">La sabía (3)</button>
+</div>
+<div class="fc-end" id="fc-end" hidden></div>
+<noscript><p>La práctica necesita JavaScript. Las tarjetas también están más abajo, para repasarlas leyendo.</p></noscript>
+</section>
+
+<section id="fc-avance" data-nav="Tu avance">
+<h2>Tu avance</h2>
+<p class="lead">Cuántas tarjetas tienes en cada caja, por tema. La meta para el sábado 21: que las que ya salieron estén en la caja 3.</p>
+<div id="fc-stats"><p class="tiny">Se calcula al abrir la página.</p></div>
+<h3>Las que más te cuestan</h3>
+<div id="fc-hard"></div>
+<p class="tiny">El avance se guarda en este navegador: si abres la página en otro computador o borras los datos del sitio, parte de cero. <button class="btn" id="fc-reset" type="button">Reiniciar avance</button></p>
+</section>
+
+<section id="fc-todas" data-grp="Leer las tarjetas" data-nav="Todas las tarjetas">
+<h2>Todas las tarjetas</h2>
+<p class="lead">Las mismas 119 tarjetas por tema, para repasar leyendo: primero las que ya salieron. Saltar a: <a class="inl" href="#fc-t-pi">Propiedad intelectual (20)</a> · <a class="inl" href="#fc-t-oss">Código abierto (18)</a> · <a class="inl" href="#fc-t-etica">Ética profesional y ACM (15)</a> · <a class="inl" href="#fc-t-datos">Protección de datos (12)</a> · <a class="inl" href="#fc-t-dev">Desarrollo de software (8)</a> · <a class="inl" href="#fc-t-ia">Inteligencia artificial (12)</a> · <a class="inl" href="#fc-t-proc">Datos e impacto (9)</a> · <a class="inl" href="#fc-t-c1-razon">C1 · Falacias y sesgos (7)</a> · <a class="inl" href="#fc-t-c1-ciencia">C1 · Ciencia e ingeniería (6)</a> · <a class="inl" href="#fc-t-c1-etica">C1 · Ética (5)</a> · <a class="inl" href="#fc-t-c1-otros">C1 · Proyectos, Pólya y más (7)</a>.</p>
+<h3 id="fc-t-pi">Propiedad intelectual <span class="num">· 20 tarjetas</span></h3>
+<details class="ex fc-item" id="c-pi-01"><summary>¿Qué es la propiedad intelectual y qué la distingue de otras propiedades? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Las legislaciones que protegen las <b>creaciones del intelecto</b>. Trata de <b>bienes intangibles</b>, que se copian sin quitarle nada al dueño, y cubre áreas de <b>trato legal muy distinto</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · C2 25-2 · Fuente: 17, diapositivas 3-4 · <a class="inl" href="17-Propiedad-intelectual.html#que-es">ver en 17 · Qué es</a></p></div></details>
+<details class="ex fc-item" id="c-pi-02"><summary>¿Por qué la propiedad intelectual es tan importante en informática? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Porque la informática trata de <b>entidades abstractas</b> (algoritmos, programas, información) y el <b>software es intangible</b>: es esencialmente <b>la única legislación</b> que lo protege.</p><p class="tiny"><b>Salió en:</b> R 25-1 · R 25-2 · C2 25-2 · Fuente: pautas R 25-1 y C2 25-2 · <a class="inl" href="17-Propiedad-intelectual.html#relevancia">ver en 17 · Relevancia</a></p></div></details>
+<details class="ex fc-item" id="c-pi-03"><summary>¿Cuáles son las áreas de la propiedad intelectual? · <small>ya salió, nueva C2</small></summary><div class="body"><p><b>Derecho de autor</b>, <b>patentes</b>, <b>marcas registradas</b> y <b>secretos comerciales</b> (las de la pauta), más las <b>indicaciones geográficas</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · C1 26-1 · Fuente: 17, diapositivas 5-6 · <a class="inl" href="17-Propiedad-intelectual.html#areas">ver en 17 · Las áreas</a></p></div></details>
+<details class="ex fc-item" id="c-pi-04"><summary>¿Qué protege el derecho de autor y qué no? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Los derechos exclusivos del autor sobre una <b>obra original fijada en un medio tangible</b>. <b>No cubre hechos, ideas, sistemas ni métodos</b>: solo su <b>expresión concreta</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · Fuente: 17, diapositiva 8 · <a class="inl" href="17-Propiedad-intelectual.html#autor">ver en 17 · Derecho de autor</a></p></div></details>
+<details class="ex fc-item" id="c-pi-10"><summary>¿Qué es una patente y qué requisitos debe cumplir el invento? · <small>ya salió, nueva C2</small></summary><div class="body"><p>El derecho a <b>excluir a otros</b> de explotar un invento <b>nuevo, útil y no obvio</b> por un plazo limitado (<b>~20 años</b>), <b>a cambio de publicarlo</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · C1 26-1 · Fuente: 17, diapositiva 27 · <a class="inl" href="17-Propiedad-intelectual.html#patentes">ver en 17 · Patentes</a></p></div></details>
+<details class="ex fc-item" id="c-pi-12"><summary>¿Qué es una marca registrada y para qué sirve? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Una palabra, frase, símbolo o diseño que <b>identifica el origen</b> de un producto o servicio y evita que el consumidor lo <b>confunda</b> con otros. Se obtiene por <b>registro</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · C1 26-1 · Fuente: 17, diapositivas 31-32 · <a class="inl" href="17-Propiedad-intelectual.html#marcas">ver en 17 · Marcas</a></p></div></details>
+<details class="ex fc-item" id="c-pi-16"><summary>¿Qué es un secreto comercial y cuánto dura su protección? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Información confidencial que <b>vale por ser secreta</b> y que se protege con medidas razonables (NDA). <b>No requiere registro</b> y dura <b>indefinidamente</b> mientras no se divulgue.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · C1 26-1 · Fuente: 17, diapositivas 41-43 · <a class="inl" href="17-Propiedad-intelectual.html#secretos">ver en 17 · Secretos</a></p></div></details>
+<details class="ex fc-item" id="c-pi-18"><summary>Patente vs. secreto comercial: ¿en qué se oponen? · <small>ya salió, nueva C2</small></summary><div class="body"><p>La patente obliga a <b>publicar</b> el invento a cambio de ~20 años de exclusividad; el secreto se protege <b>por no publicarse</b>, sin plazo, pero sin protección contra quien lo descubra por su cuenta.</p><p class="tiny"><b>Salió en:</b> C2 25-2 · Fuente: 17 · tabla resumen · <a class="inl" href="17-Propiedad-intelectual.html#resumen">ver en 17 · Tabla resumen</a></p></div></details>
+<details class="ex fc-item" id="c-pi-19"><summary>¿Cómo incide cada área de la propiedad intelectual en el software? · <small>ya salió, nueva C2</small></summary><div class="body"><p><b>Autor:</b> el código se asocia a las obras literarias. <b>Patentes:</b> se extendieron a algoritmos y formas de programar. <b>Marcas:</b> logos y nombres de programas. <b>Secretos:</b> el código fuente propietario.</p><p class="tiny"><b>Salió en:</b> R 25-1 · R 25-2 · Fuente: pautas R 25-1 y R 25-2 · <a class="inl" href="17-Propiedad-intelectual.html#incide">ver en 17 · En informática</a></p></div></details>
+<details class="ex fc-item" id="c-pi-05"><summary>¿Qué derechos da el derecho de autor? · <small>nueva C2</small></summary><div class="body"><p><b>Reproducir</b>, preparar <b>obras derivadas</b>, <b>distribuir</b>, <b>interpretar</b> y <b>exhibir</b> públicamente, y <b>autorizar a terceros</b> a hacerlo (de ahí salen las licencias).</p><p class="tiny">Fuente: 17, diapositivas 9-10 · <a class="inl" href="17-Propiedad-intelectual.html#autor">ver en 17 · Derecho de autor</a></p></div></details>
+<details class="ex fc-item" id="c-pi-06"><summary>¿Cuánto dura el derecho de autor en EE.UU., en Chile y según Berna? · <small>nueva C2</small></summary><div class="body"><p><b>EE.UU. y Chile: vida + 70 años.</b> Berna exige como mínimo <b>vida + 50</b>. En EE.UU., las obras por encargo o anónimas: lo primero entre 95 años desde la publicación y 120 desde la creación.</p><p class="tiny">Fuente: 17, diapositivas 11, 23 y 26 · <a class="inl" href="17-Propiedad-intelectual.html#autor">ver en 17 · Derecho de autor</a></p></div></details>
+<details class="ex fc-item" id="c-pi-07"><summary>¿Cuáles son los tres principios de la Convención de Berna? · <small>nueva C2</small></summary><div class="body"><p><b>Trato nacional</b> (como a una obra del propio país), <b>protección automática</b> (sin formalidades) e <b>independencia de la protección</b> respecto del país de origen. Es de 1886.</p><p class="tiny">Fuente: 17, diapositivas 17-19 · <a class="inl" href="17-Propiedad-intelectual.html#berna">ver en 17 · Berna</a></p></div></details>
+<details class="ex fc-item" id="c-pi-08"><summary>¿Qué es una obra derivada? Da un ejemplo de zona gris en software. · <small>nueva C2</small></summary><div class="body"><p>Una obra que <b>construye sobre otra</b> o incluye partes sustanciales de ella (traducción, película basada en un libro). Zonas grises: un programa que usa una <b>biblioteca estática o compartida</b>, o una biblioteca que reimplementa una <b>API</b>.</p><p class="tiny">Fuente: 17, diapositivas 12-14 · <a class="inl" href="17-Propiedad-intelectual.html#derivadas">ver en 17 · Obras derivadas</a></p></div></details>
+<details class="ex fc-item" id="c-pi-09"><summary>Derechos patrimoniales vs. derechos morales (ley chilena) · <small>nueva C2</small></summary><div class="body"><p><b>Patrimoniales:</b> los económicos, <b>transferibles</b>. <b>Morales:</b> reconocimiento de la autoría, oponerse a modificaciones, mantener la obra inédita; son <b>inalienables e intransferibles</b> (pasan al cónyuge y sucesores).</p><p class="tiny">Fuente: 17, diapositiva 26 · <a class="inl" href="17-Propiedad-intelectual.html#autor">ver en 17 · Ley chilena</a></p></div></details>
+<details class="ex fc-item" id="c-pi-11"><summary>¿Qué áreas se agregaron a las patentes en EE.UU. por resoluciones judiciales? · <small>nueva C2</small></summary><div class="body"><p><b>Software</b>, <b>procesos de negocio</b> y <b>seres vivos</b> (variedades seleccionadas o modificadas). Algunas se restringieron después.</p><p class="tiny">Fuente: 17, diapositiva 28 · <a class="inl" href="17-Propiedad-intelectual.html#patentes">ver en 17 · Patentes</a></p></div></details>
+<details class="ex fc-item" id="c-pi-13"><summary>¿Cuánto dura una marca y cómo se puede perder? · <small>nueva C2</small></summary><div class="body"><p><b>10 años, renovables indefinidamente.</b> Se pierde si <b>no se usa</b> (3 a 5 años) o si <b>no se defiende</b> de las infracciones.</p><p class="tiny">Fuente: 17, diapositiva 36 · <a class="inl" href="17-Propiedad-intelectual.html#marcas">ver en 17 · Marcas</a></p></div></details>
+<details class="ex fc-item" id="c-pi-14"><summary>¿Qué tipos de marca acepta la ley y cuáles no? · <small>nueva C2</small></summary><div class="body"><p>Acepta las <b>distintivas</b>: <b>fantasiosas</b>, <b>arbitrarias</b> y <b>sugestivas</b>. No acepta las <b>descriptivas</b> ni las <b>genéricas</b>.</p><p class="tiny">Fuente: 17, diapositiva 35 · <a class="inl" href="17-Propiedad-intelectual.html#marcas">ver en 17 · Marcas</a></p></div></details>
+<details class="ex fc-item" id="c-pi-15"><summary>Nombra los tratados internacionales de marcas. · <small>nueva C2</small></summary><div class="body"><p><b>Convención de París</b> (registrar país por país), <b>Protocolo de Madrid</b> (extender una marca nacional a los miembros) y <b>TRIPS</b> (1995, estándares mínimos de la OMC).</p><p class="tiny">Fuente: 17, diapositivas 33-34 · <a class="inl" href="17-Propiedad-intelectual.html#marcas">ver en 17 · Marcas</a></p></div></details>
+<details class="ex fc-item" id="c-pi-17"><summary>¿Es ilegal descubrir el secreto de otra empresa por ingeniería reversa? · <small>nueva C2</small></summary><div class="body"><p><b>No.</b> La ley no persigue el descubrimiento <b>independiente</b> ni la <b>ingeniería reversa</b>; solo lo obtenido contra <b>prácticas comerciales honestas</b>.</p><p class="tiny">Fuente: 17, diapositiva 42 · <a class="inl" href="17-Propiedad-intelectual.html#secretos">ver en 17 · Secretos</a></p></div></details>
+<details class="ex fc-item" id="c-pi-20"><summary>¿Qué es una indicación geográfica? Da ejemplos. · <small>nueva C2</small></summary><div class="body"><p>Identifica un producto como originario de un lugar cuando su <b>calidad depende de ese origen</b>: champagne, <b>pisco</b> (en disputa con Perú), tequila.</p><p class="tiny">Fuente: 17, diapositivas 39-40 · <a class="inl" href="17-Propiedad-intelectual.html#geo">ver en 17 · Indicaciones geográficas</a></p></div></details>
+<h3 id="fc-t-oss">Código abierto <span class="num">· 18 tarjetas</span></h3>
+<details class="ex fc-item" id="c-oss-01"><summary>¿Qué es una licencia de software? · <small>ya salió, nueva C2</small></summary><div class="body"><p>El <b>permiso</b> que da el dueño del <b>derecho de autor</b> para usar el programa bajo ciertas condiciones. El código abierto usa la misma ley para dar permisos de uso, estudio, modificación y redistribución.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · Fuente: 18, diapositiva 4 · <a class="inl" href="18-Codigo-abierto.html#idea">ver en 18 · Licencias</a></p></div></details>
+<details class="ex fc-item" id="c-oss-02"><summary>¿Cuáles son las cuatro libertades del software libre (FSF)? · <small>ya salió, nueva C2</small></summary><div class="body"><p><b>0:</b> ejecutar para cualquier propósito. <b>1:</b> estudiar y modificar. <b>2:</b> redistribuir copias. <b>3:</b> distribuir las versiones modificadas.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · C2 25-2 · R 25-1 · Fuente: 18, diapositiva 32 · <a class="inl" href="18-Codigo-abierto.html#libertades">ver en 18 · Las cuatro libertades</a></p></div></details>
+<details class="ex fc-item" id="c-oss-03"><summary>¿Qué es el copyleft? · <small>ya salió, nueva C2</small></summary><div class="body"><p>La condición de GNU: toda redistribución, original o modificada, debe ir <b>con el código fuente</b> y <b>bajo las mismas condiciones</b>. Juego de palabras con copyright.</p><p class="tiny"><b>Salió en:</b> C2 25-2 · Fuente: 18, diapositiva 33 · <a class="inl" href="18-Codigo-abierto.html#copyleft">ver en 18 · Copyleft</a></p></div></details>
+<details class="ex fc-item" id="c-oss-04"><summary>¿Cuál es la idea central de la definición de código abierto de la OSI? · <small>ya salió, nueva C2</small></summary><div class="body"><p>La licencia permite <b>usar el programa sin restricciones</b>, <b>redistribuirlo con su código fuente</b> sin costo y <b>modificarlo y distribuir las versiones modificadas</b>. Son 10 puntos; la OSI es de 1998.</p><p class="tiny"><b>Salió en:</b> C2 25-2 · C2 26-1 · Fuente: pautas C2 25-2 y C2 26-1 · <a class="inl" href="18-Codigo-abierto.html#osi">ver en 18 · La OSI</a></p></div></details>
+<details class="ex fc-item" id="c-oss-06"><summary>Código abierto (OSI) vs. código libre (FSF): ¿cuál incluye a cuál? · <small>ya salió, nueva C2</small></summary><div class="body"><p>La OSI es <b>posterior</b> y más amplia: <b>expande y explicita</b> las libertades de la FSF y cubre muchas licencias. Las de la FSF cumplen la OSI, <b>pero no al revés</b>: la diferencia es el <b>copyleft</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-2 · Fuente: pauta C2 25-2 · <a class="inl" href="18-Codigo-abierto.html#osi-fsf">ver en 18 · Abierto vs. libre</a></p></div></details>
+<details class="ex fc-item" id="c-oss-07"><summary>Licencias GPL vs. BSD · <small>ya salió, nueva C2</small></summary><div class="body"><p><b>GPL:</b> exige entregar el <b>fuente</b> y mantener la <b>misma licencia</b> (copyleft). <b>BSD:</b> <b>permisiva</b>, no exige fuente; el código puede terminar en productos propietarios. Solo pide dar crédito y no dar garantías.</p><p class="tiny"><b>Salió en:</b> R 25-1 · R 25-2 · Fuente: pautas R 25-1 y R 25-2 · <a class="inl" href="18-Codigo-abierto.html#gpl-bsd">ver en 18 · GPL vs. BSD</a></p></div></details>
+<details class="ex fc-item" id="c-oss-13"><summary>¿Qué significan BY, SA, NC y ND en Creative Commons? · <small>ya salió, nueva C2</small></summary><div class="body"><p><b>BY:</b> atribuir al autor. <b>SA:</b> compartir igual (misma licencia). <b>NC:</b> no comercial. <b>ND:</b> sin obras derivadas. <b>CC0</b> = dominio público.</p><p class="tiny"><b>Salió en:</b> C2 26-1 · Fuente: pauta C2 26-1 · <a class="inl" href="18-Codigo-abierto.html#cc">ver en 18 · Creative Commons</a></p></div></details>
+<details class="ex fc-item" id="c-oss-14"><summary>¿Qué licencias Creative Commons no son código abierto y por qué? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Las <b>ND</b> violan el <b>punto 3</b> (obras derivadas) y las <b>NC</b> violan el <b>punto 6</b> (no discriminar áreas). Solo <b>CC BY, CC BY-SA y CC0</b> son compatibles.</p><p class="tiny"><b>Salió en:</b> C2 26-1 · Fuente: pauta C2 26-1 · <a class="inl" href="18-Codigo-abierto.html#cc">ver en 18 · Creative Commons</a></p></div></details>
+<details class="ex fc-item" id="c-oss-15"><summary>¿A qué licencia CC se parecen la GPL y la BSD? · <small>ya salió, nueva C2</small></summary><div class="body"><p><b>GPL ≈ CC BY-SA</b> (todo permitido, las derivadas mantienen la licencia). <b>BSD ≈ CC BY</b> (todo permitido con crédito); BSD-0 ≈ <b>CC0</b>.</p><p class="tiny"><b>Salió en:</b> R 26-1 · Fuente: R 26-1 P6 · <a class="inl" href="18-Codigo-abierto.html#gpl-bsd">ver en 18 · GPL vs. BSD</a></p></div></details>
+<details class="ex fc-item" id="c-oss-16"><summary>Da cifras del impacto del código abierto. · <small>ya salió, nueva C2</small></summary><div class="body"><p>El <b>96 %</b> de los programas incluye código abierto. Rehacer lo que cada usuario usa costaría <b>US$2,59 a 13,18 billones</b>. Uso casi unánime en la nube, redes y servidores; base de <b>Linux, Android</b> e iOS.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · C2 25-2 · Fuente: 18, diapositiva 54 · <a class="inl" href="18-Codigo-abierto.html#impacto">ver en 18 · Impacto</a></p></div></details>
+<details class="ex fc-item" id="c-oss-05"><summary>Nombra los 10 puntos de la OSI en tres bloques. · <small>nueva C2</small></summary><div class="body"><p><b>1-4:</b> libre redistribución, código fuente, obras derivadas, integridad del autor. <b>5-6:</b> no discriminar personas ni áreas. <b>7-10:</b> la licencia vale para todos, no atada a un producto, no restringe otro software, neutral a la tecnología.</p><p class="tiny">Fuente: 18, diapositivas 42-45 · <a class="inl" href="18-Codigo-abierto.html#osi">ver en 18 · La OSI</a></p></div></details>
+<details class="ex fc-item" id="c-oss-08"><summary>¿Qué variantes de licencia BSD hay? · <small>nueva C2</small></summary><div class="body"><p><b>4 cláusulas</b> (con cláusula de publicidad, incompatible con GPL), <b>3</b> (la más común), <b>2</b> (simplificada) y <b>0</b> (≈ dominio público).</p><p class="tiny">Fuente: 18, diapositivas 23-25 · <a class="inl" href="18-Codigo-abierto.html#lic-bsd">ver en 18 · Licencias BSD</a></p></div></details>
+<details class="ex fc-item" id="c-oss-09"><summary>¿Por qué la BSD de 4 cláusulas es incompatible con la GPL? · <small>nueva C2</small></summary><div class="body"><p>Por la <b>cláusula 3</b>: obliga a mencionar a los autores en todo material publicitario, una <b>restricción adicional</b> que la GPL no permite.</p><p class="tiny">Fuente: 18, diapositiva 24 · <a class="inl" href="18-Codigo-abierto.html#lic-bsd">ver en 18 · Licencias BSD</a></p></div></details>
+<details class="ex fc-item" id="c-oss-10"><summary>¿Para qué sirven la LGPL, la AGPL y la GFDL? · <small>nueva C2</small></summary><div class="body"><p><b>LGPL</b> (1991): bibliotecas; se pueden usar si la biblioteca es <b>reemplazable</b>. <b>AGPL</b> (2007): exige el fuente a quien usa el programa <b>por la red</b>. <b>GFDL</b>: para <b>documentación</b>, prohíbe DRM.</p><p class="tiny">Fuente: 18, diapositivas 36-40 · <a class="inl" href="18-Codigo-abierto.html#gnu">ver en 18 · Familia GPL</a></p></div></details>
+<details class="ex fc-item" id="c-oss-11"><summary>¿Quién lanzó GNU, cuándo y qué significa la sigla? · <small>nueva C2</small></summary><div class="body"><p><b>Richard Stallman</b>, en <b>1983</b>. <i>GNU's Not Unix</i> (acrónimo recursivo). Lo maneja la <b>FSF</b>, fundada en 1986.</p><p class="tiny">Fuente: 18, diapositivas 11 y 27 · <a class="inl" href="18-Codigo-abierto.html#gnu">ver en 18 · GNU</a></p></div></details>
+<details class="ex fc-item" id="c-oss-12"><summary>¿Por qué Unix se difundió en las universidades? · <small>nueva C2</small></summary><div class="body"><p>Porque <b>AT&amp;T no podía participar en otras industrias</b> por razones legales y licenció Unix <b>a costo nominal y con fuentes</b>.</p><p class="tiny">Fuente: 18, diapositiva 9 · <a class="inl" href="18-Codigo-abierto.html#historia">ver en 18 · Historia</a></p></div></details>
+<details class="ex fc-item" id="c-oss-17"><summary>¿Puedo usar en mi empresa un código que encontré en una web sin licencia? · <small>nueva C2</small></summary><div class="body"><p><b>No.</b> El derecho de autor es automático: por omisión <b>no hay permiso ni de leerlo</b>. “Estaba en una página web” no es licencia; hay que conseguir una licencia clara y registrarla.</p><p class="tiny">Fuente: 18, diapositiva 53 · <a class="inl" href="18-Codigo-abierto.html#uso">ver en 18 · Consideraciones de uso</a></p></div></details>
+<details class="ex fc-item" id="c-oss-18"><summary>¿Qué es Creative Commons? · <small>nueva C2</small></summary><div class="body"><p>Una organización sin fines de lucro con licencias para <b>obras en general</b> (textos, imágenes, audio, video), compatibles con las leyes nacionales. <b>No todas</b> son código abierto.</p><p class="tiny">Fuente: 18, diapositivas 46-47 · <a class="inl" href="18-Codigo-abierto.html#cc">ver en 18 · Creative Commons</a></p></div></details>
+<h3 id="fc-t-etica">Ética profesional y ACM <span class="num">· 15 tarjetas</span></h3>
+<details class="ex fc-item" id="c-eti-01"><summary>¿Qué es un dilema ético? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Una <b>decisión difícil, sin respuesta correcta clara</b>, cuyas opciones tienen <b>consecuencias éticas</b>. Exige pesar resultados y principios, con un balance difícil.</p><p class="tiny"><b>Salió en:</b> C2 26-1 · C2 25-1 · Fuente: 16, diapositiva 7 · <a class="inl" href="16-Aspectos-eticos.html#dilema">ver en 16 · Dilema ético</a></p></div></details>
+<details class="ex fc-item" id="c-eti-04"><summary>Nombra las 9 responsabilidades éticas del profesional. · <small>ya salió, nueva C2</small></summary><div class="body"><p><b>Competencia</b>, manejo de la <b>información</b>, <b>secreto</b> profesional, <b>respeto</b> entre colegas, <b>inclusión</b>, ética <b>financiera</b>, <b>comportamiento honesto</b>, <b>responsabilidad social</b> y cuidado del <b>ambiente</b>.</p><p class="tiny"><b>Salió en:</b> C1 26-1 · Fuente: pauta C1 26-1 · 16, diapositivas 11-19 · <a class="inl" href="16-Aspectos-eticos.html#responsabilidades">ver en 16 · Responsabilidades</a></p></div></details>
+<details class="ex fc-item" id="c-eti-09"><summary>Nombra los 7 principios generales del código ACM. · <small>ya salió, nueva C2</small></summary><div class="body"><p>1.1 contribuir a la sociedad · <b>1.2 evitar daños</b> · 1.3 honestidad · <b>1.4 no discriminar</b> · 1.5 respetar el trabajo creativo · <b>1.6 privacidad</b> · 1.7 confidencialidad.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · Fuente: 21, diapositiva 4 · <a class="inl" href="21-Codigo-ACM.html#s1">ver en 21 · Sección 1</a></p></div></details>
+<details class="ex fc-item" id="c-eti-10"><summary>¿Qué principios ACM se citan en el caso AllTogether? · <small>ya salió, nueva C2</small></summary><div class="body"><p><b>1.2</b> evitar daños, <b>1.4</b> no discriminar, <b>2.1</b> calidad, <b>2.3</b> reglas, <b>2.4</b> revisión profesional, <b>3.1</b> bien común, <b>3.2</b> responsabilidad social. Sección 4: <b>postergar el lanzamiento</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · Fuente: pauta C2 25-1 · <a class="inl" href="21-Codigo-ACM.html#uso">ver en 21 · Qué citar</a></p></div></details>
+<details class="ex fc-item" id="c-eti-11"><summary>Caso David: ¿qué dilema es y cuál es su responsabilidad según la pauta? · <small>ya salió, nueva C2</small></summary><div class="body"><p><b>Verdad vs. lealtad</b>: lealtad a sus amigos vs. proteger la honra de los afectados. Su responsabilidad es <b>reportar a los autores</b>, y que la víctima sea cercana <b>no debiera incidir</b>.</p><p class="tiny"><b>Salió en:</b> C2 26-1 · Fuente: pauta C2 26-1 · <a class="inl" href="22-Ejercicios.html#e7">ver en Ejercicio E7</a></p></div></details>
+<details class="ex fc-item" id="c-eti-12"><summary>Caso Jim Warren: ¿qué dilema es y actuó bien Jim? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Lealtad con la empresa vs. sus <b>obligaciones profesionales</b> con las empresas afectadas. <b>Actuó bien</b>, en orden (primero interno, luego escalar), a un <b>costo personal sustancial</b>.</p><p class="tiny"><b>Salió en:</b> R 25-1 · Fuente: pauta R 25-1 · <a class="inl" href="22-Ejercicios.html#e8">ver en Ejercicio E8</a></p></div></details>
+<details class="ex fc-item" id="c-eti-13"><summary>Caso del operador que vende datos: ¿es aceptable? ¿Y con rebajas? · <small>ya salió, nueva C2</small></summary><div class="body"><p><b>No</b>: viola la ley de datos de la UE (y la chilena) y el principio <b>ACM 1.6</b> (privacidad). Con rebajas <b>sí</b>, con consentimiento informado. Los datos se manejan en forma <b>individual</b>.</p><p class="tiny"><b>Salió en:</b> R 25-2 · R 26-1 · Fuente: pauta R 25-2 · <a class="inl" href="22-Ejercicios.html#e9">ver en Ejercicio E9</a></p></div></details>
+<details class="ex fc-item" id="c-eti-02"><summary>¿Cuáles son los cuatro tipos de dilema ético? · <small>nueva C2</small></summary><div class="body"><p><b>Verdad vs. lealtad</b>, <b>individuo vs. comunidad</b>, <b>corto vs. largo plazo</b> y <b>justicia vs. piedad</b>.</p><p class="tiny">Fuente: 16, diapositiva 8 · <a class="inl" href="16-Aspectos-eticos.html#dilema">ver en 16 · Tipos de dilema</a></p></div></details>
+<details class="ex fc-item" id="c-eti-03"><summary>¿Cómo se relacionan la ética y la ley? · <small>nueva C2</small></summary><div class="body"><p>Idealmente son <b>armónicas</b>, pero hay leyes que contravienen la ética, y <b>la ley no cubre todo</b>: donde no llega, solo guía la ética. Además, la ley llega <b>tarde</b> a la tecnología.</p><p class="tiny">Fuente: 16, diapositivas 9 y 20 · <a class="inl" href="16-Aspectos-eticos.html#ley">ver en 16 · Ética y ley</a></p></div></details>
+<details class="ex fc-item" id="c-eti-05"><summary>¿Qué es la responsabilidad social del profesional? · <small>nueva C2</small></summary><div class="body"><p><b>Rechazar</b> trabajos que se sabe que dañarán a personas o comunidades y, si corresponde, <b>denunciarlos</b>.</p><p class="tiny">Fuente: 16, diapositiva 18 · <a class="inl" href="16-Aspectos-eticos.html#responsabilidades">ver en 16 · Responsabilidades</a></p></div></details>
+<details class="ex fc-item" id="c-eti-06"><summary>¿Para qué sirve un código de conducta? · <small>nueva C2</small></summary><div class="body"><p>Para definir la <b>cultura y los valores</b> de la organización, aclarar qué se espera, <b>simplificar hacer cumplir</b> las reglas y <b>difundir los requisitos legales</b>. Puede ser exigido por ley.</p><p class="tiny">Fuente: 16, diapositiva 6 · <a class="inl" href="16-Aspectos-eticos.html#conducta">ver en 16 · Códigos de conducta</a></p></div></details>
+<details class="ex fc-item" id="c-eti-07"><summary>Colegio de Ingenieros de Chile: ¿cuándo se creó y es obligatorio? · <small>nueva C2</small></summary><div class="body"><p>Creado por ley en <b>1958</b> (el Instituto de Ingenieros es de 1888). Código vigente: 5ª versión, 2013. <b>No es obligatorio</b> pertenecer: el código obliga solo a sus miembros.</p><p class="tiny">Fuente: 16, diapositiva 3 · <a class="inl" href="16-Aspectos-eticos.html#codigos">ver en 16 · Códigos de ética</a></p></div></details>
+<details class="ex fc-item" id="c-eti-08"><summary>¿Cuáles son las 4 secciones del código ACM (2018)? · <small>nueva C2</small></summary><div class="body"><p><b>1.</b> Principios éticos generales · <b>2.</b> Responsabilidades profesionales · <b>3.</b> Liderazgo profesional · <b>4.</b> Cumplimiento del código.</p><p class="tiny">Fuente: 21, diapositiva 3 · <a class="inl" href="21-Codigo-ACM.html#acm">ver en 21 · El código</a></p></div></details>
+<details class="ex fc-item" id="c-eti-14"><summary>¿Cuáles son los 5 pasos del método para un caso ético? · <small>nueva C2</small></summary><div class="body"><p><b>1.</b> El dilema y su tipo · <b>2.</b> Los afectados · <b>3.</b> Qué se contraviene (ACM, ley) · <b>4.</b> Kant y utilitarismo · <b>5.</b> Posición justificada, letra por letra.</p><p class="tiny">Fuente: 16 · cómo resolver un caso · <a class="inl" href="16-Aspectos-eticos.html#metodo">ver en 16 · Método del caso</a></p></div></details>
+<details class="ex fc-item" id="c-eti-15"><summary>¿Qué dice el principio 2.8 del código ACM? · <small>nueva C2</small></summary><div class="body"><p>Acceder a recursos computacionales y de comunicaciones <b>solo si está autorizado</b> o lo obliga el bien común. (Lo viola entrar al computador de la colega.)</p><p class="tiny">Fuente: 21, diapositiva 6 · <a class="inl" href="21-Codigo-ACM.html#s2">ver en 21 · Sección 2</a></p></div></details>
+<h3 id="fc-t-datos">Protección de datos <span class="num">· 12 tarjetas</span></h3>
+<details class="ex fc-item" id="c-dat-02"><summary>¿Por qué la legislación de EE.UU. y la UE es relevante en Chile? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Son <b>socios comerciales muy importantes</b> y potencias tecnológicas; para relaciones fluidas hay que <b>adherir</b> a sus reglas. Chile, <b>país pequeño y abierto</b>, no tiene opción, y conviene adoptar el trabajo de otros.</p><p class="tiny"><b>Salió en:</b> C2 26-1 · C2 25-2 · Fuente: pauta C2 26-1 · <a class="inl" href="22-Ejercicios.html#e19">ver en Ejercicio E19</a></p></div></details>
+<details class="ex fc-item" id="c-dat-03"><summary>¿Qué derechos da el GDPR? · <small>ya salió, nueva C2</small></summary><div class="body"><p><b>Consentimiento</b> claro, <b>acceso</b> a los datos, <b>rectificación, supresión y olvido</b>, <b>oposición</b> a la elaboración de perfiles y <b>portabilidad</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-2 · Fuente: 19, diapositiva 11 · <a class="inl" href="19-Proteccion-datos.html#ue">ver en 19 · GDPR</a></p></div></details>
+<details class="ex fc-item" id="c-dat-04"><summary>¿Cuándo se aprobó y desde cuándo se aplica el GDPR? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Se aprobó en <b>2016</b> y se aplica desde <b>2018</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-2 · Fuente: 19, diapositiva 11 · <a class="inl" href="19-Proteccion-datos.html#ue">ver en 19 · GDPR</a></p></div></details>
+<details class="ex fc-item" id="c-dat-05"><summary>¿Qué obligaciones impone el GDPR a las organizaciones? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Medidas de <b>seguridad</b> según el riesgo, <b>notificar violaciones</b> de seguridad en ciertos casos, nombrar un <b>delegado de protección de datos</b> si hay operaciones riesgosas e informar de forma transparente.</p><p class="tiny"><b>Salió en:</b> C2 25-2 · Fuente: 19, diapositiva 12 · <a class="inl" href="19-Proteccion-datos.html#ue">ver en 19 · GDPR</a></p></div></details>
+<details class="ex fc-item" id="c-dat-08"><summary>¿Qué es la Ley 21.663 y cuál es su finalidad? · <small>ya salió, nueva C2</small></summary><div class="body"><p>La <b>Ley Marco de Ciberseguridad</b> (2024, vigente desde enero de 2025). Busca mejorar la <b>prevención y resolución</b> de delitos informáticos e incidentes; su eje es la <b>obligación de notificar incidentes</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-2 · Fuente: pauta C2 25-2 · <a class="inl" href="19-Proteccion-datos.html#chile-ciber">ver en 19 · Ley 21.663</a></p></div></details>
+<details class="ex fc-item" id="c-dat-09"><summary>¿Qué instituciones crea la Ley 21.663? · <small>ya salió, nueva C2</small></summary><div class="body"><p><b>ANCI</b> (Agencia Nacional de Ciberseguridad), <b>Consejo Multisectorial</b>, <b>CSIRT Nacional</b>, <b>CSIRT de la Defensa Nacional</b> y <b>Red de Conectividad Segura del Estado</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-2 · Fuente: pauta C2 25-2 · <a class="inl" href="19-Proteccion-datos.html#chile-ciber">ver en 19 · Ley 21.663</a></p></div></details>
+<details class="ex fc-item" id="c-dat-10"><summary>Nombra cuatro obligaciones de la Ley 21.663. · <small>ya salió, nueva C2</small></summary><div class="body"><p>Un <b>SGSI</b> con registro, <b>planes de continuidad</b> cada 2 años, <b>informar a los afectados</b>, <b>pentesting</b>, certificaciones y un <b>delegado de ciberseguridad</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-2 · Fuente: pauta C2 25-2 · <a class="inl" href="19-Proteccion-datos.html#chile-ciber">ver en 19 · Ley 21.663</a></p></div></details>
+<details class="ex fc-item" id="c-dat-11"><summary>¿Qué es el Cyber Resilience Act y qué exige? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Reglamento de la UE con estándares de ciberseguridad para <b>productos con elementos digitales</b>: <b>seguro por omisión</b>, actualizaciones de seguridad <b>automáticas</b>, notificar a <b>ENISA en 24 h</b>, documentación por <b>10 años</b>, mínimo para la <b>marca CE</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-2 · Fuente: pauta C2 25-2 · <a class="inl" href="19-Proteccion-datos.html#cra">ver en 19 · CRA</a></p></div></details>
+<details class="ex fc-item" id="c-dat-01"><summary>¿Cuáles son las propiedades de la seguridad de la información? · <small>nueva C2</small></summary><div class="body"><p><b>Confidencialidad</b>, <b>integridad</b> y <b>disponibilidad</b>, y hoy también <b>privacidad</b>. Todas suponen identificación y autenticación.</p><p class="tiny">Fuente: 19, diapositivas 3-4 · <a class="inl" href="19-Proteccion-datos.html#seguridad">ver en 19 · Seguridad</a></p></div></details>
+<details class="ex fc-item" id="c-dat-06"><summary>¿Qué hace la Ley 21.719? · <small>nueva C2</small></summary><div class="body"><p><b>Homologa</b> la ley chilena de datos personales con el <b>GDPR</b> (y cumple compromisos con la OCDE). Crea la <b>Agencia de Protección de Datos Personales</b>, con multas muy altas.</p><p class="tiny">Fuente: 19, diapositivas 14-17 · <a class="inl" href="19-Proteccion-datos.html#chile-datos">ver en 19 · Ley 21.719</a></p></div></details>
+<details class="ex fc-item" id="c-dat-07"><summary>¿Qué derechos da la Ley 21.719? · <small>nueva C2</small></summary><div class="body"><p><b>Acceso, rectificación, supresión, oposición, portabilidad y bloqueo.</b></p><p class="tiny">Fuente: 19, diapositiva 15 · <a class="inl" href="19-Proteccion-datos.html#chile-datos">ver en 19 · Ley 21.719</a></p></div></details>
+<details class="ex fc-item" id="c-dat-12"><summary>¿Por qué el CRA preocupa al código abierto? · <small>nueva C2</small></summary><div class="body"><p>Afectaría a <b>más del 70 % del código</b> en la UE, cuyos desarrolladores no tienen recursos para cumplir, y no está claro qué es <b>“uso comercial”</b>.</p><p class="tiny">Fuente: 19, diapositiva 31 · <a class="inl" href="19-Proteccion-datos.html#cra">ver en 19 · CRA</a></p></div></details>
+<h3 id="fc-t-dev">Desarrollo de software <span class="num">· 8 tarjetas</span></h3>
+<details class="ex fc-item" id="c-dev-01"><summary>¿Qué es la deuda técnica? · <small>ya salió, nueva C2</small></summary><div class="body"><p>El <b>costo del retrabajo futuro</b> por optar por una <b>salida fácil</b> en vez de una <b>solución robusta a la raíz</b> del problema.</p><p class="tiny"><b>Salió en:</b> C2 26-1 · R 25-1 · Fuente: 20, diapositiva 12 · pauta C2 26-1 · <a class="inl" href="20-Desarrollo.html#deuda">ver en 20 · Deuda técnica</a></p></div></details>
+<details class="ex fc-item" id="c-dev-02"><summary>¿Por qué es difícil evitar la deuda técnica? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Por la presión constante de <b>mínimo costo y tiempo</b>; se contrae muchas veces <b>sin darse cuenta</b> y suele verse <b>solo en retrospectiva</b>.</p><p class="tiny"><b>Salió en:</b> C2 26-1 · Fuente: pauta C2 26-1 · <a class="inl" href="20-Desarrollo.html#deuda">ver en 20 · Deuda técnica</a></p></div></details>
+<details class="ex fc-item" id="c-dev-03"><summary>¿Cómo se mitiga la deuda técnica? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Buscar y resolver la <b>causa raíz</b>, <b>rediseñar</b> las partes afectadas al modificarlas y mantener los <b>casos de prueba</b> al día, corriéndolos continuamente.</p><p class="tiny"><b>Salió en:</b> C2 26-1 · Fuente: pauta C2 26-1 · <a class="inl" href="20-Desarrollo.html#deuda">ver en 20 · Deuda técnica</a></p></div></details>
+<details class="ex fc-item" id="c-dev-04"><summary>¿Qué dice la ley de Lehman? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Conforme un programa en evolución sufre cambios, su <b>complejidad aumenta</b> (reflejo de una estructura en deterioro) <b>a menos que se trabaje en reducirla</b>.</p><p class="tiny"><b>Salió en:</b> C2 26-1 · Fuente: pauta C2 26-1 · <a class="inl" href="20-Desarrollo.html#deuda">ver en 20 · Deuda técnica</a></p></div></details>
+<details class="ex fc-item" id="c-dev-05"><summary>Nombra tres máximas de desarrollo del profe. · <small>ya salió, nueva C2</small></summary><div class="body"><p>Por ejemplo: <b>no hay balas de plata</b>, <b>toda decisión es un trade-off</b>, <b>evite la deuda técnica</b>, <b>las fallas tienen causas no técnicas</b>, <b>la gente es lo más importante</b>, <b>recorte funcionalidades</b> para manejar la agenda.</p><p class="tiny"><b>Salió en:</b> R 25-1 · Fuente: pauta R 25-1 · <a class="inl" href="20-Desarrollo.html#maximas">ver en 20 · Máximas</a></p></div></details>
+<details class="ex fc-item" id="c-dev-07"><summary>¿Qué causas de fracaso en software usó la pauta del C2 2025-1? · <small>ya salió, nueva C2</small></summary><div class="body"><p><b>Causas no técnicas</b>, <b>ambición excesiva</b>, <b>personal inadecuado</b>, <b>no recortar funcionalidades</b> a tiempo, <b>complejidad excesiva</b> y <b>deuda técnica</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · Fuente: pauta C2 25-1 · <a class="inl" href="20-Desarrollo.html#fracaso">ver en 20 · Causas de fracaso</a></p></div></details>
+<details class="ex fc-item" id="c-dev-06"><summary>¿Qué es el síndrome del segundo sistema? · <small>nueva C2</small></summary><div class="body"><p>En el primer sistema se avanza con cuidado; en el segundo nos creemos expertos y pecamos de <b>exceso de confianza y ambición</b>, la causa principal de fracaso.</p><p class="tiny">Fuente: 20, diapositiva 13 · <a class="inl" href="20-Desarrollo.html#maximas">ver en 20 · Máximas</a></p></div></details>
+<details class="ex fc-item" id="c-dev-08"><summary>Según el profe, ¿cuál es la única forma de manejar la agenda? · <small>nueva C2</small></summary><div class="body"><p><b>Eliminar o simplificar funcionalidades.</b> Una “marcha de la muerte” con trasnochadas no logra el objetivo.</p><p class="tiny">Fuente: 20, diapositiva 15 · <a class="inl" href="20-Desarrollo.html#maximas">ver en 20 · Máximas</a></p></div></details>
+<h3 id="fc-t-ia">Inteligencia artificial <span class="num">· 12 tarjetas</span></h3>
+<details class="ex fc-item" id="c-ia-01"><summary>¿Qué es la inteligencia artificial? · <small>nueva C2</small></summary><div class="body"><p>La capacidad de sistemas computacionales de efectuar <b>tareas comúnmente asociadas a la inteligencia humana</b>: aprendizaje, razonamiento, resolución de problemas, percepción y decisión.</p><p class="tiny">Fuente: XX, diapositiva 3 · <a class="inl" href="16b-Inteligencia-artificial.html#que-es">ver en XX · Qué es</a></p></div></details>
+<details class="ex fc-item" id="c-ia-02"><summary>¿Qué pasó en 1956, 2012 y 2017 en la IA? · <small>nueva C2</small></summary><div class="body"><p><b>1956:</b> nace como disciplina. <b>2012:</b> tarjetas gráficas + aprendizaje profundo. <b>2017:</b> la arquitectura de <b>transformador</b>, base de los LLM.</p><p class="tiny">Fuente: XX, diapositivas 3 y 10 · <a class="inl" href="16b-Inteligencia-artificial.html#historia">ver en XX · Historia</a></p></div></details>
+<details class="ex fc-item" id="c-ia-03"><summary>¿Por qué Eliza es una advertencia sobre la IA? · <small>nueva C2</small></summary><div class="body"><p>Era un programa <b>muy simple</b> (1966) que buscaba palabras clave y respondía con fórmulas, y aun así la gente <b>le atribuía comprensión</b> (hasta la secretaria de Weizenbaum).</p><p class="tiny">Fuente: XX, diapositiva 12 · <a class="inl" href="16b-Inteligencia-artificial.html#advertencias">ver en XX · Advertencias</a></p></div></details>
+<details class="ex fc-item" id="c-ia-04"><summary>¿Qué es un sistema experto y qué partes tiene? · <small>nueva C2</small></summary><div class="body"><p>Emula el razonamiento humano con reglas <b>si… entonces</b>. Partes: <b>base de conocimiento</b>, <b>máquina de inferencia</b> y, a veces, sistema de explicación e interfaz.</p><p class="tiny">Fuente: XX, diapositivas 15-20 · <a class="inl" href="16b-Inteligencia-artificial.html#expertos">ver en XX · Sistemas expertos</a></p></div></details>
+<details class="ex fc-item" id="c-ia-05"><summary>Ventaja y desventaja de los sistemas expertos · <small>nueva C2</small></summary><div class="body"><p><b>Ventaja:</b> el conocimiento queda <b>explícito</b> y un experto lo puede modificar. <b>Desventaja:</b> la <b>adquisición de conocimiento</b> (expertos escasos, conocimiento implícito difícil de pasar a reglas).</p><p class="tiny">Fuente: XX, diapositivas 21-22 · <a class="inl" href="16b-Inteligencia-artificial.html#expertos">ver en XX · Sistemas expertos</a></p></div></details>
+<details class="ex fc-item" id="c-ia-06"><summary>¿Cómo funciona un algoritmo genético? · <small>nueva C2</small></summary><div class="body"><p>Una <b>población</b> de soluciones (cromosomas) se evalúa con una <b>función de aptitud</b>; las más aptas generan otras por <b>cruce</b> y <b>mutación</b>, y se repite por generaciones.</p><p class="tiny">Fuente: XX, diapositivas 23-26 · <a class="inl" href="16b-Inteligencia-artificial.html#geneticos">ver en XX · Algoritmos genéticos</a></p></div></details>
+<details class="ex fc-item" id="c-ia-07"><summary>¿Qué calcula una neurona artificial? · <small>nueva C2</small></summary><div class="body"><p>Una <b>suma ponderada</b> de sus entradas más un <b>sesgo</b> (z = Σωᵢxᵢ + b), y le aplica una <b>función de activación</b> no lineal: a = σ(z).</p><p class="tiny">Fuente: XX, diapositiva 32 · <a class="inl" href="16b-Inteligencia-artificial.html#redes">ver en XX · Redes neuronales</a></p></div></details>
+<details class="ex fc-item" id="c-ia-08"><summary>¿Cuáles son los 4 pasos de la propagación hacia atrás? · <small>nueva C2</small></summary><div class="body"><p><b>Paso hacia adelante</b>, <b>cálculo del error</b> (función de pérdida), <b>paso en reversa</b> (regla de la cadena) y <b>actualización</b> de los pesos.</p><p class="tiny">Fuente: XX, diapositiva 35 · <a class="inl" href="16b-Inteligencia-artificial.html#redes">ver en XX · Redes neuronales</a></p></div></details>
+<details class="ex fc-item" id="c-ia-09"><summary>¿Qué es el sobreajuste? · <small>nueva C2</small></summary><div class="body"><p>Un modelo demasiado complicado que se ajusta <b>muy bien al entrenamiento</b> pero rinde <b>mal en casos nuevos</b>: no generaliza.</p><p class="tiny">Fuente: XX, diapositiva 36 · <a class="inl" href="16b-Inteligencia-artificial.html#redes">ver en XX · Redes neuronales</a></p></div></details>
+<details class="ex fc-item" id="c-ia-10"><summary>¿Qué es un LLM? · <small>nueva C2</small></summary><div class="body"><p>Un modelo de IA (red neuronal) entrenado con <b>enormes cantidades de texto</b> para procesar y generar lenguaje. Base de ChatGPT, Claude, Gemini. Un <b>“autocorrector con esteroides”</b>.</p><p class="tiny">Fuente: XX, diapositivas 38 y 43 · <a class="inl" href="16b-Inteligencia-artificial.html#llm">ver en XX · LLM</a></p></div></details>
+<details class="ex fc-item" id="c-ia-11"><summary>Nombra cuatro problemas de los LLM. · <small>nueva C2</small></summary><div class="body"><p><b>Datos sesgados o incorrectos</b> (ley de Sturgeon), <b>origen dudoso o ilegal</b> de los textos, <b>no se puede trazar el origen</b> de lo generado y las <b>alucinaciones</b>. Además, lo generado <b>no tiene protección</b> de propiedad intelectual.</p><p class="tiny">Fuente: XX, diapositivas 39-42 · <a class="inl" href="16b-Inteligencia-artificial.html#llm">ver en XX · LLM</a></p></div></details>
+<details class="ex fc-item" id="c-ia-12"><summary>¿Por qué alucinan los LLM? · <small>nueva C2</small></summary><div class="body"><p>Porque combinan palabras o conceptos que <b>suelen aparecer juntos</b>, pero en contextos incorrectos: completan de forma <b>plausible, no verdadera</b>.</p><p class="tiny">Fuente: XX, diapositiva 42 · <a class="inl" href="16b-Inteligencia-artificial.html#llm">ver en XX · LLM</a></p></div></details>
+<h3 id="fc-t-proc">Datos e impacto <span class="num">· 9 tarjetas</span></h3>
+<details class="ex fc-item" id="c-pro-04"><summary>¿Por qué la minería de datos amenaza la privacidad aunque los datos sean anónimos? · <small>ya salió, nueva C2</small></summary><div class="body"><p>Porque <b>cruzando datos</b> de varias fuentes, incluso entregados bajo promesa de anonimato, se puede <b>identificar a individuos</b>. Caso: <b>Walgreens</b> vendió datos de recetas.</p><p class="tiny"><b>Salió en:</b> R 25-2 · Fuente: 14, diapositivas 21-24 · <a class="inl" href="14-Procesamiento-datos.html#etica">ver en 14 · Ética</a></p></div></details>
+<details class="ex fc-item" id="c-pro-07"><summary>Nombra tres aspectos positivos de la tecnología. · <small>ya salió, nueva C2</small></summary><div class="body"><p>Por ejemplo: <b>comunicación</b> (Internet, redes), <b>colaboración</b> internacional, <b>automatización</b> del trabajo, <b>avances médicos</b> (vacunas, trasplantes).</p><p class="tiny"><b>Salió en:</b> C1 25-1 · Fuente: 15, diapositivas 9-13 · <a class="inl" href="15-Impacto.html#positivos">ver en 15 · Positivos</a></p></div></details>
+<details class="ex fc-item" id="c-pro-08"><summary>Nombra tres aspectos negativos de la tecnología. · <small>ya salió, nueva C2</small></summary><div class="body"><p>Por ejemplo: <b>distracciones</b> y sueño, <b>privacidad</b> y vulneración de datos, <b>desinformación</b>, impersonalidad, <b>daño ambiental</b> (capa de ozono).</p><p class="tiny"><b>Salió en:</b> C1 25-1 · Fuente: 15, diapositivas 14-20 · <a class="inl" href="15-Impacto.html#negativos">ver en 15 · Negativos</a></p></div></details>
+<details class="ex fc-item" id="c-pro-01"><summary>¿Qué es el procesamiento de datos (RAE)? · <small>nueva C2</small></summary><div class="body"><p>La <b>aplicación sistemática de operaciones</b> sobre un conjunto de datos, generalmente con máquinas, para <b>explotar la información</b> que representan.</p><p class="tiny">Fuente: 14, diapositiva 4 · <a class="inl" href="14-Procesamiento-datos.html#def">ver en 14 · Definición</a></p></div></details>
+<details class="ex fc-item" id="c-pro-02"><summary>¿Por qué el censo de EE.UU. de 1890 fue un hito? · <small>nueva C2</small></summary><div class="body"><p>Con las <b>tarjetas perforadas de Hollerith</b> se procesó en <b>2 a 3 años</b>, con el doble de preguntas; el de 1880, a mano, tardó <b>más de 7</b>.</p><p class="tiny">Fuente: 14, diapositivas 6-7 · <a class="inl" href="14-Procesamiento-datos.html#def">ver en 14 · Historia</a></p></div></details>
+<details class="ex fc-item" id="c-pro-03"><summary>¿Qué es la minería de datos? · <small>nueva C2</small></summary><div class="body"><p>Encontrar <b>patrones y conocimiento</b> en conjuntos <b>masivos</b> de datos (clústeres, anomalías, dependencias). El nombre es errado: no se “minan” datos.</p><p class="tiny">Fuente: 14, diapositivas 18-20 · <a class="inl" href="14-Procesamiento-datos.html#mineria">ver en 14 · Minería de datos</a></p></div></details>
+<details class="ex fc-item" id="c-pro-05"><summary>¿Qué hay que definir antes de recopilar datos? · <small>nueva C2</small></summary><div class="body"><p>El <b>propósito</b>, el <b>uso</b>, <b>quién tendrá acceso</b>, los requisitos de <b>seguridad</b> y cómo se <b>actualizarán</b>.</p><p class="tiny">Fuente: 14, diapositiva 22 · <a class="inl" href="14-Procesamiento-datos.html#mineria">ver en 14 · Recomendaciones</a></p></div></details>
+<details class="ex fc-item" id="c-pro-06"><summary>Procesamiento comercial: antes vs. hoy · <small>nueva C2</small></summary><div class="body"><p><b>Antes:</b> sistemas a medida, datos compactados (problema del año 2000), tarjetas perforadas, procesamiento secuencial. <b>Hoy:</b> componentes genéricos (ERP, bases de datos), el usuario ingresa sus datos, criptografía y <b>nube</b>.</p><p class="tiny">Fuente: 14, diapositivas 9-14 · <a class="inl" href="14-Procesamiento-datos.html#comercial">ver en 14 · Procesamiento comercial</a></p></div></details>
+<details class="ex fc-item" id="c-pro-09"><summary>¿Cuál es la conclusión de la clase de impacto? · <small>nueva C2</small></summary><div class="body"><p>Muchos problemas causados por la tecnología se pueden <b>mitigar con tecnología y educación</b>; falta la <b>decisión de pagar los costos</b>.</p><p class="tiny">Fuente: 15, diapositiva 23 · <a class="inl" href="15-Impacto.html#balance">ver en 15 · Balance</a></p></div></details>
+<h3 id="fc-t-c1-razon">C1 · Falacias y sesgos <span class="num">· 7 tarjetas</span></h3>
+<details class="ex fc-item" id="c-c1-01"><summary>¿Qué es una falacia? · <small>ya salió</small></summary><div class="body"><p>Un <b>paso ilógico en un argumento</b>: una forma de razonar errónea, porque no es válida o no es sólida. Que sea falaz <b>no prueba</b> que la conclusión sea falsa.</p><p class="tiny"><b>Salió en:</b> R 25-2 · C1 25-1 · C1 25-2 · Fuente: 3 · Razonamiento · <a class="inl" href="13b-Resumen-C1.html#r3">ver en Resumen · Falacias</a></p></div></details>
+<details class="ex fc-item" id="c-c1-03"><summary>Explica tres falacias con su ejemplo. · <small>ya salió</small></summary><div class="body"><p><b>Ad hominem:</b> atacar a la persona. <b>Post hoc:</b> confundir “después” con “por causa de”. <b>Hombre de paja:</b> caricaturizar la posición contraria. (También: falso dilema, ad populum.)</p><p class="tiny"><b>Salió en:</b> R 25-2 · Fuente: 3 · Catálogo · <a class="inl" href="3-Falacias.html">ver en 3 · Falacias</a></p></div></details>
+<details class="ex fc-item" id="c-c1-04"><summary>¿Qué es un sesgo cognitivo? · <small>ya salió</small></summary><div class="body"><p>Un <b>patrón sistemático de desviarse de la norma o la racionalidad al juzgar</b>. No siempre es malo: acelera decisiones.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · C1 25-2 · Fuente: 4 · Sesgos · <a class="inl" href="13b-Resumen-C1.html#r4">ver en Resumen · Sesgos</a></p></div></details>
+<details class="ex fc-item" id="c-c1-05"><summary>Explica tres sesgos cognitivos. · <small>ya salió</small></summary><div class="body"><p><b>Confirmación:</b> buscar lo que confirma lo que creo. <b>Costo hundido:</b> valorar más aquello en que ya invertí. <b>Representatividad:</b> el problema de Linda.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · Fuente: pauta C2 25-1 · <a class="inl" href="13b-Resumen-C1.html#r4">ver en Resumen · Sesgos</a></p></div></details>
+<details class="ex fc-item" id="c-c1-06"><summary>Falacia vs. sesgo: ¿en qué se parecen y en qué difieren? · <small>ya salió</small></summary><div class="body"><p>Ambos llevan a <b>conclusiones erróneas</b> y muchas falacias apelan a sesgos. La falacia está <b>en el argumento</b> y se disfraza de lógica; el sesgo está <b>en quien juzga</b> y a menudo ni se plantea como razonamiento.</p><p class="tiny"><b>Salió en:</b> R 25-1 · R 26-1 · Fuente: pauta R 25-1 · <a class="inl" href="13b-Resumen-C1.html#r4">ver en Resumen · Falacia vs. sesgo</a></p></div></details>
+<details class="ex fc-item" id="c-c1-07"><summary>¿Qué es la disonancia cognitiva y sus tres defensas? · <small>ya salió</small></summary><div class="body"><p>Mantener <b>dos creencias contradictorias</b> a la vez. Defensas: <b>evitar</b>, <b>deslegitimar</b> y <b>limitar el impacto</b>.</p><p class="tiny"><b>Salió en:</b> C1 26-1 · Fuente: 4 · Disonancia · <a class="inl" href="4-Sesgos-cognitivos.html">ver en 4 · Sesgos</a></p></div></details>
+<details class="ex fc-item" id="c-c1-02"><summary>Argumento válido vs. sólido</summary><div class="body"><p><b>Válido:</b> la conclusión se sigue de las premisas. <b>Sólido:</b> válido <b>y</b> con premisas verdaderas.</p><p class="tiny">Fuente: 3 · Razonamiento · <a class="inl" href="13b-Resumen-C1.html#r3">ver en Resumen · Falacias</a></p></div></details>
+<h3 id="fc-t-c1-ciencia">C1 · Ciencia e ingeniería <span class="num">· 6 tarjetas</span></h3>
+<details class="ex fc-item" id="c-c1-08"><summary>¿Qué es la ciencia (definición del ramo)? · <small>ya salió</small></summary><div class="body"><p>El <b>estudio sistemático</b> de la estructura y el comportamiento del mundo físico y natural mediante <b>observación, experimentación</b> y la comprobación de teorías contra la <b>evidencia</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-2 · R 25-1 · Fuente: pauta C2 25-2 · <a class="inl" href="13b-Resumen-C1.html#r11">ver en Resumen · Ciencia</a></p></div></details>
+<details class="ex fc-item" id="c-c1-09"><summary>Hecho, hipótesis y teoría · <small>ya salió</small></summary><div class="body"><p><b>Hecho:</b> dato verificado por observación. <b>Hipótesis:</b> explicación propuesta, refutable. <b>Teoría:</b> explicación comprobada repetidas veces y aceptada; siempre <b>provisoria</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-2 · Fuente: pauta C2 25-2 · <a class="inl" href="13b-Resumen-C1.html#r11">ver en Resumen · Ciencia</a></p></div></details>
+<details class="ex fc-item" id="c-c1-10"><summary>¿Qué es la falsabilidad y por qué es asimétrica? · <small>ya salió</small></summary><div class="body"><p>Que una hipótesis pueda ser <b>refutada</b> por evidencia (Popper): distingue a la ciencia. Es asimétrica: la evidencia puede <b>refutar</b> una teoría, pero <b>nunca demostrarla</b> definitivamente.</p><p class="tiny"><b>Salió en:</b> R 25-1 · R 26-1 · Fuente: pauta R 25-1 · <a class="inl" href="13b-Resumen-C1.html#r11">ver en Resumen · Ciencia</a></p></div></details>
+<details class="ex fc-item" id="c-c1-11"><summary>¿Qué dice la navaja de Ockham? · <small>ya salió</small></summary><div class="body"><p>Entre explicaciones <b>completas</b> de un fenómeno, preferir la <b>más simple</b>. Guía la elaboración de hipótesis.</p><p class="tiny"><b>Salió en:</b> R 26-1 · Fuente: R 26-1 P2 · <a class="inl" href="13b-Resumen-C1.html#r11">ver en Resumen · Ciencia</a></p></div></details>
+<details class="ex fc-item" id="c-c1-12"><summary>¿Qué es la ingeniería y en qué se distingue de la ciencia? · <small>ya salió</small></summary><div class="body"><p>Conocimientos para inventar y usar técnicas que aprovechan los recursos. “Un ingeniero halla <b>soluciones viables, en plazo y a costo aceptables, a problemas prácticos</b>.” La ciencia busca conocimiento; la ingeniería lo usa.</p><p class="tiny"><b>Salió en:</b> R 25-2 · C1 26-1 · Fuente: pauta R 25-2 · <a class="inl" href="13b-Resumen-C1.html#r12">ver en Resumen · Ingeniería</a></p></div></details>
+<details class="ex fc-item" id="c-c1-13"><summary>La historia de la ingeniería en 4 bloques · <small>ya salió</small></summary><div class="body"><p><b>Militar</b> (máquinas de guerra) → <b>civil</b> → <b>mecánica</b> (vapor, revolución industrial) → <b>diversificación</b> (eléctrica, química, electrónica, informática).</p><p class="tiny"><b>Salió en:</b> C1 25-1 · Fuente: 12 · Historia · <a class="inl" href="12-Ingenieria.html">ver en 12 · Ingeniería</a></p></div></details>
+<h3 id="fc-t-c1-etica">C1 · Ética <span class="num">· 5 tarjetas</span></h3>
+<details class="ex fc-item" id="c-c1-14"><summary>Ética antigua vs. moderna · <small>ya salió</small></summary><div class="body"><p><b>Antigua:</b> se centra en la <b>persona</b>, cómo vivir una buena vida (el carácter). <b>Moderna:</b> se centra en las <b>relaciones</b>, cómo actuar y qué le debo a los demás (Kant, utilitarismo).</p><p class="tiny"><b>Salió en:</b> R 26-1 · C1 25-1 · Fuente: pauta C1 25-1 · <a class="inl" href="13b-Resumen-C1.html#r9">ver en Resumen · Ética</a></p></div></details>
+<details class="ex fc-item" id="c-c1-15"><summary>Ética (Grecia) vs. moral (Roma) · <small>ya salió</small></summary><div class="body"><p><b>Ēthikós</b> = carácter. <b>Morālis</b> = costumbre (Cicerón). La <b>traducción imprecisa</b> de Cicerón las volvió sinónimos.</p><p class="tiny"><b>Salió en:</b> C1 26-1 · Fuente: pauta C1 26-1 · <a class="inl" href="13b-Resumen-C1.html#r7">ver en Resumen · Ética y moral</a></p></div></details>
+<details class="ex fc-item" id="c-c1-16"><summary>¿Qué es el bien para cínicos, cirenaicos, epicúreos y estoicos?</summary><div class="body"><p><b>Cínicos:</b> solo la virtud. <b>Cirenaicos:</b> el placer del momento. <b>Epicúreos:</b> evitar el dolor, placeres duraderos. <b>Estoicos:</b> la virtud y la ataraxia.</p><p class="tiny">Fuente: 8 · Las cinco escuelas · <a class="inl" href="13b-Resumen-C1.html#r8">ver en Resumen · Ética antigua</a></p></div></details>
+<details class="ex fc-item" id="c-c1-17"><summary>¿Qué dicen las dos formulaciones principales del imperativo categórico?</summary><div class="body"><p><b>Universalidad:</b> obra solo según una máxima que puedas querer como <b>ley universal</b>. <b>Humanidad:</b> trata a las personas siempre como <b>fin</b>, nunca solo como medio.</p><p class="tiny">Fuente: 9 · Kant · <a class="inl" href="13b-Resumen-C1.html#r9">ver en Resumen · Ética moderna</a></p></div></details>
+<details class="ex fc-item" id="c-c1-18"><summary>Utilitarismo de Bentham vs. Mill</summary><div class="body"><p>Ambos: la <b>máxima felicidad del mayor número</b>, por las consecuencias. <b>Bentham</b> (1789): cálculo <b>cuantitativo</b>. <b>Mill</b> (1863): <b>cualitativo</b>, hay placeres superiores.</p><p class="tiny">Fuente: 9 · Utilitarismo · <a class="inl" href="13b-Resumen-C1.html#r9">ver en Resumen · Ética moderna</a></p></div></details>
+<h3 id="fc-t-c1-otros">C1 · Proyectos, Pólya y más <span class="num">· 7 tarjetas</span></h3>
+<details class="ex fc-item" id="c-c1-19"><summary>Tres razones por las que fallan los proyectos, con su solución · <small>ya salió</small></summary><div class="body"><p><b>Objetivos poco claros</b> → SMART. <b>Ampliación del alcance</b> → alcance documentado y control de cambios. <b>Comunicaciones pobres</b> → plan de comunicación con registro.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · R 25-2 · Fuente: pauta R 25-2 · <a class="inl" href="13b-Resumen-C1.html#r1">ver en Resumen · Proyectos</a></p></div></details>
+<details class="ex fc-item" id="c-c1-21"><summary>¿Cuáles son los 4 principios de Pólya? · <small>ya salió</small></summary><div class="body"><p><b>Entender el problema</b>, <b>armar un plan</b>, <b>ejecutar el plan</b> y <b>reflexionar sobre lo hecho</b>.</p><p class="tiny"><b>Salió en:</b> C2 25-1 · C1 25-2 · Fuente: pauta C2 25-1 · <a class="inl" href="13b-Resumen-C1.html#r6">ver en Resumen · Pólya</a></p></div></details>
+<details class="ex fc-item" id="c-c1-22"><summary>¿Qué significa SMART? · <small>ya salió</small></summary><div class="body"><p><b>S</b>pecific (específico), <b>M</b>easurable (medible), <b>A</b>chievable (alcanzable), <b>R</b>ealistic (realista), <b>T</b>ime-bound (con plazo).</p><p class="tiny"><b>Salió en:</b> C1 25-2 · Fuente: 1 · Objetivo · <a class="inl" href="13b-Resumen-C1.html#r1">ver en Resumen · Proyectos</a></p></div></details>
+<details class="ex fc-item" id="c-c1-23"><summary>¿Cuáles son las 6 habilidades del pensamiento crítico? · <small>ya salió</small></summary><div class="body"><p>Clarificar <b>propósito y contexto</b> · cuestionar las <b>fuentes</b> · <b>identificar</b> argumentos · <b>analizar</b> · <b>evaluar</b> argumentos ajenos · <b>crear</b> argumentos propios.</p><p class="tiny"><b>Salió en:</b> C1 25-2 · Fuente: pauta C1 25-2 · <a class="inl" href="13b-Resumen-C1.html#r5">ver en Resumen · Pensamiento crítico</a></p></div></details>
+<details class="ex fc-item" id="c-c1-20"><summary>¿Cuándo un proyecto es fallido?</summary><div class="body"><p>Si <b>no cumple los objetivos</b>, <b>no se obtiene el producto</b> o <b>no se completa a tiempo</b>.</p><p class="tiny">Fuente: pauta R 25-2 · <a class="inl" href="13b-Resumen-C1.html#r1">ver en Resumen · Proyectos</a></p></div></details>
+<details class="ex fc-item" id="c-c1-24"><summary>¿Qué tecnología define cada generación de computadores?</summary><div class="body"><p><b>1ª</b> tubos de vacío · <b>2ª</b> transistores · <b>3ª</b> circuitos integrados · <b>4ª</b> microprocesador · <b>5ª</b> ULSI.</p><p class="tiny">Fuente: 13 · Generaciones · <a class="inl" href="13b-Resumen-C1.html#r13">ver en Resumen · Computación</a></p></div></details>
+<details class="ex fc-item" id="c-c1-25"><summary>Las cuatro tradiciones clásicas de la sociología</summary><div class="body"><p><b>Funcionalismo</b>, <b>teoría del conflicto</b>, <b>interaccionismo simbólico</b> y <b>elección racional</b> (utilitarismo).</p><p class="tiny">Fuente: 10 · Sociedades · <a class="inl" href="13b-Resumen-C1.html#r10">ver en Resumen · Sociedades</a></p></div></details>
+</section>
+<script type="application/json" id="fc-data">[{"id": "pi-01", "tema": "pi", "tipo": "definir", "prob": "salio", "s": "C2 25-1 · C2 25-2", "nueva": true, "f": "¿Qué es la propiedad intelectual y qué la distingue de otras propiedades?", "p": "Bienes…", "r": "Las legislaciones que protegen las <b>creaciones del intelecto<\/b>. Trata de <b>bienes intangibles<\/b>, que se copian sin quitarle nada al dueño, y cubre áreas de <b>trato legal muy distinto<\/b>.", "o": ["17, diapositivas 3-4"], "v": "17-Propiedad-intelectual.html#que-es", "vt": "17 · Qué es"}, {"id": "pi-02", "tema": "pi", "tipo": "por-que", "prob": "salio", "s": "R 25-1 · R 25-2 · C2 25-2", "nueva": true, "f": "¿Por qué la propiedad intelectual es tan importante en informática?", "p": "¿Qué tipo de producto es el software?", "r": "Porque la informática trata de <b>entidades abstractas<\/b> (algoritmos, programas, información) y el <b>software es intangible<\/b>: es esencialmente <b>la única legislación<\/b> que lo protege.", "o": ["pautas R 25-1 y C2 25-2"], "v": "17-Propiedad-intelectual.html#relevancia", "vt": "17 · Relevancia"}, {"id": "pi-03", "tema": "pi", "tipo": "lista", "prob": "salio", "s": "C2 25-1 · C1 26-1", "nueva": true, "f": "¿Cuáles son las áreas de la propiedad intelectual?", "p": "4 en la pauta, 5 en la clase", "r": "<b>Derecho de autor<\/b>, <b>patentes<\/b>, <b>marcas registradas<\/b> y <b>secretos comerciales<\/b> (las de la pauta), más las <b>indicaciones geográficas<\/b>.", "o": ["17, diapositivas 5-6"], "v": "17-Propiedad-intelectual.html#areas", "vt": "17 · Las áreas"}, {"id": "pi-04", "tema": "pi", "tipo": "definir", "prob": "salio", "s": "C2 25-1", "nueva": true, "f": "¿Qué protege el derecho de autor y qué no?", "p": "Expresión vs. idea", "r": "Los derechos exclusivos del autor sobre una <b>obra original fijada en un medio tangible<\/b>. <b>No cubre hechos, ideas, sistemas ni métodos<\/b>: solo su <b>expresión concreta<\/b>.", "o": ["17, diapositiva 8"], "v": "17-Propiedad-intelectual.html#autor", "vt": "17 · Derecho de autor"}, {"id": "pi-05", "tema": "pi", "tipo": "lista", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué derechos da el derecho de autor?", "p": "Cinco verbos, más uno", "r": "<b>Reproducir<\/b>, preparar <b>obras derivadas<\/b>, <b>distribuir<\/b>, <b>interpretar<\/b> y <b>exhibir<\/b> públicamente, y <b>autorizar a terceros<\/b> a hacerlo (de ahí salen las licencias).", "o": ["17, diapositivas 9-10"], "v": "17-Propiedad-intelectual.html#autor", "vt": "17 · Derecho de autor"}, {"id": "pi-06", "tema": "pi", "tipo": "dato", "prob": "probable", "s": "", "nueva": true, "f": "¿Cuánto dura el derecho de autor en EE.UU., en Chile y según Berna?", "p": "Vida del autor + …", "r": "<b>EE.UU. y Chile: vida + 70 años.<\/b> Berna exige como mínimo <b>vida + 50<\/b>. En EE.UU., las obras por encargo o anónimas: lo primero entre 95 años desde la publicación y 120 desde la creación.", "o": ["17, diapositivas 11, 23 y 26"], "v": "17-Propiedad-intelectual.html#autor", "vt": "17 · Derecho de autor"}, {"id": "pi-07", "tema": "pi", "tipo": "lista", "prob": "probable", "s": "", "nueva": true, "f": "¿Cuáles son los tres principios de la Convención de Berna?", "p": "Trato… protección… independencia", "r": "<b>Trato nacional<\/b> (como a una obra del propio país), <b>protección automática<\/b> (sin formalidades) e <b>independencia de la protección<\/b> respecto del país de origen. Es de 1886.", "o": ["17, diapositivas 17-19"], "v": "17-Propiedad-intelectual.html#berna", "vt": "17 · Berna"}, {"id": "pi-08", "tema": "pi", "tipo": "definir", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué es una obra derivada? Da un ejemplo de zona gris en software.", "p": "Traducción, película… biblioteca", "r": "Una obra que <b>construye sobre otra<\/b> o incluye partes sustanciales de ella (traducción, película basada en un libro). Zonas grises: un programa que usa una <b>biblioteca estática o compartida<\/b>, o una biblioteca que reimplementa una <b>API<\/b>.", "o": ["17, diapositivas 12-14"], "v": "17-Propiedad-intelectual.html#derivadas", "vt": "17 · Obras derivadas"}, {"id": "pi-09", "tema": "pi", "tipo": "comparar", "prob": "probable", "s": "", "nueva": true, "f": "Derechos patrimoniales vs. derechos morales (ley chilena)", "p": "¿Cuáles se pueden vender?", "r": "<b>Patrimoniales:<\/b> los económicos, <b>transferibles<\/b>. <b>Morales:<\/b> reconocimiento de la autoría, oponerse a modificaciones, mantener la obra inédita; son <b>inalienables e intransferibles<\/b> (pasan al cónyuge y sucesores).", "o": ["17, diapositiva 26"], "v": "17-Propiedad-intelectual.html#autor", "vt": "17 · Ley chilena"}, {"id": "pi-10", "tema": "pi", "tipo": "definir", "prob": "salio", "s": "C2 25-1 · C1 26-1", "nueva": true, "f": "¿Qué es una patente y qué requisitos debe cumplir el invento?", "p": "Nuevo, …, …", "r": "El derecho a <b>excluir a otros<\/b> de explotar un invento <b>nuevo, útil y no obvio<\/b> por un plazo limitado (<b>~20 años<\/b>), <b>a cambio de publicarlo<\/b>.", "o": ["17, diapositiva 27"], "v": "17-Propiedad-intelectual.html#patentes", "vt": "17 · Patentes"}, {"id": "pi-11", "tema": "pi", "tipo": "dato", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué áreas se agregaron a las patentes en EE.UU. por resoluciones judiciales?", "p": "Tres", "r": "<b>Software<\/b>, <b>procesos de negocio<\/b> y <b>seres vivos<\/b> (variedades seleccionadas o modificadas). Algunas se restringieron después.", "o": ["17, diapositiva 28"], "v": "17-Propiedad-intelectual.html#patentes", "vt": "17 · Patentes"}, {"id": "pi-12", "tema": "pi", "tipo": "definir", "prob": "salio", "s": "C2 25-1 · C1 26-1", "nueva": true, "f": "¿Qué es una marca registrada y para qué sirve?", "p": "Origen…", "r": "Una palabra, frase, símbolo o diseño que <b>identifica el origen<\/b> de un producto o servicio y evita que el consumidor lo <b>confunda<\/b> con otros. Se obtiene por <b>registro<\/b>.", "o": ["17, diapositivas 31-32"], "v": "17-Propiedad-intelectual.html#marcas", "vt": "17 · Marcas"}, {"id": "pi-13", "tema": "pi", "tipo": "dato", "prob": "probable", "s": "", "nueva": true, "f": "¿Cuánto dura una marca y cómo se puede perder?", "p": "10…", "r": "<b>10 años, renovables indefinidamente.<\/b> Se pierde si <b>no se usa<\/b> (3 a 5 años) o si <b>no se defiende<\/b> de las infracciones.", "o": ["17, diapositiva 36"], "v": "17-Propiedad-intelectual.html#marcas", "vt": "17 · Marcas"}, {"id": "pi-14", "tema": "pi", "tipo": "lista", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué tipos de marca acepta la ley y cuáles no?", "p": "Distintivas…", "r": "Acepta las <b>distintivas<\/b>: <b>fantasiosas<\/b>, <b>arbitrarias<\/b> y <b>sugestivas<\/b>. No acepta las <b>descriptivas<\/b> ni las <b>genéricas<\/b>.", "o": ["17, diapositiva 35"], "v": "17-Propiedad-intelectual.html#marcas", "vt": "17 · Marcas"}, {"id": "pi-15", "tema": "pi", "tipo": "dato", "prob": "probable", "s": "", "nueva": true, "f": "Nombra los tratados internacionales de marcas.", "p": "París, …", "r": "<b>Convención de París<\/b> (registrar país por país), <b>Protocolo de Madrid<\/b> (extender una marca nacional a los miembros) y <b>TRIPS<\/b> (1995, estándares mínimos de la OMC).", "o": ["17, diapositivas 33-34"], "v": "17-Propiedad-intelectual.html#marcas", "vt": "17 · Marcas"}, {"id": "pi-16", "tema": "pi", "tipo": "definir", "prob": "salio", "s": "C2 25-1 · C1 26-1", "nueva": true, "f": "¿Qué es un secreto comercial y cuánto dura su protección?", "p": "Sin registro…", "r": "Información confidencial que <b>vale por ser secreta<\/b> y que se protege con medidas razonables (NDA). <b>No requiere registro<\/b> y dura <b>indefinidamente<\/b> mientras no se divulgue.", "o": ["17, diapositivas 41-43"], "v": "17-Propiedad-intelectual.html#secretos", "vt": "17 · Secretos"}, {"id": "pi-17", "tema": "pi", "tipo": "por-que", "prob": "probable", "s": "", "nueva": true, "f": "¿Es ilegal descubrir el secreto de otra empresa por ingeniería reversa?", "p": "¿Qué protege la ley exactamente?", "r": "<b>No.<\/b> La ley no persigue el descubrimiento <b>independiente<\/b> ni la <b>ingeniería reversa<\/b>; solo lo obtenido contra <b>prácticas comerciales honestas<\/b>.", "o": ["17, diapositiva 42"], "v": "17-Propiedad-intelectual.html#secretos", "vt": "17 · Secretos"}, {"id": "pi-18", "tema": "pi", "tipo": "comparar", "prob": "salio", "s": "C2 25-2", "nueva": true, "f": "Patente vs. secreto comercial: ¿en qué se oponen?", "p": "Publicar…", "r": "La patente obliga a <b>publicar<\/b> el invento a cambio de ~20 años de exclusividad; el secreto se protege <b>por no publicarse<\/b>, sin plazo, pero sin protección contra quien lo descubra por su cuenta.", "o": ["17 · tabla resumen"], "v": "17-Propiedad-intelectual.html#resumen", "vt": "17 · Tabla resumen"}, {"id": "pi-19", "tema": "pi", "tipo": "lista", "prob": "salio", "s": "R 25-1 · R 25-2", "nueva": true, "f": "¿Cómo incide cada área de la propiedad intelectual en el software?", "p": "Código, algoritmos, logos, fuente", "r": "<b>Autor:<\/b> el código se asocia a las obras literarias. <b>Patentes:<\/b> se extendieron a algoritmos y formas de programar. <b>Marcas:<\/b> logos y nombres de programas. <b>Secretos:<\/b> el código fuente propietario.", "o": ["pautas R 25-1 y R 25-2"], "v": "17-Propiedad-intelectual.html#incide", "vt": "17 · En informática"}, {"id": "pi-20", "tema": "pi", "tipo": "definir", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué es una indicación geográfica? Da ejemplos.", "p": "Champagne…", "r": "Identifica un producto como originario de un lugar cuando su <b>calidad depende de ese origen<\/b>: champagne, <b>pisco<\/b> (en disputa con Perú), tequila.", "o": ["17, diapositivas 39-40"], "v": "17-Propiedad-intelectual.html#geo", "vt": "17 · Indicaciones geográficas"}, {"id": "oss-01", "tema": "oss", "tipo": "definir", "prob": "salio", "s": "C2 25-1", "nueva": true, "f": "¿Qué es una licencia de software?", "p": "Permiso sobre…", "r": "El <b>permiso<\/b> que da el dueño del <b>derecho de autor<\/b> para usar el programa bajo ciertas condiciones. El código abierto usa la misma ley para dar permisos de uso, estudio, modificación y redistribución.", "o": ["18, diapositiva 4"], "v": "18-Codigo-abierto.html#idea", "vt": "18 · Licencias"}, {"id": "oss-02", "tema": "oss", "tipo": "lista", "prob": "salio", "s": "C2 25-1 · C2 25-2 · R 25-1", "nueva": true, "f": "¿Cuáles son las cuatro libertades del software libre (FSF)?", "p": "Empiezan en 0", "r": "<b>0:<\/b> ejecutar para cualquier propósito. <b>1:<\/b> estudiar y modificar. <b>2:<\/b> redistribuir copias. <b>3:<\/b> distribuir las versiones modificadas.", "o": ["18, diapositiva 32"], "v": "18-Codigo-abierto.html#libertades", "vt": "18 · Las cuatro libertades"}, {"id": "oss-03", "tema": "oss", "tipo": "definir", "prob": "salio", "s": "C2 25-2", "nueva": true, "f": "¿Qué es el copyleft?", "p": "Juego de palabras", "r": "La condición de GNU: toda redistribución, original o modificada, debe ir <b>con el código fuente<\/b> y <b>bajo las mismas condiciones<\/b>. Juego de palabras con copyright.", "o": ["18, diapositiva 33"], "v": "18-Codigo-abierto.html#copyleft", "vt": "18 · Copyleft"}, {"id": "oss-04", "tema": "oss", "tipo": "dato", "prob": "salio", "s": "C2 25-2 · C2 26-1", "nueva": true, "f": "¿Cuál es la idea central de la definición de código abierto de la OSI?", "p": "Usar, redistribuir, modificar", "r": "La licencia permite <b>usar el programa sin restricciones<\/b>, <b>redistribuirlo con su código fuente<\/b> sin costo y <b>modificarlo y distribuir las versiones modificadas<\/b>. Son 10 puntos; la OSI es de 1998.", "o": ["pautas C2 25-2 y C2 26-1"], "v": "18-Codigo-abierto.html#osi", "vt": "18 · La OSI"}, {"id": "oss-05", "tema": "oss", "tipo": "lista", "prob": "probable", "s": "", "nueva": true, "f": "Nombra los 10 puntos de la OSI en tres bloques.", "p": "Qué recibes · a quién no se excluye · sin trampas", "r": "<b>1-4:<\/b> libre redistribución, código fuente, obras derivadas, integridad del autor. <b>5-6:<\/b> no discriminar personas ni áreas. <b>7-10:<\/b> la licencia vale para todos, no atada a un producto, no restringe otro software, neutral a la tecnología.", "o": ["18, diapositivas 42-45"], "v": "18-Codigo-abierto.html#osi", "vt": "18 · La OSI"}, {"id": "oss-06", "tema": "oss", "tipo": "comparar", "prob": "salio", "s": "C2 25-2", "nueva": true, "f": "Código abierto (OSI) vs. código libre (FSF): ¿cuál incluye a cuál?", "p": "Vegano y vegetariano", "r": "La OSI es <b>posterior<\/b> y más amplia: <b>expande y explicita<\/b> las libertades de la FSF y cubre muchas licencias. Las de la FSF cumplen la OSI, <b>pero no al revés<\/b>: la diferencia es el <b>copyleft<\/b>.", "o": ["pauta C2 25-2"], "v": "18-Codigo-abierto.html#osi-fsf", "vt": "18 · Abierto vs. libre"}, {"id": "oss-07", "tema": "oss", "tipo": "comparar", "prob": "salio", "s": "R 25-1 · R 25-2", "nueva": true, "f": "Licencias GPL vs. BSD", "p": "¿Qué exigen al redistribuir?", "r": "<b>GPL:<\/b> exige entregar el <b>fuente<\/b> y mantener la <b>misma licencia<\/b> (copyleft). <b>BSD:<\/b> <b>permisiva<\/b>, no exige fuente; el código puede terminar en productos propietarios. Solo pide dar crédito y no dar garantías.", "o": ["pautas R 25-1 y R 25-2"], "v": "18-Codigo-abierto.html#gpl-bsd", "vt": "18 · GPL vs. BSD"}, {"id": "oss-08", "tema": "oss", "tipo": "lista", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué variantes de licencia BSD hay?", "p": "4, 3, 2, 0", "r": "<b>4 cláusulas<\/b> (con cláusula de publicidad, incompatible con GPL), <b>3<\/b> (la más común), <b>2<\/b> (simplificada) y <b>0<\/b> (≈ dominio público).", "o": ["18, diapositivas 23-25"], "v": "18-Codigo-abierto.html#lic-bsd", "vt": "18 · Licencias BSD"}, {"id": "oss-09", "tema": "oss", "tipo": "por-que", "prob": "probable", "s": "", "nueva": true, "f": "¿Por qué la BSD de 4 cláusulas es incompatible con la GPL?", "p": "Publicidad", "r": "Por la <b>cláusula 3<\/b>: obliga a mencionar a los autores en todo material publicitario, una <b>restricción adicional<\/b> que la GPL no permite.", "o": ["18, diapositiva 24"], "v": "18-Codigo-abierto.html#lic-bsd", "vt": "18 · Licencias BSD"}, {"id": "oss-10", "tema": "oss", "tipo": "comparar", "prob": "probable", "s": "", "nueva": true, "f": "¿Para qué sirven la LGPL, la AGPL y la GFDL?", "p": "Bibliotecas, red, documentación", "r": "<b>LGPL<\/b> (1991): bibliotecas; se pueden usar si la biblioteca es <b>reemplazable<\/b>. <b>AGPL<\/b> (2007): exige el fuente a quien usa el programa <b>por la red<\/b>. <b>GFDL<\/b>: para <b>documentación<\/b>, prohíbe DRM.", "o": ["18, diapositivas 36-40"], "v": "18-Codigo-abierto.html#gnu", "vt": "18 · Familia GPL"}, {"id": "oss-11", "tema": "oss", "tipo": "dato", "prob": "probable", "s": "", "nueva": true, "f": "¿Quién lanzó GNU, cuándo y qué significa la sigla?", "p": "1983", "r": "<b>Richard Stallman<\/b>, en <b>1983<\/b>. <i>GNU's Not Unix<\/i> (acrónimo recursivo). Lo maneja la <b>FSF<\/b>, fundada en 1986.", "o": ["18, diapositivas 11 y 27"], "v": "18-Codigo-abierto.html#gnu", "vt": "18 · GNU"}, {"id": "oss-12", "tema": "oss", "tipo": "por-que", "prob": "probable", "s": "", "nueva": true, "f": "¿Por qué Unix se difundió en las universidades?", "p": "AT&T no podía…", "r": "Porque <b>AT&amp;T no podía participar en otras industrias<\/b> por razones legales y licenció Unix <b>a costo nominal y con fuentes<\/b>.", "o": ["18, diapositiva 9"], "v": "18-Codigo-abierto.html#historia", "vt": "18 · Historia"}, {"id": "oss-13", "tema": "oss", "tipo": "lista", "prob": "salio", "s": "C2 26-1", "nueva": true, "f": "¿Qué significan BY, SA, NC y ND en Creative Commons?", "p": "Crédito, igual, comercial, derivadas", "r": "<b>BY:<\/b> atribuir al autor. <b>SA:<\/b> compartir igual (misma licencia). <b>NC:<\/b> no comercial. <b>ND:<\/b> sin obras derivadas. <b>CC0<\/b> = dominio público.", "o": ["pauta C2 26-1"], "v": "18-Codigo-abierto.html#cc", "vt": "18 · Creative Commons"}, {"id": "oss-14", "tema": "oss", "tipo": "por-que", "prob": "salio", "s": "C2 26-1", "nueva": true, "f": "¿Qué licencias Creative Commons no son código abierto y por qué?", "p": "Puntos 3 y 6", "r": "Las <b>ND<\/b> violan el <b>punto 3<\/b> (obras derivadas) y las <b>NC<\/b> violan el <b>punto 6<\/b> (no discriminar áreas). Solo <b>CC BY, CC BY-SA y CC0<\/b> son compatibles.", "o": ["pauta C2 26-1"], "v": "18-Codigo-abierto.html#cc", "vt": "18 · Creative Commons"}, {"id": "oss-15", "tema": "oss", "tipo": "comparar", "prob": "salio", "s": "R 26-1", "nueva": true, "f": "¿A qué licencia CC se parecen la GPL y la BSD?", "p": "SA es el copyleft", "r": "<b>GPL ≈ CC BY-SA<\/b> (todo permitido, las derivadas mantienen la licencia). <b>BSD ≈ CC BY<\/b> (todo permitido con crédito); BSD-0 ≈ <b>CC0<\/b>.", "o": ["R 26-1 P6"], "v": "18-Codigo-abierto.html#gpl-bsd", "vt": "18 · GPL vs. BSD"}, {"id": "oss-16", "tema": "oss", "tipo": "dato", "prob": "salio", "s": "C2 25-1 · C2 25-2", "nueva": true, "f": "Da cifras del impacto del código abierto.", "p": "96…", "r": "El <b>96 %<\/b> de los programas incluye código abierto. Rehacer lo que cada usuario usa costaría <b>US$2,59 a 13,18 billones<\/b>. Uso casi unánime en la nube, redes y servidores; base de <b>Linux, Android<\/b> e iOS.", "o": ["18, diapositiva 54"], "v": "18-Codigo-abierto.html#impacto", "vt": "18 · Impacto"}, {"id": "oss-17", "tema": "oss", "tipo": "por-que", "prob": "probable", "s": "", "nueva": true, "f": "¿Puedo usar en mi empresa un código que encontré en una web sin licencia?", "p": "¿Qué es lo automático?", "r": "<b>No.<\/b> El derecho de autor es automático: por omisión <b>no hay permiso ni de leerlo<\/b>. “Estaba en una página web” no es licencia; hay que conseguir una licencia clara y registrarla.", "o": ["18, diapositiva 53"], "v": "18-Codigo-abierto.html#uso", "vt": "18 · Consideraciones de uso"}, {"id": "oss-18", "tema": "oss", "tipo": "definir", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué es Creative Commons?", "p": "No solo programas", "r": "Una organización sin fines de lucro con licencias para <b>obras en general<\/b> (textos, imágenes, audio, video), compatibles con las leyes nacionales. <b>No todas<\/b> son código abierto.", "o": ["18, diapositivas 46-47"], "v": "18-Codigo-abierto.html#cc", "vt": "18 · Creative Commons"}, {"id": "eti-01", "tema": "etica", "tipo": "definir", "prob": "salio", "s": "C2 26-1 · C2 25-1", "nueva": true, "f": "¿Qué es un dilema ético?", "p": "Sin respuesta clara…", "r": "Una <b>decisión difícil, sin respuesta correcta clara<\/b>, cuyas opciones tienen <b>consecuencias éticas<\/b>. Exige pesar resultados y principios, con un balance difícil.", "o": ["16, diapositiva 7"], "v": "16-Aspectos-eticos.html#dilema", "vt": "16 · Dilema ético"}, {"id": "eti-02", "tema": "etica", "tipo": "lista", "prob": "probable", "s": "", "nueva": true, "f": "¿Cuáles son los cuatro tipos de dilema ético?", "p": "Verdad…", "r": "<b>Verdad vs. lealtad<\/b>, <b>individuo vs. comunidad<\/b>, <b>corto vs. largo plazo<\/b> y <b>justicia vs. piedad<\/b>.", "o": ["16, diapositiva 8"], "v": "16-Aspectos-eticos.html#dilema", "vt": "16 · Tipos de dilema"}, {"id": "eti-03", "tema": "etica", "tipo": "comparar", "prob": "probable", "s": "", "nueva": true, "f": "¿Cómo se relacionan la ética y la ley?", "p": "Piso y techo", "r": "Idealmente son <b>armónicas<\/b>, pero hay leyes que contravienen la ética, y <b>la ley no cubre todo<\/b>: donde no llega, solo guía la ética. Además, la ley llega <b>tarde<\/b> a la tecnología.", "o": ["16, diapositivas 9 y 20"], "v": "16-Aspectos-eticos.html#ley", "vt": "16 · Ética y ley"}, {"id": "eti-04", "tema": "etica", "tipo": "lista", "prob": "salio", "s": "C1 26-1", "nueva": true, "f": "Nombra las 9 responsabilidades éticas del profesional.", "p": "CIS-RIF-CRA", "r": "<b>Competencia<\/b>, manejo de la <b>información<\/b>, <b>secreto<\/b> profesional, <b>respeto<\/b> entre colegas, <b>inclusión<\/b>, ética <b>financiera<\/b>, <b>comportamiento honesto<\/b>, <b>responsabilidad social<\/b> y cuidado del <b>ambiente<\/b>.", "o": ["pauta C1 26-1 · 16, diapositivas 11-19"], "v": "16-Aspectos-eticos.html#responsabilidades", "vt": "16 · Responsabilidades"}, {"id": "eti-05", "tema": "etica", "tipo": "definir", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué es la responsabilidad social del profesional?", "p": "Rechazar y…", "r": "<b>Rechazar<\/b> trabajos que se sabe que dañarán a personas o comunidades y, si corresponde, <b>denunciarlos<\/b>.", "o": ["16, diapositiva 18"], "v": "16-Aspectos-eticos.html#responsabilidades", "vt": "16 · Responsabilidades"}, {"id": "eti-06", "tema": "etica", "tipo": "por-que", "prob": "probable", "s": "", "nueva": true, "f": "¿Para qué sirve un código de conducta?", "p": "Cultura, cumplir, ley", "r": "Para definir la <b>cultura y los valores<\/b> de la organización, aclarar qué se espera, <b>simplificar hacer cumplir<\/b> las reglas y <b>difundir los requisitos legales<\/b>. Puede ser exigido por ley.", "o": ["16, diapositiva 6"], "v": "16-Aspectos-eticos.html#conducta", "vt": "16 · Códigos de conducta"}, {"id": "eti-07", "tema": "etica", "tipo": "dato", "prob": "probable", "s": "", "nueva": true, "f": "Colegio de Ingenieros de Chile: ¿cuándo se creó y es obligatorio?", "p": "1958", "r": "Creado por ley en <b>1958<\/b> (el Instituto de Ingenieros es de 1888). Código vigente: 5ª versión, 2013. <b>No es obligatorio<\/b> pertenecer: el código obliga solo a sus miembros.", "o": ["16, diapositiva 3"], "v": "16-Aspectos-eticos.html#codigos", "vt": "16 · Códigos de ética"}, {"id": "eti-08", "tema": "etica", "tipo": "lista", "prob": "probable", "s": "", "nueva": true, "f": "¿Cuáles son las 4 secciones del código ACM (2018)?", "p": "General, profesional, …", "r": "<b>1.<\/b> Principios éticos generales · <b>2.<\/b> Responsabilidades profesionales · <b>3.<\/b> Liderazgo profesional · <b>4.<\/b> Cumplimiento del código.", "o": ["21, diapositiva 3"], "v": "21-Codigo-ACM.html#acm", "vt": "21 · El código"}, {"id": "eti-09", "tema": "etica", "tipo": "lista", "prob": "salio", "s": "C2 25-1", "nueva": true, "f": "Nombra los 7 principios generales del código ACM.", "p": "Sociedad, daño, honestidad…", "r": "1.1 contribuir a la sociedad · <b>1.2 evitar daños<\/b> · 1.3 honestidad · <b>1.4 no discriminar<\/b> · 1.5 respetar el trabajo creativo · <b>1.6 privacidad<\/b> · 1.7 confidencialidad.", "o": ["21, diapositiva 4"], "v": "21-Codigo-ACM.html#s1", "vt": "21 · Sección 1"}, {"id": "eti-10", "tema": "etica", "tipo": "dato", "prob": "salio", "s": "C2 25-1", "nueva": true, "f": "¿Qué principios ACM se citan en el caso AllTogether?", "p": "Daño, discriminar, calidad, bien común", "r": "<b>1.2<\/b> evitar daños, <b>1.4<\/b> no discriminar, <b>2.1<\/b> calidad, <b>2.3<\/b> reglas, <b>2.4<\/b> revisión profesional, <b>3.1<\/b> bien común, <b>3.2<\/b> responsabilidad social. Sección 4: <b>postergar el lanzamiento<\/b>.", "o": ["pauta C2 25-1"], "v": "21-Codigo-ACM.html#uso", "vt": "21 · Qué citar"}, {"id": "eti-11", "tema": "etica", "tipo": "dato", "prob": "salio", "s": "C2 26-1", "nueva": true, "f": "Caso David: ¿qué dilema es y cuál es su responsabilidad según la pauta?", "p": "Verdad vs. …", "r": "<b>Verdad vs. lealtad<\/b>: lealtad a sus amigos vs. proteger la honra de los afectados. Su responsabilidad es <b>reportar a los autores<\/b>, y que la víctima sea cercana <b>no debiera incidir<\/b>.", "o": ["pauta C2 26-1"], "v": "22-Ejercicios.html#e7", "vt": "Ejercicio E7"}, {"id": "eti-12", "tema": "etica", "tipo": "dato", "prob": "salio", "s": "R 25-1", "nueva": true, "f": "Caso Jim Warren: ¿qué dilema es y actuó bien Jim?", "p": "Lealtad a la empresa vs. …", "r": "Lealtad con la empresa vs. sus <b>obligaciones profesionales<\/b> con las empresas afectadas. <b>Actuó bien<\/b>, en orden (primero interno, luego escalar), a un <b>costo personal sustancial<\/b>.", "o": ["pauta R 25-1"], "v": "22-Ejercicios.html#e8", "vt": "Ejercicio E8"}, {"id": "eti-13", "tema": "etica", "tipo": "dato", "prob": "salio", "s": "R 25-2 · R 26-1", "nueva": true, "f": "Caso del operador que vende datos: ¿es aceptable? ¿Y con rebajas?", "p": "GDPR y ACM 1.6", "r": "<b>No<\/b>: viola la ley de datos de la UE (y la chilena) y el principio <b>ACM 1.6<\/b> (privacidad). Con rebajas <b>sí<\/b>, con consentimiento informado. Los datos se manejan en forma <b>individual<\/b>.", "o": ["pauta R 25-2"], "v": "22-Ejercicios.html#e9", "vt": "Ejercicio E9"}, {"id": "eti-14", "tema": "etica", "tipo": "lista", "prob": "probable", "s": "", "nueva": true, "f": "¿Cuáles son los 5 pasos del método para un caso ético?", "p": "Dilema, afectados, …", "r": "<b>1.<\/b> El dilema y su tipo · <b>2.<\/b> Los afectados · <b>3.<\/b> Qué se contraviene (ACM, ley) · <b>4.<\/b> Kant y utilitarismo · <b>5.<\/b> Posición justificada, letra por letra.", "o": ["16 · cómo resolver un caso"], "v": "16-Aspectos-eticos.html#metodo", "vt": "16 · Método del caso"}, {"id": "eti-15", "tema": "etica", "tipo": "dato", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué dice el principio 2.8 del código ACM?", "p": "Acceso…", "r": "Acceder a recursos computacionales y de comunicaciones <b>solo si está autorizado<\/b> o lo obliga el bien común. (Lo viola entrar al computador de la colega.)", "o": ["21, diapositiva 6"], "v": "21-Codigo-ACM.html#s2", "vt": "21 · Sección 2"}, {"id": "dat-01", "tema": "datos", "tipo": "lista", "prob": "probable", "s": "", "nueva": true, "f": "¿Cuáles son las propiedades de la seguridad de la información?", "p": "Tres clásicas + una", "r": "<b>Confidencialidad<\/b>, <b>integridad<\/b> y <b>disponibilidad<\/b>, y hoy también <b>privacidad<\/b>. Todas suponen identificación y autenticación.", "o": ["19, diapositivas 3-4"], "v": "19-Proteccion-datos.html#seguridad", "vt": "19 · Seguridad"}, {"id": "dat-02", "tema": "datos", "tipo": "por-que", "prob": "salio", "s": "C2 26-1 · C2 25-2", "nueva": true, "f": "¿Por qué la legislación de EE.UU. y la UE es relevante en Chile?", "p": "Socios…", "r": "Son <b>socios comerciales muy importantes<\/b> y potencias tecnológicas; para relaciones fluidas hay que <b>adherir<\/b> a sus reglas. Chile, <b>país pequeño y abierto<\/b>, no tiene opción, y conviene adoptar el trabajo de otros.", "o": ["pauta C2 26-1"], "v": "22-Ejercicios.html#e19", "vt": "Ejercicio E19"}, {"id": "dat-03", "tema": "datos", "tipo": "lista", "prob": "salio", "s": "C2 25-2", "nueva": true, "f": "¿Qué derechos da el GDPR?", "p": "CARO-P", "r": "<b>Consentimiento<\/b> claro, <b>acceso<\/b> a los datos, <b>rectificación, supresión y olvido<\/b>, <b>oposición<\/b> a la elaboración de perfiles y <b>portabilidad<\/b>.", "o": ["19, diapositiva 11"], "v": "19-Proteccion-datos.html#ue", "vt": "19 · GDPR"}, {"id": "dat-04", "tema": "datos", "tipo": "dato", "prob": "salio", "s": "C2 25-2", "nueva": true, "f": "¿Cuándo se aprobó y desde cuándo se aplica el GDPR?", "p": "2016…", "r": "Se aprobó en <b>2016<\/b> y se aplica desde <b>2018<\/b>.", "o": ["19, diapositiva 11"], "v": "19-Proteccion-datos.html#ue", "vt": "19 · GDPR"}, {"id": "dat-05", "tema": "datos", "tipo": "lista", "prob": "salio", "s": "C2 25-2", "nueva": true, "f": "¿Qué obligaciones impone el GDPR a las organizaciones?", "p": "Seguridad, notificar, delegado", "r": "Medidas de <b>seguridad<\/b> según el riesgo, <b>notificar violaciones<\/b> de seguridad en ciertos casos, nombrar un <b>delegado de protección de datos<\/b> si hay operaciones riesgosas e informar de forma transparente.", "o": ["19, diapositiva 12"], "v": "19-Proteccion-datos.html#ue", "vt": "19 · GDPR"}, {"id": "dat-06", "tema": "datos", "tipo": "dato", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué hace la Ley 21.719?", "p": "Homologa…", "r": "<b>Homologa<\/b> la ley chilena de datos personales con el <b>GDPR<\/b> (y cumple compromisos con la OCDE). Crea la <b>Agencia de Protección de Datos Personales<\/b>, con multas muy altas.", "o": ["19, diapositivas 14-17"], "v": "19-Proteccion-datos.html#chile-datos", "vt": "19 · Ley 21.719"}, {"id": "dat-07", "tema": "datos", "tipo": "lista", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué derechos da la Ley 21.719?", "p": "Seis", "r": "<b>Acceso, rectificación, supresión, oposición, portabilidad y bloqueo.<\/b>", "o": ["19, diapositiva 15"], "v": "19-Proteccion-datos.html#chile-datos", "vt": "19 · Ley 21.719"}, {"id": "dat-08", "tema": "datos", "tipo": "definir", "prob": "salio", "s": "C2 25-2", "nueva": true, "f": "¿Qué es la Ley 21.663 y cuál es su finalidad?", "p": "Ley Marco de…", "r": "La <b>Ley Marco de Ciberseguridad<\/b> (2024, vigente desde enero de 2025). Busca mejorar la <b>prevención y resolución<\/b> de delitos informáticos e incidentes; su eje es la <b>obligación de notificar incidentes<\/b>.", "o": ["pauta C2 25-2"], "v": "19-Proteccion-datos.html#chile-ciber", "vt": "19 · Ley 21.663"}, {"id": "dat-09", "tema": "datos", "tipo": "lista", "prob": "salio", "s": "C2 25-2", "nueva": true, "f": "¿Qué instituciones crea la Ley 21.663?", "p": "ANCI, …", "r": "<b>ANCI<\/b> (Agencia Nacional de Ciberseguridad), <b>Consejo Multisectorial<\/b>, <b>CSIRT Nacional<\/b>, <b>CSIRT de la Defensa Nacional<\/b> y <b>Red de Conectividad Segura del Estado<\/b>.", "o": ["pauta C2 25-2"], "v": "19-Proteccion-datos.html#chile-ciber", "vt": "19 · Ley 21.663"}, {"id": "dat-10", "tema": "datos", "tipo": "lista", "prob": "salio", "s": "C2 25-2", "nueva": true, "f": "Nombra cuatro obligaciones de la Ley 21.663.", "p": "SGSI…", "r": "Un <b>SGSI<\/b> con registro, <b>planes de continuidad<\/b> cada 2 años, <b>informar a los afectados<\/b>, <b>pentesting<\/b>, certificaciones y un <b>delegado de ciberseguridad<\/b>.", "o": ["pauta C2 25-2"], "v": "19-Proteccion-datos.html#chile-ciber", "vt": "19 · Ley 21.663"}, {"id": "dat-11", "tema": "datos", "tipo": "definir", "prob": "salio", "s": "C2 25-2", "nueva": true, "f": "¿Qué es el Cyber Resilience Act y qué exige?", "p": "Seguro por omisión", "r": "Reglamento de la UE con estándares de ciberseguridad para <b>productos con elementos digitales<\/b>: <b>seguro por omisión<\/b>, actualizaciones de seguridad <b>automáticas<\/b>, notificar a <b>ENISA en 24 h<\/b>, documentación por <b>10 años<\/b>, mínimo para la <b>marca CE<\/b>.", "o": ["pauta C2 25-2"], "v": "19-Proteccion-datos.html#cra", "vt": "19 · CRA"}, {"id": "dat-12", "tema": "datos", "tipo": "por-que", "prob": "probable", "s": "", "nueva": true, "f": "¿Por qué el CRA preocupa al código abierto?", "p": "70 %…", "r": "Afectaría a <b>más del 70 % del código<\/b> en la UE, cuyos desarrolladores no tienen recursos para cumplir, y no está claro qué es <b>“uso comercial”<\/b>.", "o": ["19, diapositiva 31"], "v": "19-Proteccion-datos.html#cra", "vt": "19 · CRA"}, {"id": "dev-01", "tema": "dev", "tipo": "definir", "prob": "salio", "s": "C2 26-1 · R 25-1", "nueva": true, "f": "¿Qué es la deuda técnica?", "p": "Retrabajo…", "r": "El <b>costo del retrabajo futuro<\/b> por optar por una <b>salida fácil<\/b> en vez de una <b>solución robusta a la raíz<\/b> del problema.", "o": ["20, diapositiva 12 · pauta C2 26-1"], "v": "20-Desarrollo.html#deuda", "vt": "20 · Deuda técnica"}, {"id": "dev-02", "tema": "dev", "tipo": "por-que", "prob": "salio", "s": "C2 26-1", "nueva": true, "f": "¿Por qué es difícil evitar la deuda técnica?", "p": "Costo, sin darse cuenta…", "r": "Por la presión constante de <b>mínimo costo y tiempo<\/b>; se contrae muchas veces <b>sin darse cuenta<\/b> y suele verse <b>solo en retrospectiva<\/b>.", "o": ["pauta C2 26-1"], "v": "20-Desarrollo.html#deuda", "vt": "20 · Deuda técnica"}, {"id": "dev-03", "tema": "dev", "tipo": "lista", "prob": "salio", "s": "C2 26-1", "nueva": true, "f": "¿Cómo se mitiga la deuda técnica?", "p": "Raíz, rediseñar, pruebas", "r": "Buscar y resolver la <b>causa raíz<\/b>, <b>rediseñar<\/b> las partes afectadas al modificarlas y mantener los <b>casos de prueba<\/b> al día, corriéndolos continuamente.", "o": ["pauta C2 26-1"], "v": "20-Desarrollo.html#deuda", "vt": "20 · Deuda técnica"}, {"id": "dev-04", "tema": "dev", "tipo": "dato", "prob": "salio", "s": "C2 26-1", "nueva": true, "f": "¿Qué dice la ley de Lehman?", "p": "Complejidad…", "r": "Conforme un programa en evolución sufre cambios, su <b>complejidad aumenta<\/b> (reflejo de una estructura en deterioro) <b>a menos que se trabaje en reducirla<\/b>.", "o": ["pauta C2 26-1"], "v": "20-Desarrollo.html#deuda", "vt": "20 · Deuda técnica"}, {"id": "dev-05", "tema": "dev", "tipo": "lista", "prob": "salio", "s": "R 25-1", "nueva": true, "f": "Nombra tres máximas de desarrollo del profe.", "p": "Balas de plata…", "r": "Por ejemplo: <b>no hay balas de plata<\/b>, <b>toda decisión es un trade-off<\/b>, <b>evite la deuda técnica<\/b>, <b>las fallas tienen causas no técnicas<\/b>, <b>la gente es lo más importante<\/b>, <b>recorte funcionalidades<\/b> para manejar la agenda.", "o": ["pauta R 25-1"], "v": "20-Desarrollo.html#maximas", "vt": "20 · Máximas"}, {"id": "dev-06", "tema": "dev", "tipo": "definir", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué es el síndrome del segundo sistema?", "p": "Exceso de…", "r": "En el primer sistema se avanza con cuidado; en el segundo nos creemos expertos y pecamos de <b>exceso de confianza y ambición<\/b>, la causa principal de fracaso.", "o": ["20, diapositiva 13"], "v": "20-Desarrollo.html#maximas", "vt": "20 · Máximas"}, {"id": "dev-07", "tema": "dev", "tipo": "lista", "prob": "salio", "s": "C2 25-1", "nueva": true, "f": "¿Qué causas de fracaso en software usó la pauta del C2 2025-1?", "p": "No técnicas, ambición…", "r": "<b>Causas no técnicas<\/b>, <b>ambición excesiva<\/b>, <b>personal inadecuado<\/b>, <b>no recortar funcionalidades<\/b> a tiempo, <b>complejidad excesiva<\/b> y <b>deuda técnica<\/b>.", "o": ["pauta C2 25-1"], "v": "20-Desarrollo.html#fracaso", "vt": "20 · Causas de fracaso"}, {"id": "dev-08", "tema": "dev", "tipo": "por-que", "prob": "probable", "s": "", "nueva": true, "f": "Según el profe, ¿cuál es la única forma de manejar la agenda?", "p": "No trasnochar", "r": "<b>Eliminar o simplificar funcionalidades.<\/b> Una “marcha de la muerte” con trasnochadas no logra el objetivo.", "o": ["20, diapositiva 15"], "v": "20-Desarrollo.html#maximas", "vt": "20 · Máximas"}, {"id": "ia-01", "tema": "ia", "tipo": "definir", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué es la inteligencia artificial?", "p": "Tareas asociadas a…", "r": "La capacidad de sistemas computacionales de efectuar <b>tareas comúnmente asociadas a la inteligencia humana<\/b>: aprendizaje, razonamiento, resolución de problemas, percepción y decisión.", "o": ["XX, diapositiva 3"], "v": "16b-Inteligencia-artificial.html#que-es", "vt": "XX · Qué es"}, {"id": "ia-02", "tema": "ia", "tipo": "dato", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué pasó en 1956, 2012 y 2017 en la IA?", "p": "Disciplina, GPU, transformador", "r": "<b>1956:<\/b> nace como disciplina. <b>2012:<\/b> tarjetas gráficas + aprendizaje profundo. <b>2017:<\/b> la arquitectura de <b>transformador<\/b>, base de los LLM.", "o": ["XX, diapositivas 3 y 10"], "v": "16b-Inteligencia-artificial.html#historia", "vt": "XX · Historia"}, {"id": "ia-03", "tema": "ia", "tipo": "por-que", "prob": "probable", "s": "", "nueva": true, "f": "¿Por qué Eliza es una advertencia sobre la IA?", "p": "Palabras clave", "r": "Era un programa <b>muy simple<\/b> (1966) que buscaba palabras clave y respondía con fórmulas, y aun así la gente <b>le atribuía comprensión<\/b> (hasta la secretaria de Weizenbaum).", "o": ["XX, diapositiva 12"], "v": "16b-Inteligencia-artificial.html#advertencias", "vt": "XX · Advertencias"}, {"id": "ia-04", "tema": "ia", "tipo": "definir", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué es un sistema experto y qué partes tiene?", "p": "Si… entonces", "r": "Emula el razonamiento humano con reglas <b>si… entonces<\/b>. Partes: <b>base de conocimiento<\/b>, <b>máquina de inferencia<\/b> y, a veces, sistema de explicación e interfaz.", "o": ["XX, diapositivas 15-20"], "v": "16b-Inteligencia-artificial.html#expertos", "vt": "XX · Sistemas expertos"}, {"id": "ia-05", "tema": "ia", "tipo": "comparar", "prob": "probable", "s": "", "nueva": true, "f": "Ventaja y desventaja de los sistemas expertos", "p": "Explícito vs. adquisición", "r": "<b>Ventaja:<\/b> el conocimiento queda <b>explícito<\/b> y un experto lo puede modificar. <b>Desventaja:<\/b> la <b>adquisición de conocimiento<\/b> (expertos escasos, conocimiento implícito difícil de pasar a reglas).", "o": ["XX, diapositivas 21-22"], "v": "16b-Inteligencia-artificial.html#expertos", "vt": "XX · Sistemas expertos"}, {"id": "ia-06", "tema": "ia", "tipo": "definir", "prob": "probable", "s": "", "nueva": true, "f": "¿Cómo funciona un algoritmo genético?", "p": "Selección natural", "r": "Una <b>población<\/b> de soluciones (cromosomas) se evalúa con una <b>función de aptitud<\/b>; las más aptas generan otras por <b>cruce<\/b> y <b>mutación<\/b>, y se repite por generaciones.", "o": ["XX, diapositivas 23-26"], "v": "16b-Inteligencia-artificial.html#geneticos", "vt": "XX · Algoritmos genéticos"}, {"id": "ia-07", "tema": "ia", "tipo": "definir", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué calcula una neurona artificial?", "p": "Suma ponderada…", "r": "Una <b>suma ponderada<\/b> de sus entradas más un <b>sesgo<\/b> (z = Σωᵢxᵢ + b), y le aplica una <b>función de activación<\/b> no lineal: a = σ(z).", "o": ["XX, diapositiva 32"], "v": "16b-Inteligencia-artificial.html#redes", "vt": "XX · Redes neuronales"}, {"id": "ia-08", "tema": "ia", "tipo": "lista", "prob": "probable", "s": "", "nueva": true, "f": "¿Cuáles son los 4 pasos de la propagación hacia atrás?", "p": "Adelante, error, …", "r": "<b>Paso hacia adelante<\/b>, <b>cálculo del error<\/b> (función de pérdida), <b>paso en reversa<\/b> (regla de la cadena) y <b>actualización<\/b> de los pesos.", "o": ["XX, diapositiva 35"], "v": "16b-Inteligencia-artificial.html#redes", "vt": "XX · Redes neuronales"}, {"id": "ia-09", "tema": "ia", "tipo": "definir", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué es el sobreajuste?", "p": "Memorizar…", "r": "Un modelo demasiado complicado que se ajusta <b>muy bien al entrenamiento<\/b> pero rinde <b>mal en casos nuevos<\/b>: no generaliza.", "o": ["XX, diapositiva 36"], "v": "16b-Inteligencia-artificial.html#redes", "vt": "XX · Redes neuronales"}, {"id": "ia-10", "tema": "ia", "tipo": "definir", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué es un LLM?", "p": "Autocorrector…", "r": "Un modelo de IA (red neuronal) entrenado con <b>enormes cantidades de texto<\/b> para procesar y generar lenguaje. Base de ChatGPT, Claude, Gemini. Un <b>“autocorrector con esteroides”<\/b>.", "o": ["XX, diapositivas 38 y 43"], "v": "16b-Inteligencia-artificial.html#llm", "vt": "XX · LLM"}, {"id": "ia-11", "tema": "ia", "tipo": "lista", "prob": "probable", "s": "", "nueva": true, "f": "Nombra cuatro problemas de los LLM.", "p": "Datos, origen, alucinar, PI", "r": "<b>Datos sesgados o incorrectos<\/b> (ley de Sturgeon), <b>origen dudoso o ilegal<\/b> de los textos, <b>no se puede trazar el origen<\/b> de lo generado y las <b>alucinaciones<\/b>. Además, lo generado <b>no tiene protección<\/b> de propiedad intelectual.", "o": ["XX, diapositivas 39-42"], "v": "16b-Inteligencia-artificial.html#llm", "vt": "XX · LLM"}, {"id": "ia-12", "tema": "ia", "tipo": "por-que", "prob": "probable", "s": "", "nueva": true, "f": "¿Por qué alucinan los LLM?", "p": "Palabras que aparecen juntas", "r": "Porque combinan palabras o conceptos que <b>suelen aparecer juntos<\/b>, pero en contextos incorrectos: completan de forma <b>plausible, no verdadera<\/b>.", "o": ["XX, diapositiva 42"], "v": "16b-Inteligencia-artificial.html#llm", "vt": "XX · LLM"}, {"id": "pro-01", "tema": "proc", "tipo": "definir", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué es el procesamiento de datos (RAE)?", "p": "Operaciones sobre datos…", "r": "La <b>aplicación sistemática de operaciones<\/b> sobre un conjunto de datos, generalmente con máquinas, para <b>explotar la información<\/b> que representan.", "o": ["14, diapositiva 4"], "v": "14-Procesamiento-datos.html#def", "vt": "14 · Definición"}, {"id": "pro-02", "tema": "proc", "tipo": "dato", "prob": "probable", "s": "", "nueva": true, "f": "¿Por qué el censo de EE.UU. de 1890 fue un hito?", "p": "Hollerith", "r": "Con las <b>tarjetas perforadas de Hollerith<\/b> se procesó en <b>2 a 3 años<\/b>, con el doble de preguntas; el de 1880, a mano, tardó <b>más de 7<\/b>.", "o": ["14, diapositivas 6-7"], "v": "14-Procesamiento-datos.html#def", "vt": "14 · Historia"}, {"id": "pro-03", "tema": "proc", "tipo": "definir", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué es la minería de datos?", "p": "Patrones…", "r": "Encontrar <b>patrones y conocimiento<\/b> en conjuntos <b>masivos<\/b> de datos (clústeres, anomalías, dependencias). El nombre es errado: no se “minan” datos.", "o": ["14, diapositivas 18-20"], "v": "14-Procesamiento-datos.html#mineria", "vt": "14 · Minería de datos"}, {"id": "pro-04", "tema": "proc", "tipo": "por-que", "prob": "salio", "s": "R 25-2", "nueva": true, "f": "¿Por qué la minería de datos amenaza la privacidad aunque los datos sean anónimos?", "p": "Cruzar…", "r": "Porque <b>cruzando datos<\/b> de varias fuentes, incluso entregados bajo promesa de anonimato, se puede <b>identificar a individuos<\/b>. Caso: <b>Walgreens<\/b> vendió datos de recetas.", "o": ["14, diapositivas 21-24"], "v": "14-Procesamiento-datos.html#etica", "vt": "14 · Ética"}, {"id": "pro-05", "tema": "proc", "tipo": "lista", "prob": "probable", "s": "", "nueva": true, "f": "¿Qué hay que definir antes de recopilar datos?", "p": "Cinco", "r": "El <b>propósito<\/b>, el <b>uso<\/b>, <b>quién tendrá acceso<\/b>, los requisitos de <b>seguridad<\/b> y cómo se <b>actualizarán<\/b>.", "o": ["14, diapositiva 22"], "v": "14-Procesamiento-datos.html#mineria", "vt": "14 · Recomendaciones"}, {"id": "pro-06", "tema": "proc", "tipo": "comparar", "prob": "probable", "s": "", "nueva": true, "f": "Procesamiento comercial: antes vs. hoy", "p": "A medida vs. genérico", "r": "<b>Antes:<\/b> sistemas a medida, datos compactados (problema del año 2000), tarjetas perforadas, procesamiento secuencial. <b>Hoy:<\/b> componentes genéricos (ERP, bases de datos), el usuario ingresa sus datos, criptografía y <b>nube<\/b>.", "o": ["14, diapositivas 9-14"], "v": "14-Procesamiento-datos.html#comercial", "vt": "14 · Procesamiento comercial"}, {"id": "pro-07", "tema": "proc", "tipo": "lista", "prob": "salio", "s": "C1 25-1", "nueva": true, "f": "Nombra tres aspectos positivos de la tecnología.", "p": "Medicina…", "r": "Por ejemplo: <b>comunicación<\/b> (Internet, redes), <b>colaboración<\/b> internacional, <b>automatización<\/b> del trabajo, <b>avances médicos<\/b> (vacunas, trasplantes).", "o": ["15, diapositivas 9-13"], "v": "15-Impacto.html#positivos", "vt": "15 · Positivos"}, {"id": "pro-08", "tema": "proc", "tipo": "lista", "prob": "salio", "s": "C1 25-1", "nueva": true, "f": "Nombra tres aspectos negativos de la tecnología.", "p": "Personas y ambiente", "r": "Por ejemplo: <b>distracciones<\/b> y sueño, <b>privacidad<\/b> y vulneración de datos, <b>desinformación<\/b>, impersonalidad, <b>daño ambiental<\/b> (capa de ozono).", "o": ["15, diapositivas 14-20"], "v": "15-Impacto.html#negativos", "vt": "15 · Negativos"}, {"id": "pro-09", "tema": "proc", "tipo": "dato", "prob": "probable", "s": "", "nueva": true, "f": "¿Cuál es la conclusión de la clase de impacto?", "p": "Tecnología y educación", "r": "Muchos problemas causados por la tecnología se pueden <b>mitigar con tecnología y educación<\/b>; falta la <b>decisión de pagar los costos<\/b>.", "o": ["15, diapositiva 23"], "v": "15-Impacto.html#balance", "vt": "15 · Balance"}, {"id": "c1-01", "tema": "c1-razon", "tipo": "definir", "prob": "salio", "s": "R 25-2 · C1 25-1 · C1 25-2", "nueva": false, "f": "¿Qué es una falacia?", "p": "Paso…", "r": "Un <b>paso ilógico en un argumento<\/b>: una forma de razonar errónea, porque no es válida o no es sólida. Que sea falaz <b>no prueba<\/b> que la conclusión sea falsa.", "o": ["3 · Razonamiento"], "v": "13b-Resumen-C1.html#r3", "vt": "Resumen · Falacias"}, {"id": "c1-02", "tema": "c1-razon", "tipo": "comparar", "prob": "probable", "s": "", "nueva": false, "f": "Argumento válido vs. sólido", "p": "Forma vs. premisas", "r": "<b>Válido:<\/b> la conclusión se sigue de las premisas. <b>Sólido:<\/b> válido <b>y<\/b> con premisas verdaderas.", "o": ["3 · Razonamiento"], "v": "13b-Resumen-C1.html#r3", "vt": "Resumen · Falacias"}, {"id": "c1-03", "tema": "c1-razon", "tipo": "lista", "prob": "salio", "s": "R 25-2", "nueva": false, "f": "Explica tres falacias con su ejemplo.", "p": "Ad hominem, post hoc…", "r": "<b>Ad hominem:<\/b> atacar a la persona. <b>Post hoc:<\/b> confundir “después” con “por causa de”. <b>Hombre de paja:<\/b> caricaturizar la posición contraria. (También: falso dilema, ad populum.)", "o": ["3 · Catálogo"], "v": "3-Falacias.html", "vt": "3 · Falacias"}, {"id": "c1-04", "tema": "c1-razon", "tipo": "definir", "prob": "salio", "s": "C2 25-1 · C1 25-2", "nueva": false, "f": "¿Qué es un sesgo cognitivo?", "p": "Patrón sistemático…", "r": "Un <b>patrón sistemático de desviarse de la norma o la racionalidad al juzgar<\/b>. No siempre es malo: acelera decisiones.", "o": ["4 · Sesgos"], "v": "13b-Resumen-C1.html#r4", "vt": "Resumen · Sesgos"}, {"id": "c1-05", "tema": "c1-razon", "tipo": "lista", "prob": "salio", "s": "C2 25-1", "nueva": false, "f": "Explica tres sesgos cognitivos.", "p": "Confirmación…", "r": "<b>Confirmación:<\/b> buscar lo que confirma lo que creo. <b>Costo hundido:<\/b> valorar más aquello en que ya invertí. <b>Representatividad:<\/b> el problema de Linda.", "o": ["pauta C2 25-1"], "v": "13b-Resumen-C1.html#r4", "vt": "Resumen · Sesgos"}, {"id": "c1-06", "tema": "c1-razon", "tipo": "comparar", "prob": "salio", "s": "R 25-1 · R 26-1", "nueva": false, "f": "Falacia vs. sesgo: ¿en qué se parecen y en qué difieren?", "p": "Argumento vs. mente", "r": "Ambos llevan a <b>conclusiones erróneas<\/b> y muchas falacias apelan a sesgos. La falacia está <b>en el argumento<\/b> y se disfraza de lógica; el sesgo está <b>en quien juzga<\/b> y a menudo ni se plantea como razonamiento.", "o": ["pauta R 25-1"], "v": "13b-Resumen-C1.html#r4", "vt": "Resumen · Falacia vs. sesgo"}, {"id": "c1-07", "tema": "c1-razon", "tipo": "lista", "prob": "salio", "s": "C1 26-1", "nueva": false, "f": "¿Qué es la disonancia cognitiva y sus tres defensas?", "p": "Evitar…", "r": "Mantener <b>dos creencias contradictorias<\/b> a la vez. Defensas: <b>evitar<\/b>, <b>deslegitimar<\/b> y <b>limitar el impacto<\/b>.", "o": ["4 · Disonancia"], "v": "4-Sesgos-cognitivos.html", "vt": "4 · Sesgos"}, {"id": "c1-08", "tema": "c1-ciencia", "tipo": "definir", "prob": "salio", "s": "C2 25-2 · R 25-1", "nueva": false, "f": "¿Qué es la ciencia (definición del ramo)?", "p": "Estudio sistemático…", "r": "El <b>estudio sistemático<\/b> de la estructura y el comportamiento del mundo físico y natural mediante <b>observación, experimentación<\/b> y la comprobación de teorías contra la <b>evidencia<\/b>.", "o": ["pauta C2 25-2"], "v": "13b-Resumen-C1.html#r11", "vt": "Resumen · Ciencia"}, {"id": "c1-09", "tema": "c1-ciencia", "tipo": "comparar", "prob": "salio", "s": "C2 25-2", "nueva": false, "f": "Hecho, hipótesis y teoría", "p": "Dato, propuesta, comprobada", "r": "<b>Hecho:<\/b> dato verificado por observación. <b>Hipótesis:<\/b> explicación propuesta, refutable. <b>Teoría:<\/b> explicación comprobada repetidas veces y aceptada; siempre <b>provisoria<\/b>.", "o": ["pauta C2 25-2"], "v": "13b-Resumen-C1.html#r11", "vt": "Resumen · Ciencia"}, {"id": "c1-10", "tema": "c1-ciencia", "tipo": "definir", "prob": "salio", "s": "R 25-1 · R 26-1", "nueva": false, "f": "¿Qué es la falsabilidad y por qué es asimétrica?", "p": "Popper", "r": "Que una hipótesis pueda ser <b>refutada<\/b> por evidencia (Popper): distingue a la ciencia. Es asimétrica: la evidencia puede <b>refutar<\/b> una teoría, pero <b>nunca demostrarla<\/b> definitivamente.", "o": ["pauta R 25-1"], "v": "13b-Resumen-C1.html#r11", "vt": "Resumen · Ciencia"}, {"id": "c1-11", "tema": "c1-ciencia", "tipo": "definir", "prob": "salio", "s": "R 26-1", "nueva": false, "f": "¿Qué dice la navaja de Ockham?", "p": "La más…", "r": "Entre explicaciones <b>completas<\/b> de un fenómeno, preferir la <b>más simple<\/b>. Guía la elaboración de hipótesis.", "o": ["R 26-1 P2"], "v": "13b-Resumen-C1.html#r11", "vt": "Resumen · Ciencia"}, {"id": "c1-12", "tema": "c1-ciencia", "tipo": "definir", "prob": "salio", "s": "R 25-2 · C1 26-1", "nueva": false, "f": "¿Qué es la ingeniería y en qué se distingue de la ciencia?", "p": "Soluciones viables…", "r": "Conocimientos para inventar y usar técnicas que aprovechan los recursos. “Un ingeniero halla <b>soluciones viables, en plazo y a costo aceptables, a problemas prácticos<\/b>.” La ciencia busca conocimiento; la ingeniería lo usa.", "o": ["pauta R 25-2"], "v": "13b-Resumen-C1.html#r12", "vt": "Resumen · Ingeniería"}, {"id": "c1-13", "tema": "c1-ciencia", "tipo": "lista", "prob": "salio", "s": "C1 25-1", "nueva": false, "f": "La historia de la ingeniería en 4 bloques", "p": "Militar…", "r": "<b>Militar<\/b> (máquinas de guerra) → <b>civil<\/b> → <b>mecánica<\/b> (vapor, revolución industrial) → <b>diversificación<\/b> (eléctrica, química, electrónica, informática).", "o": ["12 · Historia"], "v": "12-Ingenieria.html", "vt": "12 · Ingeniería"}, {"id": "c1-14", "tema": "c1-etica", "tipo": "comparar", "prob": "salio", "s": "R 26-1 · C1 25-1", "nueva": false, "f": "Ética antigua vs. moderna", "p": "Persona vs. relaciones", "r": "<b>Antigua:<\/b> se centra en la <b>persona<\/b>, cómo vivir una buena vida (el carácter). <b>Moderna:<\/b> se centra en las <b>relaciones<\/b>, cómo actuar y qué le debo a los demás (Kant, utilitarismo).", "o": ["pauta C1 25-1"], "v": "13b-Resumen-C1.html#r9", "vt": "Resumen · Ética"}, {"id": "c1-15", "tema": "c1-etica", "tipo": "comparar", "prob": "salio", "s": "C1 26-1", "nueva": false, "f": "Ética (Grecia) vs. moral (Roma)", "p": "Carácter vs. costumbre", "r": "<b>Ēthikós<\/b> = carácter. <b>Morālis<\/b> = costumbre (Cicerón). La <b>traducción imprecisa<\/b> de Cicerón las volvió sinónimos.", "o": ["pauta C1 26-1"], "v": "13b-Resumen-C1.html#r7", "vt": "Resumen · Ética y moral"}, {"id": "c1-16", "tema": "c1-etica", "tipo": "lista", "prob": "probable", "s": "", "nueva": false, "f": "¿Qué es el bien para cínicos, cirenaicos, epicúreos y estoicos?", "p": "Virtud, placer…", "r": "<b>Cínicos:<\/b> solo la virtud. <b>Cirenaicos:<\/b> el placer del momento. <b>Epicúreos:<\/b> evitar el dolor, placeres duraderos. <b>Estoicos:<\/b> la virtud y la ataraxia.", "o": ["8 · Las cinco escuelas"], "v": "13b-Resumen-C1.html#r8", "vt": "Resumen · Ética antigua"}, {"id": "c1-17", "tema": "c1-etica", "tipo": "definir", "prob": "probable", "s": "", "nueva": false, "f": "¿Qué dicen las dos formulaciones principales del imperativo categórico?", "p": "Universal y fin", "r": "<b>Universalidad:<\/b> obra solo según una máxima que puedas querer como <b>ley universal<\/b>. <b>Humanidad:<\/b> trata a las personas siempre como <b>fin<\/b>, nunca solo como medio.", "o": ["9 · Kant"], "v": "13b-Resumen-C1.html#r9", "vt": "Resumen · Ética moderna"}, {"id": "c1-18", "tema": "c1-etica", "tipo": "comparar", "prob": "probable", "s": "", "nueva": false, "f": "Utilitarismo de Bentham vs. Mill", "p": "Cantidad vs. calidad", "r": "Ambos: la <b>máxima felicidad del mayor número<\/b>, por las consecuencias. <b>Bentham<\/b> (1789): cálculo <b>cuantitativo<\/b>. <b>Mill<\/b> (1863): <b>cualitativo<\/b>, hay placeres superiores.", "o": ["9 · Utilitarismo"], "v": "13b-Resumen-C1.html#r9", "vt": "Resumen · Ética moderna"}, {"id": "c1-19", "tema": "c1-otros", "tipo": "lista", "prob": "salio", "s": "C2 25-1 · R 25-2", "nueva": false, "f": "Tres razones por las que fallan los proyectos, con su solución", "p": "Objetivos, alcance, comunicación", "r": "<b>Objetivos poco claros<\/b> → SMART. <b>Ampliación del alcance<\/b> → alcance documentado y control de cambios. <b>Comunicaciones pobres<\/b> → plan de comunicación con registro.", "o": ["pauta R 25-2"], "v": "13b-Resumen-C1.html#r1", "vt": "Resumen · Proyectos"}, {"id": "c1-20", "tema": "c1-otros", "tipo": "definir", "prob": "probable", "s": "", "nueva": false, "f": "¿Cuándo un proyecto es fallido?", "p": "Tres condiciones", "r": "Si <b>no cumple los objetivos<\/b>, <b>no se obtiene el producto<\/b> o <b>no se completa a tiempo<\/b>.", "o": ["pauta R 25-2"], "v": "13b-Resumen-C1.html#r1", "vt": "Resumen · Proyectos"}, {"id": "c1-21", "tema": "c1-otros", "tipo": "lista", "prob": "salio", "s": "C2 25-1 · C1 25-2", "nueva": false, "f": "¿Cuáles son los 4 principios de Pólya?", "p": "Entender…", "r": "<b>Entender el problema<\/b>, <b>armar un plan<\/b>, <b>ejecutar el plan<\/b> y <b>reflexionar sobre lo hecho<\/b>.", "o": ["pauta C2 25-1"], "v": "13b-Resumen-C1.html#r6", "vt": "Resumen · Pólya"}, {"id": "c1-22", "tema": "c1-otros", "tipo": "definir", "prob": "salio", "s": "C1 25-2", "nueva": false, "f": "¿Qué significa SMART?", "p": "Cinco letras", "r": "<b>S<\/b>pecific (específico), <b>M<\/b>easurable (medible), <b>A<\/b>chievable (alcanzable), <b>R<\/b>ealistic (realista), <b>T<\/b>ime-bound (con plazo).", "o": ["1 · Objetivo"], "v": "13b-Resumen-C1.html#r1", "vt": "Resumen · Proyectos"}, {"id": "c1-23", "tema": "c1-otros", "tipo": "lista", "prob": "salio", "s": "C1 25-2", "nueva": false, "f": "¿Cuáles son las 6 habilidades del pensamiento crítico?", "p": "Propósito, fuentes…", "r": "Clarificar <b>propósito y contexto<\/b> · cuestionar las <b>fuentes<\/b> · <b>identificar<\/b> argumentos · <b>analizar<\/b> · <b>evaluar<\/b> argumentos ajenos · <b>crear<\/b> argumentos propios.", "o": ["pauta C1 25-2"], "v": "13b-Resumen-C1.html#r5", "vt": "Resumen · Pensamiento crítico"}, {"id": "c1-24", "tema": "c1-otros", "tipo": "lista", "prob": "probable", "s": "", "nueva": false, "f": "¿Qué tecnología define cada generación de computadores?", "p": "Tubos…", "r": "<b>1ª<\/b> tubos de vacío · <b>2ª<\/b> transistores · <b>3ª<\/b> circuitos integrados · <b>4ª<\/b> microprocesador · <b>5ª<\/b> ULSI.", "o": ["13 · Generaciones"], "v": "13b-Resumen-C1.html#r13", "vt": "Resumen · Computación"}, {"id": "c1-25", "tema": "c1-otros", "tipo": "lista", "prob": "probable", "s": "", "nueva": false, "f": "Las cuatro tradiciones clásicas de la sociología", "p": "Funcionalismo…", "r": "<b>Funcionalismo<\/b>, <b>teoría del conflicto<\/b>, <b>interaccionismo simbólico<\/b> y <b>elección racional<\/b> (utilitarismo).", "o": ["10 · Sociedades"], "v": "13b-Resumen-C1.html#r10", "vt": "Resumen · Sociedades"}]</script>
+<script>
+(function(){
+  var el = function(id){ return document.getElementById(id); };
+  var dataEl = el('fc-data');
+  if(!dataEl) return;
+  var CARDS = JSON.parse(dataEl.textContent);
+  var TEMAS = [["pi", "Propiedad intelectual"], ["oss", "Código abierto"], ["etica", "Ética profesional y ACM"], ["datos", "Protección de datos"], ["dev", "Desarrollo de software"], ["ia", "Inteligencia artificial"], ["proc", "Datos e impacto"], ["c1-razon", "C1 · Falacias y sesgos"], ["c1-ciencia", "C1 · Ciencia e ingeniería"], ["c1-etica", "C1 · Ética"], ["c1-otros", "C1 · Proyectos, Pólya y más"]];
+  var TEMA_TXT = {}; TEMAS.forEach(function(t){ TEMA_TXT[t[0]] = t[1]; });
+  var TIPO_TXT = {'definir':'Definir','por-que':'Por qué','comparar':'Comparar','lista':'Lista','dato':'Dato'};
+  var CAJA_TXT = ['Sin practicar','Caja 1','Caja 2','Caja 3'];
+  var MODO_TXT = {smart:'Repaso inteligente', deck:'Mazo al azar', exam:'Examen de 10'};
+  var W = [4, 6, 3, 1];
+  var KEY = 'iis-c2-fc-v1', UIKEY = 'iis-c2-fc-ui-v1';
+  var byId = {}; CARDS.forEach(function(c){ byId[c.id] = c; });
+
+  function load(k){ try{ var s = localStorage.getItem(k); return s ? JSON.parse(s) : null; }catch(e){ return null; } }
+  function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  var st = load(KEY) || {};
+  var ui = load(UIKEY) || {};
+  if(!ui.temas || !ui.temas.length) ui.temas = TEMAS.map(function(t){ return t[0]; });
+  if(['todas','nuevas','salio','cuestan'].indexOf(ui.cuales) < 0) ui.cuales = 'todas';
+  if(!MODO_TXT[ui.modo]) ui.modo = 'smart';
+
+  function caja(id){ var s = st[id]; return s ? s.b : 0; }
+  function shuffle(a){ for(var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function pool(){
+    return CARDS.filter(function(c){
+      if(ui.temas.indexOf(c.tema) < 0) return false;
+      if(ui.cuales === 'salio') return c.prob === 'salio';
+      if(ui.cuales === 'nuevas') return !!c.nueva;
+      if(ui.cuales === 'cuestan') return caja(c.id) === 1;
+      return true;
+    });
+  }
+
+  var S = null;
+  function nuevaSesion(cola){
+    S = {modo: ui.modo, cola: [], i: 0, cur: null, flipped: false, cuenta: {1:0, 2:0, 3:0}, vistas: 0, fallidas: [], ultimas: [], total: 0, fin: false};
+    el('fc-end').hidden = true;
+    var p = pool();
+    if(!cola && !p.length){ vacio(); return; }
+    if(cola){ S.modo = 'deck'; S.cola = shuffle(cola.slice()); }
+    else if(ui.modo === 'deck'){ S.cola = shuffle(p.map(function(c){ return c.id; })); }
+    else if(ui.modo === 'exam'){ S.cola = shuffle(p.map(function(c){ return c.id; })).slice(0, 10); }
+    S.total = S.cola.length;
+    siguiente();
+  }
+  function elegir(){
+    var p = pool(); if(!p.length) return null;
+    var evitar = S.ultimas.slice(-Math.min(5, p.length - 1));
+    var cand = p.filter(function(c){ return evitar.indexOf(c.id) < 0; });
+    var tot = 0; cand.forEach(function(c){ tot += W[caja(c.id)]; });
+    var r = Math.random() * tot;
+    for(var k = 0; k < cand.length; k++){ r -= W[caja(cand[k].id)]; if(r <= 0) return cand[k].id; }
+    return cand[cand.length - 1].id;
+  }
+  function siguiente(){
+    var id;
+    if(S.modo === 'smart'){ id = elegir(); }
+    else { if(S.i >= S.cola.length){ fin(); return; } id = S.cola[S.i]; }
+    if(!id){ vacio(); return; }
+    S.cur = id; S.flipped = false;
+    S.ultimas.push(id); if(S.ultimas.length > 8) S.ultimas.shift();
+    pintar();
+  }
+  function fuente(c){
+    var o = c.o.map(esc).join(' · ');
+    return (c.prob === 'salio' ? '<b>Salió en:</b> ' + esc(c.s) + ' · ' : '') + 'Fuente: ' + o +
+      ' · <a class="inl" href="' + esc(c.v) + '">ver en ' + esc(c.vt) + '</a>';
+  }
+  /* Inputs: tarjeta. Return: HTML con las afirmaciones falsas típicas y por qué no, o vacío si no tiene. */
+  function trampas(c){
+    if(!c.t || !c.t.length) return '';
+    return '<div class="fc-tr-tit">En alternativas, descarta</div><ul>' + c.t.map(function(x){
+      var o = /^(C1|C2|CR) /.test(x[2]) ? 'salió en ' + x[2] : x[2];
+      return '<li><span class="fc-falsa">«' + x[0] + '»</span> <span class="fc-de">(' + esc(o) + ')</span><span class="fc-por">' + x[1] + '</span></li>';
+    }).join('') + '</ul>';
+  }
+  function mostrar(ids, on){ ids.forEach(function(i){ el(i).hidden = !on; }); }
+  function pintar(){
+    var c = byId[S.cur];
+    el('fc-card').classList.toggle('flipped', S.flipped);
+    el('fc-card').classList.remove('fc-vacio');
+    el('fc-tema').textContent = TEMA_TXT[c.tema];
+    el('fc-tipo').textContent = TIPO_TXT[c.tipo] || c.tipo;
+    el('fc-salio').hidden = c.prob !== 'salio';
+    el('fc-nueva').hidden = !c.nueva;
+    el('fc-caja').textContent = CAJA_TXT[caja(c.id)];
+    mostrar(['fc-tema', 'fc-tipo', 'fc-caja'], true);
+    el('fc-front').textContent = c.f;
+    el('fc-hint').textContent = c.p ? 'Pista: ' + c.p : '';
+    el('fc-hint').hidden = true;
+    el('fc-btn-hint').disabled = !c.p;
+    el('fc-ans').innerHTML = c.r;
+    el('fc-tr').innerHTML = trampas(c);
+    el('fc-tr').hidden = !(c.t && c.t.length);
+    el('fc-src').innerHTML = fuente(c);
+    el('fc-back').hidden = !S.flipped;
+    el('fc-tap').hidden = S.flipped;
+    el('fc-tap').textContent = 'Responde en voz alta y después toca la tarjeta o pulsa espacio';
+    el('fc-actions-front').hidden = S.flipped;
+    el('fc-actions-back').hidden = !S.flipped;
+    estado();
+  }
+  function estado(){
+    var t = MODO_TXT[S.modo];
+    if(S.modo === 'smart') t += ' · ' + S.vistas + ' vistas en esta sesión';
+    else t += ' · tarjeta ' + Math.min(S.i + 1, S.total) + ' de ' + S.total;
+    if(S.vistas) t += ' · ' + S.cuenta[3] + ' la sabía, ' + S.cuenta[2] + ' más o menos, ' + S.cuenta[1] + ' no la sabía';
+    el('fc-status').textContent = t;
+  }
+  function vacio(){
+    S.cur = null;
+    el('fc-card').classList.remove('flipped');
+    el('fc-card').classList.add('fc-vacio');
+    mostrar(['fc-tema', 'fc-tipo', 'fc-salio', 'fc-nueva', 'fc-caja', 'fc-hint', 'fc-back', 'fc-actions-front', 'fc-actions-back'], false);
+    el('fc-front').textContent = 'No hay tarjetas con este filtro.';
+    el('fc-tap').hidden = false;
+    el('fc-tap').textContent = ui.cuales === 'cuestan'
+      ? 'Aquí aparecen las tarjetas de la caja 1: las que no sabías o sabías a medias. Practica primero con “Todas”.'
+      : 'Marca al menos un tema o cambia “Cuáles”.';
+    el('fc-status').textContent = '';
+  }
+  function voltear(){ if(!S || !S.cur || S.flipped) return; S.flipped = true; pintar(); }
+  function pista(){ if(!S || !S.cur || S.flipped || !byId[S.cur].p) return; el('fc-hint').hidden = false; }
+  function calificar(g){
+    if(!S || !S.cur || !S.flipped) return;
+    var id = S.cur, s = st[id] || {b: 0, n: 0, f: 0};
+    if(g === 3) s.b = Math.min(3, Math.max(1, s.b) + 1);
+    else if(g === 2) s.b = Math.max(1, s.b);
+    else { s.b = 1; s.f += 1; S.fallidas.push(id); }
+    s.n += 1; s.t = Date.now();
+    st[id] = s; save(KEY, st);
+    S.cuenta[g] += 1; S.vistas += 1;
+    if(S.modo !== 'smart') S.i += 1;
+    stats(); siguiente();
+  }
+  function saltar(){
+    if(!S || !S.cur) return;
+    if(S.modo !== 'smart' && S.i < S.cola.length - 1){ S.cola.push(S.cola.splice(S.i, 1)[0]); }
+    siguiente();
+  }
+  function fin(){
+    S.cur = null; S.fin = true;
+    var c1 = S.cuenta[1], c2 = S.cuenta[2], c3 = S.cuenta[3], n = c1 + c2 + c3;
+    var h = '';
+    if(S.modo === 'exam'){
+      var nota = n ? (c3 + 0.5 * c2) / n * 10 : 0;
+      h += '<div class="fc-score">' + nota.toFixed(1).replace('.', ',') + ' de 10</div>';
+      h += '<p>' + c3 + ' la sabía, ' + c2 + ' más o menos (cuentan la mitad) y ' + c1 + ' no la sabía.</p>';
+    } else {
+      h += '<div class="fc-score">Mazo terminado</div><p>' + c3 + ' la sabía, ' + c2 + ' más o menos y ' + c1 + ' no la sabía.</p>';
+    }
+    if(S.fallidas.length){
+      h += '<p><b>Las que fallaste</b> (cada una lleva a su tarjeta en la lista; desde ahí, a la página del tema):</p><ul>';
+      S.fallidas.forEach(function(id){ h += '<li><a class="inl" href="#c-' + esc(id) + '">' + esc(byId[id].f) + '</a></li>'; });
+      h += '</ul>';
+    }
+    h += '<div class="fc-actions">';
+    if(S.fallidas.length) h += '<button class="btn fc-main" id="fc-rep">Repetir solo las que fallé</button>';
+    h += '<button class="btn" id="fc-otra">' + (S.modo === 'exam' ? 'Otro examen' : 'Barajar de nuevo') + '</button></div>';
+    var end = el('fc-end'); end.innerHTML = h; end.hidden = false;
+    var fallidas = S.fallidas.slice();
+    var rep = el('fc-rep'); if(rep) rep.onclick = function(){ nuevaSesion(fallidas); };
+    el('fc-otra').onclick = function(){ nuevaSesion(); };
+    el('fc-card').classList.add('fc-vacio');
+    mostrar(['fc-tema', 'fc-tipo', 'fc-salio', 'fc-nueva', 'fc-caja', 'fc-hint', 'fc-back', 'fc-actions-front', 'fc-actions-back'], false);
+    el('fc-front').textContent = S.modo === 'exam' ? 'Examen terminado.' : 'Terminaste el mazo.';
+    el('fc-tap').hidden = false;
+    el('fc-tap').textContent = 'El resumen está aquí abajo.';
+    el('fc-status').textContent = '';
+  }
+  function stats(){
+    var filas = TEMAS.concat([['*', 'Todas']]).map(function(t){
+      var cs = CARDS.filter(function(c){ return t[0] === '*' || c.tema === t[0]; });
+      var k = [0, 0, 0, 0]; cs.forEach(function(c){ k[caja(c.id)] += 1; });
+      var cls = t[0] === '*' ? ' class="fc-tot"' : '';
+      return '<tr' + cls + '><td>' + t[1] + '</td><td>' + cs.length + '</td><td>' + k[0] + '</td><td>' + k[1] + '</td><td>' + k[2] + '</td><td>' + k[3] + '</td></tr>';
+    }).join('');
+    var sal = CARDS.filter(function(c){ return c.prob === 'salio'; });
+    var sal3 = sal.filter(function(c){ return caja(c.id) === 3; }).length;
+    el('fc-stats').innerHTML = '<div class="tw"><table class="mini"><thead><tr><th>Tema</th><th>Total</th><th>Sin practicar</th><th>Caja 1</th><th>Caja 2</th><th>Caja 3</th></tr></thead><tbody>' + filas + '</tbody></table></div>' +
+      '<p>De las <b>' + sal.length + '</b> que ya salieron en un certamen, tienes <b>' + sal3 + '</b> en la caja 3.</p>';
+    var duras = CARDS.filter(function(c){ return st[c.id] && st[c.id].f > 0; })
+      .sort(function(a, b){ return st[b.id].f - st[a.id].f || caja(a.id) - caja(b.id); }).slice(0, 10);
+    el('fc-hard').innerHTML = duras.length
+      ? '<ul>' + duras.map(function(c){ return '<li><a class="inl" href="#c-' + esc(c.id) + '">' + esc(c.f) + '</a> <span class="tiny">· la fallaste ' + st[c.id].f + (st[c.id].f === 1 ? ' vez' : ' veces') + ' · ' + CAJA_TXT[caja(c.id)] + '</span></li>'; }).join('') + '</ul>'
+      : '<p class="tiny">Todavía no hay: aparecen cuando calificas una tarjeta con “No la sabía”.</p>';
+    var nc = el('fc-n-cuestan'); if(nc) nc.textContent = CARDS.filter(function(c){ return caja(c.id) === 1; }).length;
+  }
+  function controles(){
+    var temas = document.querySelectorAll('#fc-temas input');
+    [].forEach.call(temas, function(inp){
+      inp.checked = ui.temas.indexOf(inp.value) >= 0;
+      inp.parentNode.classList.toggle('on', inp.checked);
+      inp.addEventListener('change', function(){
+        var sel = [].filter.call(temas, function(x){ return x.checked; }).map(function(x){ return x.value; });
+        if(!sel.length){ inp.checked = true; sel = [inp.value]; }
+        ui.temas = sel; save(UIKEY, ui);
+        [].forEach.call(temas, function(x){ x.parentNode.classList.toggle('on', x.checked); });
+        nuevaSesion();
+      });
+    });
+    [['fc-cuales', 'cuales'], ['fc-modos', 'modo']].forEach(function(par){
+      var radios = document.querySelectorAll('#' + par[0] + ' input');
+      [].forEach.call(radios, function(inp){
+        inp.checked = ui[par[1]] === inp.value;
+        inp.parentNode.classList.toggle('on', inp.checked);
+        inp.addEventListener('change', function(){
+          ui[par[1]] = inp.value; save(UIKEY, ui);
+          [].forEach.call(radios, function(x){ x.parentNode.classList.toggle('on', x.checked); });
+          nuevaSesion();
+        });
+      });
+    });
+    el('fc-btn-flip').addEventListener('click', voltear);
+    el('fc-btn-hint').addEventListener('click', pista);
+    el('fc-btn-skip').addEventListener('click', saltar);
+    [].forEach.call(document.querySelectorAll('#fc-actions-back button'), function(b){
+      b.addEventListener('click', function(){ calificar(+b.getAttribute('data-g')); });
+    });
+    el('fc-card').addEventListener('click', function(e){ if(e.target.closest('a')) return; voltear(); });
+    el('fc-reset').addEventListener('click', function(){
+      if(window.confirm('¿Borrar tu avance de las flashcards? Todas vuelven a ser nuevas.')){ st = {}; save(KEY, st); stats(); nuevaSesion(); }
+    });
+    document.addEventListener('click', function(e){
+      var a = e.target.closest && e.target.closest('a[href^="#c-"]');
+      if(a){ var d = el(a.getAttribute('href').slice(1)); if(d) d.open = true; }
+    });
+    document.addEventListener('keydown', function(e){
+      if(e.ctrlKey || e.metaKey || e.altKey || !S) return;
+      var tag = e.target && e.target.tagName;
+      if(tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      var r = el('fc-card').getBoundingClientRect();
+      if(r.bottom < 0 || r.top > window.innerHeight) return;
+      var k = e.key;
+      if(k === ' ' || k === 'Enter'){
+        if(tag === 'BUTTON' || tag === 'A') return;
+        if(S.cur && !S.flipped){ e.preventDefault(); voltear(); }
+        else if(k === ' ' && S.cur){ e.preventDefault(); }
+      }
+      else if(k === '1' || k === '2' || k === '3'){ if(S.cur && S.flipped){ e.preventDefault(); calificar(+k); } }
+      else if(k === 'p' || k === 'P'){ if(S.cur){ e.preventDefault(); pista(); } }
+      else if(k === 's' || k === 'S'){ if(S.cur){ e.preventDefault(); saltar(); } }
+    });
+  }
+  controles();
+  stats();
+  nuevaSesion();
+})();
+
+</script>
+
+<div class="pnav"><a href="22-Ejercicios.html"><small>← Anterior</small>Ejercicios</a><a class="nx" href="24-Extra.html"><small>Siguiente →</small>Extra</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c2-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>

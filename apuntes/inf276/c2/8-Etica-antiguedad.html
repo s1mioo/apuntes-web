@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ética de la antigüedad · Infosoc C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+/*c2-extra*/
+  .pages .pgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:10px 4px 0}
+  .pages .pgrp:first-child{margin-top:0}
+  .pages span.off{display:flex;gap:9px;align-items:center;font-size:13px;padding:6px 9px;border-radius:8px;
+    border:1px dashed var(--line);line-height:1.25;opacity:.5;cursor:default}
+  .pages span.off b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--code);
+    color:var(--muted);font-size:11.5px}
+  .pages a b{font-size:11px}
+  .nc{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--no-soft);
+    color:var(--no);margin-left:2px;font-style:normal;vertical-align:1px;white-space:nowrap}
+  .soon{border-bottom:1px dashed var(--muted);color:var(--muted)}
+  .box.ana p+p{margin-top:6px}
+  .box.nc{border-left-color:var(--no);background:var(--no-soft)} .box.nc .bt{color:var(--no)}
+  .lic{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:700} .nope{color:var(--no);font-weight:700}
+  .mnemo{font-size:15px;background:var(--panel);border:1px dashed var(--brand);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .mnemo b{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T8</div>
+    <div><h1>Ética de la antigüedad</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><div class="pgrp">Inicio</div><a href="0-Guia-de-estudio-C2.html"><b>★</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 21</small></span></a><div class="pgrp">Materia del C1</div><a href="1-Proyectos.html"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></a><a href="2-Definiciones.html"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></a><a href="3-Falacias.html"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></a><a href="4-Sesgos-cognitivos.html"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></a><a href="5-Pensamiento-critico.html"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></a><a href="6-Resolver-problemas.html"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></a><a href="7-Etica-y-moral.html"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></a><a href="8-Etica-antiguedad.html" class="cur"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></a><a href="9-Etica-moderna.html"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></a><a href="10-Sociedades.html"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></a><a href="11-Metodo-cientifico.html"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></a><a href="12-Ingenieria.html"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></a><a href="13-Computacion.html"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></a><a href="13b-Resumen-C1.html"><b>Σ</b><span>Resumen contenidos Certamen 1<br><small style="color:var(--muted)">lo esencial de 1 a 13</small></span></a><div class="pgrp">Materia nueva del C2</div><a href="14-Procesamiento-datos.html"><b>14</b><span>Procesamiento de datos<br><small style="color:var(--muted)">historia y minería de datos</small></span></a><a href="15-Impacto.html"><b>15</b><span>Impacto de la tecnología<br><small style="color:var(--muted)">lo bueno y lo malo</small></span></a><a href="16-Aspectos-eticos.html"><b>16</b><span>Aspectos éticos<br><small style="color:var(--muted)">códigos, dilemas, ética profesional</small></span></a><a href="16b-Inteligencia-artificial.html"><b>XX</b><span>Inteligencia artificial<br><small style="color:var(--muted)">expertos, genéticos, redes, LLM</small></span></a><a href="17-Propiedad-intelectual.html"><b>17</b><span>Propiedad intelectual<br><small style="color:var(--muted)">autor, patentes, marcas, secretos</small></span></a><a href="18-Codigo-abierto.html"><b>18</b><span>Código abierto<br><small style="color:var(--muted)">GPL, BSD, OSI, Creative Commons</small></span></a><a href="19-Proteccion-datos.html"><b>19</b><span>Protección de datos <i class="nc">no pasada</i><br><small style="color:var(--muted)">GDPR, leyes chilenas, CRA</small></span></a><a href="20-Desarrollo.html"><b>20</b><span>Desarrollo de software <i class="nc">no pasada</i><br><small style="color:var(--muted)">máximas y deuda técnica</small></span></a><a href="21-Codigo-ACM.html"><b>21</b><span>Código de ética ACM<br><small style="color:var(--muted)">las 4 secciones</small></span></a><div class="pgrp">Práctica</div><a href="22-Ejercicios.html"><b>✎</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a><a href="23-Flashcards.html"><b>⇄</b><span>Flashcards<br><small style="color:var(--muted)">toda la materia</small></span></a><div class="pgrp">Complemento</div><a href="24-Extra.html"><b>+</b><span>Extra<br><small style="color:var(--muted)">probablemente no entra</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 8</div><a href="#t8-inicio">Qué pesa y qué estudiar</a><a href="#presocraticos">Presocráticos y Sócrates</a><a href="#arbol">El árbol de escuelas</a><a href="#escuelas">Las cinco escuelas</a><a href="#antigua-moderna">Antigua vs moderna</a><div class="grp">Práctica</div><a href="#t8-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+<div class="box warn"><div class="bt">Página copiada del C1</div><p>Es la misma página que se usó para el C1, sin los videos. Lo que dice sobre el peso de cada tema y los certámenes se refiere al <b>C1</b>; para el C2 mira <a class="inl" href="0-Guia-de-estudio-C2.html#g-temario">qué entra y cuánto pesa</a>, el <a class="inl" href="13b-Resumen-C1.html">resumen del C1</a> y los <a class="inl" href="22-Ejercicios.html">ejercicios</a>, donde las preguntas tienen la numeración nueva.</p></div>
+<section id="t8-inicio">
+<h2>Tema 8 · Ética de la antigüedad</h2>
+<p class="lead">Clase <code>08-etica-antiguedad-hnd.pdf</code>. Los presocráticos, Sócrates y las cinco escuelas griegas que discute el profe: cínicos y cirenaicos (los extremos), peripatéticos (Aristóteles), epicúreos y estoicos.</p>
+
+<div class="hero">
+  <div class="big">Peso en el certamen: alto (junto con el tema 9)</div>
+  <div class="sub">“¿Cuál es la principal diferencia entre los sistemas éticos de la antigüedad y los modernos?” fue la <b>P1 del C1 2025-1</b> (20 pts), y “describa las orientaciones generales de la ética de la antigüedad clásica y las líneas modernas” salió en el <b>recuperativo 2026-1</b> (15 pts). Además, conocer estas escuelas te da argumentos para el <b>caso ético</b> de 30 puntos.</div>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder escribir</h5>
+    <p>· La <b>idea general</b>: la ética antigua se centra en la persona y en vivir una buena vida.</p>
+    <p>· El <b>árbol</b> de escuelas desde Sócrates.</p>
+    <p>· En una línea, qué es el bien y el placer para cada escuela.</p>
+    <p>· Aristóteles: la <b>función</b>, las 3 condiciones de la acción virtuosa. Estoicos: <b>ataraxia</b>.</p>
+  </div>
+  <div class="card"><h5>Dónde está</h5>
+    <p><b>Diapositivas</b> <code>08-etica-antiguedad-hnd.pdf</code>. Siguen de cerca los artículos “Ancient Ethics” y “Modern Morality and Ancient Ethics” de la <a class="inl" href="https://iep.utm.edu/" target="_blank" rel="noopener">Internet Encyclopedia of Philosophy</a> (búscalos por título), útiles para profundizar.</p>
+  </div>
+  <div class="card"><h5>Plan para este tema</h5>
+    <p>1. Árbol y tabla comparativa (20 min).</p>
+    <p>2. Aristóteles y estoicos en detalle (15 min).</p>
+    <p>3. Escribir “antigua vs moderna” en 8 líneas, junto con el tema 9 (10 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="presocraticos">
+<h2>Presocráticos y Sócrates</h2>
+<div class="box def">
+  <div class="bt">Los presocráticos</div>
+  <p>Anteriores a Sócrates. Les preocupaba sobre todo la <b>cosmología</b>: el origen y la sustancia del universo, la estructura de la naturaleza. Buscaban explicaciones en <b>leyes naturales, no en la acción de los dioses</b>, usando la razón. Compartían la intuición de que hay <b>una única explicación</b>. Iniciaron el pensamiento crítico y analítico. Les faltó el empirismo y la experimentación (por falta de instrumentos, o por ver el mundo como una unidad que no se puede fraccionar para experimentar).</p>
+  <p>Sobreviven pocos fragmentos; sus ideas se conocen por lo que de ellos dicen filósofos posteriores.</p>
+</div>
+<div class="tw"><table>
+<thead><tr><th>Característica atribuida</th><th>Qué significa</th></tr></thead>
+<tbody>
+<tr><td><b>Internas</b></td><td>Explican el mundo con características encontradas en el mismo mundo.</td></tr>
+<tr><td><b>Sistemáticas</b></td><td>Aspiran a que sus hallazgos sean universales.</td></tr>
+<tr><td><b>Económicas</b></td><td>Usan el mínimo de términos nuevos (una idea que recuerda a la navaja de Ockham).</td></tr>
+</tbody></table></div>
+<p><b>Su mayor logro:</b> cambiar el curso del pensamiento humano <b>de los mitos a la filosofía y la ciencia</b>. De su ética no sobreviven textos; se infiere de Homero, Hesíodo y el teatro, llenos de dilemas éticos.</p>
+<div class="box def">
+  <div class="bt">Sócrates</div>
+  <p>Fundador indiscutido de la <b>época de oro</b> de la filosofía griega. No dejó escritos: sus enseñanzas se conocen por su discípulo <b>Platón</b>. La clase los omite en la discusión de ética y pasa directo a las escuelas que descienden de Sócrates.</p>
+</div>
+</section>
+
+<section id="arbol">
+<h2>El árbol de escuelas</h2>
+<p class="lead">De Sócrates descienden tres ramas: la Academia de Platón, los cirenaicos de Aristipo y los cínicos de Antístenes. Las flechas de abajo son las que dibuja el tema 9: las teorías modernas no parten de cero.</p>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 760 380" width="760" role="img" aria-label="Árbol de escuelas éticas griegas">
+<g font-family="system-ui,sans-serif" font-size="12.5">
+  <defs><marker id="ar8" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--muted)"/></marker></defs>
+  <rect x="300" y="10" width="160" height="40" rx="8" fill="var(--code)" stroke="var(--g5)"/>
+  <text x="380" y="35" text-anchor="middle" fill="var(--ink)" font-weight="700">SÓCRATES</text>
+  <path d="M380 52 L130 90" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar8)"/>
+  <path d="M380 52 L380 90" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar8)"/>
+  <path d="M380 52 L630 90" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar8)"/>
+
+  <rect x="40" y="94" width="180" height="50" rx="8" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="130" y="115" text-anchor="middle" fill="var(--brand)" font-weight="700">Platón · Academia</text>
+  <text x="130" y="133" text-anchor="middle" fill="var(--muted)" font-size="11.5">(no la discute en ética)</text>
+  <rect x="290" y="94" width="180" height="50" rx="8" fill="var(--ana-soft)" stroke="var(--ana)"/>
+  <text x="380" y="115" text-anchor="middle" fill="var(--ana)" font-weight="700">Aristipo · CIRENAICOS</text>
+  <text x="380" y="133" text-anchor="middle" fill="var(--muted)" font-size="11.5">placer del momento</text>
+  <rect x="540" y="94" width="180" height="50" rx="8" fill="var(--lib-soft)" stroke="var(--lib)"/>
+  <text x="630" y="115" text-anchor="middle" fill="var(--lib)" font-weight="700">Antístenes · CÍNICOS</text>
+  <text x="630" y="133" text-anchor="middle" fill="var(--muted)" font-size="11.5">solo la virtud; placer nunca</text>
+
+  <path d="M130 146 L130 184" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar8)"/>
+  <path d="M380 146 L380 184" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar8)"/>
+  <path d="M630 146 L630 184" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar8)"/>
+
+  <rect x="40" y="188" width="180" height="50" rx="8" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="130" y="209" text-anchor="middle" fill="var(--brand)" font-weight="700">Aristóteles · PERIPATÉTICOS</text>
+  <text x="130" y="227" text-anchor="middle" fill="var(--muted)" font-size="11.5">ética de la virtud</text>
+  <rect x="290" y="188" width="180" height="50" rx="8" fill="var(--ana-soft)" stroke="var(--ana)"/>
+  <text x="380" y="209" text-anchor="middle" fill="var(--ana)" font-weight="700">Epicuro · EPICÚREOS</text>
+  <text x="380" y="227" text-anchor="middle" fill="var(--muted)" font-size="11.5">hedonismo sofisticado</text>
+  <rect x="540" y="188" width="180" height="50" rx="8" fill="var(--lib-soft)" stroke="var(--lib)"/>
+  <text x="630" y="209" text-anchor="middle" fill="var(--lib)" font-weight="700">Zenón de Citio · ESTOICOS</text>
+  <text x="630" y="227" text-anchor="middle" fill="var(--muted)" font-size="11.5">ataraxia, vivir según la naturaleza</text>
+
+  <line x1="20" y1="268" x2="740" y2="268" stroke="var(--line)" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <text x="26" y="262" fill="var(--muted)" font-size="11">ANTIGÜEDAD</text>
+  <text x="26" y="284" fill="var(--muted)" font-size="11">MODERNIDAD</text>
+
+  <path d="M130 240 L130 304" stroke="var(--g2)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ar8)"/>
+  <path d="M380 240 L380 304" stroke="var(--g2)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ar8)"/>
+  <path d="M630 240 L630 304" stroke="var(--g2)" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ar8)"/>
+  <rect x="40" y="308" width="180" height="50" rx="8" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="130" y="330" text-anchor="middle" fill="var(--accent)" font-weight="700">Neoaristotélicos</text>
+  <text x="130" y="347" text-anchor="middle" fill="var(--muted)" font-size="11.5">ética de la virtud hoy</text>
+  <rect x="290" y="308" width="180" height="50" rx="8" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="380" y="330" text-anchor="middle" fill="var(--accent)" font-weight="700">Utilitarismo</text>
+  <text x="380" y="347" text-anchor="middle" fill="var(--muted)" font-size="11.5">Bentham, Mill</text>
+  <rect x="540" y="308" width="180" height="50" rx="8" fill="var(--accent-soft)" stroke="var(--accent)"/>
+  <text x="630" y="330" text-anchor="middle" fill="var(--accent)" font-weight="700">Kant</text>
+  <text x="630" y="347" text-anchor="middle" fill="var(--muted)" font-size="11.5">deontología</text>
+</g>
+</svg>
+</div>
+<figcaption>Tres ramas desde Sócrates. Los cirenaicos dieron lugar al epicureísmo; del cinismo nació el estoicismo. En verde, las raíces que señala la clase 09: Kant tiene raíces estoicas y el utilitarismo toma de cirenaicos y epicúreos la idea de vivir una vida feliz.</figcaption>
+</figure>
+<div class="box tip"><div class="bt">Truco · dos columnas de “hedonistas” y “austeros”</div>
+<p>Columna del medio = el <b>placer</b> importa (cirenaicos → epicúreos → utilitarismo). Columna derecha = <b>solo la virtud</b> importa (cínicos → estoicos → Kant). Aristóteles va por su lado: la <b>felicidad</b> como vida buena, con el placer como consecuencia.</p></div>
+</section>
+
+<section id="escuelas">
+<h2>Las cinco escuelas</h2>
+<div class="tw"><table>
+<thead><tr><th>Escuela</th><th>Fundador</th><th>¿Qué es el bien?</th><th>¿Y el placer?</th><th>Para recordar</th></tr></thead>
+<tbody>
+<tr><td><b>Cínicos</b></td><td>Antístenes de Atenas</td><td>La <b>virtud</b> (sabiduría práctica) es un bien y <b>basta para la felicidad</b>. La maldad es un mal; todo lo demás es indiferente.</td><td><b>Nunca</b> es un bien.</td><td>Vivían como mendigos, lo más independientes posible de los bienes materiales. Indiferentes a honor, propiedad, libertad, salud y vida.</td></tr>
+<tr><td><b>Cirenaicos</b></td><td>Aristipo de Cirene</td><td>El <b>placer</b> es el bien más preciado. El conocimiento vale solo si sirve para fines prácticos (en esto coinciden con los cínicos).</td><td>Toda acción debe buscar el <b>máximo placer</b>.</td><td>Hedonismo sensual. No buscan la felicidad como estado duradero sino el <b>placer del momento</b>.</td></tr>
+<tr><td><b>Peripatéticos</b></td><td>Aristóteles</td><td>La <b>felicidad</b> es el máximo bien, al que todos aspiran.</td><td>Consecuencia de actuar bien, no un fin.</td><td>El argumento de la <b>función</b>: la del humano es razonar; ser buena persona es razonar bien.</td></tr>
+<tr><td><b>Epicúreos</b></td><td>Epicuro</td><td>La <b>sensación</b> es la única medida del bien y el mal.</td><td>Sí, pero de <b>toda la vida</b>, incluidos los <b>mentales</b>. El fin último es <b>evitar el dolor</b>.</td><td>Hedonismo sofisticado: recuerdos, esperanza y miedo pesan más que el placer del momento. Controlar los deseos, vida virtuosa, amistades estrechas.</td></tr>
+<tr><td><b>Estoicos</b></td><td>Zenón de Citio</td><td>Solo la <b>virtud</b> (vivir según la razón y la naturaleza) es un bien; es necesaria y suficiente para la felicidad.</td><td><b>No</b> es un bien; es consecuencia de actos correctos (como en Aristóteles).</td><td><b>Ataraxia</b>: felicidad es estar libre de pasiones. Instinto básico: la autopreservación.</td></tr>
+</tbody></table></div>
+
+<h3>Cínicos y cirenaicos: los extremos</h3>
+<div class="cols">
+  <div class="card"><h5>Cínicos (Antístenes)</h5>
+    <p>· La virtud se puede enseñar.</p>
+    <p>· <b>Unidad de las virtudes</b>: quien tiene una virtud ética las tiene todas.</p>
+    <p>· El único bien del humano es lo que le es peculiar: su <b>capacidad de razonar</b>.</p>
+    <p>· Muerte, enfermedad, pobreza o deshonor solo <i>se suponen</i> males.</p>
+    <p>· Dos tipos de personas: los <b>sabios</b>, que viven una vida perfecta y feliz y no pierden la virtud, y los <b>tontos</b>, infelices y que cometen errores.</p>
+  </div>
+  <div class="card"><h5>Cirenaicos (Aristipo)</h5>
+    <p>· El conocimiento vale en la medida en que sirve a fines prácticos.</p>
+    <p>· Toda acción debe aspirar al <b>máximo placer</b>.</p>
+    <p>· A diferencia de Aristóteles, no buscan una felicidad duradera sino el <b>placer del momento</b>.</p>
+    <p>· Son el contraste exacto de los cínicos.</p>
+  </div>
+</div>
+
+<h3>Aristóteles y los peripatéticos</h3>
+<p>Aristóteles es el proponente más prominente y sofisticado de la <b>ética de la virtud</b>, que sigue viva en los neoaristotélicos. El <b>argumento de la función</b>: cada cosa tiene una función (la de la tijera es cortar); como el humano es capaz de razonar, su función es razonar, y <b>ser buena persona es razonar bien</b>.</p>
+<div class="tw"><table>
+<thead><tr><th>Las 4 líneas de razonamiento</th><th>Qué dicen</th></tr></thead>
+<tbody>
+<tr><td><b>1. La virtud de la buena persona</b> (la principal)</td><td>Una acción es buena si <b>una persona virtuosa la haría</b> en esa situación; es mala (y prohibida) si jamás la haría. Tres condiciones: (i) el agente <b>conoce las circunstancias</b> (no es por accidente); (ii) la acción es <b>deliberada</b> y se hace por sí misma; (iii) se hace <b>sin titubeos</b>, por alguien de carácter virtuoso firme y estable.</td></tr>
+<tr><td><b>2. Ética de la virtud orientada a la acción</b></td><td>Hay acciones <b>intrínsecamente malas</b>: la persona noble nunca asesina, comete adulterio ni roba.</td></tr>
+<tr><td><b>3. Sabiduría práctica</b></td><td>Es la que nos indica el bien. La persona prácticamente sabia tiene una sensibilidad especial para evaluar cada situación en forma moralmente correcta.</td></tr>
+<tr><td><b>4. Valor intrínseco de las virtudes</b></td><td>Las virtudes son algo menos importantes que el objetivo global: la <b>felicidad de vivir una buena vida</b>.</td></tr>
+</tbody></table></div>
+
+<h3>Epicúreos y estoicos</h3>
+<div class="cols">
+  <div class="card"><h5>Epicuro</h5>
+    <p>Desarrolla su escuela discutiendo con cirenaicos y estoicos. La felicidad no es solo el placer físico del momento: <b>dura toda la vida</b> e incluye placeres mentales. El fin último es <b>evitar el dolor</b>. Enseña a librarse de prejuicios, <b>controlar y restringir los deseos</b>, vivir virtuosamente sin excluir placeres y cultivar amistades estrechas.</p>
+  </div>
+  <div class="card"><h5>Zenón y los estoicos</h5>
+    <p>El humano puede percibir las leyes de la naturaleza por la razón y actuar en consecuencia: <b>la mejor vida es vivir de acuerdo a la naturaleza</b>. Siguiendo a los cínicos, honor, propiedad, salud y vida no son bienes, ni sus contrarios males. Dos doctrinas cruciales: la <b>ataraxia</b> (felicidad = estar libre de pasiones, vida contenida en sí misma) y <b>actuar según la propia naturaleza</b>, es decir, virtuosamente.</p>
+  </div>
+</div>
+<div class="box warn"><div class="bt">Ojo · dos confusiones típicas</div>
+<p><b>Epicúreo no es “carretero”:</b> en el habla común “epicúreo” suena a buscar placeres, pero Epicuro pedía controlar los deseos y buscaba sobre todo evitar el dolor. El hedonismo del placer inmediato es el de los <b>cirenaicos</b>.<br>
+<b>Cínico no es “sarcástico”:</b> los cínicos griegos eran austeros radicales que despreciaban los bienes materiales; el sentido moderno de “cínico” es otro.</p></div>
+</section>
+
+<section id="antigua-moderna">
+<h2>Antigua vs moderna: la pregunta del C1 2025-1</h2>
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">C1 2025-1 · P1 · 20 pts</span></div>
+<p>“La principal diferencia es que la ética antigua se centraba en <b>la persona, en ser feliz</b>. La ética moderna se centra en <b>las relaciones entre personas</b>, en el resultado de las acciones, en si lo que hago daña a los demás: en nuestras <b>obligaciones con los demás</b>.” Agrega que, curiosamente, maximizar el placer (hedonismo) dio lugar a escuelas que entendían ser feliz como tener carácter, ser buena persona contenta consigo misma. Y que las líneas modernas son el <b>utilitarismo</b> (maximizar la felicidad de la sociedad) y la <b>deontológica</b> (obligaciones del individuo, con Kant y el imperativo categórico).</p>
+<div class="pts"><span>Descripción general de la ética de la antigüedad</span><span>10</span><span>Descripción general de la ética moderna</span><span>10</span></div>
+</div>
+<div class="box ana"><div class="bt">El matiz que suma (de la clase 09)</div>
+<p>El propio profe advierte que la clasificación “antigüedad = virtud, modernidad = acciones” es <b>engañosa</b>: hay mucho traslape. Kant tiene raíces estoicas; el utilitarismo toma de cirenaicos y epicúreos la idea de vivir una vida feliz; y los neoaristotélicos sostienen que una ética de la virtud refinada es incluso superior para los problemas actuales. Cerrar la respuesta con esto muestra que entendiste la materia, no solo la lista.</p></div>
+</section>
+
+<section id="t8-preguntas">
+<h2>Preguntas del tema</h2>
+<p class="lead">Las de certámenes con pauta y respuesta modelo: <a class="inl" href="22-Ejercicios.html#e22">E22 (antigua vs moderna)</a>.</p>
+
+<details class="ex"><summary>1 · ¿Qué tres ramas descienden de Sócrates y qué escuelas originan? <span class="tag">árbol</span></summary>
+<div class="body"><p>La Academia de Platón (de la que viene Aristóteles y los peripatéticos), los cirenaicos de Aristipo (que dan lugar al epicureísmo) y los cínicos de Antístenes (de los que nace el estoicismo).</p></div></details>
+
+<details class="ex"><summary>2 · ¿En qué se oponen cínicos y cirenaicos? <span class="tag">los extremos</span></summary>
+<div class="body"><p>Para los cínicos solo la virtud es un bien y el placer nunca lo es; vivían como mendigos, indiferentes a los bienes materiales. Para los cirenaicos el placer es el bien más preciado y toda acción debe buscar el máximo placer del momento. Coinciden en que el conocimiento solo vale por sus fines prácticos.</p></div></details>
+
+<details class="ex"><summary>3 · ¿Qué es el argumento de la función de Aristóteles? <span class="tag">Aristóteles</span></summary>
+<div class="body"><p>Cada objeto tiene una función (la tijera, cortar). El humano es capaz de razonar, así que su función es razonar, y ser buena persona es razonar bien.</p></div></details>
+
+<details class="ex"><summary>4 · ¿Qué condiciones debe cumplir una acción virtuosa según Aristóteles? <span class="tag">3 condiciones</span></summary>
+<div class="body"><p>(i) El agente conoce las circunstancias de la acción (no es por accidente); (ii) la acción es deliberada y se hace por sí misma; (iii) se hace sin titubeos, por una persona de carácter virtuoso firme y estable.</p></div></details>
+
+<details class="ex"><summary>5 · ¿En qué se diferencia Epicuro de los cirenaicos? <span class="tag">hedonismos</span></summary>
+<div class="body"><p>Los cirenaicos buscan el placer físico del momento. Epicuro piensa en la felicidad de toda la vida, incluye placeres mentales, pone como fin último evitar el dolor y pide controlar los deseos.</p></div></details>
+
+<details class="ex"><summary>6 · ¿Qué es la ataraxia? <span class="tag">estoicos</span></summary>
+<div class="body"><p>Para los estoicos, la felicidad: estar libre de pasiones y llevar una vida contenida en sí misma.</p></div></details>
+
+<details class="ex"><summary>7 · ¿Qué tres características se atribuyen a los presocráticos? <span class="tag">presocráticos</span></summary>
+<div class="body"><p>Internas (explican el mundo con lo que hay en él), sistemáticas (buscan que sus hallazgos sean universales) y económicas (usan el mínimo de términos nuevos). Su gran logro fue pasar de los mitos a la filosofía y la ciencia.</p></div></details>
+</section>
+
+<div class="pnav"><a href="7-Etica-y-moral.html"><small>← Anterior</small>Ética y moral</a><a class="nx" href="9-Etica-moderna.html"><small>Siguiente →</small>Ética moderna</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c2-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>

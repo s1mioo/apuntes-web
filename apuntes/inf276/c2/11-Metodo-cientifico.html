@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Método científico · Infosoc C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+/*c2-extra*/
+  .pages .pgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:10px 4px 0}
+  .pages .pgrp:first-child{margin-top:0}
+  .pages span.off{display:flex;gap:9px;align-items:center;font-size:13px;padding:6px 9px;border-radius:8px;
+    border:1px dashed var(--line);line-height:1.25;opacity:.5;cursor:default}
+  .pages span.off b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--code);
+    color:var(--muted);font-size:11.5px}
+  .pages a b{font-size:11px}
+  .nc{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--no-soft);
+    color:var(--no);margin-left:2px;font-style:normal;vertical-align:1px;white-space:nowrap}
+  .soon{border-bottom:1px dashed var(--muted);color:var(--muted)}
+  .box.ana p+p{margin-top:6px}
+  .box.nc{border-left-color:var(--no);background:var(--no-soft)} .box.nc .bt{color:var(--no)}
+  .lic{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:700} .nope{color:var(--no);font-weight:700}
+  .mnemo{font-size:15px;background:var(--panel);border:1px dashed var(--brand);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .mnemo b{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T11</div>
+    <div><h1>Método científico</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><div class="pgrp">Inicio</div><a href="0-Guia-de-estudio-C2.html"><b>★</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 21</small></span></a><div class="pgrp">Materia del C1</div><a href="1-Proyectos.html"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></a><a href="2-Definiciones.html"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></a><a href="3-Falacias.html"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></a><a href="4-Sesgos-cognitivos.html"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></a><a href="5-Pensamiento-critico.html"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></a><a href="6-Resolver-problemas.html"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></a><a href="7-Etica-y-moral.html"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></a><a href="8-Etica-antiguedad.html"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></a><a href="9-Etica-moderna.html"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></a><a href="10-Sociedades.html"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></a><a href="11-Metodo-cientifico.html" class="cur"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></a><a href="12-Ingenieria.html"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></a><a href="13-Computacion.html"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></a><a href="13b-Resumen-C1.html"><b>Σ</b><span>Resumen contenidos Certamen 1<br><small style="color:var(--muted)">lo esencial de 1 a 13</small></span></a><div class="pgrp">Materia nueva del C2</div><a href="14-Procesamiento-datos.html"><b>14</b><span>Procesamiento de datos<br><small style="color:var(--muted)">historia y minería de datos</small></span></a><a href="15-Impacto.html"><b>15</b><span>Impacto de la tecnología<br><small style="color:var(--muted)">lo bueno y lo malo</small></span></a><a href="16-Aspectos-eticos.html"><b>16</b><span>Aspectos éticos<br><small style="color:var(--muted)">códigos, dilemas, ética profesional</small></span></a><a href="16b-Inteligencia-artificial.html"><b>XX</b><span>Inteligencia artificial<br><small style="color:var(--muted)">expertos, genéticos, redes, LLM</small></span></a><a href="17-Propiedad-intelectual.html"><b>17</b><span>Propiedad intelectual<br><small style="color:var(--muted)">autor, patentes, marcas, secretos</small></span></a><a href="18-Codigo-abierto.html"><b>18</b><span>Código abierto<br><small style="color:var(--muted)">GPL, BSD, OSI, Creative Commons</small></span></a><a href="19-Proteccion-datos.html"><b>19</b><span>Protección de datos <i class="nc">no pasada</i><br><small style="color:var(--muted)">GDPR, leyes chilenas, CRA</small></span></a><a href="20-Desarrollo.html"><b>20</b><span>Desarrollo de software <i class="nc">no pasada</i><br><small style="color:var(--muted)">máximas y deuda técnica</small></span></a><a href="21-Codigo-ACM.html"><b>21</b><span>Código de ética ACM<br><small style="color:var(--muted)">las 4 secciones</small></span></a><div class="pgrp">Práctica</div><a href="22-Ejercicios.html"><b>✎</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a><a href="23-Flashcards.html"><b>⇄</b><span>Flashcards<br><small style="color:var(--muted)">toda la materia</small></span></a><div class="pgrp">Complemento</div><a href="24-Extra.html"><b>+</b><span>Extra<br><small style="color:var(--muted)">probablemente no entra</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 11</div><a href="#t11-inicio">Qué pesa y qué estudiar</a><a href="#terminos">Los términos</a><a href="#metodo">El método en 4 pasos</a><a href="#popper">Popper y la falsabilidad</a><a href="#usos">Usos de la evidencia</a><a href="#peligros">Peligros</a><a href="#historia">Esbozo de la historia</a><div class="grp">Práctica</div><a href="#t11-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+<div class="box warn"><div class="bt">Página copiada del C1</div><p>Es la misma página que se usó para el C1, sin los videos. Lo que dice sobre el peso de cada tema y los certámenes se refiere al <b>C1</b>; para el C2 mira <a class="inl" href="0-Guia-de-estudio-C2.html#g-temario">qué entra y cuánto pesa</a>, el <a class="inl" href="13b-Resumen-C1.html">resumen del C1</a> y los <a class="inl" href="22-Ejercicios.html">ejercicios</a>, donde las preguntas tienen la numeración nueva.</p></div>
+<section id="t11-inicio">
+<h2>Tema 11 · El método científico</h2>
+<p class="lead">Clase <code>11-metodo-cientifico-hnd.pdf</code>. Los términos (ciencia, teoría, hipótesis, especulación, evidencia, hecho), la falsabilidad de Popper, los peligros al razonar sobre evidencia y un esbozo de la historia de la ciencia.</p>
+
+<div class="hero">
+  <div class="big">Peso en el certamen: muy alto</div>
+  <div class="sub">Salió en <b>cinco</b> de los nueve certámenes: “describa qué se entiende por método científico” (<b>C1 2025-1</b>, 20 pts), “defina ciencia” (recuperativo 2025-1, 15), “defina ciencia; explique hecho, hipótesis y teoría” (C2 2025-2, 20), “navaja de Ockham” (10) y “teoría científica y falsabilidad” (15) en el recuperativo 2026-1. Más “ciencia vs ingeniería” en el <b>C1 2026-1</b> (20).</div>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder escribir</h5>
+    <p>· Definiciones de <b>ciencia, teoría, hipótesis, hecho</b> (y evidencia, especulación).</p>
+    <p>· El <b>método</b> en 4 pasos, como lo escribe la pauta.</p>
+    <p>· <b>Falsabilidad</b> y su asimetría; por qué combate el sesgo de confirmación.</p>
+    <p>· Por qué no existe la “demostración científica” definitiva.</p>
+  </div>
+  <div class="card"><h5>Dónde está</h5>
+    <p><b>Diapositivas</b> <code>11-metodo-cientifico-hnd.pdf</code> y la parte de ciencia de <code>02-definiciones-hnd.pdf</code>.</p>
+    <p>Para profundizar: <a class="inl" href="https://plato.stanford.edu/entries/scientific-method/" target="_blank" rel="noopener">“Scientific Method” en la Stanford Encyclopedia of Philosophy</a> y <a class="inl" href="https://plato.stanford.edu/entries/popper/" target="_blank" rel="noopener">la entrada de Popper</a>.</p>
+  </div>
+  <div class="card"><h5>Plan para este tema</h5>
+    <p>1. Los 6 términos, de memoria (15 min).</p>
+    <p>2. Método en 4 pasos + falsabilidad (15 min).</p>
+    <p>3. Peligros y ejemplos (Rutherford, Priestley/Lavoisier) (15 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="terminos">
+<h2>Los términos</h2>
+<div class="tw"><table>
+<thead><tr><th>Término</th><th>Definición del ramo</th></tr></thead>
+<tbody>
+<tr><td><b>Ciencia</b></td><td>El estudio sistemático de la estructura y comportamiento del mundo físico y natural a través de <b>observación, experimentación</b> y la <b>comprobación de teorías contra la evidencia</b> obtenida.</td></tr>
+<tr><td><b>Teoría</b></td><td>Una explicación de un aspecto del mundo natural que puede ser o ha sido <b>comprobada repetidas veces</b> y es <b>corroborada por evidencia</b>.</td></tr>
+<tr><td><b>Hipótesis</b></td><td>Una suposición o explicación propuesta en base a <b>evidencia limitada</b> (posiblemente simple intuición), como punto de partida para investigar. <b>Debe poder comprobarse empíricamente.</b></td></tr>
+<tr><td><b>Especulación</b></td><td>Una posible explicación de un fenómeno, <b>posiblemente sin evidencia</b>.</td></tr>
+<tr><td><b>Evidencia</b></td><td>Sirve para <b>apoyar o contradecir</b> una hipótesis o teoría (y para aplicar teorías a problemas prácticos). Se espera que sea <b>empírica</b> e interpretable según el método científico. Los estándares varían por área, pero suelen basarse en análisis estadístico o controles.</td></tr>
+<tr><td><b>Hecho</b></td><td>Un <b>dato verdadero</b> sobre algún aspecto de la realidad. Los hechos científicos se verifican con <b>observaciones cuidadosas repetidas</b> o mediciones experimentales.</td></tr>
+</tbody></table></div>
+<figure>
+<div class="fig-scroll">
+<svg viewBox="0 0 720 120" width="720" role="img" aria-label="De especulación a teoría">
+<g font-family="system-ui,sans-serif" font-size="12.5">
+  <defs><marker id="ar11" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--muted)"/></marker></defs>
+  <rect x="10" y="30" width="150" height="56" rx="9" fill="var(--code)" stroke="var(--g5)"/>
+  <text x="85" y="54" text-anchor="middle" fill="var(--ink)" font-weight="700">Especulación</text>
+  <text x="85" y="72" text-anchor="middle" fill="var(--muted)" font-size="11.5">quizás sin evidencia</text>
+  <rect x="200" y="30" width="150" height="56" rx="9" fill="var(--lib-soft)" stroke="var(--lib)"/>
+  <text x="275" y="54" text-anchor="middle" fill="var(--lib)" font-weight="700">Hipótesis</text>
+  <text x="275" y="72" text-anchor="middle" fill="var(--muted)" font-size="11.5">evidencia limitada, refutable</text>
+  <rect x="390" y="30" width="150" height="56" rx="9" fill="var(--brand-soft)" stroke="var(--brand)"/>
+  <text x="465" y="54" text-anchor="middle" fill="var(--brand)" font-weight="700">Teoría</text>
+  <text x="465" y="72" text-anchor="middle" fill="var(--muted)" font-size="11.5">sobrevive muchas pruebas</text>
+  <rect x="580" y="30" width="130" height="56" rx="9" fill="var(--warn-soft)" stroke="var(--warn)"/>
+  <text x="645" y="54" text-anchor="middle" fill="var(--warn)" font-weight="700">siempre provisoria</text>
+  <text x="645" y="72" text-anchor="middle" fill="var(--muted)" font-size="11.5">nueva evidencia puede</text>
+  <text x="645" y="84" text-anchor="middle" fill="var(--muted)" font-size="11.5">enmendarla o tumbarla</text>
+  <path d="M162 58 L196 58" stroke="var(--muted)" stroke-width="2" marker-end="url(#ar11)"/>
+  <path d="M352 58 L386 58" stroke="var(--muted)" stroke-width="2" marker-end="url(#ar11)"/>
+  <path d="M542 58 L576 58" stroke="var(--muted)" stroke-width="2" marker-end="url(#ar11)"/>
+  <text x="360" y="112" text-anchor="middle" fill="var(--muted)" font-size="11.5">los hechos (datos verificados) son la evidencia que mueve una idea de una caja a la siguiente</text>
+</g>
+</svg>
+</div>
+<figcaption>No son “niveles” fijos: una hipótesis se vuelve teoría solo si sobrevive a muchos intentos de refutarla y la comunidad la acepta.</figcaption>
+</figure>
+</section>
+
+<section id="metodo">
+<h2>El método científico en 4 pasos</h2>
+<p class="lead">Las diapositivas no traen una lista de pasos; esta es la que escribió el profe en la pauta del C1 2025-1.</p>
+<div class="steps">
+<div class="step"><b>Coleccionar observaciones</b> acerca de un fenómeno (hechos).</div>
+<div class="step"><b>Construir una hipótesis</b> de cómo opera el fenómeno, posiblemente en el marco de una teoría mayor, que sea <b>consistente con las observaciones</b>.</div>
+<div class="step"><b>Deducir de la hipótesis observaciones adicionales</b>, y posiblemente diseñar experimentos, cuyos resultados <b>debieran contradecir la hipótesis si esta no se cumple</b>.</div>
+<div class="step"><b>Efectuar las observaciones o experimentos.</b> Si contradicen la hipótesis, enmendarla o rechazarla y construir otra que incluya las nuevas observaciones.</div>
+</div>
+<p>Una hipótesis verificada ampliamente con este esquema pasa a llamarse <b>teoría</b>. Una teoría <b>siempre es provisoria</b>: en principio debe desecharse si aparecen hechos que la contradicen. En la práctica, una teoría sólidamente confirmada rara vez se desecha del todo: se <b>enmienda</b> para acomodar fenómenos nuevos o se <b>delimita</b> su ámbito de aplicación. Las teorías nuevas suelen ser más complicadas que las que reemplazan.</p>
+<div class="box ana"><div class="bt">Ejemplo de la pauta del C2 2025-2 · Newton y Einstein</div>
+<p>La mecánica de Newton fue reemplazada por la relatividad, mucho más complicada de aplicar. Pero se sigue usando: dentro del sistema solar las diferencias son diminutas. La teoría vieja no se tiró, se <b>delimitó</b> su rango de aplicabilidad. Y la ciencia no responde “por qué”, se limita a responder <b>cómo</b> se comportan los fenómenos naturales.</p></div>
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">C1 2025-1 · P2 · 20 pts</span></div>
+<div class="pts"><span>Términos (hecho, hipótesis, teoría)</span><span>5</span><span>Observaciones, experimentos</span><span>5</span><span>Elaborar hipótesis</span><span>5</span><span>Buscar contradecir la hipótesis (falsabilidad)</span><span>5</span></div>
+<p>Un cuarto del puntaje es la falsabilidad. Nunca escribas “se busca confirmar la hipótesis”: se busca <b>refutarla</b>.</p></div>
+</section>
+
+<section id="popper">
+<h2>Popper y la falsabilidad</h2>
+<div class="box def"><div class="bt">Falsabilidad</div>
+<p>Karl Popper propone que un científico desarrolla una hipótesis que <b>puede ser refutada por evidencia</b>. A eso se llama <b>falsabilidad</b>, y es <b>lo que distingue a la ciencia</b>.</p>
+<p>Es <b>asimétrica</b>: una hipótesis o teoría puede ser <b>rechazada</b> por evidencia que la refuta, pero <b>nunca puede demostrarse verdadera</b>, porque siempre puede aparecer evidencia nueva que la refute.</p></div>
+<div class="box tip"><div class="bt">Por qué es central (el vínculo con el tema 4)</div>
+<p>Una de nuestras deficiencias es el <b>sesgo de confirmación</b>: tendemos a considerar, e incluso buscar, solo datos que confirman lo que ya creemos. Exigir que la hipótesis <b>se pueda refutar</b> asegura que sea relevante, y <b>buscar activamente datos que la refuten</b> explora las zonas problemáticas: confirma su aplicabilidad o corrige errores. Puede terminar limitando el ámbito de la teoría o reemplazándola por otra más ajustada a la realidad.</p></div>
+<div class="cols">
+  <div class="card"><h5>Falsable</h5><p>“Todos los cisnes son blancos.” Basta un cisne negro para refutarla (y en 1697 apareció).</p><p>“El agua a nivel del mar hierve a 100 °C.” Un termómetro puede contradecirlo.</p></div>
+  <div class="card"><h5>No falsable</h5><p>“Hay un dragón invisible, inmaterial e indetectable en mi garaje.” Ninguna observación posible podría contradecirlo, así que no es ciencia.</p><p>“Todo pasa por algo.” Cualquier resultado “confirma”.</p></div>
+</div>
+
+<h3>La confiabilidad de la evidencia</h3>
+<p>William Bechtel describe cuatro factores que usan los biólogos para decidir si la evidencia es confiable: <b>claridad de los datos</b>, <b>replicación por otros</b>, <b>consistencia con resultados de métodos alternativos</b> y <b>consistencia con hipótesis plausibles</b> sobre los mecanismos.</p>
+
+<h3>Difusión</h3>
+<p>La ciencia exige que teorías y resultados se <b>discutan públicamente</b>. Para que la falsabilidad no sea solo un enunciado sino una actividad concreta, los resultados deben llegar a todos los competentes e interesados, <b>particularmente a los oponentes</b>.</p>
+
+<h3>“Demostración científica”</h3>
+<div class="quote">“En las ciencias empíricas, las únicas que nos pueden dar información sobre el mundo en que vivimos, no hay demostraciones, si entendemos por ‘demostración’ un argumento que establece de una vez por todas la verdad de una teoría.” <b>Karl Popper</b></div>
+<p>En la práctica se puede decir que una teoría “se demostró” solo en un sentido limitado: alcanzó un <b>alto nivel de aceptación</b> después de análisis exhaustivo y evaluación crítica de la comunidad científica, según el estándar de prueba de esa investigación.</p>
+</section>
+
+<section id="usos">
+<h2>Usos de la evidencia y preconcepciones</h2>
+<div class="cols">
+  <div class="card"><h5>Rutherford “secuestra” un experimento</h5>
+    <p>Geiger y Marsden querían ver cómo interactuaban partículas alfa con la materia, que se suponía hecha de átomos como un “<b>queque de pasas</b>” (una masa positiva con electrones incrustados). Dispararon partículas a una lámina de oro: la mayoría pasó sin desviarse y unas pocas rebotaron muchísimo. El resultado, totalmente inesperado, llevó a <b>Rutherford</b> al modelo actual: un núcleo positivo pequeño rodeado de una nube extensa de electrones. La evidencia no solo refuta: también inspira teorías nuevas.</p>
+  </div>
+  <div class="card"><h5>El mismo hecho, dos teorías</h5>
+    <p>Al calentar óxido de mercurio se obtiene mercurio. <b>Priestley</b>, dentro de la teoría del <b>flogisto</b> (una sustancia que se expulsa al quemar algo), lo explicó como flogisto entrando al compuesto. <b>Lavoisier</b>, con la teoría de los elementos químicos, lo explicó como descomposición en <b>mercurio y oxígeno</b>. Las preconcepciones determinan cómo leemos los datos.</p>
+  </div>
+</div>
+</section>
+
+<section id="peligros">
+<h2>Peligros</h2>
+<p class="lead">Somos humanos y tenemos sesgos que interfieren. La clase da siete trampas.</p>
+<div class="tw"><table>
+<thead><tr><th>Peligro</th><th>Ejemplo de la clase</th></tr></thead>
+<tbody>
+<tr><td><b>Los argumentos no son evidencia</b></td><td>La evidencia son datos concretos.</td></tr>
+<tr><td><b>Las anécdotas no son evidencia</b></td><td>“Mi tía se curó de la gota con acupuntura. La acupuntura es beneficiosa.” (generalización desde un caso)</td></tr>
+<tr><td><b>Sesgo de confirmación</b></td><td>Filmaron sesiones de estudiantes con una médium. Uno dijo “¡acertó las siete cosas que dijo!”. En la grabación, la médium hizo <b>50 afirmaciones y falló 43</b>.</td></tr>
+<tr><td><b>Manipulación emocional</b></td><td>“El mercurio es muy venenoso. Las vacunas contienen mercurio. ¡Nos están envenenando!”</td></tr>
+<tr><td><b>El sentido común no es evidencia</b></td><td>El sentido común dice que la Tierra es plana, que lo pesado cae más rápido y que para mover un objeto hay que aplicarle fuerza.</td></tr>
+<tr><td><b>Las teorías de conspiración no son evidencia</b></td><td>“Tres pueden guardar un secreto si dos de ellos están muertos.” (Benjamin Franklin)</td></tr>
+<tr><td><b>Probabilidades y riesgos</b></td><td>Volar es muchísimo más seguro por kilómetro que ir en auto; muchos temen volar y no manejar.</td></tr>
+</tbody></table></div>
+<h3>Resultados contraintuitivos</h3>
+<p>Nuestra intuición viene de una tajada muy limitada de la realidad (sentidos falibles; experiencia limitada en tiempo, espacio y escala; nunca vamos cerca de la velocidad de la luz y el roce siempre está presente). Por eso muchos resultados de la ciencia la contradicen:</p>
+<ul>
+<li>Los cuerpos caen con aceleración constante, independiente de su masa.</li>
+<li>Inercia: un cuerpo en movimiento sigue en línea recta a velocidad constante si nada lo afecta.</li>
+<li>“¡No hay partículas!” (en mecánica cuántica son excitaciones de campos).</li>
+<li>Hay eventos sin causa, al azar, como la desintegración radiactiva.</li>
+<li>Se crea materia espontáneamente (efecto Casimir) y los objetos pueden atravesar barreras (efecto túnel).</li>
+</ul>
+</section>
+
+<section id="historia">
+<h2>Esbozo de la historia de la ciencia</h2>
+<p class="lead">Toda historia de la ciencia incluye especulación: hay pocos registros de los resultados antiguos, aún menos de sus métodos, y rara vez de los intentos fallidos o las influencias.</p>
+<div class="tw"><table class="mini">
+<thead><tr><th>Época</th><th>Qué pasó</th></tr></thead>
+<tbody>
+<tr><td>3000–1200 a.C.</td><td>Primeras raíces en <b>Egipto y Mesopotamia</b>: matemáticas, medicina y astronomía, que influyen en la filosofía natural griega.</td></tr>
+<tr><td>Grecia</td><td>Filosofía natural.</td></tr>
+<tr><td>400–1000 d.C.</td><td>Tras la caída del imperio romano de occidente, el conocimiento griego se deteriora en occidente, pero sigue vivo en <b>Bizancio</b> y, por traducciones, en el <b>mundo musulmán</b> durante su época de oro.</td></tr>
+<tr><td>Siglos X–XIII</td><td>La ciencia islámica y los textos griegos recuperados reviven la filosofía natural en occidente.</td></tr>
+<tr><td>Paralelamente</td><td>Tradiciones independientes en <b>China</b> e <b>India</b>; en América, los <b>zapotecas</b> desarrollan matemáticas y calendarios, seguidos por los <b>mayas</b>.</td></tr>
+<tr><td>Siglos XVI–XVII</td><td><b>Revolución científica</b> en Europa: ciencia más mecanicista, integrada a las matemáticas, más confiable y abierta, basada en el método científico recién definido.</td></tr>
+<tr><td>Siglo XVIII</td><td><b>Revolución química</b>: métodos cuantitativos en química.</td></tr>
+<tr><td>Siglo XIX</td><td>Conservación de la energía, edad de la Tierra, evolución.</td></tr>
+<tr><td>Siglo XX</td><td>Genética y física dan lugar a la biología molecular y la física de partículas. Las consideraciones industriales y militares, y el costo creciente, llevan a la <b>“gran ciencia”</b> (<i>big science</i>).</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="t11-preguntas">
+<h2>Preguntas del tema</h2>
+<p class="lead">Las de certámenes con pauta y respuesta modelo: <a class="inl" href="22-Ejercicios.html#e14">E14 (método y ciencia)</a>, <a class="inl" href="22-Ejercicios.html#e23">E23 (ciencia vs ingeniería)</a> y <a class="inl" href="22-Ejercicios.html#e24">E24 (Ockham y falsabilidad)</a>.</p>
+
+<details class="ex"><summary>1 · Diferencie hecho, hipótesis y teoría <span class="tag">C2 2025-2</span></summary>
+<div class="body"><p><b>Hecho:</b> dato verdadero, verificado por observación o medición repetida. <b>Hipótesis:</b> explicación propuesta con evidencia limitada, que debe poder ser corroborada o contradicha por la evidencia. <b>Teoría:</b> explicación que ha sobrevivido a múltiples intentos de refutarla, explica un amplio conjunto de fenómenos y es aceptada por la comunidad; siempre provisoria.</p></div></details>
+
+<details class="ex"><summary>2 · ¿Qué es la falsabilidad y por qué es asimétrica? <span class="tag">Popper</span></summary>
+<div class="body"><p>Es la condición de que una hipótesis pueda ser refutada por evidencia; según Popper, es lo que distingue a la ciencia. Es asimétrica porque la evidencia puede refutar una hipótesis, pero ninguna cantidad de evidencia la demuestra verdadera: siempre puede aparecer evidencia nueva en contra.</p></div></details>
+
+<details class="ex"><summary>3 · ¿Por qué la ciencia exige difusión pública? <span class="tag">difusión</span></summary>
+<div class="body"><p>Para que la falsabilidad sea una actividad concreta: los resultados deben llegar a todos los competentes e interesados, en particular a los oponentes, que son quienes más buscarán refutarlos.</p></div></details>
+
+<details class="ex"><summary>4 · ¿Existe la “demostración científica”? <span class="tag">matiz</span></summary>
+<div class="body"><p>No en sentido estricto: según Popper, en las ciencias empíricas no hay argumentos que establezcan de una vez por todas la verdad de una teoría. Solo en sentido limitado: una teoría alcanza un alto nivel de aceptación tras análisis exhaustivo y evaluación crítica de la comunidad.</p></div></details>
+
+<details class="ex"><summary>5 · ¿Qué enseña el experimento de Geiger y Marsden? <span class="tag">usos de la evidencia</span></summary>
+<div class="body"><p>Que la evidencia no solo sirve para refutar o confirmar: sus resultados inesperados (pocas partículas muy desviadas) llevaron a Rutherford a proponer un modelo nuevo del átomo, con núcleo pequeño y positivo.</p></div></details>
+
+<details class="ex"><summary>6 · Nombre cuatro peligros al evaluar evidencia <span class="tag">peligros</span></summary>
+<div class="body"><p>Cualquiera de: los argumentos no son evidencia; las anécdotas no son evidencia; sesgo de confirmación; manipulación emocional; el sentido común no es evidencia; las teorías de conspiración no son evidencia; malas estimaciones de probabilidad y riesgo.</p></div></details>
+</section>
+
+<div class="pnav"><a href="10-Sociedades.html"><small>← Anterior</small>Sociedades</a><a class="nx" href="12-Ingenieria.html"><small>Siguiente →</small>Ingeniería</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c2-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>

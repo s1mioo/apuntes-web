@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ingeniería · Infosoc C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+/*c2-extra*/
+  .pages .pgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:10px 4px 0}
+  .pages .pgrp:first-child{margin-top:0}
+  .pages span.off{display:flex;gap:9px;align-items:center;font-size:13px;padding:6px 9px;border-radius:8px;
+    border:1px dashed var(--line);line-height:1.25;opacity:.5;cursor:default}
+  .pages span.off b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--code);
+    color:var(--muted);font-size:11.5px}
+  .pages a b{font-size:11px}
+  .nc{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--no-soft);
+    color:var(--no);margin-left:2px;font-style:normal;vertical-align:1px;white-space:nowrap}
+  .soon{border-bottom:1px dashed var(--muted);color:var(--muted)}
+  .box.ana p+p{margin-top:6px}
+  .box.nc{border-left-color:var(--no);background:var(--no-soft)} .box.nc .bt{color:var(--no)}
+  .lic{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:700} .nope{color:var(--no);font-weight:700}
+  .mnemo{font-size:15px;background:var(--panel);border:1px dashed var(--brand);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .mnemo b{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T12</div>
+    <div><h1>Ingeniería</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><div class="pgrp">Inicio</div><a href="0-Guia-de-estudio-C2.html"><b>★</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 21</small></span></a><div class="pgrp">Materia del C1</div><a href="1-Proyectos.html"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></a><a href="2-Definiciones.html"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></a><a href="3-Falacias.html"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></a><a href="4-Sesgos-cognitivos.html"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></a><a href="5-Pensamiento-critico.html"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></a><a href="6-Resolver-problemas.html"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></a><a href="7-Etica-y-moral.html"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></a><a href="8-Etica-antiguedad.html"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></a><a href="9-Etica-moderna.html"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></a><a href="10-Sociedades.html"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></a><a href="11-Metodo-cientifico.html"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></a><a href="12-Ingenieria.html" class="cur"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></a><a href="13-Computacion.html"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></a><a href="13b-Resumen-C1.html"><b>Σ</b><span>Resumen contenidos Certamen 1<br><small style="color:var(--muted)">lo esencial de 1 a 13</small></span></a><div class="pgrp">Materia nueva del C2</div><a href="14-Procesamiento-datos.html"><b>14</b><span>Procesamiento de datos<br><small style="color:var(--muted)">historia y minería de datos</small></span></a><a href="15-Impacto.html"><b>15</b><span>Impacto de la tecnología<br><small style="color:var(--muted)">lo bueno y lo malo</small></span></a><a href="16-Aspectos-eticos.html"><b>16</b><span>Aspectos éticos<br><small style="color:var(--muted)">códigos, dilemas, ética profesional</small></span></a><a href="16b-Inteligencia-artificial.html"><b>XX</b><span>Inteligencia artificial<br><small style="color:var(--muted)">expertos, genéticos, redes, LLM</small></span></a><a href="17-Propiedad-intelectual.html"><b>17</b><span>Propiedad intelectual<br><small style="color:var(--muted)">autor, patentes, marcas, secretos</small></span></a><a href="18-Codigo-abierto.html"><b>18</b><span>Código abierto<br><small style="color:var(--muted)">GPL, BSD, OSI, Creative Commons</small></span></a><a href="19-Proteccion-datos.html"><b>19</b><span>Protección de datos <i class="nc">no pasada</i><br><small style="color:var(--muted)">GDPR, leyes chilenas, CRA</small></span></a><a href="20-Desarrollo.html"><b>20</b><span>Desarrollo de software <i class="nc">no pasada</i><br><small style="color:var(--muted)">máximas y deuda técnica</small></span></a><a href="21-Codigo-ACM.html"><b>21</b><span>Código de ética ACM<br><small style="color:var(--muted)">las 4 secciones</small></span></a><div class="pgrp">Práctica</div><a href="22-Ejercicios.html"><b>✎</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a><a href="23-Flashcards.html"><b>⇄</b><span>Flashcards<br><small style="color:var(--muted)">toda la materia</small></span></a><div class="pgrp">Complemento</div><a href="24-Extra.html"><b>+</b><span>Extra<br><small style="color:var(--muted)">probablemente no entra</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 12</div><a href="#t12-inicio">Qué pesa y qué estudiar</a><a href="#definicion">Qué es la ingeniería</a><a href="#termino">El término y las carreras</a><a href="#historia">Historia de la ingeniería</a><div class="grp">Práctica</div><a href="#t12-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+<div class="box warn"><div class="bt">Página copiada del C1</div><p>Es la misma página que se usó para el C1, sin los videos. Lo que dice sobre el peso de cada tema y los certámenes se refiere al <b>C1</b>; para el C2 mira <a class="inl" href="0-Guia-de-estudio-C2.html#g-temario">qué entra y cuánto pesa</a>, el <a class="inl" href="13b-Resumen-C1.html">resumen del C1</a> y los <a class="inl" href="22-Ejercicios.html">ejercicios</a>, donde las preguntas tienen la numeración nueva.</p></div>
+<section id="t12-inicio">
+<h2>Tema 12 · Ingeniería</h2>
+<p class="lead">Clase <code>12-ingeniería-hnd.pdf</code>. Qué es la ingeniería y qué hace un ingeniero, de dónde viene la palabra, cómo se organizan las carreras en Chile y el mundo, y una historia de la ingeniería desde la palanca hasta la aeronáutica.</p>
+
+<div class="hero">
+  <div class="big">Peso en el certamen: medio-alto</div>
+  <div class="sub">“Esboce la historia de la ingeniería” fue la <b>P4 del C1 2025-1</b> (20 pts). “Defina ingeniería” salió en el <b>recuperativo 2025-2</b> (15 pts) y “defina ciencia e ingeniería, explicando en qué se distinguen” en el <b>C1 2026-1</b> (20 pts). Tres apariciones; la definición es casi segura en algún formato.</div>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder escribir</h5>
+    <p>· La <b>definición</b> (RAE + la frase del profe) y la diferencia con la ciencia.</p>
+    <p>· La <b>historia</b> en 4 bloques: inicios y militar → civil → mecánica → diversificación.</p>
+    <p>· Las <b>6 máquinas simples</b>.</p>
+    <p>· Ingeniería civil vs de ejecución en Chile.</p>
+  </div>
+  <div class="card"><h5>Dónde está</h5>
+    <p><b>Diapositivas</b> <code>12-ingeniería-hnd.pdf</code> y la parte de ingeniería de <code>02-definiciones-hnd.pdf</code>.</p>
+    <p>Las diapositivas de historia siguen el artículo <a class="inl" href="https://en.wikipedia.org/wiki/History_of_engineering" target="_blank" rel="noopener">History of engineering</a> de Wikipedia.</p>
+  </div>
+  <div class="card"><h5>Plan para este tema</h5>
+    <p>1. Definición y la frase del profe (5 min).</p>
+    <p>2. La línea de tiempo, con la estructura de la pauta (20 min).</p>
+    <p>3. Escribir la historia en 10 líneas sin mirar (10 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="definicion">
+<h2>Qué es la ingeniería</h2>
+<div class="cols">
+  <div class="card"><h5>Ingeniería (RAE)</h5><p>De <i>ingeniero</i>.</p><p>1. <b>Conjunto de conocimientos orientados a la invención y utilización de técnicas para el aprovechamiento de los recursos naturales o para la actividad industrial.</b></p><p>2. Actividad profesional del ingeniero.</p></div>
+  <div class="card"><h5>Ingeniero (RAE)</h5><p>De <i>ingenio</i>, “<b>máquina, artificio mecánico</b>”.</p><p>1. Persona con titulación universitaria superior que la capacita para ejercer la ingeniería en alguna de sus ramas.</p><p>2. En desuso: persona que discurre con ingenio las trazas y modos de conseguir o ejecutar algo.</p></div>
+</div>
+<div class="box def"><div class="bt">La frase del profe (cítala siempre)</div>
+<p>Un profesor suyo de Ingeniería Civil Química resumía la función del ingeniero así: <b>“Un ingeniero halla soluciones viables en plazo y a costo aceptables a problemas prácticos.”</b></p></div>
+<p>En inglés <i>engineer</i> significa fundamentalmente “maquinista”, pero también ingeniero en nuestro sentido: alguien que diseña y construye ingenios (máquinas, sistemas). Típicamente es quien está a cargo de la operación de una planta, organiza la mantención de la maquinaria y tareas afines.</p>
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">Recuperativo 2025-2 · P3 · 15 pts</span></div>
+<p>La pauta usa la definición de la RAE y agrega: se apoya en los resultados de la ciencia y usa el método científico para hallar regularidades aprovechables; busca soluciones efectivas y realizables a problemas prácticos.</p>
+<div class="pts"><span>Definición de ingeniería</span><span>10</span><span>Uso de la ciencia como elemento clave</span><span>3</span><span>Soluciones efectivas y practicables</span><span>2</span></div>
+</div>
+<div class="box tip"><div class="bt">Ciencia vs ingeniería en una línea (pauta del C1 2026-1)</div>
+<p>“La <b>ciencia busca nuevo conocimiento</b>; la <b>ingeniería resuelve problemas concretos usando el conocimiento acopiado</b>.” Ver la figura de la <a class="inl" href="2-Definiciones.html#ingenieria">página 2</a> y <a class="inl" href="22-Ejercicios.html#e23">E23</a>.</p></div>
+</section>
+
+<section id="termino">
+<h2>El término y las carreras</h2>
+<ul>
+<li>En inglés, <i>engineer</i> aparece <b>alrededor de 1325</b> para el “constructor de máquinas”, donde “máquina” era una <b>máquina militar</b>, como una catapulta.</li>
+<li>Cuando el diseño y la construcción de obras civiles (puentes, edificios) maduró como disciplina técnica, se empezó a hablar de <b>ingeniería civil</b>, en contraste con la <b>ingeniería militar</b>.</li>
+<li>El uso original cayó en desuso; sobrevive en casos como el <b>arma de ingenieros del Ejército de Chile</b>.</li>
+</ul>
+<div class="cols">
+  <div class="card"><h5>En Chile</h5>
+    <p>Originalmente existían ingeniería militar y civil. La <b>“ingeniería civil en X”</b> es un invento chileno: un ingeniero con <b>licenciatura en ciencias de la ingeniería</b>, para distinguirlo del <b>ingeniero de ejecución en X</b>, sin licenciatura. Eran carreras de <b>6 y 4 años</b>: el civil diseñaba y el de ejecución operaba. Hubo por un tiempo carreras de “ingeniería” a secas, de 5 años.</p>
+    <p>Con los cambios legales de <b>1980</b>, las carreras de 5 años o más quedaron reservadas a las universidades. Hoy las distinciones se borran: las carreras convergen a 5 años y desaparecen las de ejecución.</p>
+  </div>
+  <div class="card"><h5>En el resto del mundo</h5>
+    <p>El pregrado (<i>bachelor</i>) dura <b>4 años</b> y rara vez incluye tesis (acá, “memoria”). Luego se puede seguir un <b>master</b> (unos 2 años, típicamente con tesis) y un <b>doctorado</b>, que consiste en desarrollar una investigación original.</p>
+  </div>
+</div>
+</section>
+
+<section id="historia">
+<h2>Historia de la ingeniería</h2>
+<p class="lead">La ingeniería como concepto existe desde la antigüedad, con inventos como la polea, la rueda o la palanca: explotan mecanismos básicos de la mecánica para crear herramientas útiles, igual que la ingeniería actual.</p>
+<div class="box def"><div class="bt">Las seis máquinas simples (conocidas desde la antigüedad)</div>
+<p><b>1.</b> La palanca · <b>2.</b> Rueda y eje · <b>3.</b> Polea · <b>4.</b> Plano inclinado · <b>5.</b> Cuña · <b>6.</b> Tornillo</p></div>
+
+<div class="tw"><table>
+<thead><tr><th>Época</th><th>Hitos de la clase</th></tr></thead>
+<tbody>
+<tr><td><b>Antigüedad</b></td><td>Zigurats babilonios, pirámides y templos egipcios, canalizaciones chinas, terrazas de cultivo incas, pirámides y ciudades mayas. En <b>Kush</b>, la <b>saqia</b> (elevador de cubos movido por animales o personas, siglo IV a.C.), embalses para regular el riego e ingenieros militares que construían caminos. En <b>Persia</b>, las primeras máquinas útiles movidas por agua: <b>ruedas hidráulicas y molinos</b> (siglo IV a.C.).</td></tr>
+<tr><td><b>Grecia, China y Roma</b></td><td>Máquinas civiles y militares. Los inventos de <b>Arquímedes</b> (probablemente exagerados) defendieron Siracusa. El <b>mecanismo de Anticitera</b>, operado a mano, predecía posiciones de los astros y eclipses por décadas y seguía el ciclo de 4 años de las olimpíadas. Ejércitos chinos y romanos usaban <b>ballestas y catapultas</b>. En China se inventó el <b>sismógrafo</b>.</td></tr>
+<tr><td><b>Edad Media</b></td><td><b>Bizancio</b> conservó manuscritos griegos y aportó el <b>fuego griego</b> (sustancia inflamable usada como arma) y la iglesia de <b>Santa Sofía</b> (532–537). En la <b>edad de oro islámica</b>, tras traducir textos griegos, persas y romanos, aparecen los primeros usos prácticos del viento: <b>molinos y bombas de viento</b>. En <b>India</b>, máquinas para la industria del algodón.</td></tr>
+<tr><td><b>Revolución industrial</b></td><td><b>Newcomen</b> construye la primera máquina a vapor práctica para bombear agua de minas de carbón en Inglaterra (la clase dice 1716; ver erratas). Inicia la revolución industrial y la fabricación en serie. En el <b>siglo XVIII</b> “ingeniería” empieza a usarse como nombre de profesión, aplicando matemáticas y ciencia a la producción (las “artes mecánicas”).</td></tr>
+<tr><td><b>Época moderna</b></td><td><b>Mecánica:</b> los inventos de <b>Savery y Watt</b> y la mantención de máquinas especializadas. <b>Eléctrica:</b> Volta, Faraday, Ohm, el motor eléctrico y las redes de telégrafo; profesión a fines del siglo XIX. <b>Electrónica:</b> nace del trabajo de Maxwell y Hertz; tubos de vacío, radio, transistor y circuitos integrados. <b>Química:</b> nace en la revolución industrial por la necesidad de nuevos materiales y producción a gran escala. <b>Aeronáutica:</b> diseño de aviones, desde el trabajo pionero de inicios del siglo XX.</td></tr>
+</tbody></table></div>
+
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">C1 2025-1 · P4 · 20 pts</span></div>
+<p>“Esboce la historia de la ingeniería.” La pauta la organiza en cuatro bloques de 5 puntos: bases antiguas (rueda, polea, palanca) y nacimiento como <b>construcción de máquinas militares</b> (formalizada en el imperio romano; <i>engineer</i> hacia 1325); separación de la <b>ingeniería civil</b> al madurar las obras civiles; con el renacimiento europeo, en el siglo XVIII, la <b>ingeniería mecánica</b>; y la <b>diversificación</b> por los fenómenos y teorías de los siglos XVIII y XIX (eléctrica, química), y en el XX la aeronáutica, la electrónica y, últimamente, la informática.</p>
+<div class="pts"><span>Inicios, ingeniería militar</span><span>5</span><span>Ingeniería civil</span><span>5</span><span>Ingeniería mecánica</span><span>5</span><span>Diversificación en los siglos XVIII a XX</span><span>5</span></div>
+</div>
+<div class="box tip"><div class="bt">Truco · no hagas una lista de inventos</div>
+<p>La pauta no premia nombrar zigurats y molinos, sino la <b>evolución de la profesión</b>: militar → civil → mecánica → eléctrica, química, electrónica, aeronáutica, informática. Usa los inventos solo como ejemplos dentro de cada bloque.</p></div>
+</section>
+
+<section id="t12-preguntas">
+<h2>Preguntas del tema</h2>
+<p class="lead">Las de certámenes con pauta y respuesta modelo: <a class="inl" href="22-Ejercicios.html#e23">E23 (ciencia vs ingeniería y definición)</a> y <a class="inl" href="22-Ejercicios.html#e40">E40 (historia)</a>.</p>
+
+<details class="ex"><summary>1 · Defina ingeniería <span class="tag">R 2025-2</span></summary>
+<div class="body"><p>Según la RAE, el conjunto de conocimientos orientados a la invención y utilización de técnicas para el aprovechamiento de los recursos naturales o para la actividad industrial. Se apoya en los resultados de la ciencia y busca soluciones efectivas y realizables a problemas prácticos: “un ingeniero halla soluciones viables en plazo y a costo aceptables a problemas prácticos”.</p></div></details>
+
+<details class="ex"><summary>2 · ¿De dónde viene la palabra “ingeniero” y qué significaba “engineer” en 1325? <span class="tag">etimología</span></summary>
+<div class="body"><p>De “ingenio”, en el sentido de máquina o artificio mecánico. En inglés, hacia 1325, <i>engineer</i> era el constructor de máquinas militares, como catapultas.</p></div></details>
+
+<details class="ex"><summary>3 · ¿Cómo nació la distinción entre ingeniería militar y civil? <span class="tag">historia</span></summary>
+<div class="body"><p>La ingeniería nació como construcción de máquinas militares. Cuando el diseño y construcción de obras civiles, como puentes y edificios, maduró como disciplina técnica, se empezó a llamar “ingeniería civil” en contraste con la militar.</p></div></details>
+
+<details class="ex"><summary>4 · ¿Cuáles son las seis máquinas simples? <span class="tag">lista</span></summary>
+<div class="body"><p>Palanca, rueda y eje, polea, plano inclinado, cuña y tornillo.</p></div></details>
+
+<details class="ex"><summary>5 · ¿Qué distinguía al ingeniero civil del de ejecución en Chile? <span class="tag">Chile</span></summary>
+<div class="body"><p>El ingeniero civil tenía licenciatura en ciencias de la ingeniería (carrera de 6 años) y diseñaba; el de ejecución no tenía licenciatura (4 años) y operaba. Hoy las carreras convergen a 5 años y las de ejecución desaparecen.</p></div></details>
+
+<details class="ex"><summary>6 · ¿Qué máquina inicia la revolución industrial según la clase? <span class="tag">historia</span></summary>
+<div class="body"><p>La máquina a vapor de Newcomen, construida para bombear agua de las minas de carbón en Inglaterra. Posibilitó la fabricación en serie.</p></div></details>
+</section>
+
+<div class="pnav"><a href="11-Metodo-cientifico.html"><small>← Anterior</small>Método científico</a><a class="nx" href="13-Computacion.html"><small>Siguiente →</small>Computación</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c2-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>

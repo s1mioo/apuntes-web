@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Gabriel Quezada">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Razonamiento y falacias · Infosoc C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+/*c2-extra*/
+  .pages .pgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:10px 4px 0}
+  .pages .pgrp:first-child{margin-top:0}
+  .pages span.off{display:flex;gap:9px;align-items:center;font-size:13px;padding:6px 9px;border-radius:8px;
+    border:1px dashed var(--line);line-height:1.25;opacity:.5;cursor:default}
+  .pages span.off b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--code);
+    color:var(--muted);font-size:11.5px}
+  .pages a b{font-size:11px}
+  .nc{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--no-soft);
+    color:var(--no);margin-left:2px;font-style:normal;vertical-align:1px;white-space:nowrap}
+  .soon{border-bottom:1px dashed var(--muted);color:var(--muted)}
+  .box.ana p+p{margin-top:6px}
+  .box.nc{border-left-color:var(--no);background:var(--no-soft)} .box.nc .bt{color:var(--no)}
+  .lic{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:700} .nope{color:var(--no);font-weight:700}
+  .mnemo{font-size:15px;background:var(--panel);border:1px dashed var(--brand);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .mnemo b{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T3</div>
+    <div><h1>Razonamiento y falacias</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><div class="pgrp">Inicio</div><a href="0-Guia-de-estudio-C2.html"><b>★</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 21</small></span></a><div class="pgrp">Materia del C1</div><a href="1-Proyectos.html"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></a><a href="2-Definiciones.html"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></a><a href="3-Falacias.html" class="cur"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></a><a href="4-Sesgos-cognitivos.html"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></a><a href="5-Pensamiento-critico.html"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></a><a href="6-Resolver-problemas.html"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></a><a href="7-Etica-y-moral.html"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></a><a href="8-Etica-antiguedad.html"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></a><a href="9-Etica-moderna.html"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></a><a href="10-Sociedades.html"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></a><a href="11-Metodo-cientifico.html"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></a><a href="12-Ingenieria.html"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></a><a href="13-Computacion.html"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></a><a href="13b-Resumen-C1.html"><b>Σ</b><span>Resumen contenidos Certamen 1<br><small style="color:var(--muted)">lo esencial de 1 a 13</small></span></a><div class="pgrp">Materia nueva del C2</div><a href="14-Procesamiento-datos.html"><b>14</b><span>Procesamiento de datos<br><small style="color:var(--muted)">historia y minería de datos</small></span></a><a href="15-Impacto.html"><b>15</b><span>Impacto de la tecnología<br><small style="color:var(--muted)">lo bueno y lo malo</small></span></a><a href="16-Aspectos-eticos.html"><b>16</b><span>Aspectos éticos<br><small style="color:var(--muted)">códigos, dilemas, ética profesional</small></span></a><a href="16b-Inteligencia-artificial.html"><b>XX</b><span>Inteligencia artificial<br><small style="color:var(--muted)">expertos, genéticos, redes, LLM</small></span></a><a href="17-Propiedad-intelectual.html"><b>17</b><span>Propiedad intelectual<br><small style="color:var(--muted)">autor, patentes, marcas, secretos</small></span></a><a href="18-Codigo-abierto.html"><b>18</b><span>Código abierto<br><small style="color:var(--muted)">GPL, BSD, OSI, Creative Commons</small></span></a><a href="19-Proteccion-datos.html"><b>19</b><span>Protección de datos <i class="nc">no pasada</i><br><small style="color:var(--muted)">GDPR, leyes chilenas, CRA</small></span></a><a href="20-Desarrollo.html"><b>20</b><span>Desarrollo de software <i class="nc">no pasada</i><br><small style="color:var(--muted)">máximas y deuda técnica</small></span></a><a href="21-Codigo-ACM.html"><b>21</b><span>Código de ética ACM<br><small style="color:var(--muted)">las 4 secciones</small></span></a><div class="pgrp">Práctica</div><a href="22-Ejercicios.html"><b>✎</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a><a href="23-Flashcards.html"><b>⇄</b><span>Flashcards<br><small style="color:var(--muted)">toda la materia</small></span></a><div class="pgrp">Complemento</div><a href="24-Extra.html"><b>+</b><span>Extra<br><small style="color:var(--muted)">probablemente no entra</small></span></a></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 3</div><a href="#t3-inicio">Qué pesa y qué estudiar</a><a href="#validez">Validez y solidez</a><a href="#falacia">Qué es una falacia</a><a href="#catalogo">Catálogo de falacias</a><a href="#evitar">Cómo evitarlas</a><a href="#vs-sesgo">Falacia vs sesgo cognitivo</a><div class="grp">Práctica</div><a href="#t3-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+<div class="box warn"><div class="bt">Página copiada del C1</div><p>Es la misma página que se usó para el C1, sin los videos. Lo que dice sobre el peso de cada tema y los certámenes se refiere al <b>C1</b>; para el C2 mira <a class="inl" href="0-Guia-de-estudio-C2.html#g-temario">qué entra y cuánto pesa</a>, el <a class="inl" href="13b-Resumen-C1.html">resumen del C1</a> y los <a class="inl" href="22-Ejercicios.html">ejercicios</a>, donde las preguntas tienen la numeración nueva.</p></div>
+<section id="t3-inicio">
+<h2>Tema 3 · Razonamiento riguroso y falacias</h2>
+<p class="lead">Clase <code>03-razonar-hnd.pdf</code>. Qué hace que un argumento sea válido y sólido, qué es una falacia y un catálogo de 28 falacias comunes, con ideas para no caer en ellas.</p>
+
+<div class="hero">
+  <div class="big">Peso en el certamen: el más alto de todos</div>
+  <div class="sub">Falacias salió en <b>los C1 de 2025-1 y 2025-2</b> (15 pts cada vez), en el <b>recuperativo 2025-2</b> (20 pts) y, comparada con los sesgos, en los <b>recuperativos 2025-1 y 2026-1</b> (20 y 15 pts). Cinco de nueve certámenes. La pregunta es casi siempre la misma: <i>defina falacia y explique tres</i>.</div>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder escribir</h5>
+    <p>· La <b>definición de falacia</b>, palabra por palabra.</p>
+    <p>· <b>Tres falacias</b> con nombre, traducción, qué son, un ejemplo y por qué fallan.</p>
+    <p>· <b>Válido vs sólido</b>, con un ejemplo de cada.</p>
+    <p>· La diferencia entre <b>falacia y sesgo cognitivo</b>.</p>
+  </div>
+  <div class="card"><h5>Dónde está</h5>
+    <p><b>Diapositivas</b> <code>03-razonar-hnd.pdf</code>. El profe cita la <a class="inl" href="https://iep.utm.edu/fallacy/" target="_blank" rel="noopener">lista de la Internet Encyclopedia of Philosophy</a> (inmensa) y la de Don Lindsay.</p>
+    <p>Las sugerencias para evitarlas vienen del <a class="inl" href="https://writingcenter.unc.edu/tips-and-tools/fallacies/" target="_blank" rel="noopener">Writing Center de UNC Chapel Hill</a>.</p>
+  </div>
+  <div class="card"><h5>Plan para este tema</h5>
+    <p>1. Definición + validez/solidez (10 min).</p>
+    <p>2. Elegir <b>tus 4 falacias</b> y dominarlas con ejemplo propio (20 min).</p>
+    <p>3. Hojear el resto del catálogo y hacer el quiz del final (20 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="validez">
+<h2>Validez y solidez</h2>
+<p class="lead">En inglés <i>validity</i> y <i>soundness</i>. Son dos preguntas distintas sobre un argumento: ¿la conclusión se sigue de las premisas?, y ¿las premisas son verdaderas?</p>
+<div class="box def">
+  <div class="bt">Definiciones</div>
+  <p><b>Válido:</b> las premisas implican la conclusión. Si la conclusión es consecuencia lógica de las premisas, el argumento es <b>deductivamente válido</b>.</p>
+  <p><b>Sólido:</b> es válido <b>y además</b> sus premisas son verdaderas.</p>
+  <p><b>Inducción:</b> deducir una regla general a partir de casos particulares. <b>No es deductivamente válida</b>, pero es la única herramienta con que contamos para aprender del mundo.</p>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Válido y sólido</h5><p>Todos los hombres son mortales. Sócrates es un hombre. Luego, Sócrates es mortal.</p><p style="color:var(--muted)">La lógica funciona y las premisas son ciertas.</p></div>
+  <div class="card"><h5>Válido pero no sólido</h5><p>Los aviones supersónicos vuelan más rápido que el sonido. El Subaru Impreza es un avión supersónico. Luego, el Subaru vuela más rápido que el sonido.</p><p style="color:var(--muted)">La lógica funciona, pero la segunda premisa es falsa (es un auto).</p></div>
+  <div class="card"><h5>No válido</h5><p>Todos los conejos son mortales. Sócrates es mortal. Luego, Sócrates es un conejo.</p><p style="color:var(--muted)">Premisas verdaderas, pero la conclusión no se sigue (es “afirmar el consecuente”).</p></div>
+  <div class="card"><h5>Inducción</h5><p>Todos los cisnes observados son blancos. Luego, todos los cisnes son blancos.</p><p style="color:var(--muted)">Falso: en Australia hay cisnes negros, descubiertos por europeos en 1697.</p></div>
+</div>
+
+<div class="box tip">
+  <div class="bt">Truco · cómo recordar cuál es cuál</div>
+  <p><b>Válido</b> mira la <b>forma</b> (la “tubería” lógica). <b>Sólido</b> mira además el <b>contenido</b> (lo que entra por la tubería). Todo argumento sólido es válido; no todo argumento válido es sólido. Una tubería perfecta con agua sucia entrega agua sucia.</p>
+</div>
+</section>
+
+<section id="falacia">
+<h2>Qué es una falacia</h2>
+<div class="box def">
+  <div class="bt">Definición del ramo (memorízala tal cual)</div>
+  <p>Una falacia es un <b>paso ilógico en un argumento</b>. En el discurso académico o profesional, un <b>argumento</b> es una conclusión o una afirmación con supuestos o razones que apoyan la afirmación.</p>
+</div>
+<p>Ejemplo de argumento de la clase: “El azul es un mal color, ya que se asocia a la tristeza.” Tiene conclusión y razón, así que es un argumento; pero la razón es discutible, porque hay quien asocia el azul a la calma.</p>
+<div class="box pauta"><div class="bt"><span class="chk"></span>La versión larga de la pauta<span class="ref">Recuperativo 2025-2 · P2</span></div>
+<p>“Una falacia es una forma de razonar errónea, ya sea porque <b>no es válida</b> (las premisas no permiten concluir lo que se indica) o porque <b>no es sólida</b> (las premisas no se sabe si son ciertas, estamos razonando sin bases).” Esa pregunta pedía además, para cada falacia, “indicar cómo satisface su definición”: es decir, <b>explicar dónde está el paso ilógico</b>. En la pauta casi siempre es “no considera el argumento”.</p>
+</div>
+<ul>
+<li><b>Que un argumento sea falaz no demuestra que su conclusión sea falsa.</b> Solo muestra que ese argumento no la sostiene.</li>
+<li>Están en la política, los argumentos legales, los medios y la vida diaria, muchas veces sin intención. <b>Todos las cometemos.</b></li>
+<li>Como <i>parecen</i> lógicas, las usan los embaucadores. Reconocerlas sirve para no ser engañado y para no engañar.</li>
+</ul>
+</section>
+
+<section id="catalogo">
+<h2>Catálogo de falacias</h2>
+<p class="lead">Las 28 de la clase, agrupadas en cinco familias para que sea más fácil recordarlas. La agrupación es de este resumen, no del profe (él dice que la Enciclopedia de Filosofía en Internet “intenta clasificarlas”). Los ejemplos marcados “clase” son los de las diapositivas; el resto son propios.</p>
+
+<h3>1 · Atacan a la persona o a la fuente, no al argumento</h3>
+<div class="tw"><table>
+<thead><tr><th>Falacia</th><th>Qué es</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td><b>Ad hominem</b><br><span class="yrs">“al hombre”</span></td><td>Desechar un argumento desacreditando a quien lo emite. Variante <b>tu quoque</b> (“¿y tú?”): atacar al contrincante. Afín: <b>whataboutism</b> (“¿y qué hay de…?”): sacar una supuesta falta del otro.</td><td>“No le hagas caso a su propuesta de seguridad, si ni siquiera terminó la carrera.” / “¿Me dices que no copie? Tú copiaste en el C1.”</td></tr>
+<tr><td><b>Ad verecundiam</b><br><span class="yrs">apelar a la autoridad</span></td><td>Citar una autoridad, sobre todo <b>fuera de su área</b>, como apoyo.</td><td>“Un futbolista famoso dice que esta criptomoneda es segura, así que lo es.”</td></tr>
+<tr><td><b>Genético</b></td><td>Apoyar o desacreditar algo por su <b>origen</b>, cuando el origen es irrelevante.</td><td>Clase: “Elegir un regalo por lo que dijo el horóscopo es ridículo. Tú misma dijiste que no crees en los horóscopos.”</td></tr>
+</tbody></table></div>
+
+<h3>2 · Apelan a emociones o a presión</h3>
+<div class="tw"><table>
+<thead><tr><th>Falacia</th><th>Qué es</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td><b>Ad baculum</b><br><span class="yrs">“del garrote”</span></td><td>“Convencer” al adversario amenazándolo de alguna forma.</td><td>“Si no apoyas mi propuesta, recuerda quién evalúa tu desempeño.”</td></tr>
+<tr><td><b>Apelar al miedo</b></td><td>Apelar a un miedo del interlocutor.</td><td>“Si no instalas este antivirus, te van a vaciar la cuenta del banco.”</td></tr>
+<tr><td><b>Apelar a la simpatía</b></td><td>Victimizarse para evitar responsabilidades. Similares: apelar a agrado, rabia, desprecio u otras emociones.</td><td>“No entregué porque tuve un semestre muy difícil; merezco que no me descuenten.”</td></tr>
+<tr><td><b>Ad populum</b><br><span class="yrs">de popularidad</span></td><td>Dar como apoyo a una posición el que sea popular.</td><td>“Todo el mundo usa esa librería, así que tiene que ser la mejor.”</td></tr>
+<tr><td><b>Ad consequentiam</b><br><span class="yrs">de las consecuencias</span></td><td>Argüir que una creencia es falsa porque implica algo que prefiero no creer, o verdadera porque me gusta lo que implica.</td><td>Clase: “Imposible que Juanito haya hecho eso. Es de mi iglesia, un cristiano no se comporta así.”</td></tr>
+<tr><td><b>Del mundo justo</b></td><td>Deducir algo suponiendo que el mundo es justo. El mundo no tiene esa obligación.</td><td>“Si lo despidieron, algo habrá hecho.”</td></tr>
+<tr><td><b>Rótulos cargados</b></td><td>Usar palabras con carga emocional o reemplazar términos neutros por otros cargados.</td><td>Llamar “parásitos” a los usuarios del plan gratuito en vez de “usuarios gratuitos”.</td></tr>
+</tbody></table></div>
+
+<h3>3 · Fallas de lógica: la conclusión no se sigue</h3>
+<div class="tw"><table>
+<thead><tr><th>Falacia</th><th>Qué es</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td><b>Non sequitur</b><br><span class="yrs">“no se sigue”</span></td><td>Obtener una conclusión que no se deduce de las premisas.</td><td>“Es el mejor programador del equipo, así que será un excelente jefe.”</td></tr>
+<tr><td><b>Afirmar el consecuente</b></td><td>Dar vuelta la lógica: de “si P entonces Q” y “Q”, concluir “P”.</td><td>Clase: “Todos los gatos mueren; Sócrates murió; por tanto, Sócrates era un gato.”</td></tr>
+<tr><td><b>Petitio principii</b><br><span class="yrs">petición de principio, begging the question</span></td><td>Incluir entre las premisas algo equivalente a la conclusión. Es un razonamiento válido, pero <b>no aporta información nueva</b>.</td><td>“Este sistema es seguro porque no tiene vulnerabilidades.”</td></tr>
+<tr><td><b>Post hoc, ergo propter hoc</b><br><span class="yrs">“después de ello, luego por ello”</span></td><td>Confundir una relación <b>temporal</b> con una <b>causal</b>.</td><td>“Instalé la actualización y al día siguiente falló el disco: la actualización rompió el disco.”</td></tr>
+<tr><td><b>Del jugador</b><br><span class="yrs">gambler’s fallacy</span></td><td>Suponer que los resultados previos influyen en el siguiente, cuando son independientes.</td><td>Clase: “En los diez últimos lanzamientos del dado no ha salido seis, ahora sí debe salir.”</td></tr>
+<tr><td><b>Falso dilema</b></td><td>Plantear solo dos alternativas cuando hay otras. Variante: considerar solo algunas posibilidades.</td><td>“O reescribimos todo desde cero o el proyecto fracasa.”</td></tr>
+<tr><td><b>Falsa analogía</b></td><td>Presentar como análogas situaciones distintas, para ganar simpatías.</td><td>“Un país es como una empresa: si no da utilidades, hay que despedir gente.”</td></tr>
+<tr><td><b>Equívoco</b></td><td>Usar un término con varias acepciones para confundir.</td><td>“La gravedad es una ley; toda ley la dicta un legislador; luego alguien dictó la gravedad.”</td></tr>
+<tr><td><b>Teleológica</b></td><td>Argüir que como algo cumple un propósito, ese propósito lo explica; a menudo, atribuirlo a un diseño. (Teleología: estudio de los fines; Aristóteles creía que las cosas tienden a un fin, como la semilla al árbol.)</td><td>Clase: “El universo permite la vida. Por lo tanto, soportar vida es el propósito del universo.”</td></tr>
+</tbody></table></div>
+
+<h3>4 · Manejo tramposo de la evidencia</h3>
+<div class="tw"><table>
+<thead><tr><th>Falacia</th><th>Qué es</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td><b>Suprimir evidencia</b><br><span class="yrs">cherry picking</span></td><td>Omitir información que se sabe o sospecha relevante; elegir solo lo que apoya la aseveración.</td><td>Mostrar solo los benchmarks donde tu algoritmo gana.</td></tr>
+<tr><td><b>Ignorar evidencia</b></td><td>Omitir lo que no queremos considerar, por miedo a que produzca trabajo extra o confusión.</td><td>No revisar los logs de error porque si aparece algo habrá que arreglarlo.</td></tr>
+<tr><td><b>Estadísticas defectuosas</b></td><td>Dar estadísticas sin bases, sin diseño del estudio o manipuladas, aprovechando lo convincente de los números. (“Mentiras, malditas mentiras y estadísticas”, Mark Twain.)</td><td>“El 90 % de los usuarios ama la app” (encuesta a 10 personas, todas del equipo).</td></tr>
+<tr><td><b>Generalización apresurada</b></td><td>Generalizar desde casos restringidos, quizás elegidos a propósito.</td><td>“Probé la app dos veces y se cayó: es pésima.”</td></tr>
+<tr><td><b>Apelar a la ignorancia</b></td><td>Argüir que la falta de evidencia (en contrario) apoya una posición.</td><td>“Nadie ha demostrado que los fantasmas no existan, así que existen.”</td></tr>
+<tr><td><b>Mover la carga de la prueba</b><br><span class="yrs">shift the burden of proof</span></td><td>Cuando no hay evidencia a favor, exigir a la contraparte que demuestre lo contrario. Probar que algo es falso o no existe suele ser mucho más difícil.</td><td>“Demuéstrame que mi código tiene un bug; si no puedes, está correcto.”</td></tr>
+<tr><td><b>Falso escocés</b><br><span class="yrs">no true Scotsman</span></td><td>Desestimar un contraejemplo diciendo que no pertenece “de verdad” al grupo. Salva una generalización no justificada.</td><td>Clase: “Ningún escocés terminó la carrera.” “McDougal es escocés y la terminó.” “McDougal no es un verdadero escocés.”</td></tr>
+<tr><td><b>Alegato especial</b><br><span class="yrs">special pleading</span></td><td>Alegar una excepción a una regla general sin justificarla.</td><td>Clase: “Nadie está por sobre la ley y todos deben apoyar a la policía. Por supuesto, si me preguntan por los robos a los vecinos no digo nada: no soy soplón.”</td></tr>
+</tbody></table></div>
+
+<h3>5 · Desvían la discusión</h3>
+<div class="tw"><table>
+<thead><tr><th>Falacia</th><th>Qué es</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td><b>Hombre de paja</b><br><span class="yrs">straw man</span></td><td>Caricaturizar la posición contraria para luego demoler la caricatura.</td><td>A: “Deberíamos escribir más tests.” B: “O sea, ¿quieres pasar el semestre escribiendo tests y no entregar nada?”</td></tr>
+<tr><td><b>Pista falsa</b><br><span class="yrs">red herring</span></td><td>Introducir un tema que distrae la atención del argumento.</td><td>Ante un bug en tu módulo: “Bueno, pero el equipo de diseño también se atrasó.”</td></tr>
+<tr><td><b>Pendiente resbaladiza</b><br><span class="yrs">slippery slope</span></td><td>Presentar la propuesta como primer paso que inevitablemente llevará a un final terrible.</td><td>“Si aceptamos una entrega un día tarde, después pedirán una semana y al final nadie entregará.”</td></tr>
+<tr><td><b>Olvidar lo central</b></td><td>Llegar a una conclusión distinta a la anunciada.</td><td>Anunciar que se probará que el plan es barato y terminar concluyendo que es “innovador”.</td></tr>
+</tbody></table></div>
+
+<div class="box tip">
+  <div class="bt">Truco · llega al certamen con 4 falacias elegidas</div>
+  <p>La pregunta pide tres; lleva cuatro por si una no te sale. Buenas candidatas porque tienen nombre en latín, traducción y un ejemplo fácil: <b>ad hominem</b>, <b>post hoc ergo propter hoc</b>, <b>hombre de paja</b> y <b>falso dilema</b>. Para cada una escribe: <b>nombre (traducción)</b> → <b>qué es</b> → <b>ejemplo</b> → <b>dónde está el error</b> (una línea).</p>
+</div>
+</section>
+
+<section id="evitar">
+<h2>Cómo evitarlas</h2>
+<p class="lead">Sugerencias de la Universidad de Carolina del Norte en Chapel Hill que cita la clase.</p>
+<ol>
+<li><b>Suponga que está en desacuerdo con su propio argumento.</b> ¿Qué partes parecen dudosas? ¿Cuáles son fáciles de atacar?</li>
+<li><b>Liste sus puntos principales y la evidencia de cada uno.</b> Si para alguno la evidencia es pobre, revíselo.</li>
+<li><b>Cuidado con las afirmaciones generales</b> (“todos”, “ninguno”, “siempre”, “nunca”). A veces son correctas, pero exigen evidencia contundente.</li>
+</ol>
+</section>
+
+<section id="vs-sesgo">
+<h2>Falacia vs sesgo cognitivo</h2>
+<p class="lead">Salió en los recuperativos 2025-1 (20 pts) y 2026-1 (15 pts). Conecta este tema con el siguiente.</p>
+<div class="tw"><table>
+<thead><tr><th></th><th>Falacia</th><th>Sesgo cognitivo</th></tr></thead>
+<tbody>
+<tr><td><b>Qué es</b></td><td>Una forma de <b>razonamiento erróneo</b>: un paso ilógico en un argumento.</td><td>Un patrón sistemático de desviarse de la racionalidad al juzgar: el <b>impulso a decidir sin analizar</b>, dejándose llevar por emociones o prejuicios.</td></tr>
+<tr><td><b>Dónde ocurre</b></td><td>En el <b>argumento</b>, que se puede escribir y revisar.</td><td>En la <b>mente</b> de quien juzga, antes de cualquier argumento.</td></tr>
+<tr><td><b>Cómo se ve</b></td><td>Se <b>disfraza de razonamiento lógico</b>.</td><td>Muchas veces <b>ni siquiera se plantea como razonamiento</b>.</td></tr>
+<tr><td><b>En común</b></td><td colspan="2">Ambas llevan a conclusiones erróneas, y <b>muchas falacias funcionan porque apelan a un sesgo</b>: el <i>ad populum</i> convence por nuestro anhelo de pertenecer al grupo (sesgo de causa popular, tribalismo).</td></tr>
+</tbody></table></div>
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">Recuperativo 2025-1 · P1 · 20 pts</span></div>
+<div class="pts"><span>Definir falacia</span><span>5</span><span>Definir sesgo cognitivo</span><span>5</span><span>Discutir la relación entre ambos</span><span>10</span></div>
+<p>La mitad del puntaje está en la relación. No basta con dos definiciones: hay que decir qué tienen en común y en qué difieren, con un ejemplo que muestre una falacia apoyada en un sesgo.</p>
+</div>
+</section>
+
+<section id="t3-preguntas">
+<h2>Preguntas del tema</h2>
+<p class="lead">Las de certámenes con pauta y respuesta modelo: <a class="inl" href="22-Ejercicios.html#e13">E13 (falacias)</a> y <a class="inl" href="22-Ejercicios.html#e12">E12 (falacia vs sesgo)</a>. Acá, un quiz para reconocerlas.</p>
+
+<h3>Quiz · ¿qué falacia es?</h3>
+<div class="q">
+<details><summary>1. “El ministro dice que el proyecto de ley es bueno, pero ¿qué va a saber? Si estuvo involucrado en un escándalo hace años.”</summary><p><b>Ad hominem.</b> Ataca a la persona en vez de discutir el proyecto.</p></details>
+<details><summary>2. “Desde que llegó el nuevo jefe bajaron las ventas. Él es el problema.”</summary><p><b>Post hoc, ergo propter hoc.</b> Que una cosa ocurra después de otra no prueba que la cause.</p></details>
+<details><summary>3. “O estás con nosotros o estás contra nosotros.”</summary><p><b>Falso dilema.</b> Hay más posiciones posibles (neutral, de acuerdo en parte…).</p></details>
+<details><summary>4. “Si dejamos que los alumnos usen calculadora, después querrán usar el computador y terminarán sin saber sumar.”</summary><p><b>Pendiente resbaladiza.</b> Presenta una cadena inevitable hacia un final terrible sin justificar cada paso.</p></details>
+<details><summary>5. “Este champú es el más vendido del país, así que debe ser el mejor.”</summary><p><b>Ad populum.</b> La popularidad no demuestra calidad.</p></details>
+<details><summary>6. “Ningún informático de verdad usa modo claro en el editor.”</summary><p><b>Falso escocés.</b> Cualquier contraejemplo se descarta como “no de verdad”.</p></details>
+<details><summary>7. “Nadie ha probado que la homeopatía no funcione, así que funciona.”</summary><p><b>Apelar a la ignorancia</b> (también se puede argumentar <b>mover la carga de la prueba</b>). La falta de evidencia en contra no es evidencia a favor.</p></details>
+<details><summary>8. “Salieron 5 caras seguidas en la moneda; la próxima tiene que ser sello.”</summary><p><b>Del jugador.</b> Cada lanzamiento es independiente del anterior.</p></details>
+<details><summary>9. “Mi rival quiere bajar el presupuesto de defensa. O sea, quiere dejar al país indefenso.”</summary><p><b>Hombre de paja.</b> Exagera la posición contraria para atacarla con facilidad.</p></details>
+<details><summary>10. “Un Premio Nobel de Química dijo que la vitamina C cura el resfrío.”</summary><p><b>Ad verecundiam.</b> Es una autoridad fuera de su área (además, la evidencia no lo respalda).</p></details>
+</div>
+
+<details class="ex"><summary>1 · Defina falacia <span class="tag">definición literal</span></summary>
+<div class="body"><p>Un paso ilógico en un argumento. Un argumento es una conclusión o afirmación con supuestos o razones que la apoyan.</p></div></details>
+
+<details class="ex"><summary>2 · Diferencie argumento válido y sólido, con ejemplos <span class="tag">validez</span></summary>
+<div class="body"><p><b>Válido:</b> las premisas implican la conclusión. <b>Sólido:</b> válido y con premisas verdaderas. Ejemplo sólido: hombres mortales, Sócrates hombre, Sócrates mortal. Ejemplo válido no sólido: aviones supersónicos más rápidos que el sonido, el Subaru es un avión supersónico, el Subaru vuela más rápido que el sonido (la premisa es falsa).</p></div></details>
+
+<details class="ex"><summary>3 · ¿Por qué la inducción no es deductivamente válida? ¿Por qué se usa igual? <span class="tag">inducción</span></summary>
+<div class="body"><p>Porque de casos particulares no se sigue lógicamente una regla general: siempre puede aparecer un caso distinto (los cisnes negros de Australia, 1697). Se usa porque es la única herramienta que tenemos para generalizar a partir de la experiencia.</p></div></details>
+
+<details class="ex"><summary>4 · ¿Si un argumento es falaz, su conclusión es falsa? <span class="tag">trampa</span></summary>
+<div class="body"><p>No. Que un argumento sea falaz solo muestra que ese argumento no sostiene la conclusión; la conclusión podría ser verdadera por otras razones.</p></div></details>
+
+<details class="ex"><summary>5 · ¿Por qué la petición de principio “en realidad es válida”? <span class="tag">detalle</span></summary>
+<div class="body"><p>Porque si la premisa es equivalente a la conclusión, la conclusión se sigue trivialmente. El problema es que no aporta información nueva: el argumento da por supuesto lo que debía demostrar.</p></div></details>
+
+<details class="ex"><summary>6 · Dé las tres sugerencias para evitar falacias <span class="tag">UNC</span></summary>
+<div class="body"><p>Suponer que uno está en desacuerdo con su propio argumento y ver qué partes son atacables; listar los puntos principales con su evidencia y revisar los de evidencia pobre; cuidar las afirmaciones generales (todos, ninguno, siempre, nunca), que requieren evidencia contundente.</p></div></details>
+</section>
+
+<div class="pnav"><a href="2-Definiciones.html"><small>← Anterior</small>Definiciones</a><a class="nx" href="4-Sesgos-cognitivos.html"><small>Siguiente →</small>Sesgos cognitivos</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c2-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>
