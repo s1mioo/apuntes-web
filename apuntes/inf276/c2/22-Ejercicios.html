@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Caleb Baez">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ejercicios · Infosoc C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+
+  .pages .pgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:10px 4px 0}
+  .pages .pgrp:first-child{margin-top:0}
+  .pages span.off{display:flex;gap:9px;align-items:center;font-size:13px;padding:6px 9px;border-radius:8px;
+    border:1px dashed var(--line);line-height:1.25;opacity:.5;cursor:default}
+  .pages span.off b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--code);
+    color:var(--muted);font-size:11.5px}
+  .pages a b{font-size:11px}
+  .nc{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--no-soft);
+    color:var(--no);margin-left:2px;font-style:normal;vertical-align:1px;white-space:nowrap}
+  .soon{border-bottom:1px dashed var(--muted);color:var(--muted)}
+  .box.ana p+p{margin-top:6px}
+  .box.nc{border-left-color:var(--no);background:var(--no-soft)} .box.nc .bt{color:var(--no)}
+  .lic{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:700} .nope{color:var(--no);font-weight:700}
+  .mnemo{font-size:15px;background:var(--panel);border:1px dashed var(--brand);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .mnemo b{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">EJ</div>
+    <div><h1>Ejercicios</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><div class="pgrp">Inicio</div><a href="0-Guia-de-estudio-C2.html"><b>★</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 21</small></span></a><div class="pgrp">Materia del C1</div><span class="off" title="Todavía no está publicada"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></span><span class="off" title="Todavía no está publicada"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></span><span class="off" title="Todavía no está publicada"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></span><span class="off" title="Todavía no está publicada"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></span><span class="off" title="Todavía no está publicada"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></span><span class="off" title="Todavía no está publicada"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></span><span class="off" title="Todavía no está publicada"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></span><span class="off" title="Todavía no está publicada"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></span><span class="off" title="Todavía no está publicada"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></span><span class="off" title="Todavía no está publicada"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></span><span class="off" title="Todavía no está publicada"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></span><span class="off" title="Todavía no está publicada"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></span><span class="off" title="Todavía no está publicada"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></span><span class="off" title="Todavía no está publicada"><b>Σ</b><span>Resumen contenidos Certamen 1<br><small style="color:var(--muted)">lo esencial de 1 a 13</small></span></span><div class="pgrp">Materia nueva del C2</div><span class="off" title="Todavía no está publicada"><b>14</b><span>Procesamiento de datos<br><small style="color:var(--muted)">historia y minería de datos</small></span></span><span class="off" title="Todavía no está publicada"><b>15</b><span>Impacto de la tecnología<br><small style="color:var(--muted)">lo bueno y lo malo</small></span></span><a href="16-Aspectos-eticos.html"><b>16</b><span>Aspectos éticos<br><small style="color:var(--muted)">códigos, dilemas, ética profesional</small></span></a><span class="off" title="Todavía no está publicada"><b>XX</b><span>Inteligencia artificial<br><small style="color:var(--muted)">expertos, genéticos, redes, LLM</small></span></span><a href="17-Propiedad-intelectual.html"><b>17</b><span>Propiedad intelectual<br><small style="color:var(--muted)">autor, patentes, marcas, secretos</small></span></a><a href="18-Codigo-abierto.html"><b>18</b><span>Código abierto<br><small style="color:var(--muted)">GPL, BSD, OSI, Creative Commons</small></span></a><span class="off" title="Todavía no está publicada"><b>19</b><span>Protección de datos <i class="nc">no pasada</i><br><small style="color:var(--muted)">GDPR, leyes chilenas, CRA</small></span></span><span class="off" title="Todavía no está publicada"><b>20</b><span>Desarrollo de software <i class="nc">no pasada</i><br><small style="color:var(--muted)">máximas y deuda técnica</small></span></span><span class="off" title="Todavía no está publicada"><b>21</b><span>Código de ética ACM<br><small style="color:var(--muted)">las 4 secciones</small></span></span><div class="pgrp">Práctica</div><a href="22-Ejercicios.html" class="cur"><b>✎</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a><span class="off" title="Todavía no está publicada"><b>⇄</b><span>Flashcards<br><small style="color:var(--muted)">toda la materia</small></span></span><div class="pgrp">Complemento</div><span class="off" title="Todavía no está publicada"><b>+</b><span>Extra<br><small style="color:var(--muted)">probablemente no entra</small></span></span></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Ejercicios</div><a href="#ej-inicio">Cómo está ordenado</a><a href="#nivel1">Nivel 1 · casi seguro</a><a href="#nivel2">Nivel 2 · muy probable</a><a href="#nivel3">Nivel 3 · probable</a><a href="#nivel4">Nivel 4 · posible</a><a href="#nivel5">Nivel 5 · poco probable</a></nav>
+</aside>
+<main class="content">
+<section id="ej-inicio" data-grp="Ejercicios" data-nav="Cómo está ordenado">
+<h2>Ejercicios · ordenados por probabilidad</h2>
+<p class="lead">Todas las preguntas de los <b>seis C2 y recuperativos</b> anteriores (2025-1, 2025-2 y 2026-1) más las del C1 que pueden repetirse, y preguntas inventadas al estilo del profe para las clases que nunca se han preguntado. Van de la más probable a la menos probable, con enunciado real, cómo corrigió la pauta y una respuesta modelo del largo que se espera.</p>
+
+<div class="hero">
+  <div class="big">Tres familias se llevan casi todo el puntaje</div>
+  <div class="sub"><b>Propiedad intelectual</b> (5 de 6 certámenes), <b>código abierto y licencias</b> (6 de 6) y <b>un caso ético</b> (6 de 6) sumaron entre <b>60 y 90 de los ~120 puntos</b> de cada C2. Si llevas listos E1 a E9, tienes el grueso del certamen.</div>
+</div>
+
+<div class="box def"><div class="bt">Cómo se calculó el orden</div>
+<p>Se contó en cuántos de los seis C2 y recuperativos salió cada pregunta (pesando más los C2) y si su clase se pasó este semestre. Los niveles:</p>
+<p><span class="pill t1">Nivel 1 · casi seguro</span> salió en casi todos los C2/recuperativos. <span class="pill t2">Nivel 2 · muy probable</span> materia del C1 que se repite en los C2/recuperativos, o pregunta de una clase ya pasada que salió en un certamen. <span class="pill t3">Nivel 3 · probable</span> salió en un C2 o recuperativo, pero su clase (19 o 20) probablemente no se pasó este semestre, o es del C1 y salió solo en recuperativos. <span class="pill t4">Nivel 4 · posible</span> clase pasada que nunca se ha preguntado (preguntas inventadas). <span class="pill t5">Nivel 5 · poco probable</span> materia del C1 que nunca ha salido en un C2 ni en un recuperativo.</p></div>
+
+<div class="box warn"><div class="bt">Tendencia: el C2 pregunta cada vez menos del C1</div>
+<p>Materia del C1 en cada C2: <b>2025-1:</b> 50 de 125 pts (sesgos, proyectos, Pólya). <b>2025-2:</b> 20 de 120 (ciencia). <b>2026-1:</b> 0 de 115. Los recuperativos, en cambio, sí mezclan mucho C1. Por eso lo del C1 queda en los niveles 2, 3 y 5.</p></div>
+
+<div class="tw"><table class="rank mini">
+<thead><tr><th>#</th><th>Pregunta</th><th>Nivel</th><th>Tema</th><th>Dónde salió</th><th>Pts</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><a class="inl" href="#e1">Propiedad intelectual: qué es, áreas y legislaciones</a></td><td><span class="pill t1">1</span></td><td>17</td><td>C2 25-1 · C2 25-2 · R 26-1 · C1 26-1</td><td>20-35</td></tr>
+<tr><td>2</td><td><a class="inl" href="#e2">Por qué la propiedad intelectual importa en informática</a></td><td><span class="pill t1">1</span></td><td>17</td><td>R 25-1 · R 25-2</td><td>25</td></tr>
+<tr><td>3</td><td><a class="inl" href="#e3">Código abierto (OSI) vs. libre (FSF) e impacto</a></td><td><span class="pill t1">1</span></td><td>18</td><td>C2 25-1 · C2 25-2</td><td>20-25</td></tr>
+<tr><td>4</td><td><a class="inl" href="#e4">Licencias GPL vs. BSD</a></td><td><span class="pill t1">1</span></td><td>18</td><td>R 25-1 · R 25-2</td><td>20</td></tr>
+<tr><td>5</td><td><a class="inl" href="#e5">Creative Commons y cuáles no son código abierto</a></td><td><span class="pill t1">1</span></td><td>18</td><td>C2 26-1 · R 26-1</td><td>15-35</td></tr>
+<tr><td>6</td><td><a class="inl" href="#e6">Caso ético: AllTogether (+ método)</a></td><td><span class="pill t1">1</span></td><td>16, 21</td><td>C2 25-1</td><td>30</td></tr>
+<tr><td>7</td><td><a class="inl" href="#e7">Caso ético: David y la página anónima</a></td><td><span class="pill t1">1</span></td><td>16</td><td>C2 26-1</td><td>35</td></tr>
+<tr><td>8</td><td><a class="inl" href="#e8">Caso ético: Jim Warren</a></td><td><span class="pill t1">1</span></td><td>16, 17</td><td>R 25-1</td><td>30</td></tr>
+<tr><td>9</td><td><a class="inl" href="#e9">Caso ético: el operador que vende datos</a></td><td><span class="pill t1">1</span></td><td>14, 19, 21</td><td>R 25-2 · R 26-1</td><td>20-30</td></tr>
+<tr><td>10</td><td><a class="inl" href="#e10">Responsabilidades éticas del profesional</a></td><td><span class="pill t2">2</span></td><td>16</td><td>C1 26-1</td><td>20</td></tr>
+<tr><td>11</td><td><a class="inl" href="#e11">Sesgos cognitivos: definición y tres</a></td><td><span class="pill t2">2</span></td><td>4</td><td>C2 25-1 · C1 25-2</td><td>15</td></tr>
+<tr><td>12</td><td><a class="inl" href="#e12">Falacia vs. sesgo cognitivo</a></td><td><span class="pill t2">2</span></td><td>3-4</td><td>R 25-1 · R 26-1</td><td>15-20</td></tr>
+<tr><td>13</td><td><a class="inl" href="#e13">Falacias: definición y tres ejemplos</a></td><td><span class="pill t2">2</span></td><td>3</td><td>R 25-2 · C1 25-1 · C1 25-2</td><td>15-20</td></tr>
+<tr><td>14</td><td><a class="inl" href="#e14">Ciencia: hecho, hipótesis, teoría</a></td><td><span class="pill t2">2</span></td><td>11</td><td>C2 25-2 · R 25-1 · C1 25-1</td><td>15-20</td></tr>
+<tr><td>15</td><td><a class="inl" href="#e15">Por qué fallan los proyectos</a></td><td><span class="pill t2">2</span></td><td>1, 20</td><td>C2 25-1 · R 25-2 · C1 25-2</td><td>15-30</td></tr>
+<tr><td>16</td><td><a class="inl" href="#e16">La estrategia de Pólya</a></td><td><span class="pill t2">2</span></td><td>6</td><td>C2 25-1 · C1 25-2</td><td>20</td></tr>
+<tr><td>17</td><td><a class="inl" href="#e17">Deuda técnica</a></td><td><span class="pill t3">3</span></td><td>20 <i class="nc">no pasada</i></td><td>C2 26-1</td><td>25</td></tr>
+<tr><td>18</td><td><a class="inl" href="#e18">Máximas para un proyecto de software</a></td><td><span class="pill t3">3</span></td><td>20 <i class="nc">no pasada</i></td><td>R 25-1</td><td>15</td></tr>
+<tr><td>19</td><td><a class="inl" href="#e19">Por qué la legislación de EE.UU. y la UE importa en Chile</a></td><td><span class="pill t3">3</span></td><td>19 <i class="nc">no pasada</i></td><td>C2 26-1 · C2 25-2</td><td>5-20</td></tr>
+<tr><td>20</td><td><a class="inl" href="#e20">GDPR y Cyber Resilience Act</a></td><td><span class="pill t3">3</span></td><td>19 <i class="nc">no pasada</i></td><td>C2 25-2</td><td>25</td></tr>
+<tr><td>21</td><td><a class="inl" href="#e21">Ley chilena de ciberseguridad</a></td><td><span class="pill t3">3</span></td><td>19 <i class="nc">no pasada</i></td><td>C2 25-2</td><td>15</td></tr>
+<tr><td>22</td><td><a class="inl" href="#e22">Ética antigua vs. moderna</a></td><td><span class="pill t3">3</span></td><td>8-9</td><td>R 26-1 · C1 25-1</td><td>15-20</td></tr>
+<tr><td>23</td><td><a class="inl" href="#e23">Defina ingeniería; ciencia vs. ingeniería</a></td><td><span class="pill t3">3</span></td><td>2, 12</td><td>R 25-2 · C1 26-1</td><td>15-20</td></tr>
+<tr><td>24</td><td><a class="inl" href="#e24">Navaja de Ockham; teoría falseable</a></td><td><span class="pill t3">3</span></td><td>2, 11</td><td>R 26-1</td><td>10-15</td></tr>
+<tr><td>25</td><td><a class="inl" href="#e25">Tecnología: aspectos positivos y negativos</a></td><td><span class="pill t3">3</span></td><td>13, 15</td><td>C1 25-1</td><td>20</td></tr>
+<tr><td>26</td><td><a class="inl" href="#e26">Inteligencia artificial: qué es y advertencias</a></td><td><span class="pill t4">4</span></td><td>XX</td><td>inventada</td><td>—</td></tr>
+<tr><td>27</td><td><a class="inl" href="#e27">Sistemas expertos, genéticos y redes neuronales</a></td><td><span class="pill t4">4</span></td><td>XX</td><td>inventada</td><td>—</td></tr>
+<tr><td>28</td><td><a class="inl" href="#e28">LLM y sus problemas</a></td><td><span class="pill t4">4</span></td><td>XX, 17</td><td>inventada</td><td>—</td></tr>
+<tr><td>29</td><td><a class="inl" href="#e29">Minería de datos y ética</a></td><td><span class="pill t4">4</span></td><td>14</td><td>inventada</td><td>—</td></tr>
+<tr><td>30</td><td><a class="inl" href="#e30">Procesamiento de datos comerciales</a></td><td><span class="pill t4">4</span></td><td>14</td><td>inventada</td><td>—</td></tr>
+<tr><td>31</td><td><a class="inl" href="#e31">Dilemas éticos, ética y ley</a></td><td><span class="pill t4">4</span></td><td>16</td><td>inventada</td><td>—</td></tr>
+<tr><td>32</td><td><a class="inl" href="#e32">El código de ética de la ACM</a></td><td><span class="pill t4">4</span></td><td>21</td><td>inventada</td><td>—</td></tr>
+<tr><td>33</td><td><a class="inl" href="#e33">Berna y obras derivadas</a></td><td><span class="pill t4">4</span></td><td>17</td><td>inventada</td><td>—</td></tr>
+<tr><td>34</td><td><a class="inl" href="#e34">Marcas: requisitos y protección</a></td><td><span class="pill t4">4</span></td><td>17</td><td>inventada</td><td>—</td></tr>
+<tr><td>35</td><td><a class="inl" href="#e35">Disonancia cognitiva</a></td><td><span class="pill t5">5</span></td><td>4</td><td>C1 26-1</td><td>15-20</td></tr>
+<tr><td>36</td><td><a class="inl" href="#e36">Ética vs. moral (Grecia y Roma)</a></td><td><span class="pill t5">5</span></td><td>7</td><td>C1 26-1</td><td>15-20</td></tr>
+<tr><td>37</td><td><a class="inl" href="#e37">Habilidades del pensamiento crítico</a></td><td><span class="pill t5">5</span></td><td>5</td><td>C1 25-2</td><td>20</td></tr>
+<tr><td>38</td><td><a class="inl" href="#e38">Puntos de vista alternativos y suposiciones</a></td><td><span class="pill t5">5</span></td><td>5</td><td>C1 26-1</td><td>20</td></tr>
+<tr><td>39</td><td><a class="inl" href="#e39">Criterios del objetivo de un proyecto</a></td><td><span class="pill t5">5</span></td><td>1</td><td>C1 25-2</td><td>25</td></tr>
+<tr><td>40</td><td><a class="inl" href="#e40">Historia de la ingeniería</a></td><td><span class="pill t5">5</span></td><td>12</td><td>C1 25-1</td><td>20</td></tr>
+<tr><td>41</td><td><a class="inl" href="#e41">Historia de la computación</a></td><td><span class="pill t5">5</span></td><td>13</td><td>inventada</td><td>—</td></tr>
+<tr><td>42</td><td><a class="inl" href="#e42">Tradiciones de la sociología</a></td><td><span class="pill t5">5</span></td><td>10</td><td>inventada</td><td>—</td></tr>
+<tr><td>43</td><td><a class="inl" href="#e43">Validez y solidez</a></td><td><span class="pill t5">5</span></td><td>3</td><td>inventada</td><td>—</td></tr>
+<tr><td>44</td><td><a class="inl" href="#e44">Kant y el utilitarismo</a></td><td><span class="pill t5">5</span></td><td>9</td><td>inventada</td><td>—</td></tr>
+<tr><td>45</td><td><a class="inl" href="#e45">Funciones de un buen ayudante</a></td><td><span class="pill t5">5</span></td><td>—</td><td>C1 25-1</td><td>0</td></tr>
+</tbody></table></div>
+
+<div class="box tip"><div class="bt">Cómo practicar con esta página</div>
+<p>Lee el enunciado, escribe tu respuesta en papel con reloj (unos <b>6 minutos por cada 10 puntos</b>) y recién ahí abre la respuesta modelo. Compara contra el desglose de puntos de la pauta, no contra el largo del texto: el profe advierte que sus soluciones son “muchas veces más extensas de lo que realmente se pide”.</p></div>
+</section>
+
+<section id="nivel1" data-nav="Nivel 1 · casi seguro">
+<div class="tier"><span class="pill t1">Nivel 1</span><h3>Casi seguro que sale algo así</h3></div>
+
+<details class="ex" id="e1"><summary>1 · Propiedad intelectual: qué es, sus áreas y sus legislaciones <span class="tag">C2 25-1 · C2 25-2 · R 26-1 · C1 26-1 · 20-35 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C2 2025-2 · P2 (35 pts)</div><p>Respecto del área de propiedad intelectual, responda: a) ¿Qué distingue la propiedad intelectual de otras propiedades? b) Indique porqué esta legislación es relevante en nuestra área. c) ¿Cómo puede clasificarse? Distinga entre las áreas, y esboce y distinga entre las legislaciones al respecto.</p></div>
+<p class="src">Variantes: C2 2025-1 P2 “Defina lo que se entiende por propiedad intelectual. Describa las áreas que cubre, e indique diferencias clave entre las legislaciones del caso” (25). C1 2026-1 P5 “Defina las áreas que cubre la propiedad intelectual. Esboce la legislación aplicable a cada una de ellas” (30). R 2026-1 P7 “El área de propiedad intelectual se divide en subáreas de tratamiento legal diferente. Descríbalas, e indique la relevancia de cada una de ellas en la informática” (20, sin pauta).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>C2 2025-2: a) distinguir · b) relevancia · c) clasificación y esbozos</span><span>10 · 10 · 15</span><span>C2 2025-1: autor · patentes · marcas · secretos</span><span>7 · 6 · 6 · 6</span><span>C1 2026-1: autor · patentes · marcas · secretos</span><span>8 · 8 · 8 · 6</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>a)</b> La propiedad intelectual trata de <b>bienes intangibles</b>: creaciones del intelecto que pueden copiarse sin quitarle nada al dueño. Por eso no protege un objeto, sino derechos (copiar, explotar, identificar), lo que trae desafíos propios. Cubre varias áreas, de características y tratos legales muy distintos.</p>
+<p><b>b)</b> La informática trata fundamentalmente de <b>entidades abstractas</b>: algoritmos, diseños, programas, información. Como el software es intangible, la propiedad intelectual es esencialmente la única legislación que lo protege.</p>
+<p><b>c)</b> Se clasifica en:</p>
+<p><b>Derecho de autor</b> (<i>copyright</i>): derechos exclusivos del autor sobre una obra original fijada en un medio tangible (reproducirla, distribuirla, crear obras derivadas). No cubre ideas ni métodos, solo su expresión. Dura la vida del autor + 70 años en EE.UU. y Chile (mínimo + 50 según Berna). Es automático: la <b>Convención de Berna</b> (1886) exige protección sin formalidades y trato nacional en todos los países firmantes. Cubre los programas como obras literarias.</p>
+<p><b>Patentes:</b> protección de un invento nuevo, útil y no obvio por un plazo acotado (unos 20 años), a cambio de divulgarlo públicamente. Hay que solicitarla y solo vale en su país; <b>no hay acuerdos internacionales amplios</b>, aunque se puede postular en varios países. En EE.UU. se extendió a software y procesos de negocio.</p>
+<p><b>Marcas registradas</b> (<i>trademark</i>): palabra, frase, símbolo o diseño que identifica el origen de un producto. Se obtiene por <b>registro</b>, dura 10 años renovables indefinidamente y se pierde si no se usa o no se defiende. La Convención de París, el Protocolo de Madrid y TRIPS facilitan la protección internacional.</p>
+<p><b>Secretos comerciales:</b> información confidencial que vale por ser secreta (como la receta de Coca-Cola o el código fuente propietario). <b>No requiere registro</b> y dura <b>indefinidamente</b> mientras no se divulgue; no se persigue a quien lo descubre por su cuenta o por ingeniería reversa.</p>
+<p>(La clase agrega las <b>indicaciones geográficas</b>, como champagne o pisco.) Las diferencias clave: el derecho de autor es automático; marcas y patentes requieren registro; el secreto se protege justamente por no registrarse ni publicarse. Las duraciones van de 20 años (patentes) a indefinidas (marcas que se renuevan, secretos).</p>
+</div>
+<div class="box tip"><div class="bt">Si la pregunta es la del R 2026-1 (relevancia de cada subárea)</div><p>Usa el mismo esquema y agrega a cada área su línea de <a class="inl" href="#e2">E2</a>: el código como obra literaria, patentes de algoritmos, logos de programas y el código fuente como secreto.</p></div>
+</div></details>
+
+<details class="ex" id="e2"><summary>2 · Por qué la propiedad intelectual importa en informática <span class="tag">R 25-1 · R 25-2 · 25 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Recuperativo 2025-1 · P3 (25 pts), idéntica en el R 2025-2 · P4</div><p>Explique porqué la legislación de propiedad intelectual es importante en informática. Indique cómo inciden las diferentes áreas en ello.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Software es intangible, no hay otras áreas de la ley</span><span>5</span><span>Copyright</span><span>5</span><span>Patentes</span><span>5</span><span>Marcas registradas</span><span>5</span><span>Secretos comerciales</span><span>5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>La propiedad intelectual protege bienes intangibles. La informática trabaja con entidades abstractas (algoritmos, diseños, programas, información) y el <b>software es un producto intangible</b>: se copia a costo casi nulo y no hay otra área del derecho que lo proteja. Por eso es esencialmente la única legislación relevante para el software. Cada área incide así:</p>
+<p><b>Derecho de autor:</b> aunque nació pensando en obras artísticas y literarias, <b>se asocia el software a ellas</b>: el código es una obra protegida automáticamente. Es además la base legal de todas las licencias, incluidas las de código abierto.</p>
+<p><b>Patentes:</b> un algoritmo novedoso o una forma particular de programar la solución a un problema no es un invento tangible, pero en EE.UU. <b>se extendió la legislación a estos casos</b>, de forma controvertida.</p>
+<p><b>Marcas:</b> muchos programas tienen <b>logos o características distintivas</b>, y las grandes casas de software asocian sus productos a su marca; todo eso se protege como marca.</p>
+<p><b>Secretos comerciales:</b> en general, <b>el código fuente de los programas propietarios se trata como secreto industrial</b>, protegido con acuerdos de confidencialidad, sin plazo mientras no se divulgue.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e3"><summary>3 · Código abierto (OSI) vs. código libre (FSF) y su impacto <span class="tag">C2 25-1 · C2 25-2 · 20-25 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C2 2025-2 · P3 (25 pts)</div><p>Explique y distinga los conceptos de código abierto (como definido por OSI) y código libre (como definido por FSF y el proyecto GNU). ¿Qué impacto han tenido en la informática?</p></div>
+<p class="src">Variante: C2 2025-1 P4 “Explique en qué consiste el código abierto, e indique su importancia en la computación actual” (20: libertades FSF y definición OSI 15, importancia 5).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Definir código abierto</span><span>5</span><span>Definir código libre</span><span>5</span><span>Impacto en informática</span><span>15</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>Ambos conceptos usan el <b>derecho de autor</b> para dar, mediante una licencia, permisos que normalmente estarían reservados al autor.</p>
+<p><b>Código libre (FSF, 1986):</b> el que da las <b>cuatro libertades</b>: (0) ejecutar el programa para cualquier propósito; (1) estudiar cómo funciona y modificarlo; (2) redistribuir copias para ayudar a otros; (3) distribuir las versiones modificadas para que toda la comunidad se beneficie. Además, las licencias de la FSF (GPL) exigen el <b>copyleft</b>: si se distribuye el programa, original o modificado, hay que ofrecer el código fuente completo sin costo sustancial y bajo las mismas condiciones.</p>
+<p><b>Código abierto (OSI, 1998):</b> el que tiene una licencia que cumple los <b>10 puntos de la OSI</b>: libre redistribución, código fuente disponible, permitir obras derivadas, integridad del autor (solo vía parches), no discriminar personas ni áreas de trabajo, la licencia se aplica a todos sin otra licencia, no está atada a un producto, no restringe otro software y es neutral a la tecnología. Lo central es que permite usar el programa sin restricciones, redistribuirlo con su fuente y modificarlo.</p>
+<p><b>Distinción:</b> la definición de la OSI es posterior, expande y explicita las libertades de la FSF y es más detallada porque busca cubrir una variedad de licencias (incluidas las permisivas como BSD). La de la FSF sirve de inspiración solo a la GPL y afines. Las licencias de la FSF cumplen la definición de código abierto, pero no al revés: la diferencia es la condición de copyleft.</p>
+<p><b>Impacto:</b> se estima que el <b>96 % de los programas</b> incluye algún componente de código abierto. Su valor: rehacer una vez lo que se usa costaría entre US$1,22 y 6,22 mil millones, y si cada usuario lo rehiciera, entre <b>US$2,59 y 13,18 billones</b>. En infraestructura (nube, equipos de red, servidores web) y áreas especializadas (supercómputo, la base de Google y de las redes sociales) el uso es prácticamente unánime: mucha de la infraestructura de Internet corre sobre <b>Linux</b>, que es la base de <b>Android</b>, y también está en iOS, televisores inteligentes y Alexa. Algunos componentes son críticos para Internet y no tienen alternativas. Además cambió cómo se desarrolla: proyectos colaborativos a escala mundial (GCC, git), estándares abiertos y empresas enteras basadas en él (Red Hat, comprada por IBM en 2019).</p>
+</div>
+</div></details>
+
+<details class="ex" id="e4"><summary>4 · Licencias GNU (GPL) vs. licencias BSD <span class="tag">R 25-1 · R 25-2 · 20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Recuperativo 2025-2 · P5 (20 pts)</div><p>En licencias de código abierto, contraste las licencias de la FSF (Free Software Foundation) para el proyecto GNU con las licencias BSD (Berkeley Software Distribution).</p></div>
+<p class="src">Variante: R 2025-1 P5 “Dos líneas importantes de código abierto son el proyecto GNU y los proyectos derivados de BSD. Discuta las diferencias entre las licencias de ambas” (20: GNU 10, BSD 10).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Licencias BSD</span><span>10</span><span>Licencias GNU</span><span>10</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>Ambas familias son licencias pensadas para programas, basadas en un <b>uso creativo del derecho de autor</b>, y ambas son código abierto según la OSI. Las dos respetan las cuatro libertades de la FSF (usar, estudiar, compartir, mejorar). Difieren en <b>qué exigen al redistribuir</b>.</p>
+<p><b>Licencias GNU (GPL y afines):</b> permiten cualquier uso, pero exigen que toda redistribución, gratuita o no, original o modificada, vaya acompañada del <b>código fuente completo</b> (o una oferta ilimitada de acceso a él) y se haga <b>bajo las mismas condiciones</b>. Es el <b>copyleft</b>: todo programa que incorpore código GPL es una obra derivada y queda bajo la GPL. Variantes: LGPL (bibliotecas, se puede reemplazar la biblioteca), AGPL (también para uso a través de la red) y GFDL (documentación).</p>
+<p><b>Licencias BSD:</b> son <b>permisivas</b>: permiten cualquier uso y redistribución sin exigir entregar el fuente; se pueden redistribuir solo binarios o versiones modificadas cerradas, incluso dentro de productos propietarios. Solo piden mantener el aviso de derecho de autor y de que se entrega sin garantías. Variantes: 4 cláusulas (exige mencionar a los autores en la publicidad, lo que la hace incompatible con la GPL), 3 cláusulas (la más común), 2 cláusulas y 0 cláusulas, esta última equivalente a entregar al dominio público.</p>
+<p><b>En resumen:</b> la GPL garantiza que el código <b>siga siendo libre</b> en todas sus derivaciones; la BSD prioriza que <b>cualquiera pueda usarlo</b>, aunque lo cierre.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e5"><summary>5 · Creative Commons: las 7 licencias y cuáles no son código abierto <span class="tag">C2 26-1 · R 26-1 · 15-35 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C2 2026-1 · P2 (35 pts)</div><p>Creative Commons propone un menú de licencias: CC BY, CC BY-SA, CC BY-NC, CC BY-NC-SA, CC BY-ND, CC BY-NC-ND y CC0. a) Explique brevemente en qué consisten. b) Algunas de las anteriores no se consideran código abierto (como definido por OSI). Explique cuáles.</p></div>
+<p class="src">Variante: R 2026-1 P6 “Discutimos las licencias BSD y GPL. Por otro lado, está el menú de licencias de Creative Commons… ¿A qué licencias CC se asemejan más las licencias BSD y las licencias GPL?” (15, sin pauta).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>a) Describir las licencias CC</span><span>20</span><span>b) Indicar cuáles y porqué no son código abierto</span><span>15</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>a)</b> Creative Commons es una organización sin fines de lucro con licencias para obras en general (textos, imágenes, audio, video), compatibles con las leyes nacionales. La licencia básica es <b>CC BY</b>: permite distribuir, remezclar, adaptar y construir sobre el material en cualquier medio o formato, incluso con fines comerciales, <b>siempre que se atribuya al autor</b>. Las demás agregan restricciones indicadas por sus letras:</p>
+<p><b>SA</b> (<i>share alike</i>, compartir igual): las versiones modificadas deben distribuirse bajo la misma licencia o una compatible. <b>NC</b> (<i>non-commercial</i>): solo permite uso no comercial. <b>ND</b> (<i>no derivatives</i>): prohíbe distribuir versiones modificadas; solo se puede copiar y distribuir tal cual.</p>
+<p>Así: <b>CC BY-SA</b> permite todo con atribución, pero las modificaciones mantienen la licencia. <b>CC BY-NC</b>, todo con atribución, solo sin fines comerciales. <b>CC BY-NC-SA</b>, lo anterior y además las modificaciones mantienen la licencia. <b>CC BY-ND</b>, copiar y distribuir sin modificar, incluso comercialmente. <b>CC BY-NC-ND</b>, copiar y distribuir sin modificar y sin fines comerciales (la más restrictiva). <b>CC0</b> es dedicar la obra al <b>dominio público</b>, sin condiciones (salvo las que imponga la ley local, como la alemana, que no permite eliminar la autoría).</p>
+<p><b>b)</b> La OSI exige, entre otros, que la licencia <b>permita obras derivadas (punto 3)</b> y que <b>no discrimine áreas de trabajo (punto 6)</b>. Las licencias <b>ND</b> (CC BY-ND, CC BY-NC-ND) violan el punto 3 porque prohíben modificar. Las <b>NC</b> (CC BY-NC, CC BY-NC-SA, CC BY-NC-ND) violan el punto 6 porque prohíben el uso comercial. Por lo tanto solo <b>CC BY, CC BY-SA y CC0</b> son compatibles con la definición de código abierto.</p>
+</div>
+<div class="box tip"><div class="bt">Para la variante del R 2026-1</div><p>La <b>BSD</b> se parece a <b>CC BY</b>: todo permitido, solo dar crédito (y la BSD de 0 cláusulas, a <b>CC0</b>). La <b>GPL</b> se parece a <b>CC BY-SA</b>: todo permitido, pero las derivadas deben mantener la licencia; el SA es el copyleft de Creative Commons.</p></div>
+</div></details>
+
+<details class="ex" id="e6"><summary>6 · Caso ético: AllTogether y la accesibilidad (más el método) <span class="tag">C2 25-1 · 30 pts</span></summary>
+<div class="body">
+<p>Los seis C2 y recuperativos traen un caso ético largo (20 a 35 puntos). Sin letras, la pauta corrige <b>identificar el dilema (10)</b> y <b>discutir los puntos principales contravenidos (20)</b>. Con letras, 10 a 15 por letra.</p>
+<div class="box def"><div class="bt">Método en 5 pasos (detalle en el <a class="inl" href="16-Aspectos-eticos.html#metodo">tema 16</a>)</div>
+<p><b>1. El dilema y su tipo</b> (verdad vs. lealtad, individuo vs. comunidad, corto vs. largo plazo, justicia vs. piedad), nombrando los valores en conflicto. <b>2. Los afectados.</b> <b>3. Qué se contraviene:</b> principios del código ACM por número (1.2 evitar daños, 1.4 no discriminar, 1.6 privacidad, 2.1 calidad, 3.1 bien común…) y la ley. <b>4. Dos lentes:</b> Kant (¿universalizable? ¿uso a alguien solo como medio?) y utilitarismo (¿mejor resultado para el mayor número?). <b>5. Posición justificada</b>, una respuesta por letra.</p></div>
+<div class="enun"><div class="et">C2 2025-1 · P5 (30 pts)</div><p>AllTogether mantiene un sistema colaborativo popular y accesible basado en web, usado por grupos comunitarios, organizaciones sin fines de lucro, escuelas, agencias, negocios y compañías tecnológicas alrededor del mundo para planificar proyectos y comunicaciones. El grupo de desarrollo estaba bien encaminado a implantar nueva funcionalidad cuando se da cuenta que se habían omitido algunos requerimientos clave de accesibilidad, resultando en serios problemas en esta área. A pesar de esto, el responsable del producto se ve presionado a lanzar la nueva versión a pesar de los defectos de accesibilidad. Explique el dilema ético que presenta esta situación. ¿Qué comportamiento sugiere el código de ACM en esta situación?</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Dilema ético que se plantea</span><span>10</span><span>Discusión de los puntos principales contravenidos</span><span>20</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>Dilema:</b> es de tipo <b>corto vs. largo plazo</b> (y también individuo vs. comunidad): el bien del proyecto, lanzar pronto la nueva versión bajo presión comercial, frente a <b>perjudicar a los usuarios con discapacidad</b>, que hoy usan un sistema que era accesible y quedarían excluidos.</p>
+<p><b>Lanzar el producto así contraviene los principios éticos generales:</b> <b>1.2 Evitar daños</b>: perjudica directamente a parte de los usuarios. <b>1.4 Ser justo y no discriminar</b>: los usuarios con discapacidad se verían impedidos o entorpecidos en su uso.</p>
+<p><b>Y las responsabilidades profesionales:</b> <b>2.1 Alta calidad</b> en procesos y productos: el producto resultante es deficiente. <b>2.3 Conocer y respetar las reglas</b>: podría no cumplir normas de accesibilidad. <b>2.4 Aceptar y dar revisión profesional</b>: lanzarlo ignora la opinión técnica de los desarrolladores que detectaron el problema.</p>
+<p><b>Y el liderazgo:</b> <b>3.1 El bien común como preocupación central</b>, comprometido salvo que el beneficio para el resto fuera mucho mayor que el daño. <b>3.2 Responsabilidades sociales</b> de la organización, que claramente no se cumplirían.</p>
+<p><b>Lo que sugiere el código:</b> según la sección 4 (cumplimiento), el profesional debe <b>postergar la liberación</b> mientras no se corrijan las deficiencias, o al menos lanzar sin la funcionalidad que rompe la accesibilidad, informando con claridad el riesgo a quien decide. Con el utilitarismo: el retraso molesta a muchos un poco; lanzar así daña gravemente a quienes más dependen del sistema.</p>
+</div>
+<details class="ex"><summary>Caso de práctica · la colega (C1 2025-1 · P5 · 30 pts)</summary>
+<div class="body">
+<div class="enun"><div class="et">Enunciado</div><p>Usted es un gerente de nivel medio. Está por cerrar un contrato importante, pero requiere datos que tiene una colega de vacaciones. Como son amigos, conoce y usa su clave para entrar a su computador. Ahí nota que ella envió un correo con datos confidenciales a un alto ejecutivo de la competencia. a) ¿Debiera confrontarla cuando vuelva? b) ¿Debiera avisar a recursos humanos? c) Indicar cómo tuvo acceso puede meterlo en problemas. ¿Qué hace?</p></div>
+<div class="sol">
+<p><b>Dilema</b> verdad vs. lealtad: la amistad con la colega (y protegerme, porque entré con su clave) frente a la honestidad y el deber con la empresa.</p>
+<p><b>a)</b> Sí, como mínimo: enviar datos confidenciales a la competencia es grave; confrontarla le da la oportunidad de explicar, pero no reemplaza informar. <b>b)</b> Sí: con Kant, “callo las faltas graves de mis amigos” no es universalizable; con el utilitarismo, callar protege a dos y daña a la empresa, a los trabajadores y a los clientes. <b>c)</b> Entrar con su clave ya fue una falta (ACM 2.8: acceder solo con autorización); lo ético es transparentar cómo me enteré y asumir las consecuencias, porque ocultarlo sería otra deshonestidad.</p>
+</div></div></details>
+</div></details>
+
+<details class="ex" id="e7"><summary>7 · Caso ético: David y la página anónima <span class="tag">C2 26-1 · 35 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C2 2026-1 · P4 (35 pts)</div><p>David es un estudiante de la UTFSM. Recientemente apareció una página web anónima que ataca a profesores y estudiantes, por ejemplo esparciendo el rumor que dos profesores casados tienen una relación y especulando sobre quién de una lista de estudiantes supuestamente homosexuales será el primero con SIDA. David se entera por casualidad que tres de sus compañeros y amigos son los autores del sitio. Al darse cuenta de esto, le hacen prometer no delatarlos. La universidad, al enterarse del sitio, toma medidas. Hace un llamado a identificar a los autores, luego procede a interrogar a todos quienes hayan accedido al sitio. David es uno de quienes ha entrado al sitio, y cree que es el único que conoce a los hechores. a) ¿Qué dilema se le presenta a David? Identifique los valores que entran en conflicto. b) ¿Cuál cree que es la responsabilidad de David en esta situación? Justifique. c) ¿Cómo afectaría a su respuesta si alguno de los profesores o estudiantes humillados es cercano a usted?</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>a) Identificar el dilema</span><span>10</span><span>b) Plantear y defender una elección</span><span>15</span><span>c) Discutir el punto</span><span>10</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>a)</b> Es un dilema de tipo <b>verdad vs. lealtad</b>: la <b>lealtad a sus amigos</b> y la promesa que les hizo, frente a la <b>honestidad</b> (la universidad lo interroga directamente), la <b>justicia</b> y el deber de <b>proteger la honra</b> de los profesores y estudiantes humillados, que están siendo dañados con rumores y discriminación.</p>
+<p><b>b)</b> Su responsabilidad es <b>reportar a los autores</b>. El sitio es una transgresión seria: difama, discrimina por orientación sexual y expone a personas a burlas públicas. Con Kant: una promesa de encubrir un daño no obliga, porque “guardo el secreto de quien daña a otros” no es universalizable, y los afectados están siendo usados solo como medio de diversión. Con el utilitarismo: el daño a muchas personas pesa más que el costo para tres. Lo mejor sería primero pedir a sus amigos que se entreguen, pero si no lo hacen, al ser interrogado debe decir la verdad. (La pauta cuenta que cerca de la mitad de los estudiantes a quienes se les planteó el dilema preferían la lealtad, y que muchos comentan: “David está fregado de todas formas”.)</p>
+<p><b>c)</b> <b>No debiera incidir.</b> El daño existe igual si la víctima es cercana o no; si mi respuesta dependiera de quién es la víctima, estaría aplicando un <b>alegato especial</b> (una excepción sin justificación). Que la víctima sea cercana solo hace más evidente un daño que ya era grave.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e8"><summary>8 · Caso ético: Jim Warren y el software sin licencia <span class="tag">R 25-1 · 30 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Recuperativo 2025-1 · P6 (30 pts)</div><p>Jim Warren, como ingeniero experimentado, es contratado por la startup NewSoft para ayudar en el desarrollo de un nuevo producto. Pronto se entera que el producto está basado en software propietario de otra empresa, que se está usando sin licencia. Suponiendo que se trata de un error, Jim le indica esto al presidente de la empresa. Le aseguran que la situación se rectificaría a la brevedad. En los meses siguientes Jim se entera de varias situaciones similares, pero nuevos reclamos no llevaron a acciones concretas. Al amenazar con avisar a las empresas afectadas, Jim fue despedido. ¿Qué dilema ético presenta esta situación? ¿Considera que Jim actuó de acuerdo a los estándares éticos y profesionales?</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Dilema ético que se plantea</span><span>10</span><span>Discusión de los puntos principales contravenidos</span><span>20</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>Dilema</b> (verdad vs. lealtad): la <b>lealtad con la empresa</b> que contrató a Jim frente a sus <b>obligaciones como profesional</b> con las empresas afectadas y con la ley.</p>
+<p><b>Lo que hace NewSoft:</b> usar software propietario sin licencia viola el <b>derecho de autor</b> de terceros (tema 17) y el código ACM: <b>1.5</b> respetar el trabajo requerido para producir trabajo creativo, <b>1.3</b> ser honesto y confiable, y <b>2.3</b> conocer y respetar las reglas. Además expone a la propia empresa a demandas.</p>
+<p><b>Cómo actuó Jim: correctamente y en el orden adecuado.</b> Primero supuso buena fe y lo informó internamente al presidente; cuando vio que era sistemático, insistió; solo entonces amenazó con avisar a los afectados. Eso es <b>responsabilidad social</b> (rechazar y denunciar actividades que dañan a terceros) y cumplir el código (sección 4: defender sus principios). Con Kant, la máxima “uso software ajeno sin pagar si me conviene” no es universalizable. Jim <b>cumplió cabalmente con sus obligaciones, a un costo personal sustancial</b> (fue despedido), que es justamente lo que distingue una conducta ética de una conveniente.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e9"><summary>9 · Caso ético: el operador que vende datos personales <span class="tag">R 25-2 · R 26-1 · 20-30 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Recuperativo 2025-2 · P6 (30 pts), repetida en el R 2026-1 · P5 (20 pts)</div><p>Un operador de servicios de red recolecta información personal de sus clientes, particularmente de su participación en foros, intereses y compras, y la vende a empresas de telemarketing. A los usuarios no se les consulta si desean que sus datos sean usados de esta forma. a) ¿Hasta qué punto este comportamiento es aceptable bajo la legislación y códigos de ética actuales? b) ¿Es aceptable ofrecer recompensas, por ejemplo rebajas, por permitir compartir esta información? c) ¿Cómo debiera controlarse distribución secundaria y terciaria? d) ¿Qué granularidad se debiera manejar en el control de la distribución de la información? Por ejemplo, si el usuario fuma o no, su participación en foros LGTB, entre otros. En un extremo, todos los usuarios son un gran grupo, en el otro son grupos de una persona.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>a) Legislación UE, ética ACM</span><span>5</span><span>b) Discusión</span><span>10</span><span>c) Manejo de redistribución</span><span>10</span><span>d) Legislación UE requiere manejo individual</span><span>5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>a)</b> <b>No es aceptable.</b> Contraviene la legislación de protección de datos personales de la Unión Europea (el GDPR exige consentimiento claro y da derecho a oponerse a la elaboración de perfiles) y, por lo tanto, también la chilena: la <b>Ley 21.719</b> (2024) homologa la legislación chilena con el GDPR. Contraviene además el principio <b>1.6 del código ACM</b>, que exige respetar la privacidad, y trata a los clientes solo como medio.</p>
+<p><b>b)</b> <b>Sí</b>, siempre que sea un consentimiento informado y libre: se ofrece algo de valor a cambio de algo de valor, y el usuario puede decir que no.</p>
+<p><b>c)</b> Al menos hay que asegurarse de que las empresas receptoras <b>cumplan la ley</b>, <b>informar al usuario</b> a quién se redistribuyen sus datos y, si pide retirarlos o corregirlos, <b>hacer las gestiones a su nombre</b> ante quienes los recibieron.</p>
+<p><b>d)</b> Según la legislación vigente, la información debe manejarse en forma <b>individual</b> (cada usuario decide sobre sus datos), con <b>especial cuidado</b> en los datos de pertenencia a grupos sensibles: religión, orientación sexual (foros LGBT), salud (si fuma).</p>
+</div>
+<div class="box tip"><div class="bt">Conexiones que suman</div><p>Este caso junta el tema 14 (minería de datos: cruzar datos “anónimos” puede identificar personas, como en el caso Walgreens), el 19 (GDPR y Ley 21.719) y el 21 (ACM 1.6).</p></div>
+</div></details>
+</section>
+
+<section id="nivel2" data-nav="Nivel 2 · muy probable">
+<div class="tier"><span class="pill t2">Nivel 2</span><h3>Muy probable</h3></div>
+
+<details class="ex" id="e10"><summary>10 · Responsabilidades éticas del profesional <span class="tag">C1 26-1 · tema 16 · 20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2026-1 · P6 (20 pts)</div><p>Esboce las responsabilidades éticas de un profesional en nuestra área.</p></div>
+<p class="src">Salió en el C1 del semestre pasado, cuando esta clase ya se había pasado. Este semestre la clase 16 llegó después del C1, así que puede caer ahora.</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Contar con las competencias</span><span>5</span><span>Trato de colegas y otras personas</span><span>4</span><span>Uso debido de recursos del cargo</span><span>5</span><span>Evitar perjuicio a terceros o al ambiente</span><span>3</span><span>Problemas de privacidad y seguridad</span><span>3</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>Competencia profesional:</b> tener las competencias que exige el cargo; no postular ni aceptar encargos sin el conocimiento, la experiencia o la preparación necesarios.</p>
+<p><b>Trato de colegas y otras personas:</b> respetar a los colegas (no desacreditarlos, insultarlos ni engañarlos) e incluir a todos: las decisiones profesionales no deben depender de prejuicios de origen, edad, formación, creencias u opciones personales.</p>
+<p><b>Uso debido de la información y los recursos del cargo:</b> manejar con suma discreción la información a la que se accede por el cargo, respetar el secreto profesional (y reportar cuando la ley lo exige), no falsear datos financieros ni usar información confidencial para lucrar, y no usar contactos, influencias o recursos para beneficio propio, que es corrupción.</p>
+<p><b>Evitar perjuicios a terceros y al ambiente:</b> rechazar trabajos que se sabe que dañarán a personas o comunidades, denunciarlos si corresponde, y minimizar el impacto ambiental (energía, desechos, contaminación).</p>
+<p><b>Privacidad y seguridad:</b> la tecnología avanza más rápido que los códigos de ética y, sobre todo, que las leyes. En informática los desafíos nuevos son la privacidad y la seguridad de los datos, la minería de datos y la inteligencia artificial, donde muchas veces solo guía la ética.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e11"><summary>11 · Sesgos cognitivos: definición y tres <span class="tag">C1 25-2 · C2 25-1 · 15 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-2 · P3 (15 pts)</div><p>Defina lo que se entienda por sesgo cognitivo. Explique brevemente tres sesgos cognitivos.</p></div>
+<p class="src">Variante: C2 2025-1 P1 “Discuta brevemente tres sesgos cognitivos” (15, 5 por sesgo).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Definición</span><span>3</span><span>Cada sesgo</span><span>4</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>Un <b>sesgo cognitivo</b> es un patrón sistemático de desviarse de la norma o la racionalidad al momento de juzgar. Cada persona crea su propia realidad subjetiva, que dicta su comportamiento, lo que puede llevar a percepciones distorsionadas y juicios errados. No son siempre negativos: aceleran las decisiones cuando importa más la rapidez que la exactitud.</p>
+<p><b>Sesgo de confirmación:</b> buscar o interpretar la información de forma que confirme lo que ya creo, desacreditando lo que lo contradice. Ejemplo: un programador que solo corre los tests que sabe que pasan y concluye que su código funciona.</p>
+<p><b>Costo hundido:</b> asignar mayor valor a aquello en lo que ya invertimos recursos. Ejemplo: seguir con un framework inadecuado porque “ya le dedicamos tres meses”, aunque cambiar sea lo racional.</p>
+<p><b>Representatividad:</b> juzgar la probabilidad por cuánto algo se parece a un estereotipo. En el problema de Linda, descrita como preocupada por la justicia social, muchos creen más probable que sea “cajera y feminista” que “cajera”, aunque lo primero es un caso particular de lo segundo y no puede ser más probable.</p>
+</div>
+</div></details>
+<details class="ex" id="e12"><summary>12 · Falacia vs sesgo cognitivo <span class="tag">R 25-1 · R 26-1 · 15-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Recuperativo 2025-1 · P1 (20 pts)</div><p>Distinga entre falacias y sesgos cognitivos. ¿Qué tienen en común?</p></div>
+<p class="src">Variante: R 2026-1 P1 “Defina y distinga entre falacia y sesgo cognitivo. Ambas afectan el razonamiento. ¿En qué difieren sus efectos?” (15).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Definir falacia</span><span>5</span><span>Definir sesgo cognitivo</span><span>5</span><span>Discutir la relación entre ambos</span><span>10</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>Una <b>falacia</b> es un paso ilógico en un argumento: una forma de razonamiento erróneo. Un <b>sesgo cognitivo</b> es un patrón sistemático de desviarse de la racionalidad al juzgar: el impulso a decidir sin analizar con cuidado, dejándose llevar por emociones o prejuicios.</p>
+<p><b>En común:</b> ambas llevan a conclusiones erróneas, y muchas falacias funcionan precisamente porque apelan a un sesgo. El <i>ad populum</i> convence por nuestro anhelo de pertenecer al grupo y vernos respaldados por la mayoría (sesgo de causa popular).</p>
+<p><b>Diferencia:</b> la falacia se <b>disfraza de razonamiento lógico</b> y está en el argumento, así que se puede detectar revisándolo; el sesgo opera en quien juzga y muchas veces <b>ni siquiera se plantea como razonamiento</b>, por lo que es más difícil de notar. Por eso se combaten distinto: las falacias revisando la lógica y la evidencia del argumento; los sesgos con hábitos (considerar puntos de vista alternativos, buscar contraejemplos, humildad epistémica).</p>
+</div>
+</div></details>
+<details class="ex" id="e13"><summary>13 · Falacias: definición y tres ejemplos <span class="tag">C1 25-1 · C1 25-2 · R 25-2 · 15-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-2 · P2 (15 pts)</div><p>Defina lo que se entienda por falacia. Explique brevemente tres tipos de falacias.</p></div>
+<p class="src">Variantes: C1 2025-1 P3 “Explique brevemente tres tipos de falacias” (15). Recuperativo 2025-2 P2 “Explique lo que se entiende por falacia. Dé tres ejemplos, e indique cómo satisface su definición para cada uno de ellos” (20).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>C1 2025-1: cada falacia</span><span>5</span><span>C1 2025-2: definición + cada falacia</span><span>3 + 4</span><span>R 2025-2: definición + cada falacia</span><span>5 + 5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>Una <b>falacia</b> es un paso ilógico en un argumento. En el discurso académico o profesional, un argumento es una conclusión o afirmación con supuestos o razones que la apoyan. Una falacia es una forma de razonar errónea, ya sea porque no es válida (las premisas no permiten concluir lo indicado) o porque no es sólida (se razona desde premisas falsas o no demostradas). Que un argumento sea falaz no prueba que su conclusión sea falsa.</p>
+<p><b>Ad hominem</b> (“al hombre”): desechar un argumento desacreditando a quien lo emite. “No consideren su propuesta de seguridad: ni terminó la carrera.” El error es que no se evalúa el argumento, sino a la persona.</p>
+<p><b>Post hoc, ergo propter hoc</b> (“después de ello, luego por ello”): confundir una relación temporal con una causal. “Instalé la actualización y al día siguiente falló el disco: la actualización lo rompió.” Que B ocurra después de A no prueba que A cause B.</p>
+<p><b>Hombre de paja</b> (<i>straw man</i>): caricaturizar la posición contraria para demoler la caricatura. A: “Deberíamos escribir más tests.” B: “¿O sea que quieres no entregar nada por escribir tests?”. Se refuta una posición que nadie sostuvo; las premisas se cambian por otras falsas.</p>
+</div>
+<div class="box tip"><div class="bt">Alternativas igual de seguras</div><p>Falso dilema (solo dos opciones cuando hay más), ad populum (es cierto porque es popular), ad verecundiam (autoridad fuera de su área), pendiente resbaladiza. Catálogo completo en la <span class="soon" title="Página aún no publicada">página 3</span>.</p></div>
+</div></details>
+<details class="ex" id="e14"><summary>14 · Ciencia y método científico <span class="tag">C1 25-1 · R 25-1 · C2 25-2 · 15-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-1 · P2 (20 pts)</div><p>Describa qué se entiende por método científico.</p></div>
+<p class="src">Variantes: R 2025-1 P2 “Defina lo que se entiende por ciencia” (15: definición 10, falsabilidad 5). C2 2025-2 P1 “Defina lo que se entiende hoy por ciencia. Términos importantes del área son hecho, hipótesis y teoría. Explíquelos” (20: 5 cada uno).</p>
+<h5>Cómo se corrige (C1 2025-1)</h5>
+<div class="pts"><span>Términos (hecho, hipótesis, teoría)</span><span>5</span><span>Observaciones, experimentos</span><span>5</span><span>Elaborar hipótesis</span><span>5</span><span>Buscar contradecir la hipótesis (falsabilidad)</span><span>5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>La <b>ciencia</b> es el estudio sistemático de la estructura y comportamiento del mundo físico y natural a través de observación, experimentación y la comprobación de teorías contra la evidencia. El método científico trabaja con <b>hechos</b> (datos verdaderos verificados por observación o medición repetida) e <b>hipótesis</b> (explicaciones propuestas con evidencia limitada, que deben poder comprobarse empíricamente). Una hipótesis ampliamente verificada pasa a llamarse <b>teoría</b>.</p>
+<div class="steps">
+<div class="step">Se coleccionan observaciones de un fenómeno.</div>
+<div class="step">Se construye una hipótesis de cómo opera, consistente con las observaciones.</div>
+<div class="step">Se deducen de ella observaciones adicionales y se diseñan experimentos cuyos resultados la contradirían si fuera falsa.</div>
+<div class="step">Se hacen los experimentos; si la contradicen, se enmienda o se rechaza la hipótesis.</div>
+</div>
+<p>La clave es la <b>falsabilidad</b> (Popper): se busca activamente <b>refutar</b> la hipótesis, no confirmarla, lo que protege contra el sesgo de confirmación. Es asimétrica: la evidencia puede refutar una teoría, pero nunca demostrarla definitivamente. Por eso toda teoría es <b>provisoria</b>; en la práctica, una teoría bien establecida rara vez se desecha: se enmienda o se delimita su ámbito (Newton sigue sirviendo en el sistema solar pese a la relatividad). La navaja de Ockham guía la elaboración de hipótesis: entre explicaciones completas, preferir la más simple.</p>
+</div>
+</div></details>
+<details class="ex" id="e15"><summary>15 · Por qué fallan los proyectos <span class="tag">C1 25-2 · R 25-2 · C2 25-1 · 15-30 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-2 · P1 (30 pts)</div><p>Discutimos varias razones por las que los proyectos fracasan. Discuta tres de ellas, explicando cómo hacen que el proyecto falle e indique posibles medidas para evitarlas.</p></div>
+<p class="src">Variantes: R 2025-2 P1 “Indique tres razones por las que los proyectos fracasan, explicando cómo afectan” (15, 5 cada una). C2 2025-1 P3 “Explique brevemente tres causas de la falla de proyectos, particularmente en el área de desarrollo de software” (15).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Cada razón</span><span>5</span><span>Cada solución propuesta</span><span>5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>Un proyecto se considera fallido si no cumple sus objetivos, no se obtiene el producto buscado o no se completa a tiempo.</p>
+<p><b>Ampliación del alcance</b> (<i>scope creep</i>): los entregables cambian a medida que avanza el proyecto. Como es lenta, es difícil de detectar, y termina en plazos sobrepasados y objetivos incumplidos (el 34 % de los proyectos de 2020 la sufrió). <b>Medida:</b> definir y circular un alcance documentado antes de partir, e instalar un proceso de control de cambios que evalúe cada extensión y pida recursos adicionales.</p>
+<p><b>Objetivos poco claros:</b> el grupo no está alineado y no hay cómo medir avance; cada uno trabaja hacia algo distinto. <b>Medida:</b> fijar en la planificación objetivos claros y medibles, SMART (específicos, medibles, alcanzables, realistas y con plazo).</p>
+<p><b>Comunicaciones pobres:</b> no está claro qué canal usar, cuándo ni quién comunica qué; con tantas aplicaciones la información se pierde, sobre todo en equipos distribuidos. <b>Medida:</b> un plan de comunicación con frecuencia, canales, audiencia y responsable, usando canales únicos que dejen registro.</p>
+</div>
+<div class="box warn"><div class="bt">La versión del C2 2025-1: “particularmente en desarrollo de software”</div>
+<p>Esa pauta (5 por causa) usó las causas de la clase de <span class="soon" title="Página aún no publicada">desarrollo (tema 20)</span>, no las de proyectos: <b>causas no técnicas</b> (política, relaciones interpersonales, sociológicas, falta de competencias), <b>ambición excesiva</b> (proponerse más de lo posible, subestimar costos y tiempos), <b>personal inadecuado</b> (la demanda atrae gente sin los talentos requeridos), <b>no recortar funcionalidades a tiempo</b> (una “marcha de la muerte” con trasnochadas no logra el objetivo), <b>complejidad excesiva</b> y <b>deuda técnica</b> (los parches “para salir del paso” pasan la cuenta). Si la pregunta dice “software”, usa estas.</p></div>
+</div></details>
+<details class="ex" id="e16"><summary>16 · La estrategia de Pólya <span class="tag">C1 25-2 · C2 25-1 · 20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-2 · P6 (20 pts)</div><p>Esboce la estrategia de Pólya para resolver problemas.</p></div>
+<p class="src">Variante: C2 2025-1 P6 “Indique los pasos de la estrategia de Pólya para resolver problemas” (20).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Entender el problema</span><span>5</span><span>Armar un plan</span><span>5</span><span>Ejecutar el plan</span><span>5</span><span>Reflexionar sobre lo hecho</span><span>5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>George Pólya, matemático húngaro, propuso en “How to Solve It” (1945) una estrategia centrada en la enseñanza de la matemática, con cuatro principios:</p>
+<p><b>1. Entender el problema:</b> si no tenemos claro qué buscamos, difícilmente lo encontraremos. Leer con cuidado, identificar la incógnita, los datos y las técnicas disponibles, y nombrarlos.</p>
+<p><b>2. Armar un plan:</b> atacar el problema en forma organizada, de datos a resultados o de resultados a datos, con estrategias como buscar un patrón, hacer un dibujo, resolver un problema más simple o trabajar en reversa, y heurísticas como la analogía o la generalización.</p>
+<p><b>3. Ejecutar el plan:</b> llevar a cabo los pasos y verificar que se obtiene lo buscado. Si el plan resulta inviable, entender por qué falló, enmendarlo o plantear otro.</p>
+<p><b>4. Reflexionar sobre lo hecho:</b> revisar si la respuesta tiene sentido y usa todos los datos, y qué funcionó y qué no, para aplicarlo a problemas futuros. Ejemplo de clase: en el embaldosado con losas en L, la inducción solo cerró al demostrar algo más general (la paradoja del inventor).</p>
+</div>
+</div></details>
+</section>
+
+<section id="nivel3" data-nav="Nivel 3 · probable">
+<div class="tier"><span class="pill t3">Nivel 3</span><h3>Probable</h3></div>
+
+<details class="ex" id="e17"><summary>17 · Deuda técnica <i class="nc">clase no pasada</i> <span class="tag">C2 26-1 · tema 20 · 25 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C2 2026-1 · P1 (25 pts)</div><p>Explique lo que se entiende por deuda técnica en desarrollo de software. ¿Qué efectos nocivos tiene? ¿Porqué es difícil evitarla? ¿Qué medidas deben tomarse para evitar o al menos aliviar este problema?</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Definición de deuda técnica</span><span>5</span><span>Efectos nocivos</span><span>10</span><span>Mitigación</span><span>10</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>Definición:</b> la deuda técnica (también deuda de diseño o de código) es el <b>costo del retrabajo futuro</b> que resulta de optar por una <b>salida fácil o conveniente en el momento</b> en vez de una solución robusta a la raíz del problema. Acelera el desarrollo en el corto plazo, pero la baja calidad resultante aumenta los costos futuros si no se resuelve.</p>
+<p><b>Efectos nocivos:</b> hace más difícil y caro cada cambio siguiente, porque los parches se acumulan y el código se enreda; aparecen errores en lugares inesperados; el sistema se vuelve un <b>sistema legado</b> que nadie quiere tocar. Es la ley de Lehman de 1980 (“ley de Manny”): “conforme un programa en evolución sufre continuos cambios, su complejidad, reflejo de una estructura en deterioro, aumenta a menos que se trabaje en mantenerla o reducirla”.</p>
+<p><b>Por qué es difícil evitarla:</b> la presión por <b>mínimo costo y tiempo</b> de desarrollo está siempre presente; a diferencia de una deuda monetaria, muchas veces se contrae <b>sin darse cuenta</b>, y suele verse <b>solo en retrospectiva</b>.</p>
+<p><b>Mitigación:</b> buscar la <b>causa raíz</b> de los problemas y resolverla en vez de parchar el síntoma; <b>rediseñar</b> las partes afectadas al modificarlas; mantener los casos de prueba al día y <b>correrlos continuamente</b>; y, como dice la clase, buscar simplicidad y no repetirse (DRY).</p>
+</div>
+<div class="box ana"><div class="bt">Analogía: la tarjeta de crédito</div><p>Cada parche “para salir del paso” es una compra con tarjeta: hoy no pagas nada, pero el mes siguiente pagas con intereses. Si sigues pagando solo el mínimo, los intereses (el tiempo que pierdes peleando con el código enredado) terminan siendo más que la deuda original.</p></div>
+<p class="src">La ley de Lehman y la mitigación vienen de la pauta, no de las diapositivas de este semestre (la 20 solo trae la definición como máxima 11).</p>
+</div></details>
+
+<details class="ex" id="e18"><summary>18 · Máximas para un proyecto de software <i class="nc">clase no pasada</i> <span class="tag">R 25-1 · tema 20 · 15 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Recuperativo 2025-1 · P4 (15 pts)</div><p>Explique brevemente tres máximas a ser aplicadas en un proyecto, particularmente en el área de desarrollo de software.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Cada máxima y su explicación</span><span>5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>Evite la deuda técnica:</b> es el costo del retrabajo futuro implícito por optar por una salida fácil en vez de una solución robusta a la raíz del problema; tarde o temprano pasa la cuenta.</p>
+<p><b>La única manera de manejar la agenda es eliminar o simplificar funcionalidades:</b> una “marcha de la muerte” con trasnochadas no logra el objetivo; solo eliminar las áreas inciertas, no resueltas, permite avanzar.</p>
+<p><b>La gente es lo más importante:</b> muchos estudios muestran que el mejor predictor de éxito y costo es la calidad de los desarrolladores y de la gestión; aun así, muchas organizaciones los tratan como engranajes intercambiables.</p>
+</div>
+<div class="box tip"><div class="bt">Otras igual de seguras</div><p>No hay balas de plata · toda decisión es un balance (<i>trade-off</i>) · la complejidad es una maldición, busque simplicidad elegante · las fallas tienen causas no técnicas · la causa principal de fracaso es el exceso de ambición (síndrome del segundo sistema) · la comodidad de desarrollo importa más de lo que cree · automatice todo. Las 22 están en el <span class="soon" title="Página aún no publicada">tema 20</span>.</p></div>
+</div></details>
+
+<details class="ex" id="e19"><summary>19 · Por qué la legislación de EE.UU. y la UE es relevante en Chile <i class="nc">clase no pasada</i> <span class="tag">C2 26-1 · C2 25-2 · temas 17 y 19 · 5-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C2 2026-1 · P3 (20 pts)</div><p>Discutimos de legislación y reglamentaciones de EEUU y de la Unión Europea en el área informática. ¿Porqué son relevantes en Chile?</p></div>
+<p class="src">Variante: C2 2025-2 P4a “¿Porqué [la reglamentación de la UE] es relevante en Chile?” (5).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Discusión</span><span>20</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>Tanto la Unión Europea como EE.UU. son <b>socios comerciales muy importantes</b> de Chile y, como <b>potencias tecnológicas</b>, determinan el paisaje del área en el mundo. Para mantener relaciones comerciales y de otro ámbito fluidas, es importante <b>adherir a su legislación y reglamentaciones</b>: una empresa chilena que ofrece servicios a europeos debe cumplir el reglamento europeo de protección de datos, y un producto digital que se venda en Europa deberá cumplir el Cyber Resilience Act.</p>
+<p>Por eso Chile <b>homologa</b> sus leyes: la <b>Ley 21.719</b> de protección de datos (2024) se alinea con el reglamento general europeo y con compromisos adquiridos al entrar a la OCDE (2010). En propiedad intelectual, la ley chilena es “afín” a la estadounidense, que es pionera, y se enmarca en tratados multilaterales (Berna, TRIPS).</p>
+<p>Como <b>país pequeño y abierto al mundo</b>, Chile realmente no tiene opción. Y además conviene: como dijo Picasso, “los buenos artistas copian, los grandes artistas roban”; es preferible adoptar el trabajo de otros, que ya probaron estas reglas, que repetir el esfuerzo.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e20"><summary>20 · Reglamentos de la UE: protección de datos (GDPR) y Cyber Resilience Act <i class="nc">clase no pasada</i> <span class="tag">C2 25-2 · tema 19 · 25 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C2 2025-2 · P4 (25 pts)</div><p>Discutimos de reglamentaciones de la Unión Europea. a) ¿Porqué es relevante en Chile? b) Esboce la reglamentación sobre protección de datos personales. c) Esboce la reglamentación sobre seguridad digital.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>a) Relevancia para Chile</span><span>5</span><span>b) Protección de datos personales</span><span>10</span><span>c) Seguridad digital</span><span>10</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>a)</b> La UE es un socio muy importante de Chile, en particular en tecnología; para mantener relaciones fluidas hay que adherir a su legislación (ver <a class="inl" href="#e19">E19</a>).</p>
+<p><b>b)</b> El <b>Reglamento General de Protección de Datos</b> (GDPR) se aprobó en <b>2016</b> y se aplica desde <b>2018</b>. Contempla: <b>consentimiento claro</b> sobre el manejo de los datos personales; <b>acceso fácil</b> a los propios datos; derechos de <b>rectificación, supresión y “olvido”</b>; <b>oponerse</b> al uso de los datos para elaborar perfiles; y <b>portabilidad</b> de un proveedor a otro. Quienes tratan los datos deben informar de forma transparente; aplicar <b>medidas de seguridad</b> según el riesgo; en ciertos casos <b>notificar las violaciones</b> de seguridad; y las autoridades y empresas con operaciones riesgosas deben nombrar un <b>delegado de protección de datos</b>. También regula la transferencia a países no miembros, que requiere una decisión de adecuación de la Comisión Europea o garantías adecuadas.</p>
+<p><b>c)</b> El <b>Cyber Resilience Act</b> (CRA) busca mejorar la ciberseguridad con <b>estándares comunes para productos con elementos digitales</b>. Motivos: los consumidores son víctimas crecientes de fallas de seguridad (IoT, dispositivos inteligentes), el cibercrimen costó unos €5,5 billones en 2021 y la infraestructura crítica puede ser atacada. Impone el principio de <b>seguro por omisión</b> durante todo el ciclo de vida: actualizaciones de seguridad <b>automáticas</b> (con opción de restarse) y separadas de las de funcionalidad, evaluar los riesgos antes de vender, guardar documentación por <b>10 años</b>, notificar incidentes a la agencia <b>ENISA en 24 horas</b>, y que todo producto con <b>marca CE</b> cumpla un mínimo de ciberseguridad. Un 90 % de los productos se autoevalúa; los críticos requieren evaluación externa.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e21"><summary>21 · La ley chilena de ciberseguridad (Ley 21.663) <i class="nc">clase no pasada</i> <span class="tag">C2 25-2 · tema 19 · 15 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C2 2025-2 · P5 (15 pts)</div><p>Comente la legislación chilena de ciberseguridad.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Finalidad de la ley</span><span>5</span><span>Nuevas instituciones, líneas generales</span><span>5</span><span>Obligaciones y derechos</span><span>5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>Finalidad:</b> la <b>Ley 21.663, Ley Marco de Ciberseguridad</b>, promulgada en abril de 2024 y vigente desde enero de 2025, establece una normativa general sobre cómo las instituciones públicas y privadas deben enfrentar la ciberseguridad, para mejorar la prevención y resolución de delitos informáticos e incidentes. Su eje es la <b>obligación de notificar incidentes</b>. Se aplica a los <b>prestadores de servicios esenciales</b> y a los <b>operadores de importancia vital</b> que designe la ANCI.</p>
+<p><b>Instituciones:</b> la <b>ANCI</b> (Agencia Nacional de Ciberseguridad), con facultades reguladoras, fiscalizadoras y sancionadoras; el <b>Consejo Multisectorial</b>, que la asesora; el <b>CSIRT Nacional</b>, que previene y responde a ciberataques y al que hay que notificar los incidentes; el <b>CSIRT de la Defensa Nacional</b>, para las Fuerzas Armadas; y la <b>Red de Conectividad Segura del Estado</b>.</p>
+<p><b>Obligaciones:</b> mantener un <b>sistema de gestión de seguridad de la información</b> (SGSI) y un registro de sus acciones; planes de <b>continuidad operacional</b> actualizados al menos cada dos años; <b>informar a los afectados</b>; revisiones continuas con <b>pruebas de penetración</b>; reducir el impacto de los incidentes; obtener certificaciones; y designar un <b>delegado de ciberseguridad</b>.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e22"><summary>22 · Ética antigua vs moderna <span class="tag">C1 25-1 · R 26-1 · 15-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-1 · P1 (20 pts)</div><p>Discutimos varios sistemas éticos de la antigüedad clásica y esbozamos algunos modernos. ¿Cuál es la principal diferencia entre los dos enfoques?</p></div>
+<p class="src">Variante: R 2026-1 P4 “Describa las orientaciones generales de la ética como la entendía la antigüedad clásica y las líneas modernas” (15).</p>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Descripción general de la ética de la antigüedad</span><span>10</span><span>Descripción general de la ética moderna</span><span>10</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>La principal diferencia es el foco. La <b>ética antigua</b> se centra en <b>la persona</b>: cómo vivir una buena vida y ser feliz, entendiendo la felicidad como estar conforme consigo mismo y tener buen carácter (<i>ēthikós</i> significa “carácter”). Las escuelas griegas iban desde el hedonismo de los <b>cirenaicos</b> (el placer del momento) y el hedonismo moderado de <b>Epicuro</b> (evitar el dolor, placeres duraderos), hasta la austeridad de <b>cínicos</b> y <b>estoicos</b> (solo la virtud es un bien; ataraxia). <b>Aristóteles</b> propone la ética de la virtud: la función del humano es razonar, y una acción es buena si la haría una persona virtuosa.</p>
+<p>La <b>ética moderna</b> se centra en <b>las relaciones entre personas</b>: cómo actuar, qué obligaciones tenemos con los demás y si lo que hago los daña. Sus líneas principales son la <b>deontología</b> de Kant, que define deberes del individuo mediante el imperativo categórico (actuar según máximas universalizables y tratar a las personas siempre como fines), y el <b>utilitarismo</b> de Bentham y Mill, que juzga las acciones por sus consecuencias: la máxima felicidad para el mayor número.</p>
+<p>La división no es tajante: Kant tiene raíces estoicas, el utilitarismo toma de cirenaicos y epicúreos la idea de una vida feliz, y la ética de la virtud sigue viva en los neoaristotélicos.</p>
+</div>
+</div></details>
+<details class="ex" id="e23"><summary>23 · Ciencia vs ingeniería; defina ingeniería <span class="tag">C1 26-1 · R 25-2 · 15-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2026-1 · P4 (20 pts)</div><p>Defina ciencia e ingeniería, explicando en qué se distinguen.</p></div>
+<p class="src">Variante: R 2025-2 P3 “Defina lo que se entiende por ingeniería” (15: definición 10, uso de la ciencia 3, soluciones efectivas 2).</p>
+<h5>Cómo se corrige (C1 2026-1)</h5>
+<div class="pts"><span>Definición de ciencia</span><span>8</span><span>Definición de ingeniería</span><span>8</span><span>Distinciones</span><span>4</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>Ciencia:</b> el estudio sistemático de la estructura y comportamiento del mundo físico y natural a través de observación, experimentación y la comprobación de teorías contra la evidencia obtenida.</p>
+<p><b>Ingeniería:</b> el conjunto de conocimientos orientados a la invención y utilización de técnicas para el aprovechamiento de los recursos naturales o para la actividad industrial (RAE); el diseño, prueba y construcción de máquinas, estructuras y procesos usando matemáticas y ciencias. Se basa en los resultados de la ciencia. En palabras de un profesor de Ingeniería Civil Química: “un ingeniero halla soluciones viables en plazo y a costo aceptables a problemas prácticos”.</p>
+<p><b>Distinción:</b> la ciencia busca <b>nuevo conocimiento</b> (cómo funciona el mundo) y su producto son teorías; la ingeniería <b>resuelve problemas concretos</b> usando el conocimiento acopiado, bajo restricciones de tiempo y recursos, y su producto son soluciones que funcionan.</p>
+</div>
+</div></details>
+<details class="ex" id="e24"><summary>24 · Navaja de Ockham; teoría científica falseable <span class="tag">R 26-1 · 10 + 15 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Recuperativo 2026-1 · P2 (10 pts) y P3 (15 pts)</div><p>P2: Describa lo que se entiende por navaja de Ockham. ¿Por qué es relevante en la ciencia? P3: Defina lo que se entiende por teoría científica. Explique la importancia de que sea falseable.</p></div>
+<p class="src">Este recuperativo no trae pauta en el zip; la respuesta sigue las diapositivas.</p>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>Navaja de Ockham</b> (<i>pluralitas non est ponenda sine necessitate</i>): cuando hay dos o más explicaciones de un fenómeno, es preferible la explicación <b>completa más simple</b>; no deben multiplicarse las entidades sin necesidad. Es relevante porque la ciencia busca describir el mundo, y una descripción simple es preferible a una compleja: la navaja guía la elaboración de hipótesis y evita agregar supuestos que no explican nada nuevo. Ojo: la explicación debe ser completa; una más simple que deja fenómenos sin explicar no sirve.</p>
+<p><b>Teoría científica:</b> una explicación de un aspecto del mundo natural que puede ser o ha sido comprobada repetidas veces y es corroborada por evidencia. Que sea <b>falseable</b> (Popper) significa que existe evidencia posible que la refutaría. Es lo que distingue la ciencia: una afirmación que ninguna observación podría contradecir no dice nada sobre el mundo. Además, buscar activamente evidencia que la refute combate el sesgo de confirmación y permite corregir errores, delimitar su ámbito o reemplazarla por una mejor. La asimetría: la evidencia puede refutarla, pero nunca demostrarla de forma definitiva.</p>
+</div>
+</div></details>
+<details class="ex" id="e25"><summary>25 · Tecnología de información: positivo y negativo <span class="tag">C1 25-1 · 20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-1 · P6 (20 pts)</div><p>Discuta aspectos positivos y negativos de la tecnología de información.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Aspectos positivos</span><span>10</span><span>Aspectos negativos</span><span>10</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>Positivos.</b> <b>Comunicación:</b> como antes la escritura y la imprenta, Internet cambió radicalmente cómo nos comunicamos; las redes sociales unen a grupos con intereses comunes aunque estén lejos. <b>Acceso a información:</b> hoy es prácticamente universal e instantáneo. <b>Colaboración:</b> las organizaciones son más eficientes y es posible trabajar en conjunto a escala internacional.</p>
+<p><b>Negativos.</b> <b>Distracciones</b> y tiempo frente a la pantalla sin resultados útiles. <b>Salud:</b> alteración del sueño, problemas oculares y sedentarismo. <b>Psicológicos:</b> compararse con muchísima gente genera inseguridad e inferioridad. <b>No desconectarse:</b> se borra la frontera entre vida personal y laboral. <b>Privacidad:</b> compras, comunicaciones y actividad en línea quedan registradas y sujetas a minería de datos. <b>Vulneración de datos:</b> los grandes volúmenes almacenados son blanco de criminales.</p>
+</div>
+<div class="box tip"><div class="bt">Lo que agrega la clase 15 (impacto), que ya se pasó</div>
+<p><b>Más positivos:</b> agricultura y manufactura menos dependientes del esfuerzo humano, tareas rutinarias automatizadas, <b>avances médicos</b> (vacunas que erradicaron la viruela, antibióticos, trasplantes), sanidad pública y alimentación. <b>Más negativos:</b> impersonalidad (en las redes se dice lo que nunca se diría cara a cara), <b>desinformación</b> difícil de desmentir, bullying y ciberataques, y daños al ambiente (contaminación, capa de ozono). Cierre de la clase: muchos de estos problemas se pueden mitigar con tecnología y educación, si hay disposición a pagar los costos. Ver el <span class="soon" title="Página aún no publicada">tema 15</span>.</p></div>
+</div></details>
+</section>
+
+<section id="nivel4" data-nav="Nivel 4 · posible">
+<div class="tier"><span class="pill t4">Nivel 4</span><h3>Posible: clases pasadas que nunca se han preguntado</h3></div>
+<p>Las preguntas marcadas “inventada” no salieron en ningún certamen; están redactadas como las del profe para practicar las clases nuevas. La de inteligencia artificial es una clase nueva de este semestre (lo indica el correo nuevo del profe en la portada), así que no hay certámenes anteriores que la usen.</p>
+
+<details class="ex" id="e26"><summary>26 · Inteligencia artificial: qué es, su auge y las advertencias <span class="tag">inventada · tema XX</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica (20 pts)</div><p>Defina lo que se entiende por inteligencia artificial. Esboce su historia y explique por qué la clase advierte contra atribuir inteligencia a estos sistemas.</p></div>
+<div class="sol">
+<p><b>Definición:</b> la capacidad de sistemas computacionales de efectuar tareas comúnmente asociadas a la inteligencia humana: aprendizaje, razonamiento, resolución de problemas, percepción y toma de decisiones. Como área de investigación, estudia métodos y software que permiten a las máquinas percibir su entorno y usar aprendizaje e inteligencia para lograr metas definidas.</p>
+<p><b>Historia:</b> nació como disciplina académica en <b>1956</b> y pasó por ciclos de optimismo y desesperación (los “inviernos de la IA”); el trabajo de Karp sobre complejidad (1972) mostró límites prácticos. En los 80 tuvieron su auge los <b>sistemas expertos</b> (Japón lanzó en 1982 su proyecto de Quinta Generación). El auge actual empezó después de <b>2012</b>, con tarjetas gráficas para acelerar redes neuronales y el aprendizaje profundo; en <b>2017</b> llegó la arquitectura de <b>transformador</b>, base de los modelos de lenguaje grandes, y desde 2020 vivimos el boom de la IA generativa.</p>
+<p><b>Advertencias:</b> tendemos a atribuir voluntad e inteligencia a lo que nos rodea (“las impresoras odian a la humanidad”). <b>Eliza</b> (Weizenbaum, MIT, 1966) solo buscaba palabras clave y respondía con fórmulas, y aun así hubo gente que conversó largamente con ella, incluida la secretaria de Weizenbaum. <b>PARRY</b> (Colby, 1972) simulaba un paciente paranoico, y psicoanalistas expertos solo lo distinguieron de pacientes reales en un 48 % de los casos, lo mismo que adivinar. Además, lo que nos parece difícil (ajedrez: Deep Blue venció a Kasparov en 1997) resultó más fácil que lo que hacemos sin pensar: recién en 2025 un robot pudo doblar toallas.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e27"><summary>27 · Sistemas expertos, algoritmos genéticos y redes neuronales <span class="tag">inventada · tema XX</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica (25 pts)</div><p>Describa brevemente tres técnicas de inteligencia artificial vistas en clases, indicando cómo funcionan y una ventaja o problema de cada una.</p></div>
+<div class="sol">
+<p><b>Sistemas expertos:</b> emulan el razonamiento humano a partir de un cuerpo de conocimientos, en forma de reglas <b>si… entonces</b> (Stanford, Feigenbaum, ~1965). Tienen una <b>base de conocimiento</b> (hechos), una <b>máquina de inferencia</b> que aplica las reglas, y a veces un sistema de explicación. <b>Ventaja:</b> el conocimiento queda <b>explícito</b> y un experto puede modificarlo. <b>Problema:</b> la <b>adquisición de conocimiento</b>: el tiempo de un experto es escaso y es poco natural escribir lo implícito como reglas.</p>
+<p><b>Algoritmos genéticos:</b> una metaheurística inspirada en la <b>selección natural</b>. Una población de soluciones candidatas, representadas como “cromosomas”, se evalúa con una <b>función de aptitud</b>; se eligen las más aptas y se generan nuevas por <b>cruce</b> y <b>mutación</b>, repitiendo hasta llegar a una solución suficientemente buena. <b>Ventaja:</b> encuentra buenas soluciones en problemas de optimización difíciles, a veces muy originales (la antena ST5 de la NASA). <b>Problema:</b> la representación y los operadores dependen íntimamente del problema y pueden caer en óptimos locales.</p>
+<p><b>Redes neuronales:</b> inspiradas en el sistema nervioso; cada neurona calcula una suma ponderada de sus entradas más un sesgo y le aplica una función de activación no lineal. Se organizan en capas (entrada, ocultas, salida) y se entrenan con datos: la <b>propagación hacia atrás</b> calcula cuánto contribuye cada peso al error y lo ajusta. <b>Ventaja:</b> “aprenden” de los datos sin reglas escritas a mano; son la base de la visión artificial, el reconocimiento de voz y los LLM. <b>Problema:</b> el <b>sobreajuste</b>, un modelo que se ajusta muy bien al entrenamiento pero rinde mal en casos nuevos.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e28"><summary>28 · Modelos de lenguaje grandes (LLM) y sus problemas <span class="tag">inventada · tema XX + 17</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica (20 pts)</div><p>Explique qué es un modelo de lenguaje de gran tamaño (LLM). Discuta los problemas que presentan, en particular respecto de propiedad intelectual.</p></div>
+<div class="sol">
+<p>Un <b>LLM</b> (<i>Large Language Model</i>) es un modelo de IA, típicamente una red neuronal, entrenado con una enorme cantidad de texto para procesar lenguaje natural: analizar, resumir, traducir y generar texto. Son la base de chatbots como ChatGPT, Claude, Gemini, Grok y DeepSeek, y se acoplan a un “arnés” que da acceso a memoria o búsqueda web. Se les ha llamado <b>“autocorrectores con esteroides”</b>, porque completan texto de forma plausible según sus datos de entrenamiento.</p>
+<p><b>Problemas:</b> (1) <b>Calidad de los datos:</b> se entrenan recorriendo la red, y datos sesgados o incorrectos hacen poco confiable la salida (ley de Sturgeon: “el 90 % de todo es basura”). (2) <b>Alucinaciones:</b> combinan palabras que aparecen juntas en contextos incorrectos; por ejemplo, una lista de 15 libros recomendados para el verano de 2025 publicada en periódicos estadounidenses tenía solo 5 libros reales, y lo mismo ocurre en presentaciones legales. (3) <b>Propiedad intelectual:</b> usan para entrenar textos accesibles públicamente pero publicados bajo distintas condiciones, e incluso ilegalmente, y muchos creadores hoy prohíben ese uso; no se puede trazar el origen del texto generado, así que puede reproducir trabajo ajeno sin citarlo (la clase menciona la controversia por una supuesta solución del problema de Navier-Stokes); y, según la doctrina actual, como su resultado no es un acto creativo original, <b>no tiene protección de propiedad intelectual</b>.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e29"><summary>29 · Minería de datos y sus consideraciones éticas <span class="tag">inventada · tema 14</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica (20 pts)</div><p>Explique en qué consiste la minería de datos. ¿Qué consideraciones éticas presenta? ¿Qué se recomienda tener presente antes de recopilar datos?</p></div>
+<div class="sol">
+<p>La <b>minería de datos</b> es el proceso de <b>encontrar patrones y conocimiento</b> en conjuntos masivos de datos, con métodos de aprendizaje de máquina, estadística y bases de datos. El nombre es errado: no se “extraen datos”, se extrae conocimiento de ellos. Busca grupos de registros (análisis de clúster), registros anómalos y dependencias, por ejemplo para que un sistema de decisión prediga mejor.</p>
+<p><b>Consideraciones éticas:</b> se asocia a extraer información sobre el <b>comportamiento de los usuarios</b>, con riesgos de privacidad, éticos y legales (por ejemplo, minería gubernamental para seguridad nacional). <b>Cruzar datos</b> de varias fuentes, incluso entregados bajo promesa de anonimato, puede <b>identificar individuos</b>, y los datos “anonimizados” pueden seguir siendo suficientes para hacerlo. La divulgación de información personal identificable puede causar daño emocional, financiero o incluso físico. Ejemplo: la farmacia <b>Walgreens</b> vendió datos de recetas a una empresa de minería que los revendió a farmacéuticas, y fue demandada.</p>
+<p><b>Recomendaciones antes de recopilar:</b> tener claro el <b>propósito</b>, el <b>uso</b> que se dará a los datos, <b>quiénes tendrán acceso</b> a minarlos y usar sus derivados, los <b>requisitos de seguridad</b> y <b>cómo se actualizarán</b>. La legislación europea es estricta, aunque su cumplimiento en general no es especialmente riguroso.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e30"><summary>30 · Procesamiento de datos comerciales: de los inicios a hoy <span class="tag">inventada · tema 14</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica (15 pts)</div><p>Defina procesamiento de datos y compare el procesamiento de datos comerciales en sus inicios con el actual.</p></div>
+<div class="sol">
+<p><b>Procesamiento de datos</b> (RAE): aplicación sistemática de una serie de operaciones sobre un conjunto de datos, generalmente por medio de máquinas, para explotar la información que representan. Existe desde Babilonia y Egipto; un hito es el <b>censo de EE.UU. de 1890</b>, que con las tarjetas perforadas de Hollerith se procesó en 2 a 3 años, cuando el de 1880, manual, había tardado más de 7.</p>
+<p><b>Inicios:</b> grandes volúmenes de entrada y salida con poco procesamiento (las cartolas de un banco). Cada organización hacía sus propios sistemas; el hardware caro obligaba a compactar los datos (años con dos dígitos, que llevaron al <b>problema del año 2000</b>); entrada por tarjetas perforadas, almacenamiento en cinta, procesamiento secuencial; empresas que arrendaban computadores, como ECOM en Chile.</p>
+<p><b>Hoy:</b> se combinan componentes genéricos (ofimática, ERP, bases de datos relacionales), lo que bajó los costos y puso la tecnología al alcance de organizaciones pequeñas; los <b>usuarios ingresan sus propios datos</b> por la web y el celular, gracias a la <b>criptografía</b>; se exige acceso instantáneo, y la <b>nube</b> permite arrendar capacidad para los peaks (el Cyber Day, las inscripciones universitarias).</p>
+</div>
+</div></details>
+
+<details class="ex" id="e31"><summary>31 · Dilemas éticos, ética y ley, y códigos de conducta <span class="tag">inventada · tema 16</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica (20 pts)</div><p>Defina lo que se entiende por dilema ético y describa sus tipos. ¿Cómo se relacionan la ética y la ley?</p></div>
+<div class="sol">
+<p>Un <b>dilema ético</b> es una decisión difícil, sin respuesta correcta clara, cuyas opciones tienen consecuencias éticas; resolverlo exige pesar los resultados posibles y los principios relevantes, normalmente con un balance difícil. Tipos: <b>verdad vs. lealtad</b> (honestidad absoluta o lealtad); <b>individuo vs. comunidad</b> (interés personal o beneficio colectivo); <b>corto vs. largo plazo</b> (beneficio inmediato o consecuencias futuras); <b>justicia vs. piedad</b> (consecuencias justas o compasión).</p>
+<p><b>Ética y ley:</b> idealmente son armónicas, pero puede haber leyes que contravienen la ética (lo ético puede ser ilegal y lo legal, poco ético). La ley no cubre todo: en las áreas no consideradas, sobre todo las tecnológicas nuevas, solo quedan los lineamientos éticos. Los códigos de ética se adaptan más rápido que las leyes, porque son generales. Las organizaciones bajan esto a <b>códigos de conducta</b>, que definen su cultura y valores, aclaran lo esperado, facilitan hacer cumplir las reglas y difunden los requisitos legales.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e32"><summary>32 · El código de ética y conducta profesional de la ACM <span class="tag">inventada · tema 21</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica (20 pts)</div><p>Describa la estructura del código de ética de ACM y explique cuatro de sus principios éticos generales.</p></div>
+<div class="sol">
+<p>El código de la <b>ACM</b> (<i>Association for Computing Machinery</i>, la mayor organización profesional del área), en su versión de <b>2018</b>, tiene cuatro secciones: <b>1. principios éticos generales</b>, <b>2. responsabilidades profesionales</b>, <b>3. liderazgo profesional</b> y <b>4. cumplimiento del código</b>. Chile no tiene una organización informática con código propio.</p>
+<p><b>1.1 Contribuir a la sociedad y al bienestar humano</b>, reconociendo que toda la humanidad es parte interesada en la computación. <b>1.2 Evitar daños</b>: anticipar y minimizar las consecuencias negativas de los sistemas. <b>1.4 Ser justo y no discriminar</b>: no excluir a nadie, por ejemplo por accesibilidad (caso AllTogether). <b>1.6 Respetar la privacidad</b>: usar los datos personales solo para fines legítimos y con consentimiento (caso del operador). Los demás: 1.3 ser honesto y confiable, 1.5 respetar el trabajo creativo, 1.7 honrar la confidencialidad.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e33"><summary>33 · Derecho de autor: Convención de Berna y obras derivadas <span class="tag">inventada · tema 17</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica (20 pts)</div><p>Explique los principios de la Convención de Berna. ¿Qué es una obra derivada? Discuta las zonas grises que presenta este concepto en software.</p></div>
+<div class="sol">
+<p>La <b>Convención de Berna</b> (1886, último ajuste en 1979) es el acuerdo internacional de derecho de autor. Sus principios: <b>trato nacional</b> (una obra de un país firmante se protege en los demás como si fuera nacional), <b>protección automática</b> (sin formalidades como el registro) e <b>independencia de la protección</b> respecto del país de origen. Fija derechos exclusivos mínimos (traducir, adaptar, reproducir, presentar en público), <b>derechos morales</b> (autoría, integridad), un plazo mínimo de vida + 50 años, y usos libres (citas, enseñanza, noticias).</p>
+<p>Una <b>obra derivada</b> construye sobre una original o incluye partes sustanciales de ella: una traducción, una película basada en un libro, un solucionario. Necesita permiso del autor original. En software hay zonas grises: un ejecutable enlazado con una <b>biblioteca estática</b> es claramente derivado, pero ¿lo es el fuente que solo incluye sus encabezados? ¿Y un programa que usa una <b>biblioteca compartida</b>, que solo se referencia al ejecutar? ¿Es derivada una biblioteca escrita independientemente para ofrecer la misma <b>API</b>? Estas preguntas importan, porque la GPL se aplica precisamente a las obras derivadas.</p>
+</div>
+</div></details>
+
+<details class="ex" id="e34"><summary>34 · Marcas registradas: requisitos y protección <span class="tag">inventada · tema 17</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica (15 pts)</div><p>¿Qué se entiende por marca registrada? ¿Qué marcas acepta la ley y cómo puede perderse una marca?</p></div>
+<div class="sol">
+<p>Una <b>marca registrada</b> es una palabra, frase, símbolo, diseño o combinación (incluso formas, sonidos o colores) que identifica el origen de un producto o servicio y evita que el consumidor lo confunda. Se protege registrándola, y protege contra infracción, dilución y competencia desleal; París, Madrid y TRIPS facilitan la protección internacional.</p>
+<p>La ley protege solo marcas <b>distintivas</b>: <b>fantasiosas</b> (palabras inventadas), <b>arbitrarias</b> (palabras sin relación con el producto) y <b>sugestivas</b> (sugieren una característica sin decirla). No acepta las <b>descriptivas</b> ni las <b>genéricas</b>. Dura en general 10 años, prorrogables indefinidamente, y se <b>pierde</b> si no se usa por un período (3 a 5 años) o si no se defiende de las infracciones. En Chile se prohíbe inscribir marcas parecidas a marcas famosas extranjeras.</p>
+</div>
+</div></details>
+</section>
+
+<section id="nivel5" data-nav="Nivel 5 · poco probable">
+<div class="tier"><span class="pill t5">Nivel 5</span><h3>Poco probable: del C1, nunca preguntado en un C2</h3></div>
+<p>Preguntas de los C1 anteriores cuya materia nunca ha salido en un C2 ni en un recuperativo. Entran igual (el C2 cubre todo), pero si el tiempo no alcanza, son las primeras que puedes saltarte.</p>
+<details class="ex" id="e35"><summary>35 · Disonancia cognitiva <span class="tag">C1 26-1 · 15-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2026-1 · P2 (15 pts en el enunciado, 20 en la pauta)</div><p>Describa en qué consiste el estado psicológico de disonancia cognitiva. Describa dos técnicas que usan los afectados para evadir el problema.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Definición</span><span>6</span><span>Cada técnica (dos)</span><span>7</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>La <b>disonancia cognitiva</b> es un fenómeno psicológico que se presenta cuando una persona mantiene <b>dos creencias contradictorias a la vez</b>. Al ser un sentir interno, no muestra signos externos. Como es incómoda, las personas se ven motivadas a evitarla con mecanismos de defensa:</p>
+<p><b>Evitar:</b> ignorar la disonancia, evitando las situaciones que la recuerdan, desalentando las conversaciones del tema o distrayéndose con actividades absorbentes. Ejemplo: un fumador que sabe que fumar mata cambia de canal cuando aparece una campaña antitabaco.</p>
+<p><b>Deslegitimar:</b> desvirtuar la evidencia de la disonancia, desacreditando a la persona, grupo o situación que la resalta. Ejemplo: “esos estudios los hacen médicos exagerados”.</p>
+<p>(Tercera, si sobra tiempo: <b>limitar el impacto</b>, minimizando su importancia: “mi abuelo fumó y vivió 90 años”.) La salida correcta, aunque costosa emocionalmente, es resolver la inconsistencia cambiando el comportamiento o la creencia.</p>
+</div>
+</div></details>
+<details class="ex" id="e36"><summary>36 · Ética vs moral (Grecia y Roma) <span class="tag">C1 26-1 · 15-20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2026-1 · P1 (20 pts en el enunciado, 15 en la pauta)</div><p>En la antigüedad, en Grecia se hablaba de “ética”, mientras luego en Roma se usó el término “moral”. Hoy se consideran sinónimos, pero tenían significados diferentes. Explique cuáles eran.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Origen de “ética”</span><span>6</span><span>Origen de “moral”</span><span>6</span><span>Por qué son sinónimos hoy</span><span>3</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>El término griego <b><i>ēthikós</i></b> puede traducirse como <b>carácter</b>. La filosofía griega, en particular Aristóteles, ponía el énfasis en el carácter de la persona: que fuera virtuosa y feliz, entendiendo la felicidad como estar conforme consigo misma, no como placer.</p>
+<p>El término latino <b><i>morālis</i></b> significa <b>costumbre, usanza</b>. Lo usó el filósofo romano <b>Cicerón</b> para traducir el término griego.</p>
+<p>Esa <b>traducción imprecisa</b> unió las dos palabras, y al integrarse al vocabulario actual terminaron considerándose sinónimos. Hoy la ética se centra en la relación de la persona con la sociedad.</p>
+</div>
+</div></details>
+<details class="ex" id="e37"><summary>37 · Habilidades del pensamiento crítico <span class="tag">C1 25-2 · 20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-2 · P5 (20 pts)</div><p>¿Cuáles son las habilidades centrales del pensamiento crítico?</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Clarificar el ámbito</span><span>5</span><span>Cuestionar / evaluar fuentes</span><span>5</span><span>Identificar argumentos</span><span>2</span><span>Evaluar argumentos</span><span>3</span><span>Crear / sintetizar argumentos</span><span>5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>El pensamiento crítico consiste en cuestionar, analizar, interpretar, evaluar y juzgar: juzgar en forma confiable basado en información fidedigna. Requiere aprender a:</p>
+<p><b>1. Clarificar el propósito y contexto:</b> saber para qué y en qué situación se razona. <b>2. Cuestionar las fuentes de información:</b> quién lo dice, con qué evidencia e interés. <b>3. Identificar argumentos:</b> separar conclusiones de razones. <b>4. Analizar fuentes y argumentos:</b> ver si las razones sostienen la conclusión y detectar falacias. <b>5. Evaluar argumentos ajenos:</b> juzgar su validez y solidez. <b>6. Crear o sintetizar argumentos propios:</b> construir una posición bien fundada.</p>
+</div>
+</div></details>
+<details class="ex" id="e38"><summary>38 · Puntos de vista alternativos y suposiciones propias <span class="tag">C1 26-1 · 20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2026-1 · P3 (20 pts)</div><p>Explique por qué “considerar puntos de vista alternativos” y “cuestionar las suposiciones propias” son pasos esenciales al extraer conclusiones lógicas.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Razón de considerar puntos de vista alternativos</span><span>10</span><span>Razón de cuestionar suposiciones propias</span><span>10</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>Pensar críticamente es juzgar en forma confiable con información fidedigna. Una conclusión lógica es tan buena como sus premisas: un argumento puede ser válido, pero si sus premisas son incompletas o falsas no será sólido.</p>
+<p><b>Considerar puntos de vista alternativos</b> es esencial porque obliga a tomar en cuenta <b>toda la información disponible</b>, no solo la que coincide con lo que uno ya cree. Muestra variables y perspectivas omitidas y las debilidades del propio argumento. Sin ese paso, la conclusión queda determinada por la selección parcial de información.</p>
+<p><b>Cuestionar las suposiciones propias</b> es necesario para <b>evitar los sesgos cognitivos</b>. Todos tenemos sesgos (atajos mentales útiles, pero que distorsionan): el más peligroso aquí es el <b>sesgo de confirmación</b>, que nos lleva a buscar y valorar solo lo que confirma lo que pensamos. Preguntarse “¿qué estoy suponiendo?, ¿qué no he considerado?” permite detectarlos antes de concluir.</p>
+</div>
+</div></details>
+<details class="ex" id="e39"><summary>39 · Criterios del objetivo de un proyecto <span class="tag">C1 25-2 · 25 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-2 · P4 (25 pts)</div><p>¿Qué criterios debe cumplir el objetivo de un proyecto? Explique.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Tres características, 7 puntos cada una</span><span>20</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p>El objetivo es lo que se quiere obtener al final del proyecto. Debe ser:</p>
+<p><b>Claro y preciso:</b> todos los involucrados deben saber qué se quiere obtener y cómo evaluar si se logró. Si no, el grupo no está alineado.</p>
+<p><b>Medible:</b> se acuerdan criterios objetivos de medición, para poder seguir el avance y decidir al final si se cumplió.</p>
+<p><b>Realista:</b> debe poder lograrse en el plazo convenido con los recursos disponibles; metas imposibles estresan al equipo y llevan a plazos incumplidos.</p>
+<p><b>Fijo:</b> hay que resistir la tentación de extender o redefinir los objetivos durante el proyecto (la ampliación del alcance).</p>
+<p>La forma estándar de escribirlos es <b>SMART</b>: específico, medible, alcanzable, realista y con plazo.</p>
+</div>
+</div></details>
+<details class="ex" id="e40"><summary>40 · Historia de la ingeniería <span class="tag">C1 25-1 · 20 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-1 · P4 (20 pts)</div><p>Esboce la historia de la ingeniería.</p></div>
+<h5>Cómo se corrige</h5>
+<div class="pts"><span>Inicios, ingeniería militar</span><span>5</span><span>Ingeniería civil</span><span>5</span><span>Ingeniería mecánica</span><span>5</span><span>Diversificación en los siglos XVIII a XX</span><span>5</span></div>
+<h5>Respuesta modelo</h5>
+<div class="sol">
+<p><b>Inicios:</b> la ingeniería tiene bases muy antiguas: las máquinas simples (palanca, rueda y eje, polea, plano inclinado, cuña, tornillo) y obras como pirámides, canales y terrazas de cultivo. Como profesión nace con la construcción de <b>máquinas militares</b> (catapultas, ballestas), formalizada en el imperio romano; en inglés, <i>engineer</i> aparece hacia 1325 como “constructor de máquinas” de guerra.</p>
+<p><b>Ingeniería civil:</b> cuando el diseño y construcción de obras civiles (puentes, edificios) maduró técnicamente, se distinguió la ingeniería civil de la militar. Hoy “ingeniería militar” casi no se usa.</p>
+<p><b>Ingeniería mecánica:</b> con la máquina a vapor de Newcomen y las mejoras de Watt, en el siglo XVIII, comienza la revolución industrial y la fabricación en serie; “ingeniería” pasa a nombrar una profesión que aplica matemáticas y ciencia a la producción.</p>
+<p><b>Diversificación:</b> los fenómenos y teorías de los siglos XVIII y XIX dan lugar a la ingeniería eléctrica (Volta, Faraday, Ohm, el telégrafo) y química (producción de compuestos a gran escala). En el siglo XX aparecen la aeronáutica y la electrónica (tubos de vacío, transistor, circuitos integrados) y, últimamente, la informática.</p>
+</div>
+</div></details>
+<details class="ex" id="e41"><summary>41 · Historia de la computación <span class="tag">inventada · tema 13</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica</div><p>Esboce la historia de la computación electrónica, indicando qué caracteriza a cada generación.</p></div>
+<div class="sol">
+<p><b>Antecedentes:</b> el ábaco sumerio, el mecanismo de Anticitera, las calculadoras mecánicas de Pascal y Leibniz, y Babbage, que introdujo la idea de computadora digital programable. Los primeros computadores automáticos fueron el Z3 de Zuse (1941, no electrónico), Colossus (1943) y el Mark I de Harvard (1944, con relés).</p>
+<p><b>1ª generación (1945–1955), tubos de vacío:</b> ENIAC (1946), primer computador electrónico de propósito general; EDVAC, con el diseño de von Neumann de guardar programa y datos en memoria; UNIVAC I (1951), el primero comercial. Se programaban en lenguaje de máquina.</p>
+<p><b>2ª (1955–1965), transistores y núcleos magnéticos:</b> máquinas más rápidas, pequeñas y confiables (IBM 7090, DEC PDP-1, que inicia los minicomputadores). Lenguaje ensamblador, primeros sistemas operativos y primeros lenguajes de alto nivel: FORTRAN, COBOL, LISP.</p>
+<p><b>3ª (1965–1974), circuitos integrados:</b> minicomputadores (PDP-8, PDP-11) y el IBM 360 en los mainframes, con compatibilidad entre modelos. Unix (1969), escrito en C y licenciado barato a universidades.</p>
+<p><b>4ª (1974–1989), LSI/VLSI y el microprocesador:</b> microcomputadores en todas partes, el Altair 8800, el IBM PC y el ascenso de Microsoft, supercomputadores Cray, redes locales Ethernet y sistemas de ventanas.</p>
+<p><b>5ª (1990–hoy), ULSI:</b> procesadores superescalares y multihebras, portátiles y teléfonos inteligentes, supercomputadores hechos de muchos computadores con tarjetas gráficas, la web y la nube. En estudio: computación óptica, neuronal y cuántica.</p>
+</div>
+</div></details>
+<details class="ex" id="e42"><summary>42 · Tradiciones de la sociología <span class="tag">inventada · tema 10</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica</div><p>La sociología contemporánea es multiparadigmática. Describa las cuatro tradiciones clásicas. ¿Por qué la sociología, como ciencia, debe ser objetiva?</p></div>
+<div class="sol">
+<p>La sociología es la ciencia que trata de la estructura y funcionamiento de las sociedades humanas. Sus tradiciones clásicas son: el <b>funcionalismo</b>, que mira la sociedad como un todo cuyas partes cumplen funciones necesarias, con analogías biológicas y evolutivas; la <b>teoría del conflicto</b>, que critica el sistema como un todo o enfatiza las desigualdades entre grupos; el <b>interaccionismo simbólico</b>, que estudia con micro análisis los significados subjetivos y ve la sociedad como producto de múltiples interacciones; y el <b>utilitarismo</b> o teoría de la elección racional, que supone actores racionales que maximizan su interés propio (conocen las alternativas y sus consecuencias, tienen preferencias y una regla de decisión).</p>
+<p>Debe ser <b>objetiva</b> porque, como ciencia, describe cómo funciona la sociedad y no cómo nos gustaría que funcionara; no puede suponer, por ejemplo, que las interacciones siguen siempre una norma ética. Y ninguna formulación simple basta: los humanos en grupos que se traslapan son extremadamente complejos.</p>
+</div>
+</div></details>
+<details class="ex" id="e43"><summary>43 · Validez y solidez <span class="tag">inventada · tema 3</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica</div><p>Distinga entre argumentos válidos y sólidos. Dé un ejemplo de argumento válido pero no sólido, y explique por qué la inducción no es deductivamente válida.</p></div>
+<div class="sol">
+<p>Un argumento es <b>válido</b> si las premisas implican la conclusión (la conclusión es consecuencia lógica de las premisas). Es <b>sólido</b> si además es válido y sus premisas son verdaderas. Ejemplo válido no sólido: “Los aviones supersónicos vuelan más rápido que el sonido; el Subaru Impreza es un avión supersónico; luego, el Subaru vuela más rápido que el sonido”. La forma lógica es correcta, pero la segunda premisa es falsa.</p>
+<p>La <b>inducción</b> deduce una regla general desde casos particulares; no es deductivamente válida porque siempre puede aparecer un caso que la contradiga: “todos los cisnes observados son blancos, luego todos los cisnes son blancos” falló al descubrirse cisnes negros en Australia (1697). Aun así es la única herramienta con que contamos para generalizar desde la experiencia, y por eso la ciencia trata sus conclusiones como provisorias.</p>
+</div>
+</div></details>
+<details class="ex" id="e44"><summary>44 · Kant y el utilitarismo <span class="tag">inventada · tema 9</span></summary>
+<div class="body">
+<div class="enun"><div class="et">Pregunta de práctica</div><p>Explique el imperativo categórico de Kant y contrástelo con el utilitarismo. ¿Cómo juzgaría cada uno el mentir para obtener un beneficio?</p></div>
+<div class="sol">
+<p>Kant propone una ética <b>deontológica</b> (de deberes): lo único intrínsecamente bueno es una buena voluntad, y una acción es moral si su máxima obedece a la ley moral. Distingue imperativos <b>hipotéticos</b> (obligan si quiero algo) de <b>categóricos</b> (obligan siempre, por ser seres racionales). Sus formulaciones: actuar solo según máximas que puedan ser <b>ley universal</b>; tratar a la humanidad <b>siempre como fin y nunca solo como medio</b>; la <b>autonomía</b> de la voluntad racional; y actuar como legislador de un <b>reino de los fines</b>.</p>
+<p>El <b>utilitarismo</b> (Bentham, Mill) es consecuencialista: lo correcto es lo que produce la <b>máxima felicidad para el mayor número</b>. Bentham propone medir placer y dolor (hedonismo cuantitativo); Mill distingue placeres superiores (mentales) e inferiores (cualitativo).</p>
+<p><b>Mentir para beneficiarse:</b> para Kant es inmoral siempre: “mentir cuando me conviene”, universalizado, destruye la confianza que hace posible mentir, y además usa al otro como medio. Para el utilitarismo depende de las consecuencias totales: si el daño a los engañados y a la confianza general supera el beneficio, es incorrecto; en general lo es.</p>
+</div>
+</div></details>
+<details class="ex" id="e45"><summary>45 · Funciones de un buen ayudante <span class="tag">C1 25-1 · 0 pts</span></summary>
+<div class="body">
+<div class="enun"><div class="et">C1 2025-1 · P7 (0 pts)</div><p>¿Cuáles son las funciones de un buen ayudante, según lo discutido en clases?</p></div>
+<div class="sol"><p>La pauta, textual: la instrucción que recibió el profe cuando empezó como ayudante fue “profundizar dudas, enredar conceptos y, en general, perjudicar al estudiante. Desde aquel lejano evento se ha esforzado en cumplir al dedillo e ir perfeccionándose. Vaya a clases. Puede aprender algo.” Es una broma que vale 0 puntos; si aparece algo así, no le dediques tiempo.</p></div>
+</div></details>
+</section>
+
+<div class="pnav"><a href="18-Codigo-abierto.html"><small>← Anterior</small>Código abierto</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c2-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>

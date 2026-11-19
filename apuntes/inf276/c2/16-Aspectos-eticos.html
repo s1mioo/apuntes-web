@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Caleb Baez">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aspectos éticos · Infosoc C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+
+  .pages .pgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:10px 4px 0}
+  .pages .pgrp:first-child{margin-top:0}
+  .pages span.off{display:flex;gap:9px;align-items:center;font-size:13px;padding:6px 9px;border-radius:8px;
+    border:1px dashed var(--line);line-height:1.25;opacity:.5;cursor:default}
+  .pages span.off b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--code);
+    color:var(--muted);font-size:11.5px}
+  .pages a b{font-size:11px}
+  .nc{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--no-soft);
+    color:var(--no);margin-left:2px;font-style:normal;vertical-align:1px;white-space:nowrap}
+  .soon{border-bottom:1px dashed var(--muted);color:var(--muted)}
+  .box.ana p+p{margin-top:6px}
+  .box.nc{border-left-color:var(--no);background:var(--no-soft)} .box.nc .bt{color:var(--no)}
+  .lic{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:700} .nope{color:var(--no);font-weight:700}
+  .mnemo{font-size:15px;background:var(--panel);border:1px dashed var(--brand);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .mnemo b{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T16</div>
+    <div><h1>Aspectos éticos</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><div class="pgrp">Inicio</div><a href="0-Guia-de-estudio-C2.html"><b>★</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 21</small></span></a><div class="pgrp">Materia del C1</div><span class="off" title="Todavía no está publicada"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></span><span class="off" title="Todavía no está publicada"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></span><span class="off" title="Todavía no está publicada"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></span><span class="off" title="Todavía no está publicada"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></span><span class="off" title="Todavía no está publicada"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></span><span class="off" title="Todavía no está publicada"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></span><span class="off" title="Todavía no está publicada"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></span><span class="off" title="Todavía no está publicada"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></span><span class="off" title="Todavía no está publicada"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></span><span class="off" title="Todavía no está publicada"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></span><span class="off" title="Todavía no está publicada"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></span><span class="off" title="Todavía no está publicada"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></span><span class="off" title="Todavía no está publicada"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></span><span class="off" title="Todavía no está publicada"><b>Σ</b><span>Resumen contenidos Certamen 1<br><small style="color:var(--muted)">lo esencial de 1 a 13</small></span></span><div class="pgrp">Materia nueva del C2</div><span class="off" title="Todavía no está publicada"><b>14</b><span>Procesamiento de datos<br><small style="color:var(--muted)">historia y minería de datos</small></span></span><span class="off" title="Todavía no está publicada"><b>15</b><span>Impacto de la tecnología<br><small style="color:var(--muted)">lo bueno y lo malo</small></span></span><a href="16-Aspectos-eticos.html" class="cur"><b>16</b><span>Aspectos éticos<br><small style="color:var(--muted)">códigos, dilemas, ética profesional</small></span></a><span class="off" title="Todavía no está publicada"><b>XX</b><span>Inteligencia artificial<br><small style="color:var(--muted)">expertos, genéticos, redes, LLM</small></span></span><a href="17-Propiedad-intelectual.html"><b>17</b><span>Propiedad intelectual<br><small style="color:var(--muted)">autor, patentes, marcas, secretos</small></span></a><a href="18-Codigo-abierto.html"><b>18</b><span>Código abierto<br><small style="color:var(--muted)">GPL, BSD, OSI, Creative Commons</small></span></a><span class="off" title="Todavía no está publicada"><b>19</b><span>Protección de datos <i class="nc">no pasada</i><br><small style="color:var(--muted)">GDPR, leyes chilenas, CRA</small></span></span><span class="off" title="Todavía no está publicada"><b>20</b><span>Desarrollo de software <i class="nc">no pasada</i><br><small style="color:var(--muted)">máximas y deuda técnica</small></span></span><span class="off" title="Todavía no está publicada"><b>21</b><span>Código de ética ACM<br><small style="color:var(--muted)">las 4 secciones</small></span></span><div class="pgrp">Práctica</div><a href="22-Ejercicios.html"><b>✎</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a><span class="off" title="Todavía no está publicada"><b>⇄</b><span>Flashcards<br><small style="color:var(--muted)">toda la materia</small></span></span><div class="pgrp">Complemento</div><span class="off" title="Todavía no está publicada"><b>+</b><span>Extra<br><small style="color:var(--muted)">probablemente no entra</small></span></span></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 16</div><a href="#t16-inicio">Qué pesa y qué estudiar</a><a href="#codigos">Códigos de ética</a><a href="#conducta">Códigos de conducta</a><a href="#dilema">Dilema ético y sus tipos</a><a href="#ley">Ética y ley</a><a href="#responsabilidades">Ética profesional: 9 puntos</a><a href="#perspectivas">Perspectivas</a><div class="grp">Para el certamen</div><a href="#metodo">Cómo resolver un caso</a><div class="grp">Práctica</div><a href="#t16-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+<section id="t16-inicio" data-grp="Tema 16" data-nav="Qué pesa y qué estudiar">
+<h2>Tema 16 · Aspectos éticos</h2>
+<p class="lead">Clase <code>16-aspectos-éticos-hnd.pdf</code> (21 diapositivas). Códigos de ética en ingeniería, códigos de conducta, qué es un dilema ético y sus tipos, ética y ley, y las <b>responsabilidades éticas del profesional</b>. Lleva la ética del C1 (Kant, utilitarismo, temas 7 a 9) al trabajo. Se complementa con el <span class="soon" title="Página aún no publicada">código de la ACM (tema 21)</span>.</p>
+
+<div class="hero">
+  <div class="big">Peso en el certamen: muy alto (por los casos)</div>
+  <div class="sub">Los 6 C2 y recuperativos anteriores traen un <b>caso ético largo de 20 a 35 puntos</b>: AllTogether, David, Jim Warren y el operador que vende datos. Es la pregunta que más puntos vale. Además, “responsabilidades éticas de un profesional en nuestra área” fue la P6 del C1 2026-1 (20 pts), y sale directamente de esta clase.</div>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder escribir</h5>
+    <p>· Qué es un <b>dilema ético</b> y sus <b>4 tipos</b>.</p>
+    <p>· La relación entre <b>ética y ley</b>.</p>
+    <p>· Para qué sirve un <b>código de conducta</b>.</p>
+    <p>· Las <b>9 responsabilidades</b> del profesional.</p>
+    <p>· El <b>método para resolver un caso</b>, citando el código de la ACM.</p>
+  </div>
+  <div class="card"><h5>Dónde está</h5>
+    <p><b>Diapositivas</b> <code>16-aspectos-éticos-hnd.pdf</code> y <code>21-código-ACM-hnd.pdf</code>.</p>
+    <p><b>Pautas</b>: C1 2026-1 P6 (en <a class="inl" href="22-Ejercicios.html#e10">E10</a>) y los casos <a class="inl" href="22-Ejercicios.html#e6">E6 a E9</a>.</p>
+  </div>
+  <div class="card"><h5>Plan para este tema</h5>
+    <p>1. Leer la página (30 min).</p>
+    <p>2. Aprender el <a class="inl" href="#metodo">método del caso</a> (10 min).</p>
+    <p>3. Hacer <a class="inl" href="22-Ejercicios.html#e10">E10</a> y uno de los casos con reloj (25 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="codigos" data-nav="Códigos de ética">
+<h2>Códigos de ética en ingeniería</h2>
+<p>Muchas asociaciones de ingenieros en el mundo han acordado <b>códigos de ética</b>. Suelen ser nacionales y agruparse en organizaciones mayores.</p>
+<ul>
+<li><b>Chile:</b> el <b>Instituto de Ingenieros de Chile</b> se fundó en <b>1888</b>; el <b>Colegio de Ingenieros de Chile</b> (hoy asociación gremial) se creó por ley en <b>1958</b>. En <b>2013</b> entró en vigencia la <b>quinta versión</b> de su código de ética. En Chile <b>no es obligatorio</b> pertenecer al Colegio para ejercer: el código obliga solo a sus miembros.</li>
+<li><b>EE.UU.:</b> la <b>NSPE</b> (<i>National Society of Professional Engineers</i>).</li>
+<li><b>Informática:</b> la mayor agrupación de profesionales del área en el mundo es la <b>ACM</b> (<i>Association for Computing Machinery</i>). Pertenecer es opcional. Su código toca los puntos propios del área (ver el <span class="soon" title="Página aún no publicada">tema 21</span>).</li>
+<li>Áreas nuevas como la <b>minería de datos</b> y la <b>inteligencia artificial</b> traen desafíos éticos que recién se están estudiando.</li>
+</ul>
+<div class="box ana"><div class="bt">Analogía: el reglamento de un club</div>
+<p>Un código de ética profesional es como el reglamento de un club deportivo: obliga a los socios, no a cualquiera que juegue en la calle. En Chile, un ingeniero que no es socio del Colegio no está obligado por su código, pero sí por la ley y por su propia ética.</p></div>
+</section>
+
+<section id="conducta" data-nav="Códigos de conducta">
+<h2>Códigos de conducta</h2>
+<p>Es común que las organizaciones (empresas, universidades) tengan <b>códigos de conducta</b> que, entre otras cosas, tratan temas éticos. Sirven para:</p>
+<ul>
+<li><b>Definir la cultura organizacional y sus valores</b>, y aclarar qué se espera de los miembros.</li>
+<li><b>Simplificar hacer cumplir</b> reglas y regulaciones, dando lineamientos para manejar las transgresiones.</li>
+<li><b>Difundir con claridad los requisitos legales</b> que aplican.</li>
+</ul>
+<p>Además, <b>pueden ser exigidos por ley</b>.</p>
+<div class="box ana"><div class="bt">Analogía</div><p>El código de ética es la <b>constitución</b> de la profesión (principios generales); el código de conducta es el <b>reglamento interno</b> de una empresa (qué se espera aquí, qué pasa si no lo cumples).</p></div>
+</section>
+
+<section id="dilema" data-nav="Dilema ético y sus tipos">
+<h2>Dilema ético</h2>
+<div class="box def"><div class="bt">Definición</div>
+<p>Un <b>dilema ético</b> presenta una <b>decisión difícil, sin respuesta correcta clara</b>, en la que <b>las opciones tienen consecuencias éticas</b>. Resolverlo exige considerar con cuidado los posibles resultados y <b>pesar los principios éticos</b> relevantes; normalmente obliga a un <b>difícil balance</b>.</p></div>
+
+<h3>Los cuatro tipos</h3>
+<div class="tw"><table>
+<thead><tr><th>Tipo</th><th>La tensión</th><th>Caso de certamen donde aparece</th></tr></thead>
+<tbody>
+<tr><td><b>Verdad vs. lealtad</b></td><td>Entre la honestidad absoluta y la lealtad.</td><td><b>David</b> (decir la verdad vs. proteger a sus amigos); <b>Jim Warren</b> (denunciar vs. lealtad a la empresa).</td></tr>
+<tr><td><b>Individuo vs. comunidad</b></td><td>Entre el interés personal y el beneficio colectivo.</td><td><b>El operador</b> que vende datos (su ganancia vs. la privacidad de todos los clientes).</td></tr>
+<tr><td><b>Corto vs. largo plazo</b></td><td>Entre beneficios inmediatos y consecuencias de largo plazo.</td><td><b>AllTogether</b> (lanzar ya vs. un producto que excluye a los usuarios con discapacidad).</td></tr>
+<tr><td><b>Justicia vs. piedad</b></td><td>Entre consecuencias justas y compasión.</td><td>La universidad del caso David: castigar a los autores vs. considerar que son estudiantes.</td></tr>
+</tbody></table></div>
+<div class="box ana"><div class="bt">Analogía: el semáforo en amarillo</div>
+<p>Un problema ético “fácil” es un semáforo en rojo: sabes qué hacer, aunque no quieras. Un <b>dilema</b> es un semáforo en amarillo con alguien pegado atrás: frenar y pasar tienen costos reales, y ninguna opción es limpia. Por eso la pauta no premia “la respuesta correcta”, sino <b>identificar el dilema y defender una elección</b>.</p></div>
+<div class="box tip"><div class="bt">Truco para el certamen</div>
+<p>Abre todo caso con: “El dilema es de tipo <b>verdad vs. lealtad</b>: entre ___ y ___”. Usa vocabulario de esta clase y nombra los <b>valores en conflicto</b>, que es lo que pide la letra a.</p></div>
+</section>
+
+<section id="ley" data-nav="Ética y ley">
+<h2>Ética y ley</h2>
+<ul>
+<li><b>Idealmente</b>, los requisitos éticos y los legales son armónicos.</li>
+<li><b>En la práctica</b> puede haber leyes que contravienen la ética: el comportamiento ético puede ser ilegal y el legal puede ser poco ético.</li>
+<li><b>No todo está cubierto por la ley</b>: en las áreas no consideradas solo quedan los lineamientos éticos.</li>
+<li>Hay leyes que enmarcan la acción del profesional, aparte de las éticas.</li>
+</ul>
+<div class="box ana"><div class="bt">Analogía: el piso y el techo</div>
+<p>La ley es el <b>piso</b>: lo mínimo que no puedes dejar de hacer. La ética es hasta dónde decides <b>subir</b>. Lanzar un producto inaccesible puede ser legal en algún país, pero sigue siendo poco ético (caso AllTogether). Y la tecnología avanza tan rápido que muchas veces todavía no hay ley: en ese caso solo te guía la ética.</p></div>
+</section>
+
+<section id="responsabilidades" data-nav="Ética profesional: 9 puntos">
+<h2>Responsabilidades éticas del profesional</h2>
+<p class="lead">La clase adapta una lista de la <i>Enciclopedia Significados</i>. Es exactamente lo que pidió la P6 del C1 2026-1: “Esboce las responsabilidades éticas de un profesional en nuestra área”.</p>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Responsabilidad</th><th>Qué significa</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><b>Competencia profesional</b></td><td>Tener las competencias que exige el cargo. No postular ni aceptar encargos sin el conocimiento, la experiencia o la preparación necesarios.</td></tr>
+<tr><td>2</td><td><b>Manejo responsable de la información</b></td><td>Lo que se sabe por el cargo se maneja con suma discreción, dentro y fuera de la organización.</td></tr>
+<tr><td>3</td><td><b>Secreto profesional</b></td><td>Hay profesiones en que la ley protege la información que se maneja, y otras en que la ley exige reportar ciertos hechos.</td></tr>
+<tr><td>4</td><td><b>Respeto entre colegas</b></td><td>No desacreditar, insultar, molestar ni engañar a colegas u otros profesionales.</td></tr>
+<tr><td>5</td><td><b>Inclusión</b></td><td>Tratar con personas de todo origen, edad, formación, creencia u opción personal sin que las decisiones profesionales dependan de esos prejuicios.</td></tr>
+<tr><td>6</td><td><b>Ética financiera</b></td><td>Manejar responsablemente la información financiera. Falsear datos financieros o usar información confidencial para lucrar en el mercado son delitos.</td></tr>
+<tr><td>7</td><td><b>Comportamiento honesto</b></td><td>No usar de forma poco ética la información, los contactos, las influencias o los recursos del cargo: eso es corrupción y puede tener graves consecuencias legales.</td></tr>
+<tr><td>8</td><td><b>Responsabilidad social</b></td><td>Rechazar trabajos que se sabe que dañarán a personas, grupos o comunidades y, si corresponde, <b>denunciarlos</b>.</td></tr>
+<tr><td>9</td><td><b>Cuidado del ambiente</b></td><td>Toda actividad económica impacta el ambiente (ruido, gases, energía, agua, desechos): minimizarlo y, si corresponde, denunciar.</td></tr>
+</tbody></table></div>
+<div class="mnemo"><b>Mnemotecnia: “CIS-RIF-CRA”.</b> <b>C</b>ompetencia · <b>I</b>nformación · <b>S</b>ecreto · <b>R</b>espeto · <b>I</b>nclusión · <b>F</b>inanzas · <b>C</b>omportamiento honesto · <b>R</b>esponsabilidad social · <b>A</b>mbiente.</div>
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">C1 2026-1 P6 · 20 pts</span></div>
+<div class="pts"><span>Contar con las competencias</span><span>5</span><span>Trato de colegas y otras personas</span><span>4</span><span>Uso debido de recursos del cargo</span><span>5</span><span>Evitar perjuicio a terceros o al ambiente</span><span>3</span><span>Problemas de privacidad y seguridad</span><span>3</span></div>
+<p>Fíjate que agrupa las 9 en <b>5 bloques</b> y cierra con las <b>perspectivas</b> (privacidad y seguridad), que vienen en la siguiente sección.</p></div>
+<div class="box ana"><div class="bt">Analogía: el cerrajero</div>
+<p>Un cerrajero tiene en sus manos la llave de todas las casas del barrio. La ética profesional es lo que hace que puedas confiarle tu puerta: que sepa hacer su trabajo (competencia), que no le cuente a nadie qué tienes en la casa (información y secreto), que no use tus llaves para entrar cuando no estás (comportamiento honesto) y que se niegue a abrirle la puerta a un ladrón (responsabilidad social). Un informático con acceso a bases de datos es un cerrajero digital.</p></div>
+</section>
+
+<section id="perspectivas" data-nav="Perspectivas">
+<h2>Perspectivas de la ética</h2>
+<p>El avance vertiginoso de la tecnología trae desafíos nuevos. Los <b>códigos de ética demoran</b> en incorporarlos, aunque al ser generales suelen ser <b>lo bastante flexibles</b> para acomodarlos sin grandes cambios. Las <b>leyes demoran mucho más</b> en reconocer realidades nuevas. En informática, las áreas con problemas nuevos son <b>la privacidad y la seguridad de los datos, la minería de datos y, últimamente, la inteligencia artificial</b>.</p>
+<div class="box ana"><div class="bt">Analogía: el mapa y el territorio</div>
+<p>La tecnología es un territorio que crece todos los días; los códigos de ética son un mapa dibujado a grandes rasgos, que sirve incluso para zonas nuevas; las leyes son un mapa con todo detallado, que queda desactualizado muy rápido.</p></div>
+</section>
+
+<section id="metodo" data-grp="Para el certamen" data-nav="Cómo resolver un caso">
+<h2>Cómo resolver un caso ético (el de 30 puntos)</h2>
+<p class="lead">Así corrigen las pautas: sin letras, <b>identificar el dilema (10)</b> y <b>discutir los puntos principales contravenidos (20)</b>; con letras, 10 a 15 por letra. El método junta esta clase, el código ACM y la ética del C1.</p>
+<div class="steps">
+<div class="step"><b>El dilema y su tipo.</b> “El dilema es de tipo <b>verdad vs. lealtad</b>: entre la lealtad a ___ y ___.” Nombra los <b>valores en conflicto</b>: lealtad, honestidad, privacidad, legalidad, proteger a terceros, calidad.</div>
+<div class="step"><b>Los afectados.</b> Quién gana y quién pierde con cada opción (usuarios, empresa, terceros, el propio profesional).</div>
+<div class="step"><b>Qué se contraviene.</b> Cita <b>principios del código ACM por número</b> (ver la tabla de abajo) y, si aplica, la ley (propiedad intelectual, protección de datos).</div>
+<div class="step"><b>Dos lentes del C1.</b> <b>Kant:</b> ¿la máxima es universalizable? ¿Uso a alguien solo como medio? <b>Utilitarismo:</b> ¿qué opción da el mejor resultado para el mayor número?</div>
+<div class="step"><b>Posición justificada</b>, reconociendo los costos personales (“Jim cumplió con sus obligaciones, a un costo personal sustancial”). Si hay letras, responde <b>una por una</b>, marcando a), b), c).</div>
+</div>
+
+<h3 id="acm-breve">El código ACM en una tabla (para citar)</h3>
+<div class="tw"><table class="mini">
+<thead><tr><th>Sección</th><th>Principios más citados en los casos</th></tr></thead>
+<tbody>
+<tr><td><b>1. Principios éticos generales</b></td><td><b>1.1</b> contribuir a la sociedad y al bienestar humano · <b>1.2 evitar daños</b> · <b>1.3</b> ser honesto y confiable · <b>1.4 ser justo y no discriminar</b> · <b>1.5</b> respetar el trabajo creativo (propiedad intelectual) · <b>1.6 respetar la privacidad</b> · <b>1.7</b> honrar la confidencialidad</td></tr>
+<tr><td><b>2. Responsabilidades profesionales</b></td><td><b>2.1 alta calidad</b> · 2.2 competencia · <b>2.3 conocer y respetar las reglas</b> · <b>2.4 aceptar y dar revisión profesional</b> · 2.5 evaluar riesgos · 2.6 trabajar en su área de competencia · 2.8 acceder solo con autorización · 2.9 sistemas seguros</td></tr>
+<tr><td><b>3. Liderazgo profesional</b></td><td><b>3.1 el bien común como preocupación central</b> · <b>3.2 promover las responsabilidades sociales</b> · 3.7 cuidado con sistemas que se integran a la infraestructura de la sociedad</td></tr>
+<tr><td><b>4. Cumplimiento del código</b></td><td>4.1 defender y promover los principios · 4.2 tratar las violaciones como incompatibles con ser miembro de la ACM</td></tr>
+</tbody></table></div>
+<div class="box ana"><div class="bt">Analogía: el abogado que cita artículos</div>
+<p>En los casos, una opinión sin respaldo vale poco. Citar “esto contraviene el principio <b>1.6</b> (respetar la privacidad)” es como cuando un abogado cita el artículo de la ley: muestra que no estás opinando, sino aplicando una norma. La pauta del caso AllTogether es literalmente una lista de principios ACM con su explicación.</p></div>
+<p>Los cuatro casos de certámenes anteriores, con pauta y respuesta modelo, están en <a class="inl" href="22-Ejercicios.html#e6">E6 (AllTogether)</a>, <a class="inl" href="22-Ejercicios.html#e7">E7 (David)</a>, <a class="inl" href="22-Ejercicios.html#e8">E8 (Jim Warren)</a> y <a class="inl" href="22-Ejercicios.html#e9">E9 (el operador de datos)</a>.</p>
+</section>
+
+<section id="t16-preguntas" data-grp="Práctica" data-nav="Preguntas del tema">
+<h2>Preguntas del tema</h2>
+<p class="lead">De certamen con pauta: <a class="inl" href="22-Ejercicios.html#e10">E10 (responsabilidades éticas)</a> y <a class="inl" href="22-Ejercicios.html#e31">E31 (dilemas, ética y ley)</a>.</p>
+
+<details class="ex"><summary>1 · ¿Qué es un dilema ético? <span class="tag">diapositiva 7</span></summary>
+<div class="body"><p>Una decisión difícil, sin respuesta correcta clara, cuyas opciones tienen consecuencias éticas. Resolverlo exige pesar resultados y principios, y normalmente obliga a un balance difícil.</p></div></details>
+
+<details class="ex"><summary>2 · Nombra los cuatro tipos de dilema ético <span class="tag">diapositiva 8</span></summary>
+<div class="body"><p>Verdad vs. lealtad, individuo vs. comunidad, corto vs. largo plazo, y justicia vs. piedad.</p></div></details>
+
+<details class="ex"><summary>3 · ¿Es obligatorio en Chile pertenecer al Colegio de Ingenieros? <span class="tag">diapositiva 3</span></summary>
+<div class="body"><p>No. Su código de ética (quinta versión, 2013) obliga solo a sus miembros.</p></div></details>
+
+<details class="ex"><summary>4 · ¿Para qué sirve un código de conducta? <span class="tag">diapositiva 6</span></summary>
+<div class="body"><p>Para definir la cultura y los valores de la organización, aclarar qué se espera de sus miembros, simplificar hacer cumplir las reglas (con lineamientos para manejar transgresiones) y difundir los requisitos legales. Puede ser exigido por ley.</p></div></details>
+
+<details class="ex"><summary>5 · ¿Puede algo ser legal y poco ético? <span class="tag">diapositiva 9</span></summary>
+<div class="body"><p>Sí. Idealmente ética y ley son armónicas, pero puede haber leyes que contravienen la ética, y hay áreas que la ley no cubre, donde solo queda la ética.</p></div></details>
+
+<details class="ex"><summary>6 · ¿Qué dice la responsabilidad social del profesional? <span class="tag">diapositiva 18</span></summary>
+<div class="body"><p>Rechazar tareas o servicios que se sabe que pueden usarse para dañar a personas, grupos, instituciones o comunidades, y denunciarlas si corresponde.</p></div></details>
+
+<details class="ex"><summary>7 · ¿Qué demora más en adaptarse a la tecnología: los códigos de ética o las leyes? <span class="tag">diapositiva 20</span></summary>
+<div class="body"><p>Las leyes. Los códigos también demoran, pero al ser generales suelen ser lo bastante flexibles para cubrir situaciones nuevas.</p></div></details>
+</section>
+
+<div class="pnav"><a href="0-Guia-de-estudio-C2.html"><small>← Anterior</small>Guía de estudio</a><a class="nx" href="17-Propiedad-intelectual.html"><small>Siguiente →</small>Propiedad intelectual</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c2-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>

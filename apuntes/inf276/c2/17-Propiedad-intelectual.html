@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Caleb Baez">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propiedad intelectual · Infosoc C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+
+  .pages .pgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:10px 4px 0}
+  .pages .pgrp:first-child{margin-top:0}
+  .pages span.off{display:flex;gap:9px;align-items:center;font-size:13px;padding:6px 9px;border-radius:8px;
+    border:1px dashed var(--line);line-height:1.25;opacity:.5;cursor:default}
+  .pages span.off b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--code);
+    color:var(--muted);font-size:11.5px}
+  .pages a b{font-size:11px}
+  .nc{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--no-soft);
+    color:var(--no);margin-left:2px;font-style:normal;vertical-align:1px;white-space:nowrap}
+  .soon{border-bottom:1px dashed var(--muted);color:var(--muted)}
+  .box.ana p+p{margin-top:6px}
+  .box.nc{border-left-color:var(--no);background:var(--no-soft)} .box.nc .bt{color:var(--no)}
+  .lic{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:700} .nope{color:var(--no);font-weight:700}
+  .mnemo{font-size:15px;background:var(--panel);border:1px dashed var(--brand);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .mnemo b{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T17</div>
+    <div><h1>Propiedad intelectual</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><div class="pgrp">Inicio</div><a href="0-Guia-de-estudio-C2.html"><b>★</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 21</small></span></a><div class="pgrp">Materia del C1</div><span class="off" title="Todavía no está publicada"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></span><span class="off" title="Todavía no está publicada"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></span><span class="off" title="Todavía no está publicada"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></span><span class="off" title="Todavía no está publicada"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></span><span class="off" title="Todavía no está publicada"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></span><span class="off" title="Todavía no está publicada"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></span><span class="off" title="Todavía no está publicada"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></span><span class="off" title="Todavía no está publicada"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></span><span class="off" title="Todavía no está publicada"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></span><span class="off" title="Todavía no está publicada"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></span><span class="off" title="Todavía no está publicada"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></span><span class="off" title="Todavía no está publicada"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></span><span class="off" title="Todavía no está publicada"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></span><span class="off" title="Todavía no está publicada"><b>Σ</b><span>Resumen contenidos Certamen 1<br><small style="color:var(--muted)">lo esencial de 1 a 13</small></span></span><div class="pgrp">Materia nueva del C2</div><span class="off" title="Todavía no está publicada"><b>14</b><span>Procesamiento de datos<br><small style="color:var(--muted)">historia y minería de datos</small></span></span><span class="off" title="Todavía no está publicada"><b>15</b><span>Impacto de la tecnología<br><small style="color:var(--muted)">lo bueno y lo malo</small></span></span><a href="16-Aspectos-eticos.html"><b>16</b><span>Aspectos éticos<br><small style="color:var(--muted)">códigos, dilemas, ética profesional</small></span></a><span class="off" title="Todavía no está publicada"><b>XX</b><span>Inteligencia artificial<br><small style="color:var(--muted)">expertos, genéticos, redes, LLM</small></span></span><a href="17-Propiedad-intelectual.html" class="cur"><b>17</b><span>Propiedad intelectual<br><small style="color:var(--muted)">autor, patentes, marcas, secretos</small></span></a><a href="18-Codigo-abierto.html"><b>18</b><span>Código abierto<br><small style="color:var(--muted)">GPL, BSD, OSI, Creative Commons</small></span></a><span class="off" title="Todavía no está publicada"><b>19</b><span>Protección de datos <i class="nc">no pasada</i><br><small style="color:var(--muted)">GDPR, leyes chilenas, CRA</small></span></span><span class="off" title="Todavía no está publicada"><b>20</b><span>Desarrollo de software <i class="nc">no pasada</i><br><small style="color:var(--muted)">máximas y deuda técnica</small></span></span><span class="off" title="Todavía no está publicada"><b>21</b><span>Código de ética ACM<br><small style="color:var(--muted)">las 4 secciones</small></span></span><div class="pgrp">Práctica</div><a href="22-Ejercicios.html"><b>✎</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a><span class="off" title="Todavía no está publicada"><b>⇄</b><span>Flashcards<br><small style="color:var(--muted)">toda la materia</small></span></span><div class="pgrp">Complemento</div><span class="off" title="Todavía no está publicada"><b>+</b><span>Extra<br><small style="color:var(--muted)">probablemente no entra</small></span></span></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 17</div><a href="#t17-inicio">Qué pesa y qué estudiar</a><a href="#que-es">Qué es y por qué importa</a><a href="#areas">Las áreas (mapa)</a><div class="grp">Las áreas</div><a href="#autor">Derecho de autor</a><a href="#patentes">Patentes</a><a href="#marcas">Marcas registradas</a><a href="#geo">Indicaciones geográficas</a><a href="#secretos">Secretos comerciales</a><div class="grp">Para responder</div><a href="#resumen">Tabla resumen</a><div class="grp">Práctica</div><a href="#t17-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+<section id="t17-inicio" data-grp="Tema 17" data-nav="Qué pesa y qué estudiar">
+<h2>Tema 17 · Propiedad intelectual</h2>
+<p class="lead">Clase <code>17-propiedad-intelectual-hnd.pdf</code> (46 diapositivas). Es un tema legal: qué es la propiedad intelectual, sus áreas (derecho de autor, patentes, marcas, indicaciones geográficas y secretos comerciales) y cómo las tratan la ley de EE.UU., los tratados internacionales y la ley chilena. Esta página parte de cero.</p>
+
+<div class="hero">
+  <div class="big">Peso en el certamen: altísimo, casi seguro</div>
+  <div class="sub">Salió en <b>5 de los 6</b> C2 y recuperativos anteriores, y además en el C1 2026-1: entre <b>20 y 35 puntos</b> cada vez. Siempre es alguna mezcla de tres cosas: <b>qué es</b>, <b>cuáles son sus áreas</b> (con su legislación) y <b>por qué importa en informática</b>. Si aprendes bien esta página, tienes asegurada una pregunta completa.</div>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder escribir</h5>
+    <p>· Qué distingue a la propiedad intelectual: protege <b>bienes intangibles</b>.</p>
+    <p>· Las <b>4 áreas</b> de la pauta (autor, patentes, marcas, secretos) con qué protegen, cómo se obtienen, cuánto duran y su tratado internacional.</p>
+    <p>· Por qué es <b>la</b> legislación relevante en informática, y cómo incide cada área en el software.</p>
+  </div>
+  <div class="card"><h5>Dónde está</h5>
+    <p><b>Diapositivas</b> <code>17-propiedad-intelectual-hnd.pdf</code>.</p>
+    <p><b>Pautas</b>: C2 2025-1 P2, C2 2025-2 P2, R 2025-1 P3, R 2025-2 P4 y C1 2026-1 P5 (en <a class="inl" href="22-Ejercicios.html#e1">E1</a> y <a class="inl" href="22-Ejercicios.html#e2">E2</a>).</p>
+  </div>
+  <div class="card"><h5>Plan para este tema</h5>
+    <p>1. Leer la página completa (35 min).</p>
+    <p>2. Memorizar la <a class="inl" href="#resumen">tabla resumen</a> (10 min).</p>
+    <p>3. Escribir sin mirar <a class="inl" href="22-Ejercicios.html#e1">E1</a> y <a class="inl" href="22-Ejercicios.html#e2">E2</a> (25 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="que-es" data-nav="Qué es y por qué importa">
+<h2>Qué es la propiedad intelectual</h2>
+<div class="box def"><div class="bt">Definición</div>
+<p>La <b>propiedad intelectual</b> (en inglés <i>intellectual property</i>, IP) es el conjunto de legislaciones que protegen las <b>creaciones del intelecto</b>: obras, inventos, marcas, secretos. Su rasgo distintivo es que trata de <b>bienes intangibles</b>, lo que introduce desafíos propios. Cubre varias áreas, de <b>características y tratos legales muy diferentes</b>.</p></div>
+
+<div class="box ana"><div class="bt">Analogía: la bicicleta y la canción</div>
+<p>Si te robo la bicicleta, tú te quedas sin bicicleta: la propiedad “normal” protege cosas que solo una persona puede tener a la vez. Si copio tu canción, <b>los dos la tenemos</b>: copiarla no te quita nada físico. Por eso hacen falta leyes especiales: no protegen “la cosa”, protegen <b>el derecho a decidir quién la copia, la usa o la explota</b>. Eso es lo que distingue a la propiedad intelectual de otras propiedades (la letra a de la P2 del C2 2025-2).</p></div>
+
+<p>Tres ideas generales de la clase:</p>
+<ul>
+<li>Es un <b>tema legal de alcance internacional</b>: las leyes de cada país se enmarcan en <b>tratados multilaterales</b> (Berna, París, Madrid, TRIPS), aunque igual hay diferencias relevantes entre países.</li>
+<li>La legislación de <b>Estados Unidos es pionera</b> y muy influyente por su peso en la economía mundial; por eso la clase la usa de referencia.</li>
+<li>La de <b>Chile es “afín”</b> a la estadounidense en casi todo, con algunos detalles propios (plazos y derechos morales).</li>
+</ul>
+
+<h3 id="relevancia">Por qué importa tanto en informática</h3>
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">C2 2025-2 P2b · R 2025-1 P3 · R 2025-2 P4</span></div>
+<p>“La informática trata fundamentalmente de <b>entidades abstractas</b> (algoritmos, diseños, programas, información), lo que hace que la legislación de propiedad intelectual sea de gran importancia.” Y en los recuperativos: “Como el <b>software es un producto intangible</b>, es esencialmente la única legislación que es relevante.”</p></div>
+<div class="box ana"><div class="bt">Analogía: el arquitecto y el programador</div>
+<p>Un arquitecto entrega una casa: si alguien la usa sin permiso, hay leyes de propiedad común (es una cosa física). Un programador entrega <b>archivos que se copian gratis y al instante</b>: lo único que lo protege son las leyes de propiedad intelectual. Por eso, en informática, la propiedad intelectual es la protección básica, no un detalle legal.</p></div>
+</section>
+
+<section id="areas" data-nav="Las áreas (mapa)">
+<h2>Las áreas: el mapa completo</h2>
+<p class="lead">La clase lista <b>cinco</b> áreas; las pautas piden <b>cuatro</b> (no cuentan las indicaciones geográficas). Escribe las cuatro siempre, y la quinta si te sobra tiempo.</p>
+<div class="tw"><table>
+<thead><tr><th>Área</th><th>Qué protege</th><th>Ejemplo</th></tr></thead>
+<tbody>
+<tr><td><b>Derecho de autor</b> (<i>copyright</i>)</td><td>La <b>expresión concreta</b> de una obra original: texto, música, película, programa.</td><td>El código de un programa, una novela.</td></tr>
+<tr><td><b>Patentes</b></td><td>Un <b>invento</b> nuevo, útil y no obvio, por un plazo acotado, <b>a cambio de publicarlo</b>.</td><td>Un proceso industrial, una máquina; en EE.UU. también algoritmos.</td></tr>
+<tr><td><b>Marcas registradas</b> (<i>trademark</i>)</td><td>Una palabra, frase, símbolo o diseño que <b>identifica el origen</b> de un producto.</td><td>Pepsi®, la forma de la botella de Coca-Cola®.</td></tr>
+<tr><td><b>Indicaciones geográficas</b></td><td>El nombre de un producto cuya calidad depende de su <b>origen geográfico</b>.</td><td>Champagne, pisco, tequila.</td></tr>
+<tr><td><b>Secretos comerciales</b> (<i>trade secret</i>)</td><td><b>Información confidencial</b> con valor económico por ser secreta.</td><td>La receta de Coca-Cola®, el código fuente propietario.</td></tr>
+</tbody></table></div>
+
+<div class="box ana"><div class="bt">Analogía: una pastelería</div>
+<p>Imagina una pastelería famosa. El <b>libro de recetas</b> que escribió la dueña, con sus fotos y su forma de explicar, está protegido por <b>derecho de autor</b> (nadie puede fotocopiarlo y venderlo, pero cualquiera puede hacer pan). La <b>máquina nueva de amasar</b> que inventó está <b>patentada</b>: la publicó, y a cambio nadie más puede fabricarla por 20 años. El <b>nombre y el logo</b> del local son su <b>marca</b>: nadie puede abrir otra pastelería con ese nombre y confundir a los clientes. El <b>“pan de Chillán”</b> sería una <b>indicación geográfica</b> si solo se pudiera llamar así al pan hecho en Chillán. Y la <b>receta secreta del relleno</b>, que no está en ningún libro y solo conocen dos empleados con contrato de confidencialidad, es un <b>secreto comercial</b>.</p></div>
+</section>
+
+<section id="autor" data-grp="Las áreas" data-nav="Derecho de autor">
+<h2>Derecho de autor (<i>copyright</i>)</h2>
+<div class="box def"><div class="bt">Definición</div>
+<p>Derechos <b>exclusivos</b>, protegidos por ley, del autor de una <b>obra original fijada en un medio tangible</b>, publicada o no. <b>No cubre hechos, ideas, sistemas ni métodos de operación</b>, aunque sí protege su <b>expresión concreta</b>. El dueño es el autor o, si la obra se hizo <b>por encargo</b>, quien la encargó. Los derechos se pueden transferir por contrato o por herencia.</p></div>
+<div class="box ana"><div class="bt">Analogía: la idea vs. la receta escrita</div>
+<p>La <b>idea</b> de un programa que ordena números (o de una novela de magos) es de todos. Lo protegido es <b>tu texto concreto</b>: tu código, tus frases. Si alguien escribe desde cero otro programa que hace lo mismo, no te copió; si copia tu archivo, sí.</p></div>
+
+<h3>Qué derechos da</h3>
+<ul>
+<li><b>Reproducir</b> la obra en copias.</li>
+<li>Preparar <b>obras derivadas</b>.</li>
+<li><b>Distribuir</b> copias al público (venta, arriendo, préstamo).</li>
+<li><b>Interpretar</b> públicamente (obras literarias, musicales, dramáticas, películas…).</li>
+<li><b>Exhibir</b> públicamente (imágenes, esculturas, cuadros de una película…).</li>
+<li>Y además <b>autorizar a terceros</b> a ejercer estos derechos: de ahí salen las <b>licencias</b>, que son la base del <a class="inl" href="18-Codigo-abierto.html">código abierto (tema 18)</a>.</li>
+</ul>
+
+<h3>Cuánto dura</h3>
+<div class="tw"><table class="mini">
+<thead><tr><th>Dónde</th><th>Plazo</th></tr></thead>
+<tbody>
+<tr><td><b>EE.UU.</b> (obras desde 1978)</td><td><b>Vida del autor + 70 años</b>. Colaboración: 70 años desde la muerte del último autor. Por encargo, anónimas o con seudónimo: lo que ocurra primero entre <b>95 años desde la publicación</b> y <b>120 desde la creación</b>.</td></tr>
+<tr><td><b>Convención de Berna</b> (mínimo)</td><td><b>Vida del autor + 50 años</b>. Anónimas: 50 años desde su publicación. Fotografía y arte aplicado: mínimo 25 años.</td></tr>
+<tr><td><b>Chile</b></td><td><b>Vida del autor + 70 años</b>.</td></tr>
+</tbody></table></div>
+<p>Pasado el plazo, la obra pasa al <b>dominio público</b>: pertenece a todos. En Chile se le llama <b>patrimonio cultural común</b>.</p>
+
+<h3 id="derivadas">Obras derivadas y zonas grises</h3>
+<p>Una <b>obra derivada</b> construye sobre la original o incluye partes sustanciales de ella: una traducción, la película basada en un libro, el solucionario de un texto, textos con los personajes de una novela. (Ejemplo de la clase: el pato sueco <i>Arne Anka</i> tuvo que cambiar de diseño por parecerse al Pato Donald.)</p>
+<p>En software hay <b>zonas grises</b> que la clase plantea como preguntas abiertas:</p>
+<ul>
+<li>Un programa en C que usa una <b>biblioteca estática</b> incluye en el ejecutable parte del código de la biblioteca: el binario es claramente derivado. ¿Lo es también el fuente, que solo la “cita”?</li>
+<li>Con una <b>biblioteca compartida</b>, el programa solo hace referencia a ella durante la ejecución. ¿Es derivado?</li>
+<li>Una <b>API</b> es la especificación de funciones y datos. Una biblioteca escrita de forma independiente para ofrecer la misma API, ¿es derivada de la API? (Fue el centro del juicio Oracle vs. Google, de 2010.)</li>
+</ul>
+<div class="box ana"><div class="bt">Analogía: el enchufe</div>
+<p>Una API es como la <b>forma de un enchufe</b>: describe dónde van las patas. Fabricar un enchufe compatible no es copiar el aparato de otro, pero ¿es copiar el “diseño” del enchufe? Esa es la pregunta que la ley no resuelve con claridad.</p></div>
+
+<h3>Cuándo puedo usar una obra ajena</h3>
+<p>Todos usamos obras protegidas al leer, ver películas, oír música o correr programas. Se puede usar una obra si: (1) la <b>compras o licencias</b>; (2) cae en una <b>excepción de la ley</b> (usos libres); o (3) está en el <b>dominio público</b>, porque expiró su protección, el autor no cumplió formalidades que antes se exigían, o nunca estuvo protegida (hechos, descubrimientos). <b>Registrar</b> la obra no es obligatorio, pero ayuda si hay que demostrar la autoría ante un tribunal.</p>
+<p><b>Colecciones</b> (antologías, selecciones): se puede proteger la <b>selección y organización</b>, aparte de los derechos de cada obra, que igual hay que respetar.</p>
+
+<h3 id="berna">La Convención de Berna (1886, último ajuste 1979)</h3>
+<p>Es el acuerdo internacional sobre derecho de autor. Tiene <b>tres principios</b>:</p>
+<div class="steps">
+<div class="step"><b>Trato nacional:</b> una obra de un país firmante recibe en cada país firmante la misma protección que sus obras nacionales.</div>
+<div class="step"><b>Protección automática:</b> la protección <b>no depende de ninguna formalidad</b>, como el registro. La obra está protegida desde que se crea.</div>
+<div class="step"><b>Independencia de la protección:</b> la protección no depende de que exista en el país de origen. (Excepción: si un país da más que el mínimo y la obra ya no está protegida en su origen, puede dejar de protegerla.)</div>
+</div>
+<p>Además fija <b>derechos exclusivos mínimos</b> (traducir, adaptar, presentar y recitar en público, difundir, reproducir, hacer obras audiovisuales), <b>derechos morales</b> (afirmar la autoría y oponerse a mutilaciones que dañen el honor del autor), el <b>plazo mínimo</b> de vida + 50 años y <b>usos libres</b> sin permiso ni pago: citas, ilustración en la enseñanza, noticias y reproducción en casos especiales. Los países en desarrollo pueden dar licencias obligatorias de traducción y reproducción para la educación, con un pago fijado por ley.</p>
+<div class="box ana"><div class="bt">Analogía: el carnet de identidad del autor</div>
+<p>Berna funciona como si el autor naciera con un <b>carnet que vale en todos los países firmantes</b>, sin trámites: no hay que inscribirse país por país (protección automática), y en cada país se le trata como a un nacional (trato nacional).</p></div>
+
+<h3>La ley chilena</h3>
+<p>Es esencialmente afín a la estadounidense: <b>vida + 70 años</b>, reconoce el <b>patrimonio cultural común</b> (el dominio público) y distingue dos tipos de derechos:</p>
+<ul>
+<li><b>Patrimoniales:</b> los económicos (explotar, vender, licenciar). Se transfieren.</li>
+<li><b>Morales:</b> que se reconozca la autoría, oponerse a modificaciones, mantener la obra inédita, entre otros. Son <b>inalienables e intransferibles</b>, aunque pasan al cónyuge sobreviviente y a los sucesores.</li>
+</ul>
+<div class="box ana"><div class="bt">Analogía: vender el cuadro, no la firma</div>
+<p>Un pintor puede vender el cuadro y todos los derechos de reproducirlo (patrimoniales). Pero nadie le puede comprar el derecho a figurar como autor ni el de impedir que le pinten bigotes a su obra (morales).</p></div>
+</section>
+
+<section id="patentes" data-nav="Patentes">
+<h2>Patentes</h2>
+<div class="box def"><div class="bt">Definición (ley de EE.UU.)</div>
+<p>Una patente es un derecho que se da al inventor de un <b>proceso, máquina, artículo manufacturado o composición de materia</b> que sea <b>nuevo, útil y no obvio</b>. Es el derecho de <b>excluir a otros</b> por un plazo limitado (<b>generalmente 20 años</b>) de lucrar con la tecnología patentada sin permiso del dueño: fabricarla, usarla, venderla, ofrecerla, importarla o inducir a otros a infringirla. A cambio, el invento se <b>divulga públicamente</b>.</p></div>
+<div class="box ana"><div class="bt">Analogía: un trato con la sociedad</div>
+<p>El inventor le dice a la sociedad: “les cuento exactamente cómo funciona mi invento, para que todos aprendan de él; a cambio, durante 20 años solo yo lo puedo explotar”. Al terminar el plazo, cualquiera puede fabricarlo. Es lo contrario del secreto comercial, donde el truco es <b>no contarlo</b>.</p></div>
+<ul>
+<li><b>Áreas extendidas por los jueces:</b> en EE.UU., por resoluciones judiciales, se permitió patentar <b>software</b>, <b>procesos de negocio</b> y <b>seres vivos</b> (variedades seleccionadas, híbridas o modificadas genéticamente). Algunas de estas extensiones se restringieron o eliminaron después con otras resoluciones.</li>
+<li><b>Alcance:</b> una patente en general <b>solo vale en su país</b>. Se puede postular en varios países a la vez. Según la pauta, publicarla en un país en general impide que otros la pidan en otros países (porque ya no sería “nueva”).</li>
+<li><b>No hay acuerdos internacionales amplios</b> como Berna: las legislaciones varían de un país a otro.</li>
+<li><b>Chile:</b> la ley es afín a la ley estadounidense original. Como Chile no es tan importante económicamente en esto, no hay mucho desarrollo legal ni reglamentario.</li>
+</ul>
+<div class="box warn"><div class="bt">Ojo con las patentes de software</div>
+<p>Un algoritmo no es un invento tangible, pero en EE.UU. la protección se extendió a esos casos. La pauta lo dice así: “aunque un algoritmo novedoso o una forma particular de programar la solución a un problema no es un invento tangible, se ha extendido esta legislación a estos casos”.</p></div>
+</section>
+
+<section id="marcas" data-nav="Marcas registradas">
+<h2>Marcas registradas (<i>trademark</i>)</h2>
+<div class="box def"><div class="bt">Definición</div>
+<p>Una <b>palabra, frase, símbolo, diseño o combinación</b> que identifica un producto o servicio de un <b>origen particular</b> y lo distingue de otros. Puede extenderse a formas tridimensionales, envoltorios, sonidos, olores y colores. Ejemplos: Pepsi® para bebidas, la <b>forma de la botella</b> de Coca-Cola®. Su función principal es <b>identificar el origen y evitar que el consumidor confunda</b> un producto con otro.</p></div>
+<div class="box ana"><div class="bt">Analogía: la camiseta de un equipo</div>
+<p>La camiseta de Colo-Colo no dice nada sobre lo bien que juega el equipo, pero te dice <b>quién es</b>. Si otro club usara la misma camiseta, la gente se confundiría. La marca protege eso: la identidad, no la calidad del producto.</p></div>
+<ul>
+<li><b>Cómo se obtiene:</b> típicamente <b>registrándola</b> en una agencia del gobierno. El registro reserva derechos al dueño y le da recursos legales contra el uso no autorizado.</li>
+<li><b>Contra qué protege:</b> infracciones, <b>dilución</b> (usar una marca parecida que confunde al cliente) y competencia desleal.</li>
+<li><b>Tratados:</b> la <b>Convención de París</b> (hay que registrar la marca país por país), el <b>Protocolo de Madrid</b> (extender una marca nacional ya registrada a los países miembros) y <b>TRIPS</b>, de 1995, que fija estándares mínimos de propiedad intelectual para los países de la OMC.</li>
+<li><b>Duración:</b> en general <b>10 años, prorrogables indefinidamente</b>. Se puede <b>perder</b> si no se usa por un tiempo (típicamente entre 3 y 5 años) o si no se defiende de las infracciones.</li>
+<li><b>Chile:</b> sin grandes sorpresas; prohíbe inscribir marcas parecidas a <b>marcas “famosas” extranjeras</b>.</li>
+</ul>
+
+<h3>Qué marcas se aceptan</h3>
+<div class="tw"><table class="mini">
+<thead><tr><th>Tipo</th><th>Qué es</th><th>Ejemplo inventado</th><th>¿Se acepta?</th></tr></thead>
+<tbody>
+<tr><td><b>Fantasiosa</b></td><td>Palabra inventada, solo se asocia al producto.</td><td>“Kodak”, “Xerox”</td><td class="yes">Sí</td></tr>
+<tr><td><b>Arbitraria</b></td><td>Palabra real sin relación con el producto.</td><td>“Apple” para computadores</td><td class="yes">Sí</td></tr>
+<tr><td><b>Sugestiva</b></td><td>Sugiere una característica sin decirla directo.</td><td>“Netflix” (net + flicks, películas en la red)</td><td class="yes">Sí</td></tr>
+<tr><td><b>Descriptiva</b></td><td>Describe una característica del producto.</td><td>“Rápido” para un navegador</td><td class="nope">No</td></tr>
+<tr><td><b>Genérica</b></td><td>Es el nombre común del producto.</td><td>“Computador” para computadores</td><td class="nope">No</td></tr>
+</tbody></table></div>
+<p><b>Tipos especiales:</b> <b>imagen de marca</b> (diseño y empaque, como el diseño de las tiendas de una cadena), <b>marca colectiva</b> (la usan los miembros de un colectivo que cumplen sus requisitos) y <b>marca de certificación</b> (indica que un producto cumple los estándares de una organización).</p>
+</section>
+
+<section id="geo" data-nav="Indicaciones geográficas">
+<h2>Indicaciones geográficas</h2>
+<p>Identifican un producto como originario de un país, región o localidad <b>cuando su calidad, reputación u otra característica depende esencialmente de ese origen</b>. Ejemplos de la clase: el <b>champagne</b> (vino espumante de la región de Champagne, Francia); el <b>pisco</b> (aguardiente de uva de Atacama y Coquimbo, en disputa con Perú, que también lo reclama); el <b>tequila</b> (de agave azul, solo de ciertos estados de México). También frutas, aceites de oliva y quesos.</p>
+<div class="box ana"><div class="bt">Analogía</div><p>Es una marca que no es de una empresa, sino <b>de un lugar</b>: cualquier productor de la zona la puede usar, pero nadie de fuera.</p></div>
+</section>
+
+<section id="secretos" data-nav="Secretos comerciales">
+<h2>Secretos comerciales (<i>trade secret</i>)</h2>
+<div class="box def"><div class="bt">Definición</div>
+<p>Información confidencial que <b>vale económicamente por mantenerse en reserva</b> y que se protege con <b>esfuerzos razonables</b> para mantenerla en secreto. Ejemplo: la receta de Coca-Cola®. Debe cumplir tres condiciones:</p>
+<ol><li><b>No es conocida</b> ni accesible en el sector.</li><li>Es <b>valiosa comercialmente por ser secreta</b>.</li><li>El dueño toma <b>medidas razonables</b> para mantenerla en secreto.</li></ol></div>
+<ul>
+<li><b>No requiere registro</b> y la protección es <b>indefinida</b> mientras no se divulgue.</li>
+<li>Se protege, entre otras cosas, con <b>acuerdos de confidencialidad</b> (NDA, <i>nondisclosure agreement</i>).</li>
+<li>Se puede vender o licenciar. Si alguien lo obtiene, divulga o usa <b>contra prácticas comerciales honestas</b>, hay recursos legales.</li>
+<li>La ley <b>no persigue</b> a quien lo descubra por su cuenta o mediante <b>ingeniería reversa</b>.</li>
+<li>Lo rigen las leyes nacionales; <b>TRIPS</b> obliga a los miembros a proteger la “información no divulgada”. Chile: sin grandes sorpresas.</li>
+</ul>
+<div class="box ana"><div class="bt">Analogía: la caja fuerte</div>
+<p>El secreto comercial es una caja fuerte sin fecha de vencimiento: mientras nadie la abra, está protegida para siempre. Pero si alguien llega a la misma combinación por su cuenta (o desarma el producto y la deduce), no hay nada que reclamar. Es el trato opuesto a la patente.</p></div>
+</section>
+
+<section id="resumen" data-grp="Para responder" data-nav="Tabla resumen">
+<h2>Tabla resumen: cómo se distinguen las áreas</h2>
+<p class="lead">Esta tabla responde “indique diferencias clave entre las legislaciones del caso” (C2 2025-1) y “distinga entre las áreas y esboce las legislaciones” (C2 2025-2).</p>
+<div class="tw"><table>
+<thead><tr><th></th><th>Derecho de autor</th><th>Patentes</th><th>Marcas</th><th>Secretos</th></tr></thead>
+<tbody>
+<tr><td><b>Protege</b></td><td>Expresión de una obra</td><td>Invento nuevo, útil, no obvio</td><td>Identidad de origen de un producto</td><td>Información confidencial valiosa</td></tr>
+<tr><td><b>Cómo se obtiene</b></td><td><b>Automático</b> (Berna); registrar es opcional</td><td>Solicitud y concesión, país por país</td><td><b>Registro</b> en una agencia</td><td><b>Sin registro</b>: basta mantenerlo en secreto</td></tr>
+<tr><td><b>Duración</b></td><td>Vida + 70 (EE.UU., Chile); mínimo vida + 50 (Berna)</td><td>~20 años</td><td>10 años renovables <b>indefinidamente</b>, si se usa y se defiende</td><td><b>Indefinida</b> mientras no se divulgue</td></tr>
+<tr><td><b>Precio</b></td><td>—</td><td><b>Hay que publicar</b> el invento</td><td>Usarla y defenderla</td><td>Ingeniería reversa y descubrimiento independiente son legales</td></tr>
+<tr><td><b>Ámbito internacional</b></td><td>Convención de Berna: amplia</td><td><b>No hay acuerdos amplios</b></td><td>París, Madrid, TRIPS</td><td>Leyes nacionales + TRIPS</td></tr>
+<tr><td><b>En informática</b></td><td>El código (como obra literaria)</td><td>Algoritmos, formas de programar (EE.UU.)</td><td>Logos y nombres de productos</td><td>El código fuente propietario</td></tr>
+</tbody></table></div>
+
+<h3 id="incide">Cómo incide cada área en informática</h3>
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">R 2025-1 P3 · R 2025-2 P4 (25 pts: 5 por ítem)</span></div>
+<p><b>Software es intangible</b>, no hay otras áreas de la ley que lo protejan (5). Luego, 5 puntos por cada área:</p>
+<ul>
+<li><b>Derecho de autor:</b> aunque se creó pensando en obras artísticas y literarias, <b>se asocia el software a ellas</b>.</li>
+<li><b>Patentes:</b> aunque un algoritmo novedoso o una forma particular de programar no es un invento tangible, <b>se ha extendido</b> esta legislación a esos casos.</li>
+<li><b>Marcas:</b> muchos programas tienen <b>logos o características distintivas</b>, y las grandes casas de software asocian sus productos a su marca.</li>
+<li><b>Secretos comerciales:</b> en general, <b>el código fuente se trata como secreto industrial</b>.</li>
+</ul></div>
+
+<div class="box tip"><div class="bt">La plantilla que sirve para cualquier pregunta de este tema</div>
+<p><b>1.</b> Definición: legislación que protege bienes intangibles, de áreas con tratamiento legal muy distinto. <b>2.</b> Por qué importa en informática: el software es intangible. <b>3.</b> Las cuatro áreas, cada una con <b>qué protege · cómo se obtiene · cuánto dura · tratado · ejemplo en software</b>. <b>4.</b> (Si sobra tiempo) indicaciones geográficas y la ley chilena (vida + 70, derechos morales).</p></div>
+</section>
+
+<section id="t17-preguntas" data-grp="Práctica" data-nav="Preguntas del tema">
+<h2>Preguntas del tema</h2>
+<p class="lead">Las de certamen con pauta y respuesta modelo: <a class="inl" href="22-Ejercicios.html#e1">E1 (qué es, áreas y legislaciones)</a>, <a class="inl" href="22-Ejercicios.html#e2">E2 (por qué importa en informática)</a> y <a class="inl" href="22-Ejercicios.html#e33">E33 (Berna y obras derivadas)</a>.</p>
+
+<details class="ex"><summary>1 · ¿Qué distingue a la propiedad intelectual de otras propiedades? <span class="tag">C2 2025-2</span></summary>
+<div class="body"><p>Trata de <b>bienes intangibles</b>: se pueden copiar sin quitarle nada al dueño, lo que trae desafíos propios. Por eso protege derechos (copiar, explotar, identificar) y no objetos físicos.</p></div></details>
+
+<details class="ex"><summary>2 · ¿Qué NO cubre el derecho de autor? <span class="tag">diapositiva 8</span></summary>
+<div class="body"><p>Hechos, ideas, sistemas ni métodos de operación. Solo protege su expresión concreta.</p></div></details>
+
+<details class="ex"><summary>3 · ¿Cuáles son los tres principios de la Convención de Berna? <span class="tag">diapositivas 18-19</span></summary>
+<div class="body"><p>Trato nacional, protección automática (sin formalidades) e independencia de la protección respecto del país de origen.</p></div></details>
+
+<details class="ex"><summary>4 · ¿Cuánto dura el derecho de autor en Chile y en EE.UU.? <span class="tag">diapositivas 11 y 26</span></summary>
+<div class="body"><p>En ambos, vida del autor + 70 años (en EE.UU., para obras desde 1978). Berna exige como mínimo vida + 50.</p></div></details>
+
+<details class="ex"><summary>5 · ¿Qué tres condiciones debe cumplir un invento para patentarse? <span class="tag">diapositiva 27</span></summary>
+<div class="body"><p>Ser nuevo, útil y no obvio. Se protege por unos 20 años a cambio de publicarlo.</p></div></details>
+
+<details class="ex"><summary>6 · ¿Cómo se puede perder una marca? <span class="tag">diapositiva 36</span></summary>
+<div class="body"><p>Si no se usa por un período (típicamente 3 a 5 años) o si el dueño no la defiende de las infracciones.</p></div></details>
+
+<details class="ex"><summary>7 · ¿Por qué la marca “Computador” no sería aceptada? <span class="tag">diapositiva 35</span></summary>
+<div class="body"><p>Porque es genérica: es el nombre común del producto. Solo se protegen marcas distintivas (fantasiosas, arbitrarias o sugestivas).</p></div></details>
+
+<details class="ex"><summary>8 · Si una empresa descubre por ingeniería reversa el secreto de otra, ¿comete delito? <span class="tag">diapositiva 42</span></summary>
+<div class="body"><p>No. La ley no persigue a quien descubre un secreto comercial en forma independiente o por ingeniería reversa; solo protege contra prácticas comerciales deshonestas (robo, violación de un NDA).</p></div></details>
+
+<details class="ex"><summary>9 · ¿Qué diferencia hay entre derechos patrimoniales y morales? <span class="tag">ley chilena</span></summary>
+<div class="body"><p>Los patrimoniales son los económicos y se pueden transferir. Los morales (reconocimiento de autoría, oponerse a modificaciones, mantener la obra inédita) son inalienables e intransferibles, aunque pasan al cónyuge y a los sucesores.</p></div></details>
+
+<details class="ex"><summary>10 · ¿Por qué el código fuente de un programa propietario suele ser secreto comercial y no patente? <span class="tag">aplicación</span></summary>
+<div class="body"><p>Porque el secreto dura indefinidamente y no exige publicar nada, mientras que la patente obliga a divulgar el invento y dura unos 20 años. Además, el código compilado ya está protegido por derecho de autor.</p></div></details>
+</section>
+
+<div class="pnav"><a href="16-Aspectos-eticos.html"><small>← Anterior</small>Aspectos éticos</a><a class="nx" href="18-Codigo-abierto.html"><small>Siguiente →</small>Código abierto</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c2-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Caleb Baez">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía de estudio · Infosoc C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+
+  .pages .pgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:10px 4px 0}
+  .pages .pgrp:first-child{margin-top:0}
+  .pages span.off{display:flex;gap:9px;align-items:center;font-size:13px;padding:6px 9px;border-radius:8px;
+    border:1px dashed var(--line);line-height:1.25;opacity:.5;cursor:default}
+  .pages span.off b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--code);
+    color:var(--muted);font-size:11.5px}
+  .pages a b{font-size:11px}
+  .nc{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--no-soft);
+    color:var(--no);margin-left:2px;font-style:normal;vertical-align:1px;white-space:nowrap}
+  .soon{border-bottom:1px dashed var(--muted);color:var(--muted)}
+  .box.ana p+p{margin-top:6px}
+  .box.nc{border-left-color:var(--no);background:var(--no-soft)} .box.nc .bt{color:var(--no)}
+  .lic{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:700} .nope{color:var(--no);font-weight:700}
+  .mnemo{font-size:15px;background:var(--panel);border:1px dashed var(--brand);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .mnemo b{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">C2</div>
+    <div><h1>Guía de estudio</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><div class="pgrp">Inicio</div><a href="0-Guia-de-estudio-C2.html" class="cur"><b>★</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 21</small></span></a><div class="pgrp">Materia del C1</div><span class="off" title="Todavía no está publicada"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></span><span class="off" title="Todavía no está publicada"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></span><span class="off" title="Todavía no está publicada"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></span><span class="off" title="Todavía no está publicada"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></span><span class="off" title="Todavía no está publicada"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></span><span class="off" title="Todavía no está publicada"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></span><span class="off" title="Todavía no está publicada"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></span><span class="off" title="Todavía no está publicada"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></span><span class="off" title="Todavía no está publicada"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></span><span class="off" title="Todavía no está publicada"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></span><span class="off" title="Todavía no está publicada"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></span><span class="off" title="Todavía no está publicada"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></span><span class="off" title="Todavía no está publicada"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></span><span class="off" title="Todavía no está publicada"><b>Σ</b><span>Resumen contenidos Certamen 1<br><small style="color:var(--muted)">lo esencial de 1 a 13</small></span></span><div class="pgrp">Materia nueva del C2</div><span class="off" title="Todavía no está publicada"><b>14</b><span>Procesamiento de datos<br><small style="color:var(--muted)">historia y minería de datos</small></span></span><span class="off" title="Todavía no está publicada"><b>15</b><span>Impacto de la tecnología<br><small style="color:var(--muted)">lo bueno y lo malo</small></span></span><a href="16-Aspectos-eticos.html"><b>16</b><span>Aspectos éticos<br><small style="color:var(--muted)">códigos, dilemas, ética profesional</small></span></a><span class="off" title="Todavía no está publicada"><b>XX</b><span>Inteligencia artificial<br><small style="color:var(--muted)">expertos, genéticos, redes, LLM</small></span></span><a href="17-Propiedad-intelectual.html"><b>17</b><span>Propiedad intelectual<br><small style="color:var(--muted)">autor, patentes, marcas, secretos</small></span></a><a href="18-Codigo-abierto.html"><b>18</b><span>Código abierto<br><small style="color:var(--muted)">GPL, BSD, OSI, Creative Commons</small></span></a><span class="off" title="Todavía no está publicada"><b>19</b><span>Protección de datos <i class="nc">no pasada</i><br><small style="color:var(--muted)">GDPR, leyes chilenas, CRA</small></span></span><span class="off" title="Todavía no está publicada"><b>20</b><span>Desarrollo de software <i class="nc">no pasada</i><br><small style="color:var(--muted)">máximas y deuda técnica</small></span></span><span class="off" title="Todavía no está publicada"><b>21</b><span>Código de ética ACM<br><small style="color:var(--muted)">las 4 secciones</small></span></span><div class="pgrp">Práctica</div><a href="22-Ejercicios.html"><b>✎</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a><span class="off" title="Todavía no está publicada"><b>⇄</b><span>Flashcards<br><small style="color:var(--muted)">toda la materia</small></span></span><div class="pgrp">Complemento</div><span class="off" title="Todavía no está publicada"><b>+</b><span>Extra<br><small style="color:var(--muted)">probablemente no entra</small></span></span></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">El certamen</div><a href="#g-datos">Fecha, hora y formato</a><a href="#g-sinclases">Si no fuiste a clases</a><a href="#g-temario">Qué entra y cuánto pesa</a><a href="#g-formato">Cómo es el certamen</a><div class="grp">Estudiar</div><a href="#g-plan">Plan día por día</a><a href="#g-check">Checklist sin mirar</a><a href="#g-sala">En la sala</a><div class="grp">Repaso final</div><a href="#chuleta">Chuleta</a><a href="#g-relampago">Repaso relámpago</a><a href="#errores">Errores típicos</a><a href="#erratas">Erratas (puntos extra)</a><a href="#g-flash">Flashcards</a><a href="#glosario">Glosario</a><a href="#g-fuentes">Fuentes</a></nav>
+</aside>
+<main class="content">
+<section id="g-datos" data-grp="El certamen" data-nav="Fecha, hora y formato">
+<h2>Certamen 2 · Ingeniería, Informática y Sociedad</h2>
+<p class="lead">Guía para llegar al sábado con lo que más puntaje da. El C2 cubre <b>todo</b>: la materia del C1 (páginas 1 a 13, más un resumen) y las clases nuevas (14 a 21 y la de inteligencia artificial), explicadas desde cero. La página de <b>Ejercicios</b> tiene todas las preguntas de los C2 y recuperativos anteriores, ordenadas por probabilidad y con respuesta modelo.</p>
+
+<div class="kpis">
+  <div class="kpi"><b>Sáb 21 nov</b><span>certamen 2</span></div>
+  <div class="kpi"><b>9:40 – 12:15</b><span>certamen de 2 horas, con holgura</span></div>
+  <div class="kpi"><b>~115-125 pts</b><span>sobre 100 (lo extra es nota extra)</span></div>
+  <div class="kpi"><b>4 a 6 preguntas</b><span>de desarrollo, de 15 a 35 pts</span></div>
+  <div class="kpi"><b>25 %</b><span>de la nota final</span></div>
+</div>
+
+<div class="box def"><div class="bt">Lo que dice la presentación del ramo</div>
+<p>Profesor <b>Horst H. von Brand</b> (INF-276). El C1 pesa 20 % y el <b>C2 cubre todo y pesa 25 %</b>; el proyecto 35 %, tareas 15 % y ayudantías 5 %. No hay examen. Los certámenes “generalmente tienen 125 puntos sobre 100”. Cada pregunta se entrega <b>en hoja separada, identificada con nombre, rol, certamen y ramo</b>; si no respondes una, se entrega la hoja en blanco igual.</p></div>
+
+<div class="box warn"><div class="bt">Revisa en Aula antes del sábado</div>
+<p><b>1. La fecha.</b> La diapositiva <code>00-fechas</code> dice “Sábado <b>20</b> de noviembre”, pero el 20 es viernes: el certamen es el <b>sábado 21</b>, como en el calendario. Confírmalo. <b>2. La sala</b> (no aparece en el material). <b>3. Los anuncios del foro</b>, donde el profe publica lo importante. <b>4.</b> Si dice algo de las clases 19 y 20, que según Aula probablemente no se pasaron.</p></div>
+</section>
+
+<section id="g-sinclases" data-nav="Si no fuiste a clases">
+<h2>Si no fuiste a clases después del C1</h2>
+<p>Las páginas 14 a 21 y la XX están escritas <b>para alguien que no vio nada</b> de esa materia: cada una explica el tema desde cero, con analogías, lo que pidió la pauta del profe y preguntas de repaso. Según Aula, el profe pasó estas clases, en este orden:</p>
+<div class="tw"><table class="mini">
+<thead><tr><th>Orden en clases</th><th>Clase</th><th>¿Se pasó?</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><span class="soon" title="Página aún no publicada">14 · Procesamiento de datos</span></td><td class="yes">Sí</td></tr>
+<tr><td>2</td><td><span class="soon" title="Página aún no publicada">15 · Impacto de la tecnología</span></td><td class="yes">Sí</td></tr>
+<tr><td>3</td><td><a class="inl" href="16-Aspectos-eticos.html">16 · Aspectos éticos</a></td><td class="yes">Sí</td></tr>
+<tr><td>4</td><td><span class="soon" title="Página aún no publicada">XX · Inteligencia artificial</span></td><td class="yes">Sí (entre la 16 y la 17)</td></tr>
+<tr><td>5</td><td><a class="inl" href="17-Propiedad-intelectual.html">17 · Propiedad intelectual</a></td><td class="yes">Sí</td></tr>
+<tr><td>6</td><td><a class="inl" href="18-Codigo-abierto.html">18 · Código abierto</a></td><td class="yes">Sí</td></tr>
+<tr><td>—</td><td><span class="soon" title="Página aún no publicada">19 · Protección de datos</span></td><td class="nope">Probablemente no</td></tr>
+<tr><td>—</td><td><span class="soon" title="Página aún no publicada">20 · Desarrollo de software</span></td><td class="nope">Probablemente no</td></tr>
+<tr><td>7</td><td><span class="soon" title="Página aún no publicada">21 · Código de ética ACM</span></td><td class="yes">Sí</td></tr>
+</tbody></table></div>
+<div class="box tip"><div class="bt">En qué orden leer</div>
+<p>No sigas el orden de las clases: sigue el <b>plan día por día</b> de esta guía, que va por puntos. Primero <b>17</b> y <b>18</b> (salieron en casi todos los certámenes), después <b>16 + 21</b> (el caso ético) y al final el resto. El <b>Resumen contenidos Certamen 1</b> repasa la materia vieja en una sola página.</p></div>
+</section>
+
+<section id="g-temario" data-nav="Qué entra y cuánto pesa">
+<h2>Qué entra y cuánto pesa</h2>
+<p class="lead">La columna “certámenes” cuenta en cuántos de los <b>seis C2 y recuperativos</b> disponibles (2025-1, 2025-2 y 2026-1) salió el tema.</p>
+<div class="tw"><table>
+<thead><tr><th>Clase</th><th>Peso</th><th>Certámenes</th><th>Lo esencial</th></tr></thead>
+<tbody>
+<tr><td><a class="inl" href="17-Propiedad-intelectual.html">17 · Propiedad intelectual</a></td><td><span class="pill w">Altísimo</span></td><td>5 de 6 (+ C1 26-1)</td><td>Bienes intangibles; las 4 áreas con su legislación; por qué es la ley del software.</td></tr>
+<tr><td><a class="inl" href="18-Codigo-abierto.html">18 · Código abierto</a></td><td><span class="pill w">Altísimo</span></td><td>6 de 6</td><td>4 libertades y copyleft; 10 puntos de la OSI; GPL vs. BSD; Creative Commons; 96 %.</td></tr>
+<tr><td><a class="inl" href="16-Aspectos-eticos.html">16 · Aspectos éticos</a> + <span class="soon" title="Página aún no publicada">21 · ACM</span></td><td><span class="pill w">Muy alto</span></td><td>6 de 6 (casos)</td><td>Dilema ético y sus 4 tipos; 9 responsabilidades; principios ACM para citar en el caso.</td></tr>
+<tr><td><span class="soon" title="Página aún no publicada">19 · Protección de datos</span> <i class="nc">no pasada</i></td><td><span class="pill">Medio</span></td><td>3 de 6</td><td>GDPR; Ley 21.719; Ley 21.663 de ciberseguridad; Cyber Resilience Act; por qué importa en Chile.</td></tr>
+<tr><td><span class="soon" title="Página aún no publicada">20 · Desarrollo</span> <i class="nc">no pasada</i></td><td><span class="pill">Medio</span></td><td>3 de 6</td><td>Deuda técnica; las máximas; causas de fracaso en software.</td></tr>
+<tr><td><span class="soon" title="Página aún no publicada">XX · Inteligencia artificial</span></td><td><span class="pill">Medio</span></td><td>0 (clase nueva)</td><td>Definición; inviernos y auge; Eliza; sistemas expertos, genéticos, redes neuronales; LLM.</td></tr>
+<tr><td><span class="soon" title="Página aún no publicada">15 · Impacto</span></td><td><span class="pill">Medio</span></td><td>0 (C1 25-1 sí)</td><td>Aspectos positivos y negativos de la tecnología.</td></tr>
+<tr><td><span class="soon" title="Página aún no publicada">14 · Procesamiento de datos</span></td><td><span class="pill a">Bajo-medio</span></td><td>0 (vía caso del operador)</td><td>Definición; censo de 1890; procesamiento comercial; minería de datos y su ética.</td></tr>
+<tr><td><span class="soon" title="Página aún no publicada">1-13 · Materia del C1</span></td><td><span class="pill">Medio</span></td><td>11 preguntas en 6</td><td>Falacias y sesgos (4), ciencia (3), proyectos (2), Pólya, ingeniería, ética antigua/moderna.</td></tr>
+</tbody></table></div>
+<div class="box warn"><div class="bt">Las clases 19 y 20: prioridad media, no baja</div>
+<p>Aula indica que probablemente no se pasaron, y el profe suele preguntar lo que pasó. Pero <b>sí salieron en certámenes anteriores</b>: deuda técnica valió 25 pts en el C2 2026-1, y el C2 2025-2 dedicó 40 pts al reglamento europeo y a la ley de ciberseguridad. Además, el caso del operador que vende datos (recuperativos) se responde con la materia de la 19. Por eso van después de lo seguro, pero no se saltan.</p></div>
+<div class="box def"><div class="bt">Lo que pesa la materia del C1</div>
+<p>En los C2 ha ido bajando: <b>50 pts</b> en 2025-1, <b>20</b> en 2025-2 y <b>0</b> en 2026-1. Los recuperativos sí la mezclan mucho. Lo que más se repite es <b>falacias y sesgos</b>, <b>ciencia</b> y <b>fallas de proyectos</b>.</p></div>
+</section>
+
+<section id="g-formato" data-nav="Cómo es el certamen">
+<h2>Cómo es el certamen</h2>
+<p class="lead">Preguntas de desarrollo del tipo “explique y distinga”, “esboce”, y un caso ético largo. No hay cálculos.</p>
+<div class="tw"><table class="mini">
+<thead><tr><th>C2 2025-1 (5 jul)</th><th>C2 2025-2 (8 nov)</th><th>C2 2026-1 (13 jun)</th></tr></thead>
+<tbody>
+<tr><td>Tres sesgos cognitivos · 15</td><td>Ciencia: hecho, hipótesis, teoría · 20</td><td>Deuda técnica · 25</td></tr>
+<tr><td>Propiedad intelectual: áreas y legislaciones · 25</td><td>Propiedad intelectual (a, b, c) · 35</td><td>Creative Commons y cuáles no son abiertas · 35</td></tr>
+<tr><td>Causas de falla en software · 15</td><td>Código abierto (OSI) vs. libre (FSF) e impacto · 25</td><td>Legislación de EE.UU. y UE: por qué importa en Chile · 20</td></tr>
+<tr><td>Qué es el código abierto e importancia · 20</td><td>Reglamentos de la UE: datos y seguridad · 25</td><td>Caso ético: David · 35</td></tr>
+<tr><td>Caso ético: AllTogether y el código ACM · 30</td><td>Ley chilena de ciberseguridad · 15</td><td></td></tr>
+<tr><td>Estrategia de Pólya · 20</td><td></td><td></td></tr>
+</tbody></table></div>
+<p>Los <b>recuperativos</b> (julio 2025, noviembre 2025, junio 2026) mezclan materia del C1 (falacias, sesgos, ciencia, ingeniería, ética antigua) con propiedad intelectual, GPL vs. BSD, Creative Commons y un caso ético.</p>
+<div class="box tip"><div class="bt">Lo que se repite (y probablemente se repita el sábado)</div>
+<p><b>Propiedad intelectual</b> en 5 de 6. <b>Código abierto</b> en 6 de 6 (definiciones, GPL vs. BSD o Creative Commons). <b>Caso ético</b> en 6 de 6, de 20 a 35 pts. Esas tres familias sumaron entre <b>60 y 90 de los ~120 puntos</b> de cada C2.</p></div>
+<div class="box pauta"><div class="bt"><span class="chk"></span>Cómo corrige el profe</div>
+<p>Las pautas son <b>listas con puntaje por ítem</b>: “autor 7, patentes 6, marcas 6, secretos 6”; “definir código abierto 5, código libre 5, <b>impacto 15</b>”; “identificar el dilema 10, discutir los puntos contravenidos 20”. Se gana puntaje <b>nombrando cada ítem y explicándolo</b>. Ojo con dónde están los puntos: en el C2 2025-2, el impacto del código abierto valía más que las dos definiciones juntas.</p></div>
+</section>
+
+<section id="g-plan" data-grp="Estudiar" data-nav="Plan día por día">
+<h2>Plan día por día</h2>
+<p class="lead">Desde el jueves 19 en la tarde hasta el sábado 21 en la mañana: unas 7 horas en total, con lo de más puntaje primero. Las casillas se guardan en este navegador.</p>
+<div class="bar"><i></i></div><p class="barlbl" style="font-size:12.5px;color:var(--muted);margin:2px 0 0"></p>
+
+<div class="day"><h4>Jueves 19 · tarde y noche</h4><div class="when">≈ 2,5 h · propiedad intelectual y código abierto (lo que sale siempre)</div>
+<ul class="check">
+<li><input type="checkbox" data-k="p1"><span>Leer esta guía completa (15 min).</span></li>
+<li><input type="checkbox" data-k="p2"><span><a class="inl" href="17-Propiedad-intelectual.html">Tema 17</a>, propiedad intelectual, con su tabla resumen (45 min).</span></li>
+<li><input type="checkbox" data-k="p3"><span>Ejercicios <a class="inl" href="22-Ejercicios.html#e1">E1</a> y <a class="inl" href="22-Ejercicios.html#e2">E2</a> a mano, sin mirar (20 min).</span></li>
+<li><input type="checkbox" data-k="p4"><span><a class="inl" href="18-Codigo-abierto.html">Tema 18</a>, código abierto: libertades, GPL/BSD, OSI y Creative Commons (50 min).</span></li>
+<li><input type="checkbox" data-k="p5"><span>Ejercicios <a class="inl" href="22-Ejercicios.html#e3">E3</a>, <a class="inl" href="22-Ejercicios.html#e4">E4</a> y <a class="inl" href="22-Ejercicios.html#e5">E5</a> (25 min).</span></li>
+</ul></div>
+
+<div class="day"><h4>Viernes 20</h4><div class="when">≈ 4 h · ética y casos, las clases no pasadas, IA y el C1</div>
+<ul class="check">
+<li><input type="checkbox" data-k="p6"><span><a class="inl" href="16-Aspectos-eticos.html">Tema 16</a>, aspectos éticos, y <span class="soon" title="Página aún no publicada">tema 21</span>, código ACM (40 min).</span></li>
+<li><input type="checkbox" data-k="p7"><span>Casos <a class="inl" href="22-Ejercicios.html#e6">E6 a E9</a> con el método de 5 pasos, al menos dos con reloj, y <a class="inl" href="22-Ejercicios.html#e10">E10</a> (40 min).</span></li>
+<li><input type="checkbox" data-k="p8"><span><span class="soon" title="Página aún no publicada">Tema 19</span> (no pasada), protección de datos, más <a class="inl" href="22-Ejercicios.html#e19">E19 a E21</a> (35 min).</span></li>
+<li><input type="checkbox" data-k="p9"><span><span class="soon" title="Página aún no publicada">Tema 20</span> (no pasada), desarrollo, más <a class="inl" href="22-Ejercicios.html#e17">E17</a> y <a class="inl" href="22-Ejercicios.html#e18">E18</a> (25 min).</span></li>
+<li><input type="checkbox" data-k="p10"><span><span class="soon" title="Página aún no publicada">Tema XX</span>, inteligencia artificial, más una lectura de <a class="inl" href="22-Ejercicios.html#e26">E26 a E28</a> (30 min).</span></li>
+<li><input type="checkbox" data-k="p11"><span>Temas <span class="soon" title="Página aún no publicada">14</span> y <span class="soon" title="Página aún no publicada">15</span>, una lectura rápida, más <a class="inl" href="22-Ejercicios.html#e25">E25</a> y <a class="inl" href="22-Ejercicios.html#e29">E29</a> (25 min).</span></li>
+<li><input type="checkbox" data-k="p12"><span><span class="soon" title="Página aún no publicada">Resumen contenidos Certamen 1</span>, más <a class="inl" href="22-Ejercicios.html#e11">E11 a E16</a> (45 min).</span></li>
+</ul></div>
+
+<div class="day"><h4>Sábado 21 · antes del certamen</h4><div class="when">≈ 45 min · repasar, nada nuevo</div>
+<ul class="check">
+<li><input type="checkbox" data-k="p13"><span>Escribir la <a class="inl" href="#chuleta">chuleta</a> de memoria en una hoja (15 min).</span></li>
+<li><input type="checkbox" data-k="p14"><span>Una pasada por las <span class="soon" title="Página aún no publicada">flashcards</span>, el repaso relámpago y los errores típicos (20 min).</span></li>
+<li><input type="checkbox" data-k="p15"><span>Releer las “15 frases” (10 min). Llegar con tiempo: empieza a las 9:40.</span></li>
+</ul></div>
+
+<div class="box tip"><div class="bt">Si solo alcanzas a estudiar 3 horas</div>
+<p>Ordenado por puntos por hora: <b>1.</b> Propiedad intelectual con E1 y E2 (45 min). <b>2.</b> Código abierto: las 4 libertades, GPL vs. BSD y la tabla de Creative Commons, con E3 a E5 (55 min). <b>3.</b> El método del caso ético y los principios ACM, con E6 y E7 (35 min). <b>4.</b> Las 9 responsabilidades éticas, E10 (10 min). <b>5.</b> Del C1, solo falacias, sesgos y ciencia en el resumen (20 min). <b>6.</b> La chuleta (15 min).</p></div>
+</section>
+
+<section id="g-check" data-nav="Checklist sin mirar">
+<h2>Checklist: lo que tienes que poder escribir sin mirar</h2>
+<p class="lead">Si algo queda sin marcar el viernes en la noche, eso es lo único que conviene repasar el sábado.</p>
+<ul class="check">
+<li><input type="checkbox" data-k="c1"><span>Qué es la propiedad intelectual y qué la distingue de otras propiedades (bienes intangibles).</span></li>
+<li><input type="checkbox" data-k="c2"><span>Por qué es la legislación relevante en informática (el software es intangible).</span></li>
+<li><input type="checkbox" data-k="c3"><span>Las 4 áreas (autor, patentes, marcas, secretos), con qué protegen, cómo se obtienen, cuánto duran y su tratado.</span></li>
+<li><input type="checkbox" data-k="c4"><span>Los 3 principios de Berna y cómo incide cada área en el software.</span></li>
+<li><input type="checkbox" data-k="c5"><span>Qué es una licencia y qué es el código abierto.</span></li>
+<li><input type="checkbox" data-k="c6"><span>Las 4 libertades de la FSF (de la 0 a la 3) y qué es el copyleft.</span></li>
+<li><input type="checkbox" data-k="c7"><span>La idea central de los 10 puntos de la OSI, y qué dicen los puntos 3 y 6.</span></li>
+<li><input type="checkbox" data-k="c8"><span>Código abierto vs. libre: cuál es posterior, cuál es más amplia y por qué la FSF cumple la OSI pero no al revés.</span></li>
+<li><input type="checkbox" data-k="c9"><span>GPL vs. BSD (fuente, misma licencia, propietario); qué agregan LGPL y AGPL.</span></li>
+<li><input type="checkbox" data-k="c10"><span>Las 7 licencias Creative Commons; por qué ND (punto 3) y NC (punto 6) no son abiertas; BSD ≈ CC BY, GPL ≈ CC BY-SA.</span></li>
+<li><input type="checkbox" data-k="c11"><span>El impacto del código abierto con cifras: 96 %, US$2,59-13,18 billones, Linux, Android.</span></li>
+<li><input type="checkbox" data-k="c12"><span>Qué es un dilema ético y sus 4 tipos.</span></li>
+<li><input type="checkbox" data-k="c13"><span>Las 9 responsabilidades éticas del profesional (CIS-RIF-CRA).</span></li>
+<li><input type="checkbox" data-k="c14"><span>Las 4 secciones del código ACM y los principios 1.2, 1.4, 1.6, 2.1 y 3.1.</span></li>
+<li><input type="checkbox" data-k="c15"><span>El método de 5 pasos para un caso ético.</span></li>
+<li><input type="checkbox" data-k="c16"><span>Deuda técnica: definición, efectos, por qué es difícil evitarla y cómo mitigarla.</span></li>
+<li><input type="checkbox" data-k="c17"><span>Tres máximas de desarrollo con su explicación.</span></li>
+<li><input type="checkbox" data-k="c18"><span>Por qué la legislación de EE.UU. y la UE importa en Chile.</span></li>
+<li><input type="checkbox" data-k="c19"><span>Los derechos del GDPR, la Ley 21.719 y la Ley 21.663 (ANCI, CSIRT, obligaciones).</span></li>
+<li><input type="checkbox" data-k="c20"><span>La definición de IA, sus hitos (1956, 2012, 2017) y la advertencia de Eliza.</span></li>
+<li><input type="checkbox" data-k="c21"><span>Sistemas expertos, algoritmos genéticos y redes neuronales en una frase cada uno; los problemas de los LLM.</span></li>
+<li><input type="checkbox" data-k="c22"><span>Minería de datos: qué es y por qué cruzar datos amenaza la privacidad.</span></li>
+<li><input type="checkbox" data-k="c23"><span>Tres aspectos positivos y tres negativos de la tecnología.</span></li>
+<li><input type="checkbox" data-k="c24"><span>Del C1: falacia y sesgo (definición y tres cada uno), hecho/hipótesis/teoría, Pólya y tres razones de falla de proyectos.</span></li>
+</ul>
+</section>
+
+<section id="g-sala" data-nav="En la sala">
+<h2>En la sala: el tiempo y cómo responder</h2>
+<p class="lead">Son unos 120 puntos en 2 horas: más o menos <b>1 minuto por punto</b>. Una pregunta de 20 puntos merece unos 18 minutos; la de 35, unos 30.</p>
+<div class="tw"><table class="mini">
+<thead><tr><th>Minutos</th><th>Qué hacer</th></tr></thead>
+<tbody>
+<tr><td>0-5</td><td>Leer el certamen completo. Al lado de cada pregunta, anotar en el borrador las palabras clave que se te vienen (las listas de la chuleta).</td></tr>
+<tr><td>5-60</td><td>Primero lo que sabes de memoria: propiedad intelectual, licencias, definiciones. Son puntos rápidos.</td></tr>
+<tr><td>60-100</td><td>El caso ético con el método de 5 pasos, y las preguntas de discusión (“por qué es relevante”, “impacto”).</td></tr>
+<tr><td>100-115</td><td>Lo que quedó. Mejor algo que nada: cada ítem nombrado suma.</td></tr>
+<tr><td>115-120</td><td>Revisar: ¿cada pregunta en su hoja, con nombre, rol, certamen y ramo? ¿Contesté todas las letras? ¿Entregué hoja en blanco de las que no respondí?</td></tr>
+</tbody></table></div>
+<div class="box tip"><div class="bt">La forma de respuesta que calza con las pautas</div>
+<p><b>1. Definición</b> primero, en una o dos frases. <b>2. Los ítems pedidos</b>, cada uno con su nombre destacado: nombre → qué es → ejemplo o consecuencia. <b>3. Si hay letras</b>, una respuesta por letra, marcada. <b>4. En el caso ético</b>, abrir con “El dilema es de tipo ___: entre ___ y ___” y citar principios ACM por número.</p></div>
+</section>
+
+<section id="chuleta" data-grp="Repaso final" data-nav="Chuleta">
+<h2>Chuleta</h2>
+<p class="lead">Lo que deberías poder escribir de memoria en una hoja en blanco el sábado en la mañana.</p>
+<div class="cols">
+<div class="card"><h5>Propiedad intelectual (17)</h5><p>Bienes intangibles; el software es intangible ⇒ es <b>la</b> ley del software.</p><p><b>Autor:</b> expresión (no ideas) · automático (Berna 1886: trato nacional, automática, independiente) · vida + 70 (EE.UU., Chile), mínimo + 50 (Berna) · derechos morales.</p><p><b>Patentes:</b> nuevo, útil, no obvio · 20 años · a cambio de publicar · solo su país · sin acuerdos amplios.</p><p><b>Marcas:</b> identifica el origen · registro · 10 años renovables · se pierde sin uso o sin defensa · París, Madrid, TRIPS.</p><p><b>Secretos:</b> sin registro · indefinido · NDA · ingeniería reversa es legal. (+ indicaciones geográficas.)</p></div>
+<div class="card"><h5>Código abierto (18)</h5><p>Licencia = permiso sobre el derecho de autor.</p><p><b>FSF (1986):</b> libertad 0 usar · 1 estudiar y modificar · 2 redistribuir · 3 distribuir modificaciones. + <b>copyleft</b>.</p><p><b>OSI (1998):</b> 10 puntos; lo central: usar sin restricciones, redistribuir con fuente, modificar. 3 = derivadas, 6 = no discriminar áreas.</p><p>FSF ⊂ OSI. <b>GPL</b> (1989): fuente + misma licencia. LGPL (1991) bibliotecas, AGPL (2007) red, GFDL docs. <b>BSD</b>: permisiva, 4/3/2/0 cláusulas.</p><p>Impacto: <b>96 %</b>; US$2,59-13,18 billones; Linux, Android.</p></div>
+<div class="card"><h5>Creative Commons</h5><p><b>BY</b> crédito · <b>SA</b> misma licencia · <b>NC</b> no comercial · <b>ND</b> sin derivadas · <b>CC0</b> dominio público.</p><p>Abiertas (OSI): <b>BY, BY-SA, CC0</b>. ND viola el punto 3; NC viola el punto 6.</p><p>BSD ≈ CC BY (BSD-0 ≈ CC0) · GPL ≈ CC BY-SA.</p></div>
+<div class="card"><h5>Ética profesional (16)</h5><p>Dilema: decisión difícil, sin respuesta clara, con consecuencias éticas. Tipos: <b>verdad/lealtad · individuo/comunidad · corto/largo plazo · justicia/piedad</b>.</p><p>Ley = piso, ética = techo; la ley llega tarde.</p><p>9 responsabilidades (<b>CIS-RIF-CRA</b>): competencia · información · secreto · respeto · inclusión · finanzas · comportamiento honesto · responsabilidad social · ambiente.</p><p>Chile: Instituto 1888, Colegio 1958, código 2013, no obligatorio.</p></div>
+<div class="card"><h5>Código ACM (21) y el caso</h5><p>2018, 4 secciones: <b>1</b> principios generales · <b>2</b> responsabilidades profesionales · <b>3</b> liderazgo · <b>4</b> cumplimiento.</p><p>Citar: 1.2 evitar daños · 1.4 no discriminar · 1.5 trabajo creativo · 1.6 privacidad · 2.1 calidad · 2.3 reglas · 3.1 bien común.</p><p>Método: dilema y tipo → afectados → qué se contraviene → Kant y utilitarismo → posición, una letra a la vez.</p></div>
+<div class="card"><h5>Datos y ciberseguridad (19)</h5><p>Seguridad: confidencialidad, integridad, disponibilidad + privacidad.</p><p><b>GDPR</b> (2016/2018): consentimiento · acceso · rectificación, supresión, olvido · oponerse a perfiles · portabilidad · delegado.</p><p><b>Ley 21.719</b> (2024): homologa el GDPR; agencia de datos.</p><p><b>Ley 21.663</b> (2024): ANCI, CSIRT, notificar incidentes, SGSI, delegado.</p><p><b>CRA</b>: seguro por omisión, ENISA 24 h, 10 años, marca CE.</p></div>
+<div class="card"><h5>Desarrollo (20)</h5><p><b>Deuda técnica:</b> costo del retrabajo futuro por la salida fácil. Difícil: presión de costo y plazo, se ve en retrospectiva. Mitigar: causa raíz, rediseñar, pruebas continuas. Ley de Lehman.</p><p>Máximas: automatice · no hay balas de plata · trade-off · la complejidad es una maldición · causas no técnicas · exceso de ambición · la gente es lo más importante · recortar funcionalidades.</p></div>
+<div class="card"><h5>IA (XX), datos (14) e impacto (15)</h5><p><b>IA:</b> tareas asociadas a la inteligencia humana. 1956 · inviernos · 2012 GPU + deep learning · 2017 transformador. Eliza (1966). Expertos (reglas si…entonces) · genéticos (selección, cruce, mutación) · redes (pesos, backpropagation, sobreajuste) · LLM (alucinan, PI dudosa, “autocorrector con esteroides”).</p><p><b>Minería de datos:</b> patrones en datos masivos; cruzar datos identifica personas (Walgreens).</p><p><b>Impacto:</b> + medicina, automatización, comunicación · − distracción, sueño, privacidad, desinformación, ambiente.</p></div>
+<div class="card"><h5>Materia del C1</h5><p><b>Falacia:</b> paso ilógico en un argumento (ad hominem, post hoc, hombre de paja). <b>Sesgo:</b> desvío sistemático de la racionalidad al juzgar (confirmación, costo hundido, representatividad).</p><p><b>Ciencia:</b> hecho · hipótesis (refutable) · teoría (comprobada, provisoria) · falsabilidad (Popper) · Ockham.</p><p><b>Pólya:</b> entender · plan · ejecutar · reflexionar. <b>Proyectos:</b> objetivos poco claros · ampliación del alcance · comunicación pobre.</p></div>
+</div>
+
+<h3>Las 15 frases que hay que poder escribir</h3>
+<ol>
+<li>La propiedad intelectual protege bienes intangibles, y como el software es intangible, es esencialmente la única legislación que lo protege.</li>
+<li>El derecho de autor protege la expresión concreta de una obra, no las ideas, y es automático desde la Convención de Berna.</li>
+<li>Una patente protege un invento nuevo, útil y no obvio por unos 20 años, a cambio de publicarlo.</li>
+<li>Un secreto comercial se protege indefinidamente mientras no se divulgue, pero no protege contra la ingeniería reversa.</li>
+<li>Una licencia es el permiso que da el dueño del derecho de autor para usar la obra bajo ciertas condiciones.</li>
+<li>Las cuatro libertades son ejecutar, estudiar y modificar, redistribuir, y distribuir las versiones modificadas.</li>
+<li>El copyleft exige que toda redistribución vaya con el código fuente y bajo las mismas condiciones.</li>
+<li>Las licencias de la FSF cumplen la definición de código abierto de la OSI, pero no al revés.</li>
+<li>Las licencias CC con ND violan el punto 3 de la OSI (obras derivadas) y las NC el punto 6 (no discriminar áreas).</li>
+<li>El 96 % de los programas incluye algún componente de código abierto.</li>
+<li>Un dilema ético es una decisión difícil, sin respuesta correcta clara, cuyas opciones tienen consecuencias éticas.</li>
+<li>La ley es el mínimo; la ética cubre lo que la ley no alcanza, y la ley llega tarde a la tecnología.</li>
+<li>La deuda técnica es el costo del retrabajo futuro por elegir una salida fácil en vez de resolver la raíz del problema.</li>
+<li>Chile, como país pequeño y abierto, debe adherir a la legislación de sus grandes socios: la UE y EE.UU.</li>
+<li>Los LLM son “autocorrectores con esteroides”: completan texto de forma plausible, por eso alucinan.</li>
+</ol>
+</section>
+
+<section id="g-relampago" data-nav="Repaso relámpago">
+<h2>Repaso relámpago</h2>
+<p class="lead">Doce preguntas de una línea para el sábado en la mañana. Menos de 30 segundos cada una.</p>
+<div class="q">
+<details><summary>1 · ¿Qué área de la propiedad intelectual no requiere registro y dura para siempre?</summary><p>El <b>secreto comercial</b> (mientras no se divulgue). El derecho de autor tampoco requiere registro, pero dura vida + 70.</p></details>
+<details><summary>2 · ¿Cuáles son los tres principios de Berna?</summary><p>Trato nacional, protección automática e independencia de la protección.</p></details>
+<details><summary>3 · ¿Qué tienen las patentes que no tienen los secretos?</summary><p>Obligan a <b>publicar</b> el invento, a cambio de unos 20 años de exclusividad.</p></details>
+<details><summary>4 · ¿Qué es la libertad 0?</summary><p>Ejecutar el programa como desee, para cualquier propósito.</p></details>
+<details><summary>5 · ¿Qué licencia exige el fuente también a quien usa el programa por la red?</summary><p>La <b>AGPL</b> (2007).</p></details>
+<details><summary>6 · ¿Qué cláusula hace incompatible la BSD original con la GPL?</summary><p>La cláusula 3, de publicidad: mencionar a los autores en todo material publicitario.</p></details>
+<details><summary>7 · ¿Cuáles licencias CC son código abierto?</summary><p>CC BY, CC BY-SA y CC0.</p></details>
+<details><summary>8 · ¿De qué tipo es el dilema de David?</summary><p>Verdad vs. lealtad.</p></details>
+<details><summary>9 · ¿Qué principio ACM se viola al vender datos sin consentimiento?</summary><p>El <b>1.6</b>, respetar la privacidad.</p></details>
+<details><summary>10 · ¿Qué institución crea la Ley 21.663?</summary><p>La <b>ANCI</b> (Agencia Nacional de Ciberseguridad), además del CSIRT Nacional, el CSIRT de la Defensa, el Consejo Multisectorial y la Red de Conectividad Segura del Estado.</p></details>
+<details><summary>11 · ¿Qué es la ley de Lehman?</summary><p>Conforme un programa en evolución sufre cambios, su complejidad aumenta a menos que se trabaje en mantenerla o reducirla.</p></details>
+<details><summary>12 · ¿Qué fue Eliza y por qué es una advertencia?</summary><p>Un programa de 1966 que simulaba un psicoanalista buscando palabras clave; aun así, la gente le atribuía comprensión. Tendemos a ver inteligencia donde no la hay.</p></details>
+</div>
+</section>
+
+<section id="errores" data-nav="Errores típicos">
+<h2>Errores típicos</h2>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>El error</th><th>Lo correcto</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Decir que el derecho de autor protege las ideas.</td><td>Protege la <b>expresión concreta</b>; no cubre hechos, ideas, sistemas ni métodos.</td></tr>
+<tr><td>2</td><td>Dar un solo plazo para el derecho de autor.</td><td>Vida + 70 en EE.UU. y Chile; mínimo vida + 50 en Berna. (Una pauta antigua dice “vida + 60, en general”; usa las cifras de las diapositivas.)</td></tr>
+<tr><td>3</td><td>Confundir patente con secreto comercial.</td><td>La patente obliga a <b>publicar</b> y dura ~20 años; el secreto se protege <b>por no publicarse</b> y dura indefinidamente.</td></tr>
+<tr><td>4</td><td>Decir que las marcas duran 10 años.</td><td>10 años <b>renovables indefinidamente</b>, si se usan y se defienden.</td></tr>
+<tr><td>5</td><td>Decir que código abierto es lo mismo que gratis.</td><td>Es sobre <b>permisos</b>: el punto 1 de la OSI permite incluso venderlo.</td></tr>
+<tr><td>6</td><td>Decir que las licencias BSD no son código abierto.</td><td>Sí lo son (OSI); son <b>permisivas</b>, no exigen copyleft.</td></tr>
+<tr><td>7</td><td>Numerar las libertades del 1 al 4.</td><td>Van del <b>0 al 3</b>.</td></tr>
+<tr><td>8</td><td>Decir que todas las licencias Creative Commons son código abierto.</td><td>Solo CC BY, CC BY-SA y CC0. <b>ND → punto 3</b>, <b>NC → punto 6</b>.</td></tr>
+<tr><td>9</td><td>Quedarse corto en el “impacto” del código abierto.</td><td>Valía 15 de 25 pts: lleva cifras (96 %, billones de dólares) y ejemplos (Linux, Android, la nube).</td></tr>
+<tr><td>10</td><td>En un caso ético, dar solo una opinión.</td><td>Nombrar el dilema y su tipo, los valores en conflicto, los <b>principios ACM por número</b>, dos lentes y una posición, letra por letra.</td></tr>
+<tr><td>11</td><td>En el caso David, responder que la cercanía sí cambia la respuesta.</td><td>La pauta: <b>no debiera incidir</b> (sería un alegato especial).</td></tr>
+<tr><td>12</td><td>En deuda técnica, olvidar el “por qué es difícil evitarla”.</td><td>Presión de costo y plazo, se contrae sin darse cuenta y se ve solo en retrospectiva.</td></tr>
+<tr><td>13</td><td>Creer que un código publicado en la web sin licencia es libre.</td><td>Por omisión <b>no hay permiso</b> ni de leerlo: el derecho de autor es automático.</td></tr>
+<tr><td>14</td><td>Contar la GPL como “la que prohíbe vender”.</td><td>La GPL permite vender; lo que exige es entregar el fuente y mantener la licencia.</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="erratas" data-nav="Erratas (puntos extra)">
+<h2>Erratas del material (hasta 5 puntos extra)</h2>
+<p class="lead">La presentación del ramo premia con <b>hasta 5 puntos en la nota final</b> reportar errores del apunte o las transparencias (“de tipeo, gramática, matemáticos…”), repartidos entre quienes los reporten. Estos son errores de las diapositivas nuevas del C2. <b>Verifícalos tú antes de reportarlos.</b></p>
+<div class="tw"><table>
+<thead><tr><th>Archivo</th><th>Dice</th><th>Debería decir</th></tr></thead>
+<tbody>
+<tr><td><code>14-procesamiento-datos</code></td><td>“Enterprise Resource <b>Planinnig</b>”</td><td>Planning.</td></tr>
+<tr><td><code>14-procesamiento-datos</code></td><td>“<b>millenium</b> bug”</td><td>millennium.</td></tr>
+<tr><td><code>14-procesamiento-datos</code></td><td>“La minería de datos <b>de</b> asocia”</td><td>“se asocia”.</td></tr>
+<tr><td><code>14-procesamiento-datos</code></td><td>“«<b>anomimizados</b>»”</td><td>anonimizados.</td></tr>
+<tr><td><code>15-impacto</code></td><td>“han acortado y <b>aliviando</b> las jornadas”</td><td>“aliviado”.</td></tr>
+<tr><td><code>17-propiedad-intelectual</code></td><td>“<b>Aplication</b> Programming Interface”</td><td>Application.</td></tr>
+<tr><td><code>17-propiedad-intelectual</code></td><td>“Las patentes en general solo <b>son valen</b>”</td><td>“solo valen”.</td></tr>
+<tr><td><code>17-propiedad-intelectual</code></td><td>“World Trade <b>Oganization</b>”</td><td>Organization.</td></tr>
+<tr><td><code>18-código-abierto</code></td><td>“Douglas <b>McIllroy</b>”</td><td>McIlroy.</td></tr>
+<tr><td><code>18-código-abierto</code></td><td>“Defense Advanced Research <b>Proyects</b> Agency”</td><td>Projects.</td></tr>
+<tr><td><code>18-código-abierto</code></td><td>“<b>Berekely</b> Software Design”</td><td>Berkeley.</td></tr>
+<tr><td><code>18-código-abierto</code></td><td>“La idea <b>originar</b> era”</td><td>“original”.</td></tr>
+<tr><td><code>19-protección-datos</code></td><td>“en el <b>merco</b> del SGSI”</td><td>marco.</td></tr>
+<tr><td><code>20-desarrollo</code></td><td>“demuestran <b>el el</b> mejor predictor”</td><td>“que el mejor predictor”.</td></tr>
+<tr><td><code>XX-ai</code></td><td>“<b>McCullough</b> y Pitts”</td><td>McCulloch (Warren McCulloch).</td></tr>
+<tr><td><code>XX-ai</code></td><td>“de <b>las primeros</b> formas”</td><td>“de las primeras formas”.</td></tr>
+<tr><td><code>XX-ai</code></td><td>“entrenado con <b>un una</b> enorme cantidad”</td><td>“con una”.</td></tr>
+<tr><td><code>XX-ai</code></td><td>“no <b>en implícitamente</b>”</td><td>“no implícitamente”.</td></tr>
+<tr><td><code>XX-ai</code></td><td>“un arnés que <b>ofrecen</b>”</td><td>“que ofrece”.</td></tr>
+<tr><td><code>XX-ai</code></td><td>“alimentado de <b>ésto</b>”</td><td>“esto” (sin tilde).</td></tr>
+<tr><td><code>XX-ai</code></td><td>“tendencia a alucinar, <b>por el</b> método subyacente combina”</td><td>“porque el método subyacente combina”.</td></tr>
+</tbody></table></div>
+<div class="box warn"><div class="bt">Discutibles (no las reportes sin revisar)</div>
+<p><b>GFDL:</b> la clase dice que la FSF publicó su primera versión en 2008; la versión 1.1 es de 2000 y la de 2008 es la 1.3. <b>GitHub:</b> la clase lo ubica en 2010, pero se lanzó en 2008. <b>Cyber Resilience Act:</b> la clase dice que entró en vigencia en noviembre de 2024; se publicó en noviembre y entró en vigencia en diciembre de 2024. <b>Ley 21.719:</b> la clase dice que es de agosto de 2024 y entra en vigencia en agosto de 2026; agosto fue su aprobación en el Congreso, y la ley se publicó en diciembre de 2024 (revisa la fecha de vigencia en la Biblioteca del Congreso). <b>15-impacto:</b> “situaciones inconfortables” (la RAE no registra “inconfortable”; mejor “incómodas”).</p></div>
+</section>
+
+<section id="g-flash" data-nav="Flashcards">
+<h2>Flashcards</h2>
+<p>La página de <span class="soon" title="Página aún no publicada">flashcards</span> tiene tarjetas de toda la materia (C1 y C2), filtrables por tema, con las del C2 marcadas como nuevas. Sirven para el repaso del sábado en la mañana y para usar el celular en los ratos muertos.</p>
+</section>
+
+<section id="glosario" data-nav="Glosario">
+<h2>Glosario</h2>
+<div class="tw"><table class="mini">
+<thead><tr><th>Término</th><th>Significado en el ramo</th><th>Tema</th></tr></thead>
+<tbody>
+<tr><td><b>ACM</b></td><td>Association for Computing Machinery: la mayor organización profesional de informática; su código es de 2018.</td><td>16, 21</td></tr>
+<tr><td><b>AGPL</b></td><td>GPL que también exige el fuente a quien usa el programa por la red (2007).</td><td>18</td></tr>
+<tr><td><b>ANCI</b></td><td>Agencia Nacional de Ciberseguridad, creada por la Ley 21.663.</td><td>19</td></tr>
+<tr><td><b>API</b></td><td>Especificación de funciones y datos de una biblioteca; zona gris para las obras derivadas.</td><td>17</td></tr>
+<tr><td><b>Backpropagation</b></td><td>Propagación hacia atrás: algoritmo que ajusta los pesos de una red neuronal según su aporte al error.</td><td>XX</td></tr>
+<tr><td><b>BSD</b></td><td>Berkeley Software Distribution; sus licencias son permisivas.</td><td>18</td></tr>
+<tr><td><b>Convención de Berna</b></td><td>Tratado de derecho de autor (1886): trato nacional, protección automática, independencia.</td><td>17</td></tr>
+<tr><td><b>Copyleft</b></td><td>Condición de la GPL: redistribuir siempre con fuente y bajo la misma licencia.</td><td>18</td></tr>
+<tr><td><b>CRA</b></td><td>Cyber Resilience Act: reglamento de ciberseguridad de la UE para productos digitales.</td><td>19</td></tr>
+<tr><td><b>CSIRT</b></td><td>Equipo de respuesta a incidentes de seguridad informática.</td><td>19</td></tr>
+<tr><td><b>Deuda técnica</b></td><td>Costo del retrabajo futuro por elegir una salida fácil.</td><td>20</td></tr>
+<tr><td><b>Dilema ético</b></td><td>Decisión difícil sin respuesta correcta clara, con consecuencias éticas.</td><td>16</td></tr>
+<tr><td><b>Dilución</b></td><td>Usar una marca parecida a otra que confunde al cliente.</td><td>17</td></tr>
+<tr><td><b>Dominio público</b></td><td>Obras sin protección vigente; en Chile, patrimonio cultural común.</td><td>17</td></tr>
+<tr><td><b>FSF</b></td><td>Free Software Foundation (1986): maneja el proyecto GNU y define el código libre.</td><td>18</td></tr>
+<tr><td><b>GDPR</b></td><td>Reglamento General de Protección de Datos de la UE (2016, aplicado desde 2018).</td><td>19</td></tr>
+<tr><td><b>GPL</b></td><td>General Public License (1989), la licencia de GNU.</td><td>18</td></tr>
+<tr><td><b>Indicación geográfica</b></td><td>Nombre de un producto cuya calidad depende de su origen (pisco, champagne).</td><td>17</td></tr>
+<tr><td><b>LGPL</b></td><td>GPL para bibliotecas (1991): se puede usar si la biblioteca es reemplazable.</td><td>18</td></tr>
+<tr><td><b>LLM</b></td><td>Modelo de lenguaje de gran tamaño (ChatGPT, Claude, Gemini).</td><td>XX</td></tr>
+<tr><td><b>Minería de datos</b></td><td>Encontrar patrones y conocimiento en datos masivos.</td><td>14</td></tr>
+<tr><td><b>NDA</b></td><td>Acuerdo de confidencialidad: protege secretos comerciales.</td><td>17</td></tr>
+<tr><td><b>Obra derivada</b></td><td>Obra que construye sobre otra o incluye partes sustanciales de ella.</td><td>17</td></tr>
+<tr><td><b>OSI</b></td><td>Open Source Initiative (1998): la definición de código abierto en 10 puntos.</td><td>18</td></tr>
+<tr><td><b>Sobreajuste</b></td><td>Modelo que rinde muy bien en entrenamiento y mal en casos nuevos.</td><td>XX</td></tr>
+<tr><td><b>Sistema experto</b></td><td>IA basada en reglas si… entonces, con base de conocimiento y máquina de inferencia.</td><td>XX</td></tr>
+<tr><td><b>TRIPS</b></td><td>Acuerdo de la OMC (1995) con estándares mínimos de propiedad intelectual.</td><td>17</td></tr>
+<tr><td><b>Trade-off</b></td><td>Balance de ventajas y desventajas en toda decisión.</td><td>20</td></tr>
+</tbody></table></div>
+<p>Los términos del C1 (falacia, sesgo, falsabilidad, ataraxia, deontología…) están en el <span class="soon" title="Página aún no publicada">resumen del C1</span> y en cada página de la 1 a la 13.</p>
+</section>
+
+<section id="g-fuentes" data-nav="Fuentes">
+<h2>Fuentes</h2>
+<ul>
+<li><b>Diapositivas del C2:</b> <code>14-procesamiento-datos</code>, <code>15-impacto</code>, <code>16-aspectos-éticos</code>, <code>XX-ai</code>, <code>17-propiedad-intelectual</code>, <code>18-código-abierto</code>, <code>19-protección-datos</code>, <code>20-desarrollo</code> y <code>21-código-ACM</code>.</li>
+<li><b>Diapositivas del C1:</b> de <code>01-proyectos</code> a <code>13-computación</code> (páginas 1 a 13, copiadas de la serie del C1).</li>
+<li><b>Certámenes con pauta:</b> C2 2025-1, C2 2025-2, C2 2026-1, recuperativos 2025-1 y 2025-2. El recuperativo 2026-1 viene sin pauta. Los C1 2025-1, 2025-2 y 2026-1, con pauta.</li>
+<li><b>Presentaciones de semestres anteriores</b> (Ciberseguridad, Privacidad, Inteligencia artificial, Propiedad intelectual, Redes y seguridad, Rol del informático): en la página <span class="soon" title="Página aún no publicada">Extra</span>, porque probablemente no entran.</li>
+<li>Comentario del profe sobre las soluciones: “Los contenidos han ido cambiando, y la materia cubierta por los certámenes no necesariamente coincida. Se dan los enunciados y las soluciones, muchas veces más extensas de lo que realmente se pide.”</li>
+</ul>
+</section>
+
+<div class="pnav"><a class="nx" href="16-Aspectos-eticos.html"><small>Siguiente →</small>Aspectos éticos</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c2-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>

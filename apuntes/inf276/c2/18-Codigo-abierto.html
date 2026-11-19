@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Caleb Baez">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Código abierto · Infosoc C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+
+  .pages .pgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:10px 4px 0}
+  .pages .pgrp:first-child{margin-top:0}
+  .pages span.off{display:flex;gap:9px;align-items:center;font-size:13px;padding:6px 9px;border-radius:8px;
+    border:1px dashed var(--line);line-height:1.25;opacity:.5;cursor:default}
+  .pages span.off b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--code);
+    color:var(--muted);font-size:11.5px}
+  .pages a b{font-size:11px}
+  .nc{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--no-soft);
+    color:var(--no);margin-left:2px;font-style:normal;vertical-align:1px;white-space:nowrap}
+  .soon{border-bottom:1px dashed var(--muted);color:var(--muted)}
+  .box.ana p+p{margin-top:6px}
+  .box.nc{border-left-color:var(--no);background:var(--no-soft)} .box.nc .bt{color:var(--no)}
+  .lic{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:700} .nope{color:var(--no);font-weight:700}
+  .mnemo{font-size:15px;background:var(--panel);border:1px dashed var(--brand);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .mnemo b{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T18</div>
+    <div><h1>Código abierto</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><div class="pgrp">Inicio</div><a href="0-Guia-de-estudio-C2.html"><b>★</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 21</small></span></a><div class="pgrp">Materia del C1</div><span class="off" title="Todavía no está publicada"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></span><span class="off" title="Todavía no está publicada"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></span><span class="off" title="Todavía no está publicada"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></span><span class="off" title="Todavía no está publicada"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></span><span class="off" title="Todavía no está publicada"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></span><span class="off" title="Todavía no está publicada"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></span><span class="off" title="Todavía no está publicada"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></span><span class="off" title="Todavía no está publicada"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></span><span class="off" title="Todavía no está publicada"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></span><span class="off" title="Todavía no está publicada"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></span><span class="off" title="Todavía no está publicada"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></span><span class="off" title="Todavía no está publicada"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></span><span class="off" title="Todavía no está publicada"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></span><span class="off" title="Todavía no está publicada"><b>Σ</b><span>Resumen contenidos Certamen 1<br><small style="color:var(--muted)">lo esencial de 1 a 13</small></span></span><div class="pgrp">Materia nueva del C2</div><span class="off" title="Todavía no está publicada"><b>14</b><span>Procesamiento de datos<br><small style="color:var(--muted)">historia y minería de datos</small></span></span><span class="off" title="Todavía no está publicada"><b>15</b><span>Impacto de la tecnología<br><small style="color:var(--muted)">lo bueno y lo malo</small></span></span><a href="16-Aspectos-eticos.html"><b>16</b><span>Aspectos éticos<br><small style="color:var(--muted)">códigos, dilemas, ética profesional</small></span></a><span class="off" title="Todavía no está publicada"><b>XX</b><span>Inteligencia artificial<br><small style="color:var(--muted)">expertos, genéticos, redes, LLM</small></span></span><a href="17-Propiedad-intelectual.html"><b>17</b><span>Propiedad intelectual<br><small style="color:var(--muted)">autor, patentes, marcas, secretos</small></span></a><a href="18-Codigo-abierto.html" class="cur"><b>18</b><span>Código abierto<br><small style="color:var(--muted)">GPL, BSD, OSI, Creative Commons</small></span></a><span class="off" title="Todavía no está publicada"><b>19</b><span>Protección de datos <i class="nc">no pasada</i><br><small style="color:var(--muted)">GDPR, leyes chilenas, CRA</small></span></span><span class="off" title="Todavía no está publicada"><b>20</b><span>Desarrollo de software <i class="nc">no pasada</i><br><small style="color:var(--muted)">máximas y deuda técnica</small></span></span><span class="off" title="Todavía no está publicada"><b>21</b><span>Código de ética ACM<br><small style="color:var(--muted)">las 4 secciones</small></span></span><div class="pgrp">Práctica</div><a href="22-Ejercicios.html"><b>✎</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a><span class="off" title="Todavía no está publicada"><b>⇄</b><span>Flashcards<br><small style="color:var(--muted)">toda la materia</small></span></span><div class="pgrp">Complemento</div><span class="off" title="Todavía no está publicada"><b>+</b><span>Extra<br><small style="color:var(--muted)">probablemente no entra</small></span></span></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 18</div><a href="#t18-inicio">Qué pesa y qué estudiar</a><a href="#idea">La idea y las licencias</a><a href="#historia">Breve historia</a><div class="grp">Las dos grandes líneas</div><a href="#bsd">BSD y sus licencias</a><a href="#gnu">GNU, FSF y la GPL</a><div class="grp">Las definiciones</div><a href="#osi">La definición de la OSI</a><a href="#osi-fsf">Código abierto vs. libre</a><a href="#gpl-bsd">GPL vs. BSD</a><div class="grp">Más allá del software</div><a href="#cc">Creative Commons</a><a href="#otras">Otras licencias</a><div class="grp">Uso e impacto</div><a href="#uso">Consideraciones de uso</a><a href="#impacto">Impacto del código abierto</a><div class="grp">Práctica</div><a href="#t18-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+<section id="t18-inicio" data-grp="Tema 18" data-nav="Qué pesa y qué estudiar">
+<h2>Tema 18 · Código abierto</h2>
+<p class="lead">Clase <code>18-código-abierto-hnd.pdf</code> (56 diapositivas, la más larga del C2). Qué es el código abierto, de dónde salió (Unix, BSD, GNU), las grandes familias de licencias (BSD, GPL, Creative Commons), la definición oficial de la OSI y su impacto. Depende del <a class="inl" href="17-Propiedad-intelectual.html">tema 17</a>: las licencias son un uso del derecho de autor.</p>
+
+<div class="hero">
+  <div class="big">Peso en el certamen: altísimo, casi seguro</div>
+  <div class="sub">Salió en <b>los 6</b> C2 y recuperativos anteriores, entre <b>15 y 35 puntos</b>. Hay tres preguntas que se repiten: <b>código abierto (OSI) vs. código libre (FSF) y su impacto</b>; <b>licencias GPL vs. BSD</b>; y el <b>menú de Creative Commons</b>, preguntando cuáles no son código abierto (35 pts en el C2 2026-1).</div>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder escribir</h5>
+    <p>· Qué es una licencia y qué es el código abierto.</p>
+    <p>· Las <b>4 libertades</b> de la FSF (0 a 3) y la idea de <b>copyleft</b>.</p>
+    <p>· Los <b>10 puntos de la OSI</b> (al menos su idea central y los puntos 3 y 6).</p>
+    <p>· <b>GPL vs. BSD</b>: la GPL exige entregar el fuente y mantener la licencia; BSD no.</p>
+    <p>· Las <b>7 licencias CC</b> y por qué ND y NC no son código abierto.</p>
+    <p>· El impacto: <b>96 %</b> de los programas usan código abierto.</p>
+  </div>
+  <div class="card"><h5>Dónde está</h5>
+    <p><b>Diapositivas</b> <code>18-código-abierto-hnd.pdf</code>.</p>
+    <p><b>Pautas</b>: C2 2025-1 P4, C2 2025-2 P3, C2 2026-1 P2, R 2025-1 P5 y R 2025-2 P5 (en <a class="inl" href="22-Ejercicios.html#e3">E3</a>, <a class="inl" href="22-Ejercicios.html#e4">E4</a> y <a class="inl" href="22-Ejercicios.html#e5">E5</a>).</p>
+  </div>
+  <div class="card"><h5>Plan para este tema</h5>
+    <p>1. Leer la página (40 min). La historia se puede leer rápido.</p>
+    <p>2. Memorizar las 4 libertades, la <a class="inl" href="#cc">tabla CC</a> y la <a class="inl" href="#mnemo-osi">mnemotecnia OSI</a> (15 min).</p>
+    <p>3. Escribir sin mirar <a class="inl" href="22-Ejercicios.html#e3">E3</a>, <a class="inl" href="22-Ejercicios.html#e4">E4</a> y <a class="inl" href="22-Ejercicios.html#e5">E5</a> (30 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="idea" data-nav="La idea y las licencias">
+<h2>La idea: software que se puede estudiar, cambiar y compartir</h2>
+<p>El software es <b>maleable</b> y se copia a un <b>costo ínfimo</b>. Es común querer adaptarlo, corregir errores o aprender cómo funciona; estudiar el código puede ser la manera más simple de construir software que interactúe con el original. La clase lo compara con el <b>método científico</b>: los resultados se comparten para ser criticados, usados como base de productos nuevos o reemplazados por alternativas mejores.</p>
+
+<h3>Qué es una licencia</h3>
+<div class="box def"><div class="bt">Licencia de software</div>
+<p>El software es una <b>obra creativa</b>, así que lo protege el <b>derecho de autor</b>. Una <b>licencia</b> es el <b>permiso</b> que da el dueño de esos derechos para usar el programa bajo ciertas condiciones. Las licencias propietarias típicas exigen un <b>pago</b>, permiten correr el programa en <b>una sola máquina</b> y <b>prohíben estudiar o compartir</b> el código. El <b>código abierto</b> usa la misma ley al revés: entrega permisos de <b>uso libre, análisis, modificación y redistribución</b> (a veces con condiciones).</p></div>
+<div class="box ana"><div class="bt">Analogía: el candado y las llaves</div>
+<p>El derecho de autor es un <b>candado</b> que la ley le pone automáticamente a todo programa: por defecto, nadie más puede copiarlo. La licencia es la decisión del dueño sobre <b>a quién le da llaves y con qué condiciones</b>. Una licencia propietaria da una llave que solo abre una puerta y prohíbe hacer copias de la llave. Una licencia abierta deja <b>un montón de llaves en la entrada</b> para quien las quiera. Las licencias abiertas no se saltan la ley: la usan.</p></div>
+</section>
+
+<section id="historia" data-nav="Breve historia">
+<h2>Breve historia</h2>
+<ul>
+<li><b>Los primeros tiempos:</b> cada computador era único y los programas se escribían para esa máquina. Cuando se empezaron a fabricar en serie, el software <b>venía con el equipo</b> y los usuarios intercambiaban programas, para felicidad de los fabricantes (más programas, más ventas). Al crecer la complejidad, el software <b>se empezó a cobrar aparte</b>.</li>
+<li><b>Microcomputadores:</b> se compartían programas en revistas y en <b>BBS</b> (<i>Bulletin Board System</i>); se popularizó el <b>shareware</b> (“copie cuanto quiera, pague si lo usa”).</li>
+<li><b>Multics y Unix:</b> a mediados de los 60, MIT, Bell Labs y General Electric desarrollaron <b>Multics</b>, un gran computador para toda una ciudad. Bell Labs se retiró, y Ken Thompson, Dennis Ritchie, Brian Kernighan, Douglas McIlroy y Joe Ossanna crearon <b>Unix (1969)</b> en un PDP-7 muy limitado. Esas limitaciones forzaron un diseño <b>simple</b>, con pocos mecanismos que se combinan libremente.</li>
+<li><b>Por qué Unix se difundió:</b> por razones legales, <b>AT&amp;T no podía participar en otras industrias</b>, así que licenció Unix <b>a costo nominal y con fuentes</b>. Fabricantes y universidades lo adoptaron, y las universidades usaban su código en cursos de sistemas operativos (más o menos ilegalmente).</li>
+<li><b>La reacción:</b> como copiar programas es casi gratis y modificarlos es fácil, muchos programadores se opusieron a los programas secretos que no podían estudiar ni adaptar. De ahí nacieron muchas iniciativas independientes para compartir programas libremente.</li>
+</ul>
+<div class="tw"><table class="mini">
+<thead><tr><th>Año</th><th>Hito</th></tr></thead>
+<tbody>
+<tr><td>1955</td><td>SHARE, grupo de usuarios de IBM que comparten programas.</td></tr>
+<tr><td>1975</td><td>SIG TAPE entre usuarios de DEC.</td></tr>
+<tr><td>1978</td><td>Primera BSD en UC Berkeley.</td></tr>
+<tr><td>1983</td><td>Richard M. Stallman lanza el <b>proyecto GNU</b>.</td></tr>
+<tr><td>1984 / 1986</td><td>X Window System (MIT y otros); X11. Se crea la IETF.</td></tr>
+<tr><td>1991</td><td>Linus Torvalds: “Estoy trabajando en un sistema operativo como hobby…” (<b>Linux</b>).</td></tr>
+<tr><td>1992</td><td>Juicio USL vs. UCB por BSD NET/2. Primeras distribuciones de Linux.</td></tr>
+<tr><td>1998</td><td>Netscape libera el código de Mozilla. Se funda la <b>OSI</b>.</td></tr>
+<tr><td>2001</td><td>IBM invierte mil millones de dólares en Linux.</td></tr>
+<tr><td>2003</td><td>Juicio de The SCO Group contra IBM.</td></tr>
+<tr><td>2005–2006</td><td>Lanzamiento de <b>git</b>. Formato OpenDocument (OASIS), estándar ISO/IEC en 2006. Sun anuncia OpenJDK bajo GPL.</td></tr>
+<tr><td>2008</td><td>Controversia por la estandarización ISO de OOXML (Microsoft). Lanzamiento de <b>Android</b>.</td></tr>
+<tr><td>2010</td><td>Juicio Oracle vs. Google (por la API de Java). La clase también ubica aquí a GitHub.</td></tr>
+<tr><td>2019</td><td>IBM compra Red Hat.</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="bsd" data-grp="Las dos grandes líneas" data-nav="BSD y sus licencias">
+<h2>BSD y las licencias permisivas</h2>
+<p><b>BSD</b> (<i>Berkeley Software Distribution</i>) fue un sistema basado en el Unix de AT&amp;T, desarrollado desde 1978 por el <b>CSRG</b> de la Universidad de California en Berkeley. Fue pionero en muchas tecnologías y sus modificaciones se distribuían <b>sin mayores condiciones</b>, así que muchos fabricantes las usaban. Lo financió DARPA hasta 1988, fue base de ARPANET (el precursor de Internet) y de <b>TCP/IP</b>: casi todas las versiones de TCP/IP vienen de la de BSD, incluso la de Windows hasta hace poco.</p>
+<p><b>El juicio USL vs. BSDi:</b> BSDi vendía BSD/386 con fuentes completos por <b>US$995</b>, cuando el Unix de USL (la rama de AT&amp;T) costaba <b>US$20 000</b>. USL demandó a fines de 1991 alegando que contenía código propietario. En 1994, ya en manos de Novell, se llegó a un acuerdo: BSDi basaría sus productos en <b>4.4BSD-Lite</b>, declarado libre de código de AT&amp;T. Ese código limpio dio origen a:</p>
+<div class="tw"><table class="mini">
+<thead><tr><th>Proyecto</th><th>Año</th><th>Enfoque</th></tr></thead>
+<tbody>
+<tr><td><b>FreeBSD</b></td><td>1993</td><td>Unix completo, portado a muchas arquitecturas; muchas variantes empaquetadas.</td></tr>
+<tr><td><b>NetBSD</b></td><td>1993</td><td>Claridad del código, diseño cuidadoso, portabilidad.</td></tr>
+<tr><td><b>OpenBSD</b></td><td>1995</td><td>Derivado de NetBSD: seguridad proactiva, correctitud, criptografía.</td></tr>
+<tr><td><b>DragonFly BSD</b></td><td>2003</td><td>Derivado de FreeBSD 4.8 (Matthew Dillon), por el manejo del multiprocesamiento; ambos colaboran.</td></tr>
+</tbody></table></div>
+
+<h3 id="lic-bsd">Las licencias BSD</h3>
+<div class="box def"><div class="bt">Idea central</div>
+<p>Son código abierto según la OSI, pero <b>no exigen</b> que los productos derivados se distribuyan bajo las mismas condiciones; en particular, <b>no exigen entregar el código fuente</b> junto con los binarios. Por eso se llaman <b>licencias permisivas</b>: permiten incluir el código en <b>productos propietarios</b>. Solo piden mantener el aviso de derecho de autor y el aviso de que se entrega “tal cual”, sin garantías.</p></div>
+<div class="tw"><table class="mini">
+<thead><tr><th>Variante</th><th>Qué exige</th></tr></thead>
+<tbody>
+<tr><td><b>BSD de 4 cláusulas</b> (original)</td><td>Mantener el aviso de derecho de autor y de falta de garantías; no usar el nombre de los autores en publicidad; y la <b>cláusula 3</b>: todo material publicitario debe mencionar que incluye software de los autores. Esa cláusula la hace <b>incompatible con la GPL</b>.</td></tr>
+<tr><td><b>BSD de 3 cláusulas</b> (“revisada”, “nueva”)</td><td>Elimina la cláusula de publicidad. <b>Es la más común.</b></td></tr>
+<tr><td><b>BSD de 2 cláusulas</b> (“simplificada”, “FreeBSD”)</td><td>Solo mantener el aviso de derecho de autor y de falta de garantías.</td></tr>
+<tr><td><b>BSD de 0 cláusulas</b></td><td>Solo mantener la falta de garantías: es esencialmente <b>donar al dominio público</b>.</td></tr>
+</tbody></table></div>
+<div class="box ana"><div class="bt">Analogía: la receta regalada</div>
+<p>BSD es como una cocinera que publica su receta y dice: “úsenla para lo que quieran, incluso en un restaurante caro y sin contarle a nadie cómo la cambiaron; solo dejen mi nombre en la receta y no me culpen si les cae mal”. Por eso empresas como Apple (macOS viene en parte de BSD) pueden usar código BSD en productos cerrados.</p></div>
+</section>
+
+<section id="gnu" data-nav="GNU, FSF y la GPL">
+<h2>GNU, la FSF y las licencias GPL</h2>
+<p>El <b>proyecto GNU</b> (acrónimo recursivo de <i>GNU's Not Unix</i>) lo lanzó <b>Richard Stallman en 1983</b>. Lo maneja la <b>Free Software Foundation (FSF)</b>, fundación sin fines de lucro creada en 1986, que administra los derechos de autor de sus productos y en 1986 definió lo que entiende por <b>“código libre”</b>. Su objetivo final es que <b>todo el código sea libre</b>, compartido por la comunidad.</p>
+<p>Empezó con el editor <b>emacs</b>, entre programadores del laboratorio de IA del MIT que querían un sistema operativo libre en LISP. Como LISP era un nicho, cambiaron la meta a un <b>clon libre de Unix</b>. La pieza central fue el compilador <b>gcc</b> (luego GCC, <i>GNU Compiler Collection</i>), más versiones de los utilitarios de Unix. Con el auge de Linux, mucho software se publicó bajo GPL, como el propio núcleo Linux; hoy incluye ambientes gráficos como Gnome.</p>
+
+<h3 id="libertades">Las cuatro libertades</h3>
+<div class="box def"><div class="bt">Código libre según la FSF</div>
+<p><b>Libertad 0:</b> ejecutar el programa como desee, para cualquier propósito.<br>
+<b>Libertad 1:</b> estudiar cómo funciona y modificarlo para sus propios fines.<br>
+<b>Libertad 2:</b> redistribuir copias para ayudar a sus vecinos.<br>
+<b>Libertad 3:</b> distribuir copias de sus modificaciones, para que toda la comunidad se beneficie.</p></div>
+<div class="mnemo"><b>Usar · Estudiar · Compartir · Mejorar y compartir lo mejorado</b>. Empiezan en 0 porque son programadores.</div>
+
+<h3 id="copyleft">Copyleft: la condición que agrega GNU</h3>
+<p>GNU además insiste en que <b>cualquier modificación se distribuya con su código fuente, sin restricciones adicionales</b>. Eso es lo que la clase llama “código libre”. A la idea la llaman <b>copyleft</b>, un juego de palabras con <i>copyright</i>: <i>right</i> es derecha y derecho; <i>left</i> es izquierda y también “dejado”, permitido.</p>
+<div class="box ana"><div class="bt">Analogía: la cadena de favores</div>
+<p>La GPL es una receta compartida con una condición: <b>si sirves a otros un plato hecho con ella, también tienes que darles la receta, incluidos tus cambios, con esta misma condición</b>. Nadie puede cortar la cadena y quedarse con una versión cerrada. BSD te regala la receta sin condiciones; la GPL te la regala con la condición de que siga siendo regalada.</p></div>
+
+<h3>La familia de licencias GPL</h3>
+<div class="tw"><table>
+<thead><tr><th>Licencia</th><th>Año</th><th>Para qué y qué exige</th></tr></thead>
+<tbody>
+<tr><td><b>GPL</b> (<i>General Public License</i>)</td><td>1989</td><td>Usa el derecho de autor para permitir distribuir el programa siempre que quien recibe una copia tenga derecho a recibir también el <b>código fuente</b>, a lo más por un cargo razonable de copia, sin restricciones adicionales. Todo programa que incorpore parte de la obra es una <b>obra derivada</b> y cae bajo las mismas condiciones. Algunas incluyen <b>excepciones</b>: por ejemplo, los programas generados con un compilador GPL quedan libres de la condición, aunque incluyan código de la herramienta.</td></tr>
+<tr><td><b>LGPL</b> (<i>Lesser</i>, antes <i>Library</i>)</td><td>1991</td><td>Para <b>bibliotecas</b>. Con la GPL, todo programa que usara la biblioteca sería derivado y tendría que ser GPL, lo que frenaba su uso. La LGPL permite usarla en otros programas mientras quien los reciba pueda <b>reemplazar la biblioteca</b> por otra (por ejemplo, una versión nueva). La biblioteca misma sigue con condiciones parecidas a la GPL.</td></tr>
+<tr><td><b>AGPL</b> (<i>Affero</i>)</td><td>2007</td><td>Basada en GPL versión 3. Correr un programa en un servidor <b>no es “distribuirlo”</b>, así que con la GPL se podía ofrecer un servicio web sin entregar el fuente. La AGPL exige ofrecer el código fuente a <b>quien interactúe con el programa a través de la red</b>.</td></tr>
+<tr><td><b>GFDL</b> (<i>Free Documentation</i>)</td><td>la clase dice 2008</td><td>Para <b>manuales y documentación</b>. Como la GPL: permite copiar, redistribuir y modificar (salvo “secciones invariantes”), siempre que las copias y derivados mantengan la licencia. <b>Prohíbe DRM</b>. Permite uso comercial, pero quien haga <b>más de 100 copias</b> debe ofrecer también el documento original o su fuente completo.</td></tr>
+</tbody></table></div>
+<div class="box ana"><div class="bt">Analogía para la AGPL: el restaurante</div>
+<p>Con la GPL, la receta se entrega a quien <b>se lleva el plato a la casa</b> (recibe una copia del programa). Pero un servicio web es como <b>comer en el restaurante</b>: no te llevas nada, así que con la GPL no te deben la receta. La AGPL cierra ese hueco: también se la deben a quien come en el local.</p></div>
+</section>
+
+<section id="osi" data-grp="Las definiciones" data-nav="La definición de la OSI">
+<h2>La Open Source Initiative (OSI) y su definición</h2>
+<p>La <b>OSI</b>, fundada en <b>1998</b>, mantiene la <b>definición oficial de código abierto</b> y una lista de licencias certificadas. Hoy además trabaja en una definición de <b>inteligencia artificial abierta</b>. Una licencia es de código abierto si cumple estas 10 condiciones:</p>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Condición</th><th>Qué significa</th></tr></thead>
+<tbody>
+<tr><td>1</td><td><b>Libre redistribución</b></td><td>No impide venderlo ni regalarlo como parte de una colección, y no exige pago.</td></tr>
+<tr><td>2</td><td><b>Código fuente</b></td><td>Se distribuye con el fuente y permite distribuirlo así; si no, debe haber una forma conocida de obtenerlo al costo de la copia.</td></tr>
+<tr><td>3</td><td><b>Obras derivadas</b></td><td>Permite modificar y crear obras derivadas, y distribuirlas bajo las mismas condiciones.</td></tr>
+<tr><td>4</td><td><b>Integridad de la obra del autor</b></td><td>Puede prohibir distribuir versiones modificadas <b>solo si</b> permite distribuir “parches”; puede exigir otro nombre para las versiones modificadas.</td></tr>
+<tr><td>5</td><td><b>No discriminar personas o grupos</b></td><td>No puede excluir a nadie.</td></tr>
+<tr><td>6</td><td><b>No discriminar áreas de trabajo</b></td><td>No puede prohibir usarlo en un área (por ejemplo, en negocios o en investigación genética).</td></tr>
+<tr><td>7</td><td><b>Distribución de la licencia</b></td><td>Los derechos valen para todos los que reciben el programa, sin firmar otra licencia.</td></tr>
+<tr><td>8</td><td><b>No específica de un producto</b></td><td>Los derechos no dependen de que el programa venga en una distribución determinada.</td></tr>
+<tr><td>9</td><td><b>No restringe otro software</b></td><td>No puede imponer condiciones a otros programas que se distribuyan junto con él.</td></tr>
+<tr><td>10</td><td><b>Neutral a la tecnología</b></td><td>Nada en la licencia depende de una tecnología o estilo de interfaz.</td></tr>
+</tbody></table></div>
+<div class="mnemo" id="mnemo-osi"><b>Mnemotecnia en 3 bloques.</b> <b>Qué recibes (1-4):</b> redistribuir · fuente · derivadas · integridad. <b>A quién no se puede excluir (5-6):</b> personas · áreas. <b>Sin trampas (7-10):</b> licencia para todos · no atada a un producto · no contamina a otros · neutral a la tecnología.</div>
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo central, en palabras de la pauta</div>
+<p>“Lo central es que la licencia <b>permite usar el programa sin restricciones</b>. Permite <b>redistribuir</b> el programa <b>con código fuente</b>, sin costo. Debe permitir <b>modificar y distribuir versiones modificadas</b>.” Si no te acuerdas de los 10 puntos, escribe esto y nombra los que recuerdes, sobre todo el 3 y el 6, que son los que se usan para Creative Commons.</p></div>
+</section>
+
+<section id="osi-fsf" data-nav="Código abierto vs. libre">
+<h2>Código abierto (OSI) vs. código libre (FSF)</h2>
+<p class="lead">Es la pregunta del C2 2025-2 (25 pts) y del C2 2025-1 (20 pts). Según la clase y la pauta:</p>
+<div class="tw"><table>
+<thead><tr><th></th><th>Código libre (FSF, GNU)</th><th>Código abierto (OSI)</th></tr></thead>
+<tbody>
+<tr><td><b>Quién lo define</b></td><td>Free Software Foundation (1986)</td><td>Open Source Initiative (1998)</td></tr>
+<tr><td><b>Cómo</b></td><td>Las <b>4 libertades</b> (0 a 3)</td><td>Una lista de <b>10 condiciones</b> sobre la licencia</td></tr>
+<tr><td><b>Condición extra</b></td><td><b>Copyleft</b>: al redistribuir, siempre con fuente completo y bajo las mismas condiciones</td><td>No la exige: acepta licencias permisivas como BSD</td></tr>
+<tr><td><b>Para qué sirve</b></td><td>Inspira las licencias GPL y afines</td><td>Cubre una gran variedad de licencias, por eso es más detallada</td></tr>
+<tr><td><b>Relación</b></td><td colspan="2">La definición de OSI es <b>posterior</b> y <b>expande y explicita</b> las libertades de la FSF. Las licencias de la FSF cumplen la definición de código abierto, <b>pero no al revés</b>.</td></tr>
+</tbody></table></div>
+<div class="box ana"><div class="bt">Analogía: vegano vs. vegetariano</div>
+<p>Todo plato vegano es vegetariano, pero no todo plato vegetariano es vegano: el vegano agrega una restricción más. Igual aquí: toda licencia de la FSF (libre, con copyleft) es de código abierto, pero no toda licencia de código abierto (BSD, por ejemplo) cumple la condición extra de la FSF.</p></div>
+<div class="box warn"><div class="bt">Matiz que no conviene poner en el certamen</div>
+<p>En la práctica, la propia FSF también considera libres a las licencias permisivas como la BSD de 3 cláusulas; su diferencia con la OSI es más de filosofía (libertad vs. pragmatismo) que de licencias. Pero el profe corrige con su versión: <b>“código libre” = las 4 libertades + copyleft</b>. Escribe esa.</p></div>
+</section>
+
+<section id="gpl-bsd" data-nav="GPL vs. BSD">
+<h2>GPL vs. BSD, lado a lado</h2>
+<p class="lead">Preguntado en los recuperativos 2025-1 y 2025-2 (20 pts: 10 cada familia).</p>
+<div class="tw"><table>
+<thead><tr><th></th><th>Licencias GNU (GPL y afines)</th><th>Licencias BSD</th></tr></thead>
+<tbody>
+<tr><td><b>Base legal</b></td><td colspan="2">Ambas son un uso creativo del <b>derecho de autor</b>, pensadas para programas.</td></tr>
+<tr><td><b>Uso</b></td><td>Cualquier uso.</td><td>Cualquier uso.</td></tr>
+<tr><td><b>Al redistribuir</b></td><td><b>Exige</b> acompañar con una oferta de acceso al <b>código fuente completo</b>, sin costo sustancial.</td><td><b>No exige</b> entregar fuentes: se pueden redistribuir solo binarios.</td></tr>
+<tr><td><b>Obras derivadas</b></td><td>Deben distribuirse <b>bajo la misma licencia</b> (copyleft).</td><td>Se pueden cerrar: el código puede terminar en un producto <b>propietario</b>.</td></tr>
+<tr><td><b>Condiciones</b></td><td>Mantener la licencia y entregar el fuente.</td><td>Solo dar crédito a los autores y aclarar que no se hacen responsables. BSD-0: ni eso.</td></tr>
+<tr><td><b>Apodo</b></td><td>Licencias “recíprocas” o con copyleft.</td><td>Licencias “permisivas”.</td></tr>
+<tr><td><b>Parecido en Creative Commons</b></td><td><span class="lic">CC BY-SA</span></td><td><span class="lic">CC BY</span> (y BSD-0 ≈ <span class="lic">CC0</span>)</td></tr>
+</tbody></table></div>
+</section>
+
+<section id="cc" data-grp="Más allá del software" data-nav="Creative Commons">
+<h2>Creative Commons</h2>
+<p><b>Creative Commons</b> es una organización internacional sin fines de lucro que promueve un área común de conocimiento y cultura. Sus licencias son para <b>obras en general</b> (textos, imágenes, audio, videos), no solo programas, y se diseñaron para ser compatibles con las distintas leyes nacionales. <b>No todas cumplen</b> las condiciones de la OSI o de GNU.</p>
+
+<h3>Las piezas: cuatro letras</h3>
+<div class="cols">
+<div class="card"><h5>BY · atribución</h5><p>Siempre hay que <b>dar crédito</b> al autor. Está en las seis licencias.</p></div>
+<div class="card"><h5>SA · share alike</h5><p><b>Compartir igual:</b> las versiones modificadas se distribuyen bajo la misma licencia. Es el copyleft de CC.</p></div>
+<div class="card"><h5>NC · non-commercial</h5><p><b>No comercial:</b> solo se permite uso no comercial.</p></div>
+<div class="card"><h5>ND · no derivatives</h5><p><b>Sin derivadas:</b> se puede copiar y distribuir, pero solo sin modificar.</p></div>
+</div>
+
+<h3>El menú completo y qué es código abierto</h3>
+<div class="tw"><table>
+<thead><tr><th>Licencia</th><th>Crédito</th><th>Modificar</th><th>Uso comercial</th><th>Misma licencia</th><th>¿Código abierto (OSI)?</th></tr></thead>
+<tbody>
+<tr><td><span class="lic">CC BY</span></td><td>Sí</td><td class="yes">Sí</td><td class="yes">Sí</td><td>No</td><td class="yes">Sí · parecida a BSD</td></tr>
+<tr><td><span class="lic">CC BY-SA</span></td><td>Sí</td><td class="yes">Sí</td><td class="yes">Sí</td><td><b>Sí</b></td><td class="yes">Sí · parecida a GPL</td></tr>
+<tr><td><span class="lic">CC BY-NC</span></td><td>Sí</td><td class="yes">Sí</td><td class="nope">No</td><td>No</td><td class="nope">No · viola el punto 6</td></tr>
+<tr><td><span class="lic">CC BY-NC-SA</span></td><td>Sí</td><td class="yes">Sí</td><td class="nope">No</td><td><b>Sí</b></td><td class="nope">No · viola el punto 6</td></tr>
+<tr><td><span class="lic">CC BY-ND</span></td><td>Sí</td><td class="nope">No</td><td class="yes">Sí</td><td>—</td><td class="nope">No · viola el punto 3</td></tr>
+<tr><td><span class="lic">CC BY-NC-ND</span></td><td>Sí</td><td class="nope">No</td><td class="nope">No</td><td>—</td><td class="nope">No · viola los puntos 3 y 6</td></tr>
+<tr><td><span class="lic">CC0</span></td><td>No</td><td class="yes">Sí</td><td class="yes">Sí</td><td>No</td><td class="yes">Equivale al dominio público</td></tr>
+</tbody></table></div>
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">C2 2026-1 P2 · 35 pts (a 20 · b 15)</span></div>
+<p>a) La básica es <b>CC BY</b>: permite distribuir, remezclar, adaptar y construir sobre el material en cualquier medio, <b>siempre que se atribuya al creador</b>. <b>CC0</b> es poner el material en el <b>dominio público</b>. Las demás agregan restricciones según sus letras (SA, ND, NC). b) La OSI exige que se permitan <b>obras derivadas (punto 3)</b> y que <b>no se discrimine ningún uso (punto 6)</b>. Las <b>ND violan el punto 3</b>; las <b>NC violan el punto 6</b>.</p></div>
+<div class="box ana"><div class="bt">Analogía: las letras como reglas de préstamo de apuntes</div>
+<p>Le prestas tus apuntes a un compañero. <b>BY:</b> “úsalos como quieras, pero di que son míos”. <b>SA:</b> “si les agregas cosas y los compartes, compártelos con estas mismas reglas”. <b>NC:</b> “no los vendas en la fotocopiadora”. <b>ND:</b> “fotocópialos, pero no les cambies nada”. <b>CC0:</b> “son de todos, haz lo que quieras”. NC y ND no son código abierto porque <b>prohíben algo</b> que la OSI exige permitir: vender (o usar en cualquier área) y modificar.</p></div>
+<p>CC0 tiene un límite: no puede saltarse la ley local. Por ejemplo, la legislación alemana no permite eliminar la asociación de la obra con su autor (un derecho moral).</p>
+</section>
+
+<section id="otras" data-nav="Otras licencias">
+<h2>Otras licencias que nombra la clase</h2>
+<ul>
+<li><b>Artistic License:</b> la de Perl y su sucesor Raku. La primera versión era vaga; la segunda permite explícitamente redistribuir bajo una licencia que respete las libertades de la FSF.</li>
+<li><b>Apache License 2.0:</b> de la Apache Software Foundation, <b>permisiva</b>, con cláusulas sobre <b>patentes</b>: quien contribuye código que usa sus patentes da automáticamente una licencia gratuita a los usuarios.</li>
+</ul>
+</section>
+
+<section id="uso" data-grp="Uso e impacto" data-nav="Consideraciones de uso">
+<h2>Consideraciones de uso</h2>
+<ul>
+<li>Usar código contraviniendo su licencia es un <b>riesgo legal</b>. <b>“Estaba en una página web” no es un permiso de uso.</b> Por omisión no hay permiso ni siquiera de leerlo, menos de copiarlo y usarlo.</li>
+<li>Hay <b>licencias incompatibles entre sí</b> (por ejemplo, BSD de 4 cláusulas con GPL): combinar código bajo ellas puede traer problemas legales.</li>
+<li>Al usar código de terceros hay que conseguir una <b>licencia clara</b>, actuar con <b>debida diligencia</b> y llevar un <b>registro de las licencias</b> y su respaldo.</li>
+</ul>
+<div class="box ana"><div class="bt">Analogía: la bicicleta sin candado</div>
+<p>Que una bicicleta esté en la calle sin candado no significa que puedas llevártela. Que un código esté en GitHub sin licencia significa que <b>sigue protegido por derecho de autor</b> y nadie te dio permiso. Esto conecta con el caso de <b>Jim Warren</b> (software usado sin licencia, <a class="inl" href="22-Ejercicios.html#e8">E8</a>).</p></div>
+</section>
+
+<section id="impacto" data-nav="Impacto del código abierto">
+<h2>Impacto del código abierto</h2>
+<div class="box pauta"><div class="bt"><span class="chk"></span>Ojo con el puntaje<span class="ref">C2 2025-2 P3: definir código abierto 5 · código libre 5 · <b>impacto 15</b></span></div>
+<p>En el C2 2025-2, el impacto valía <b>más que las dos definiciones juntas</b>. Hay que llevar cifras y ejemplos.</p></div>
+<ul>
+<li><b>96 %</b> de los programas incluyen algún componente de código abierto.</li>
+<li><b>Valor</b> (estudio reciente): rehacer una vez el código abierto que se usa costaría entre <b>US$1,22 y US$6,22 mil millones</b>; si cada usuario tuviera que rehacer lo que usa, entre <b>US$2,59 y US$13,18 billones</b>.</li>
+<li><b>Infraestructura común</b> (nube, equipos de red, servidores web) y <b>áreas especializadas</b> (supercómputo, la base de Google y de las redes sociales): el uso es <b>prácticamente unánime</b>. Buena parte de Internet corre sobre <b>Linux</b>, “código abierto por antonomasia”.</li>
+<li>Es la base de <b>Android e iOS</b>, de televisores inteligentes y de equipos como Alexa.</li>
+<li>Algunos componentes son <b>críticos para el funcionamiento de Internet</b> y no tienen alternativas viables.</li>
+</ul>
+<div class="box ana"><div class="bt">Analogía: el xkcd 2347 (“Dependency”)</div>
+<p>La clase cierra con esta tira, que encabezaba el C2 2025-2: toda la infraestructura digital moderna dibujada como una torre gigante de bloques, sostenida en la base por <b>un bloquecito</b>: “un proyecto que una persona cualquiera de Nebraska mantiene sin agradecimiento desde 2003”. El código abierto es así: <b>invisible, gratuito y del que depende todo</b>.</p></div>
+</section>
+
+<section id="t18-preguntas" data-grp="Práctica" data-nav="Preguntas del tema">
+<h2>Preguntas del tema</h2>
+<p class="lead">Las de certamen con pauta y respuesta modelo: <a class="inl" href="22-Ejercicios.html#e3">E3 (OSI vs. FSF e impacto)</a>, <a class="inl" href="22-Ejercicios.html#e4">E4 (GPL vs. BSD)</a> y <a class="inl" href="22-Ejercicios.html#e5">E5 (Creative Commons)</a>.</p>
+
+<details class="ex"><summary>1 · ¿Qué es el copyleft? <span class="tag">diapositiva 33</span></summary>
+<div class="body"><p>La condición de las licencias GNU: cualquier redistribución, original o modificada, debe ir con el código fuente y bajo las mismas condiciones. Es un juego de palabras con copyright.</p></div></details>
+
+<details class="ex"><summary>2 · ¿Por qué la BSD de 4 cláusulas es incompatible con la GPL? <span class="tag">diapositiva 24</span></summary>
+<div class="body"><p>Por la cláusula 3, que obliga a mencionar a los autores en todo material publicitario: es una restricción adicional, y la GPL no permite agregar restricciones.</p></div></details>
+
+<details class="ex"><summary>3 · ¿Para qué existe la LGPL? <span class="tag">diapositivas 36-37</span></summary>
+<div class="body"><p>Para bibliotecas: con la GPL, todo programa que usara la biblioteca tendría que ser GPL, lo que frenaba su difusión. La LGPL permite usarla en otros programas siempre que se pueda reemplazar la biblioteca.</p></div></details>
+
+<details class="ex"><summary>4 · ¿Qué hueco de la GPL cierra la AGPL? <span class="tag">diapositiva 38</span></summary>
+<div class="body"><p>Ofrecer un programa como servicio en la red no es “distribuirlo”, así que no obligaba a entregar el fuente. La AGPL exige ofrecerlo a quien interactúa con el programa por la red.</p></div></details>
+
+<details class="ex"><summary>5 · ¿Qué licencia CC se parece a la GPL y cuál a la BSD? <span class="tag">R 2026-1 P6</span></summary>
+<div class="body"><p>La GPL se parece a <b>CC BY-SA</b> (permite todo, pero las modificaciones deben mantener la licencia). La BSD se parece a <b>CC BY</b> (permite todo con atribución); la BSD de 0 cláusulas, a <b>CC0</b>.</p></div></details>
+
+<details class="ex"><summary>6 · ¿Por qué CC BY-NC no es código abierto? <span class="tag">C2 2026-1</span></summary>
+<div class="body"><p>Porque prohíbe el uso comercial, y el punto 6 de la OSI prohíbe discriminar áreas de trabajo.</p></div></details>
+
+<details class="ex"><summary>7 · ¿Por qué Unix se difundió en las universidades? <span class="tag">diapositiva 9</span></summary>
+<div class="body"><p>Porque AT&amp;T, por razones legales, no podía participar en otras industrias y licenció Unix a costo nominal y con fuentes. Las universidades lo usaron en cursos, tesis e investigación.</p></div></details>
+
+<details class="ex"><summary>8 · ¿Qué porcentaje de los programas incluye código abierto? <span class="tag">diapositiva 54</span></summary>
+<div class="body"><p>Un 96 %.</p></div></details>
+
+<details class="ex"><summary>9 · ¿Es legal usar en mi empresa un código que encontré en una página web sin licencia? <span class="tag">diapositiva 53</span></summary>
+<div class="body"><p>No. Sin licencia, el código sigue protegido por derecho de autor y por omisión no hay permiso ni de leerlo. Hay que conseguir una licencia clara y registrar las licencias usadas.</p></div></details>
+</section>
+
+<div class="pnav"><a href="17-Propiedad-intelectual.html"><small>← Anterior</small>Propiedad intelectual</a><a class="nx" href="22-Ejercicios.html"><small>Siguiente →</small>Ejercicios</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c2-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>
