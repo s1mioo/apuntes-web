@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Static study-notes site (plain HTML + CSS + vanilla JS) published to GitHub Pages by a GitHub Action. Each note is a self-contained HTML summary for an exam in a course ("ramo"). Friends are repo collaborators who push notes directly to `main` (often via GitHub's web upload), so the site must tolerate imperfect contributions. UI text, identifiers and commit messages are in Spanish; keep that convention.
+Static study-notes site (plain HTML + CSS + vanilla JS) published to GitHub Pages by a GitHub Action. Each note is a self-contained HTML summary for an exam in a course ("ramo"). Only the owner pushes to `main` (plus the sync Action that brings Gabriel Quezada's notes); everyone else proposes notes as Pull Requests from forks (often via GitHub's web upload) that the owner reviews before merging, so the site must still tolerate imperfect contributions. UI text, identifiers and commit messages are in Spanish; keep that convention.
 
 ## Commands
 

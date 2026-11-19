@@ -1,14 +1,15 @@
 # Cómo aportar un apunte
 
-Cualquier colaborador del repositorio puede subir apuntes directamente desde
-la web de GitHub, sin instalar nada. El sitio se actualiza solo un par de
-minutos después.
+Cualquiera puede **proponer** un apunte desde la web de GitHub, sin instalar
+nada. La propuesta llega como *Pull Request* y **solo se publica cuando el
+dueño del repositorio la revisa y la aprueba**. Nadie más puede modificar el
+sitio directamente.
 
 ## Antes de empezar (una sola vez)
 
 1. Crea una cuenta en [GitHub](https://github.com) si no tienes.
-2. Pide al dueño del repositorio que te agregue como colaborador.
-3. Acepta la invitación que te llega por correo.
+2. No necesitas permisos ni invitación: GitHub crea automáticamente una copia
+   del repositorio en tu cuenta (un *fork*) cuando propones el cambio.
 
 ## Preparar el archivo
 
@@ -42,13 +43,17 @@ apuntes/<ramo>/<evaluación>/<archivo>.html
 - `<evaluación>`: `c1`, `c2`, `c3` (certámenes) o `control1`, `control2`…
   (controles). En el sitio aparecen como "Certamen 1", "Control 2", etc.
 
-## Subirlo desde la web de GitHub
+## Proponerlo desde la web de GitHub
 
 1. Entra al repositorio y abre la carpeta `apuntes/`, luego la del ramo y la
    de la evaluación.
-2. Pulsa **Add file → Upload files** y arrastra tu `.html`.
+2. Pulsa **Add file → Upload files** y arrastra tu `.html`. GitHub te avisará
+   que no tienes permiso para escribir aquí y que tu cambio irá a un *fork*:
+   está bien, así funciona.
 3. Escribe un mensaje corto (por ejemplo, *"Agrega resumen C2 de redes"*) y
-   pulsa **Commit changes**.
+   pulsa **Propose changes**.
+4. En la pantalla siguiente pulsa **Create pull request**. Explica en una
+   línea qué es el apunte.
 
 **Si la carpeta de la evaluación aún no existe:** desde la carpeta del ramo,
 usa *Upload files* y arrastra una **carpeta** con el nombre de la evaluación
@@ -61,12 +66,12 @@ agrega una línea con su código y nombre:
 "inf253": "Lenguajes de Programación"
 ```
 
-## Después de subir
+## Después de proponer
 
-En la pestaña **Actions** del repositorio verás la publicación en curso. Si
-aparece una ❌ en el paso *validar*, el sitio igual se publica, pero algo
-quedó mal (archivo fuera de lugar, falta el autor, enlace roto…). Abre el
-paso para ver el aviso y corrígelo.
+El dueño del repositorio revisa la propuesta. Si está todo bien, la acepta
+(*merge*) y el sitio se actualiza solo un par de minutos después. Si hay que
+corregir algo, te lo comenta en el mismo Pull Request: puedes subir la
+corrección ahí mismo y se agrega a la propuesta.
 
 ## Qué no subir
 

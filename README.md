@@ -2,8 +2,9 @@
 
 Sitio estático (HTML + CSS + Vanilla JS) que reúne resúmenes, guías y
 ejercicios en HTML para preparar evaluaciones, organizados por ramo y
-evaluación. Se publica en GitHub Pages; lo comparto con amigos que también
-suben sus apuntes.
+evaluación. Se publica en GitHub Pages; lo comparto con compañeros. Los apuntes
+de Gabriel Quezada se sincronizan solos desde su repositorio; cualquier otro
+aporte llega como Pull Request y lo reviso antes de publicarlo.
 
 ¿Quieres aportar? Lee [CONTRIBUTING.md](CONTRIBUTING.md).
 
