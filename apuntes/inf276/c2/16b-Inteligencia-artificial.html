@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Caleb Baez">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inteligencia artificial · Infosoc C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+
+  .pages .pgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:10px 4px 0}
+  .pages .pgrp:first-child{margin-top:0}
+  .pages span.off{display:flex;gap:9px;align-items:center;font-size:13px;padding:6px 9px;border-radius:8px;
+    border:1px dashed var(--line);line-height:1.25;opacity:.5;cursor:default}
+  .pages span.off b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--code);
+    color:var(--muted);font-size:11.5px}
+  .pages a b{font-size:11px}
+  .nc{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--no-soft);
+    color:var(--no);margin-left:2px;font-style:normal;vertical-align:1px;white-space:nowrap}
+  .soon{border-bottom:1px dashed var(--muted);color:var(--muted)}
+  .box.ana p+p{margin-top:6px}
+  .box.nc{border-left-color:var(--no);background:var(--no-soft)} .box.nc .bt{color:var(--no)}
+  .lic{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:700} .nope{color:var(--no);font-weight:700}
+  .mnemo{font-size:15px;background:var(--panel);border:1px dashed var(--brand);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .mnemo b{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">TXX</div>
+    <div><h1>Inteligencia artificial</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><div class="pgrp">Inicio</div><a href="0-Guia-de-estudio-C2.html"><b>★</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 21</small></span></a><div class="pgrp">Materia del C1</div><span class="off" title="Todavía no está publicada"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></span><span class="off" title="Todavía no está publicada"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></span><span class="off" title="Todavía no está publicada"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></span><span class="off" title="Todavía no está publicada"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></span><span class="off" title="Todavía no está publicada"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></span><span class="off" title="Todavía no está publicada"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></span><span class="off" title="Todavía no está publicada"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></span><span class="off" title="Todavía no está publicada"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></span><span class="off" title="Todavía no está publicada"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></span><span class="off" title="Todavía no está publicada"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></span><span class="off" title="Todavía no está publicada"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></span><span class="off" title="Todavía no está publicada"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></span><span class="off" title="Todavía no está publicada"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></span><span class="off" title="Todavía no está publicada"><b>Σ</b><span>Resumen contenidos Certamen 1<br><small style="color:var(--muted)">lo esencial de 1 a 13</small></span></span><div class="pgrp">Materia nueva del C2</div><a href="14-Procesamiento-datos.html"><b>14</b><span>Procesamiento de datos<br><small style="color:var(--muted)">historia y minería de datos</small></span></a><a href="15-Impacto.html"><b>15</b><span>Impacto de la tecnología<br><small style="color:var(--muted)">lo bueno y lo malo</small></span></a><a href="16-Aspectos-eticos.html"><b>16</b><span>Aspectos éticos<br><small style="color:var(--muted)">códigos, dilemas, ética profesional</small></span></a><a href="16b-Inteligencia-artificial.html" class="cur"><b>XX</b><span>Inteligencia artificial<br><small style="color:var(--muted)">expertos, genéticos, redes, LLM</small></span></a><a href="17-Propiedad-intelectual.html"><b>17</b><span>Propiedad intelectual<br><small style="color:var(--muted)">autor, patentes, marcas, secretos</small></span></a><a href="18-Codigo-abierto.html"><b>18</b><span>Código abierto<br><small style="color:var(--muted)">GPL, BSD, OSI, Creative Commons</small></span></a><a href="19-Proteccion-datos.html"><b>19</b><span>Protección de datos <i class="nc">no pasada</i><br><small style="color:var(--muted)">GDPR, leyes chilenas, CRA</small></span></a><a href="20-Desarrollo.html"><b>20</b><span>Desarrollo de software <i class="nc">no pasada</i><br><small style="color:var(--muted)">máximas y deuda técnica</small></span></a><a href="21-Codigo-ACM.html"><b>21</b><span>Código de ética ACM<br><small style="color:var(--muted)">las 4 secciones</small></span></a><div class="pgrp">Práctica</div><a href="22-Ejercicios.html"><b>✎</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a><span class="off" title="Todavía no está publicada"><b>⇄</b><span>Flashcards<br><small style="color:var(--muted)">toda la materia</small></span></span><div class="pgrp">Complemento</div><span class="off" title="Todavía no está publicada"><b>+</b><span>Extra<br><small style="color:var(--muted)">probablemente no entra</small></span></span></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema XX</div><a href="#txx-inicio">Qué pesa y qué estudiar</a><a href="#que-es">Qué es la IA</a><a href="#historia">Historia: inviernos y auge</a><a href="#advertencias">Advertencias (Eliza)</a><div class="grp">Técnicas</div><a href="#expertos">Sistemas expertos</a><a href="#geneticos">Algoritmos genéticos</a><a href="#redes">Redes neuronales</a><a href="#llm">LLM y sus problemas</a><div class="grp">Práctica</div><a href="#txx-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+<section id="txx-inicio" data-grp="Tema XX" data-nav="Qué pesa y qué estudiar">
+<h2>Tema XX · Inteligencia artificial</h2>
+<p class="lead">Clase <code>XX-ai-hnd.pdf</code> (44 diapositivas), pasada entre la 16 y la 17. Qué es la IA, su historia de optimismo y desilusión, por qué no hay que atribuirle inteligencia (Eliza), y cuatro técnicas: <b>sistemas expertos</b>, <b>algoritmos genéticos</b>, <b>redes neuronales</b> y <b>modelos de lenguaje grandes</b> (LLM).</p>
+
+<div class="hero">
+  <div class="big">Peso en el certamen: medio (clase nueva)</div>
+  <div class="sub">Es una clase <b>nueva de este semestre</b> (trae el correo nuevo del profe, <code>@usm.cl</code>), así que <b>no hay certámenes anteriores</b> que la usen. Que sea nueva y que se haya pasado la hace candidata a una pregunta. Lo más probable: “defina IA y describa tres técnicas” o “los problemas de los LLM”, que conecta con propiedad intelectual.</div>
+</div>
+
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder escribir</h5>
+    <p>· La <b>definición</b> de IA y sus hitos: 1956, inviernos, 2012, 2017.</p>
+    <p>· La <b>advertencia</b>: Eliza, PARRY, tareas fáciles que son difíciles.</p>
+    <p>· Cómo funcionan las <b>tres técnicas</b> y un pro y un contra de cada una.</p>
+    <p>· Qué es un <b>LLM</b> y sus problemas (datos, alucinaciones, propiedad intelectual).</p>
+  </div>
+  <div class="card"><h5>Dónde está</h5>
+    <p><b>Diapositivas</b> <code>XX-ai-hnd.pdf</code>.</p>
+    <p><b>Preguntas de práctica</b> (inventadas): <a class="inl" href="22-Ejercicios.html#e26">E26</a>, <a class="inl" href="22-Ejercicios.html#e27">E27</a> y <a class="inl" href="22-Ejercicios.html#e28">E28</a>.</p>
+  </div>
+  <div class="card"><h5>Plan para este tema</h5>
+    <p>1. Leer la página (25 min).</p>
+    <p>2. Leer las respuestas de E26 a E28 (10 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="que-es" data-nav="Qué es la IA">
+<h2>Qué se entiende por inteligencia artificial</h2>
+<div class="box def"><div class="bt">Definición</div>
+<p>Se llama <b>inteligencia artificial</b> (IA, o AI en inglés) a la <b>capacidad de sistemas computacionales de efectuar tareas comúnmente asociadas a la inteligencia humana</b>: aprendizaje, razonamiento, resolución de problemas, percepción y toma de decisiones. Como área de investigación de las ciencias de la computación, desarrolla y estudia métodos y software que permiten a las máquinas <b>percibir su entorno</b> y usar aprendizaje e inteligencia para lograr <b>metas definidas</b>.</p></div>
+<ul>
+<li><b>Aplicaciones vistosas:</b> búsqueda en la web (Google), sistemas de recomendación (YouTube, Amazon, Netflix), asistentes virtuales (Alexa, Siri), vehículos autónomos, herramientas generativas (modelos de lenguaje, arte) y juego superhumano en damas, ajedrez y go.</li>
+<li><b>Subáreas:</b> se organizan por metas (aprendizaje, razonamiento, representación del conocimiento, planificación, lenguaje natural, percepción, robótica) y usan búsqueda, optimización, lógica, redes neuronales, estadística, investigación de operaciones y economía. También toma de la psicología, la lingüística, la filosofía y la neurociencia.</li>
+<li><b>IA general (AGI):</b> algunas empresas (Google, OpenAI, Meta) buscan un sistema capaz de hacer <b>cualquier tarea cognitiva tan bien como un humano</b>.</li>
+<li><b>El efecto IA:</b> muchas aplicaciones se volvieron tan comunes que ya no se perciben como inteligentes, y algunos problemas resueltos con IA dieron origen a técnicas especializadas que ya no se consideran IA.</li>
+</ul>
+</section>
+
+<section id="historia" data-nav="Historia: inviernos y auge">
+<h2>Historia: ciclos de optimismo y desesperación</h2>
+<div class="tw"><table class="mini">
+<thead><tr><th>Año</th><th>Hito</th></tr></thead>
+<tbody>
+<tr><td>1943</td><td>McCulloch y Pitts proponen el primer modelo matemático de una neurona.</td></tr>
+<tr><td><b>1956</b></td><td>La IA nace como <b>disciplina académica</b>.</td></tr>
+<tr><td>1958</td><td>Rosenblatt introduce el <b>perceptrón</b>, un modelo simple para reconocer patrones.</td></tr>
+<tr><td>~1965</td><td>Sistemas expertos (Stanford, Feigenbaum).</td></tr>
+<tr><td>1966</td><td><b>Eliza</b> (Weizenbaum, MIT).</td></tr>
+<tr><td>1972</td><td><b>PARRY</b> (Colby, Stanford). El trabajo de <b>Karp</b> sobre complejidad marca límites prácticos a la computación: un “balde de agua fría”.</td></tr>
+<tr><td>1980s</td><td>Auge de los sistemas expertos; Japón lanza en 1982 su proyecto de <b>Quinta Generación</b>.</td></tr>
+<tr><td>1997</td><td><b>Deep Blue</b> (IBM) le gana a Kasparov, campeón mundial de ajedrez.</td></tr>
+<tr><td><b>2012</b></td><td>Se usan <b>tarjetas gráficas</b> para acelerar redes neuronales, junto con el <b>aprendizaje profundo</b> (<i>deep learning</i>): aumentan el interés y el financiamiento.</td></tr>
+<tr><td><b>2017</b></td><td>Se introduce la arquitectura de <b>transformador</b>, base de los modelos de lenguaje grandes.</td></tr>
+<tr><td>2020 →</td><td>El boom de la <b>IA generativa</b>. “Actualmente vivimos una fase de optimismo desbordante.”</td></tr>
+<tr><td>2025</td><td>Recién un robot humanoide logra doblar toallas correctamente.</td></tr>
+</tbody></table></div>
+<div class="box ana"><div class="bt">Analogía: la montaña rusa de las expectativas</div>
+<p>La IA ha sido como una montaña rusa: cada técnica nueva promete resolverlo todo (subida), choca con sus límites (caída) y viene un <b>“invierno”</b> en que nadie quiere financiarla. Después llega otra técnica y vuelve la subida. Hoy estamos en la cima de una subida; el profe sugiere no olvidar que antes hubo caídas.</p></div>
+</section>
+
+<section id="advertencias" data-nav="Advertencias (Eliza)">
+<h2>Advertencias: no confundir parecer inteligente con serlo</h2>
+<p><b>La paradoja de lo fácil:</b> la IA logró éxitos impresionantes en lo que nos parece difícil (Deep Blue en 1997), pero lo que hacemos sin pensar resultó muy difícil: recién en 2025 un robot pudo doblar toallas, doblar sábanas es otro problema, y hay tareas simples para un bebé de un año que aún son inalcanzables.</p>
+<p><b>Tendemos a atribuir intención</b> a lo que nos rodea: “las impresoras odian a la humanidad”, la “perfidia de los objetos inanimados”, “las piezas de LEGO tienen un plan”.</p>
+<div class="cols">
+<div class="card"><h5>Eliza (Weizenbaum, MIT, 1966)</h5><p>Simulaba un psicoanalista rogeriano, que interviene lo mínimo y hace que el paciente explore sus problemas. Era <b>muy simple</b>: buscaba palabras clave y respondía con esquemas predefinidos o comentarios genéricos. Aun así, hubo personas que conversaron largamente con ella, incluida <b>la secretaria de Weizenbaum</b>, que le pedía consejos.</p></div>
+<div class="card"><h5>PARRY (Colby, Stanford, 1972)</h5><p>Simulaba un paciente con esquizofrenia paranoide y se hizo más complejo con miles de interacciones por ARPANET. En 1973 lo pusieron a conversar con Eliza (“resultados de locos”). En una variante de la <b>prueba de Turing</b>, psicoanalistas experimentados lo distinguieron de pacientes reales solo en el <b>48 %</b> de los casos: lo mismo que adivinar al azar.</p></div>
+</div>
+<div class="box ana"><div class="bt">Analogía: el loro</div>
+<p>Un loro que dice “¡hola, qué tal!” cuando entras parece saludarte, pero no sabe lo que significa. Eliza era un loro con algunas reglas. La advertencia del profe es que con los chatbots actuales nos pasa lo mismo que a la secretaria de Weizenbaum: les atribuimos comprensión porque hablan como nosotros.</p></div>
+</section>
+
+<section id="expertos" data-grp="Técnicas" data-nav="Sistemas expertos">
+<h2>Sistemas expertos</h2>
+<div class="box def"><div class="bt">Definición</div>
+<p>Un <b>sistema experto</b> emula el razonamiento humano a partir de un <b>cuerpo de conocimientos</b>, generalmente en forma de reglas <b>“si… entonces”</b>. Los definió formalmente, alrededor de 1965, el Stanford Heuristic Programming Project, dirigido por <b>Feigenbaum</b>. Tuvieron su auge en los 80 y renacieron en los 2000 como <b>sistemas basados en reglas</b> (reglas de negocio en SAP, Siebel, Oracle). Fueron de las primeras formas de IA realmente exitosas.</p></div>
+<p><b>La idea de Feigenbaum:</b> el poder de un sistema inteligente está en el <b>conocimiento</b> que incorpora, no en los formalismos ni en los esquemas de inferencia. Hasta entonces se buscaban métodos generales de solución de problemas, que chocaron con los límites de complejidad (Karp, 1972).</p>
+<div class="cols">
+<div class="card"><h5>Arquitectura</h5><p><b>Base de conocimiento:</b> hechos sobre el mundo (hoy, con estructura orientada a objetos). <b>Máquina de inferencia:</b> evalúa lo que “sabe”, aplica las reglas relevantes e incorpora el conocimiento nuevo. A veces un <b>sistema de explicación</b>, herramientas de <b>adquisición de conocimiento</b> y una interfaz de usuario.</p></div>
+<div class="card"><h5>Ventaja</h5><p>El conocimiento queda <b>explícito</b>, no escondido en el código: es flexible y, en principio, un experto del área puede ingresarlo o modificarlo directamente.</p></div>
+<div class="card"><h5>Desventajas</h5><p>La <b>adquisición de conocimiento</b>: el tiempo de un experto es escaso, y pasar lo que sabe sin pensarlo a reglas explícitas es poco natural. Al crecer, los problemas típicos de los sistemas grandes: integración, bases de datos y rendimiento.</p></div>
+</div>
+<div class="box ana"><div class="bt">Analogía: el recetario del médico</div>
+<p>Un sistema experto es como entrevistar a un médico y escribir todo lo que sabe en un manual gigante de reglas: “si hay fiebre y tos, entonces…”. La máquina de inferencia es quien lee el manual y lo aplica. El problema es que el médico no tiene tiempo para dictar el manual, y mucho de lo que sabe no lo puede poner en palabras (“lo vi y supe que era grave”).</p></div>
+</section>
+
+<section id="geneticos" data-nav="Algoritmos genéticos">
+<h2>Algoritmos genéticos</h2>
+<div class="box def"><div class="bt">Definición</div>
+<p>Un <b>algoritmo genético</b> es una <b>metaheurística inspirada en la selección natural</b>. Se usa para encontrar buenas soluciones a problemas de <b>optimización y búsqueda</b>, con operadores inspirados en la biología: <b>selección, cruce</b> (<i>crossover</i>) y <b>mutación</b>.</p></div>
+<div class="steps">
+<div class="step"><b>Población inicial</b> de soluciones candidatas (“individuos”), por ejemplo al azar, a veces con “semillas” prometedoras. Cada una se representa como un <b>cromosoma</b> (genotipo) que se puede alterar.</div>
+<div class="step"><b>Evaluar</b> cada individuo con la <b>función de aptitud</b>, que dice qué tan buena es la solución.</div>
+<div class="step"><b>Seleccionar</b> al azar entre los más aptos y generar hijos por <b>recombinación</b> (cortar dos cromosomas y reensamblar las piezas) y <b>mutación</b> (alterar al azar una parte).</div>
+<div class="step"><b>Repetir</b> hasta tener una solución suficientemente buena o cumplir cierto número de generaciones.</div>
+</div>
+<p><b>Ajustes comunes:</b> las probabilidades de cada operación dependen del problema; se adapta la representación para generar cromosomas viables; se evita recombinar cromosomas parecidos para no caer en <b>óptimos locales</b>; la <b>selección elitista</b> conserva intactas las mejores soluciones. La representación, los operadores y la población <b>dependen íntimamente del problema</b>.</p>
+<p><b>Ejemplo:</b> como exploran más o menos al azar, dan soluciones extrañas: la NASA diseñó con un algoritmo evolutivo la <b>antena de la nave ST5</b>, con una forma retorcida que ningún ingeniero habría dibujado.</p>
+<div class="box ana"><div class="bt">Analogía: criar perros</div>
+<p>Quieres un perro que corra rápido. Tomas muchos perros (la población), los haces correr (la aptitud), cruzas a los más rápidos (el cruce), de vez en cuando nace uno con algo distinto (la mutación) y repites por generaciones. Nadie diseñó al galgo: salió de seleccionar.</p></div>
+</section>
+
+<section id="redes" data-nav="Redes neuronales">
+<h2>Redes neuronales</h2>
+<p>Son de los algoritmos más influyentes de la IA actual: la base de la visión artificial, el procesamiento de lenguaje natural (NLP), el reconocimiento de voz y facial, y las predicciones.</p>
+<p><b>Inspiración:</b> el sistema nervioso, hecho de neuronas conectadas; cada una recibe entradas, las combina (por ejemplo, con una suma ponderada) y da una salida (por ejemplo, se activa solo si la suma pasa un umbral). <b>1943:</b> McCulloch y Pitts, primer modelo matemático de una neurona. <b>1958:</b> el perceptrón de Rosenblatt.</p>
+<div class="form">Una neurona calcula <b>z = Σ ωᵢ xᵢ + b</b> y luego <b>a = σ(z)</b><span class="n">xᵢ: entradas · ωᵢ: ponderaciones (pesos) · b: sesgo · σ: función de activación no lineal · a: salida</span></div>
+<p><b>Estructura:</b> una <b>capa de entrada</b>, una o más <b>capas ocultas</b> y una <b>capa de salida</b>. Ejemplo de la clase, un detector de spam: palabras como “premio”, “oferta imperdible” o “dinero” son las entradas; las primeras neuronas pesan cada señal, las siguientes capturan el contexto y la última da el veredicto.</p>
+<h3>Entrenamiento: propagación hacia atrás (<i>backpropagation</i>)</h3>
+<p>Entrenar es encontrar los pesos ω y los sesgos b a partir de datos. Se compara la salida de la red, Ŷ, con el valor correcto Y mediante una <b>función de pérdida</b>:</p>
+<div class="steps">
+<div class="step"><b>Paso hacia adelante:</b> con datos de entrenamiento, la red produce Ŷ.</div>
+<div class="step"><b>Cálculo del error:</b> la función de pérdida mide la distancia entre Ŷ e Y.</div>
+<div class="step"><b>Paso en reversa:</b> con la regla de la cadena se calcula cuánto contribuye al error cada peso y cada sesgo.</div>
+<div class="step"><b>Actualización:</b> los parámetros se ajustan un poco en la dirección que disminuye el error.</div>
+</div>
+<p>Se repite con muchos datos. La esperanza es que <b>generalice</b> (que acierte en entradas nuevas). El riesgo es el <b>sobreajuste</b>: un modelo demasiado complicado que se ajusta muy bien al entrenamiento y rinde mal en otros casos.</p>
+<div class="box ana"><div class="bt">Analogía: estudiar para el certamen</div>
+<p><b>Entrenar</b> es hacer certámenes anteriores y corregirte con la pauta (la función de pérdida). <b>Backpropagation</b> es ver en qué te equivocaste y ajustar un poco cómo estudias ese tema. <b>Sobreajuste</b> es memorizar las respuestas exactas de los certámenes viejos: te va perfecto con esos y mal con una pregunta nueva. <b>Generalizar</b> es entender la materia.</p></div>
+<p><b>Relevancia:</b> la gran ventaja es que “aprenden” de los datos sin que un humano escriba reglas. Con capacidad suficiente, objetivos claros y cuidado con el sobreajuste, dan sistemas robustos, de prototipos a gran escala.</p>
+</section>
+
+<section id="llm" data-nav="LLM y sus problemas">
+<h2>Modelos de lenguaje de gran tamaño (LLM)</h2>
+<div class="box def"><div class="bt">Definición</div>
+<p>Un <b>LLM</b> (<i>Large Language Model</i>, “una no muy feliz traducción”, dice el profe) es un modelo de IA, típicamente una red neuronal, entrenado con una <b>enorme cantidad de texto</b> para procesar lenguaje natural: analizar, resumir, traducir y <b>generar</b> texto. Son la base de chatbots como ChatGPT, Claude, Gemini, Grok y DeepSeek, y suelen acoplarse a un <b>“arnés”</b> que les da memoria o búsqueda en la web. Se les ha llamado <b>“autocorrectores con esteroides”</b>: completan el texto de forma plausible según sus datos de entrenamiento.</p></div>
+<h3>Sus problemas</h3>
+<div class="tw"><table>
+<thead><tr><th>Problema</th><th>Qué dice la clase</th></tr></thead>
+<tbody>
+<tr><td><b>Datos de entrenamiento</b></td><td>Se recolectan recorriendo la red y tomando todo el texto accesible. Datos sesgados o incorrectos hacen poco confiable la salida. Ley de Sturgeon: “<i>Ninety percent of everything is crap</i>” (el 90 % de todo es basura).</td></tr>
+<tr><td><b>Propiedad intelectual de lo que leen</b></td><td>Usan texto accesible públicamente pero publicado bajo distintas condiciones, e incluso obtenido ilegalmente, lo que pone un “manto de duda” sobre estos sistemas. Muchos creadores hoy prohíben que su obra se use así.</td></tr>
+<tr><td><b>No se puede trazar el origen</b></td><td>No se sabe de dónde sale lo generado. La clase cita la controversia por una anunciada solución del problema de Navier-Stokes (uno de los problemas del milenio): se acusa al sistema de haber completado trabajos previos publicados sin citarlos.</td></tr>
+<tr><td><b>Alucinaciones</b></td><td>Combinan palabras o conceptos que suelen aparecer juntos, pero en contextos incorrectos. Ejemplo: una lista de 15 libros para el verano de 2025, publicada en varios periódicos de EE.UU., tenía solo 5 libros reales; los otros 10 eran títulos plausibles para esos autores, pero inexistentes. Más grave en presentaciones legales.</td></tr>
+<tr><td><b>Propiedad intelectual de lo que producen</b></td><td>Según la doctrina legal actual, como su resultado viene de un programa y no de un acto creativo original, <b>no tiene protección de propiedad intelectual</b>.</td></tr>
+</tbody></table></div>
+<div class="box ana"><div class="bt">Analogía: el compañero que habla muy seguro</div>
+<p>Un LLM es como un compañero que leyó millones de apuntes (algunos buenos, muchos malos, algunos fotocopiados sin permiso) y responde cualquier pregunta con total seguridad. Casi siempre suena bien, pero a veces <b>inventa con la misma seguridad</b> (alucina), no te puede decir de qué apunte sacó cada cosa y, si escribe un ensayo, nadie es su autor legal.</p></div>
+<div class="box tip"><div class="bt">Conexión con el tema 17</div>
+<p>Si preguntan por los LLM, conecta con <a class="inl" href="17-Propiedad-intelectual.html">propiedad intelectual</a>: se entrenan con obras protegidas por derecho de autor (¿es una obra derivada?), y lo que generan no tiene autor ni protección.</p></div>
+</section>
+
+<section id="txx-preguntas" data-grp="Práctica" data-nav="Preguntas del tema">
+<h2>Preguntas del tema</h2>
+<p class="lead">Preguntas de práctica más largas: <a class="inl" href="22-Ejercicios.html#e26">E26</a>, <a class="inl" href="22-Ejercicios.html#e27">E27</a> y <a class="inl" href="22-Ejercicios.html#e28">E28</a>.</p>
+
+<details class="ex"><summary>1 · ¿Cuándo nace la IA como disciplina académica? <span class="tag">diapositiva 3</span></summary>
+<div class="body"><p>En 1956. Después pasó por varios ciclos de optimismo y desesperación (los inviernos de la IA).</p></div></details>
+
+<details class="ex"><summary>2 · ¿Qué dos cosas explican el auge de la IA desde 2012? <span class="tag">diapositiva 10</span></summary>
+<div class="body"><p>El uso de tarjetas gráficas para acelerar las redes neuronales y las técnicas de aprendizaje profundo. En 2017 se sumó la arquitectura de transformador.</p></div></details>
+
+<details class="ex"><summary>3 · ¿Por qué Eliza es un “balde de agua fría”? <span class="tag">diapositiva 12</span></summary>
+<div class="body"><p>Porque era un programa muy simple, que buscaba palabras clave y respondía con fórmulas, y aun así la gente (incluida la secretaria de Weizenbaum) le atribuía comprensión y le pedía consejos.</p></div></details>
+
+<details class="ex"><summary>4 · ¿Qué partes tiene un sistema experto? <span class="tag">diapositiva 18</span></summary>
+<div class="body"><p>Una base de conocimiento, una máquina de inferencia y, a veces, un sistema de explicación y herramientas de adquisición de conocimiento, más una interfaz de usuario.</p></div></details>
+
+<details class="ex"><summary>5 · ¿Cuál es la mayor desventaja de los sistemas expertos? <span class="tag">diapositiva 22</span></summary>
+<div class="body"><p>La adquisición de conocimiento: el tiempo de los expertos es escaso y es poco natural pasar su conocimiento implícito a reglas explícitas.</p></div></details>
+
+<details class="ex"><summary>6 · ¿Qué operadores usa un algoritmo genético? <span class="tag">diapositiva 23</span></summary>
+<div class="body"><p>Selección, cruce (recombinación) y mutación, guiados por una función de aptitud.</p></div></details>
+
+<details class="ex"><summary>7 · ¿Qué es el sobreajuste? <span class="tag">diapositiva 36</span></summary>
+<div class="body"><p>Construir un modelo demasiado complicado, que se ajusta muy bien a los datos de entrenamiento pero rinde mal en casos nuevos (no generaliza).</p></div></details>
+
+<details class="ex"><summary>8 · ¿Por qué los LLM alucinan? <span class="tag">diapositiva 42</span></summary>
+<div class="body"><p>Porque su método combina palabras o conceptos que aparecen juntos con frecuencia, y a veces los pone en contextos incorrectos. Completan texto de forma plausible, no verdadera.</p></div></details>
+
+<details class="ex"><summary>9 · ¿Tiene protección de propiedad intelectual un texto generado por un LLM? <span class="tag">diapositiva 42</span></summary>
+<div class="body"><p>Según la doctrina legal actual, no: es el resultado de un programa, no de un acto creativo original.</p></div></details>
+</section>
+
+<div class="pnav"><a href="16-Aspectos-eticos.html"><small>← Anterior</small>Aspectos éticos</a><a class="nx" href="17-Propiedad-intelectual.html"><small>Siguiente →</small>Propiedad intelectual</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c2-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>

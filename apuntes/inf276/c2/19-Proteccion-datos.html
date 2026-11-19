@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Caleb Baez">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protección de datos · Infosoc C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+
+  .pages .pgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:10px 4px 0}
+  .pages .pgrp:first-child{margin-top:0}
+  .pages span.off{display:flex;gap:9px;align-items:center;font-size:13px;padding:6px 9px;border-radius:8px;
+    border:1px dashed var(--line);line-height:1.25;opacity:.5;cursor:default}
+  .pages span.off b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--code);
+    color:var(--muted);font-size:11.5px}
+  .pages a b{font-size:11px}
+  .nc{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--no-soft);
+    color:var(--no);margin-left:2px;font-style:normal;vertical-align:1px;white-space:nowrap}
+  .soon{border-bottom:1px dashed var(--muted);color:var(--muted)}
+  .box.ana p+p{margin-top:6px}
+  .box.nc{border-left-color:var(--no);background:var(--no-soft)} .box.nc .bt{color:var(--no)}
+  .lic{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:700} .nope{color:var(--no);font-weight:700}
+  .mnemo{font-size:15px;background:var(--panel);border:1px dashed var(--brand);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .mnemo b{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T19</div>
+    <div><h1>Protección de datos</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><div class="pgrp">Inicio</div><a href="0-Guia-de-estudio-C2.html"><b>★</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 21</small></span></a><div class="pgrp">Materia del C1</div><span class="off" title="Todavía no está publicada"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></span><span class="off" title="Todavía no está publicada"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></span><span class="off" title="Todavía no está publicada"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></span><span class="off" title="Todavía no está publicada"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></span><span class="off" title="Todavía no está publicada"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></span><span class="off" title="Todavía no está publicada"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></span><span class="off" title="Todavía no está publicada"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></span><span class="off" title="Todavía no está publicada"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></span><span class="off" title="Todavía no está publicada"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></span><span class="off" title="Todavía no está publicada"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></span><span class="off" title="Todavía no está publicada"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></span><span class="off" title="Todavía no está publicada"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></span><span class="off" title="Todavía no está publicada"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></span><span class="off" title="Todavía no está publicada"><b>Σ</b><span>Resumen contenidos Certamen 1<br><small style="color:var(--muted)">lo esencial de 1 a 13</small></span></span><div class="pgrp">Materia nueva del C2</div><a href="14-Procesamiento-datos.html"><b>14</b><span>Procesamiento de datos<br><small style="color:var(--muted)">historia y minería de datos</small></span></a><a href="15-Impacto.html"><b>15</b><span>Impacto de la tecnología<br><small style="color:var(--muted)">lo bueno y lo malo</small></span></a><a href="16-Aspectos-eticos.html"><b>16</b><span>Aspectos éticos<br><small style="color:var(--muted)">códigos, dilemas, ética profesional</small></span></a><a href="16b-Inteligencia-artificial.html"><b>XX</b><span>Inteligencia artificial<br><small style="color:var(--muted)">expertos, genéticos, redes, LLM</small></span></a><a href="17-Propiedad-intelectual.html"><b>17</b><span>Propiedad intelectual<br><small style="color:var(--muted)">autor, patentes, marcas, secretos</small></span></a><a href="18-Codigo-abierto.html"><b>18</b><span>Código abierto<br><small style="color:var(--muted)">GPL, BSD, OSI, Creative Commons</small></span></a><a href="19-Proteccion-datos.html" class="cur"><b>19</b><span>Protección de datos <i class="nc">no pasada</i><br><small style="color:var(--muted)">GDPR, leyes chilenas, CRA</small></span></a><a href="20-Desarrollo.html"><b>20</b><span>Desarrollo de software <i class="nc">no pasada</i><br><small style="color:var(--muted)">máximas y deuda técnica</small></span></a><a href="21-Codigo-ACM.html"><b>21</b><span>Código de ética ACM<br><small style="color:var(--muted)">las 4 secciones</small></span></a><div class="pgrp">Práctica</div><a href="22-Ejercicios.html"><b>✎</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a><span class="off" title="Todavía no está publicada"><b>⇄</b><span>Flashcards<br><small style="color:var(--muted)">toda la materia</small></span></span><div class="pgrp">Complemento</div><span class="off" title="Todavía no está publicada"><b>+</b><span>Extra<br><small style="color:var(--muted)">probablemente no entra</small></span></span></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 19</div><a href="#t19-inicio">Qué pesa y qué estudiar</a><a href="#seguridad">Seguridad: los pilares</a><div class="grp">Unión Europea</div><a href="#ue">GDPR (protección de datos)</a><div class="grp">Chile</div><a href="#chile-datos">Ley 21.719 (datos personales)</a><a href="#chile-ciber">Ley 21.663 (ciberseguridad)</a><div class="grp">Seguridad de productos</div><a href="#cra">Cyber Resilience Act</a><a href="#estandares">Estándares de desarrollo</a><div class="grp">Práctica</div><a href="#t19-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+<section id="t19-inicio" data-grp="Tema 19" data-nav="Qué pesa y qué estudiar">
+<h2>Tema 19 · Protección de datos</h2>
+<p class="lead">Clase <code>19-protección-datos-hnd.pdf</code> (33 diapositivas). Qué es la seguridad de la información, el reglamento europeo de protección de datos (GDPR), las leyes chilenas de datos personales (21.719) y de ciberseguridad (21.663), el <i>Cyber Resilience Act</i> europeo y los estándares de desarrollo seguro.</p>
+
+<div class="box nc"><div class="bt">Probablemente no se pasó en clases</div>
+<p>En Aula esta clase no aparece marcada como pasada. Aun así, <b>su materia salió en certámenes anteriores</b>: el C2 2025-2 le dedicó <b>40 puntos</b> (reglamentos de la UE, 25, y ley chilena de ciberseguridad, 15), el C2 2026-1 preguntó por qué la legislación europea importa en Chile (20), y el caso del operador que vende datos (recuperativos) se responde con esto. Prioridad media: estúdiala después de 17, 18 y 16.</p></div>
+
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder escribir</h5>
+    <p>· Los 3 pilares de la seguridad + privacidad.</p>
+    <p>· <b>Por qué</b> la reglamentación europea importa en Chile.</p>
+    <p>· Los <b>derechos del GDPR</b> y las obligaciones de las organizaciones.</p>
+    <p>· La <b>Ley 21.719</b> (datos) y la <b>Ley 21.663</b> (ciberseguridad): instituciones y obligaciones.</p>
+    <p>· El <b>Cyber Resilience Act</b>: motivos y mecanismos.</p>
+  </div>
+  <div class="card"><h5>Dónde está</h5>
+    <p><b>Diapositivas</b> <code>19-protección-datos-hnd.pdf</code>.</p>
+    <p><b>Pautas</b>: C2 2025-2 P4 y P5, C2 2026-1 P3, R 2025-2 P6 (en <a class="inl" href="22-Ejercicios.html#e19">E19</a>, <a class="inl" href="22-Ejercicios.html#e20">E20</a>, <a class="inl" href="22-Ejercicios.html#e21">E21</a> y <a class="inl" href="22-Ejercicios.html#e9">E9</a>).</p>
+  </div>
+  <div class="card"><h5>Plan para este tema</h5>
+    <p>1. Leer la página (25 min).</p>
+    <p>2. Hacer <a class="inl" href="22-Ejercicios.html#e20">E20</a> y <a class="inl" href="22-Ejercicios.html#e21">E21</a> sin mirar (15 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="seguridad" data-nav="Seguridad: los pilares">
+<h2>Qué es la seguridad de la información</h2>
+<p>En términos clásicos, la seguridad comprende tres propiedades, y hoy se agrega una cuarta:</p>
+<div class="tw"><table>
+<thead><tr><th>Propiedad</th><th>Qué significa</th><th>Ejemplo de falla</th></tr></thead>
+<tbody>
+<tr><td><b>Confidencialidad</b></td><td>Solo entidades autorizadas tienen acceso a los datos.</td><td>Se filtran las notas de todos los alumnos.</td></tr>
+<tr><td><b>Integridad</b></td><td>Los datos representan fielmente la realidad; solo se modifican en la forma autorizada.</td><td>Alguien cambia su nota en el sistema.</td></tr>
+<tr><td><b>Disponibilidad</b></td><td>Los datos están disponibles para el uso autorizado.</td><td>El sistema de inscripción se cae el día de inscripción.</td></tr>
+<tr><td><b>Privacidad</b> (se agrega hoy)</td><td>Restringir el acceso a datos de terceros a las entidades autorizadas.</td><td>La universidad vende los datos de los alumnos a un banco.</td></tr>
+</tbody></table></div>
+<p>Todas suponen <b>identificación</b> (poder identificar a los participantes) y <b>autenticación</b> (mecanismos para verificar su identidad).</p>
+<div class="box ana"><div class="bt">Analogía: una caja de seguridad en el banco</div>
+<p><b>Confidencialidad:</b> solo tú puedes abrirla. <b>Integridad:</b> nadie puede cambiar lo que guardaste. <b>Disponibilidad:</b> cuando vas, el banco está abierto. <b>Identificación y autenticación:</b> dices quién eres y muestras el carnet. <b>Privacidad:</b> el banco no le cuenta a nadie qué tienes guardado.</p></div>
+
+<h3>Modelos de seguridad</h3>
+<p>Hay modelos matemáticos del manejo seguro de la información: clasifican los datos en niveles de confidencialidad o integridad y definen operaciones permitidas. Son complejos, y en la práctica se usan modelos informales. Dos conclusiones sorprendentes:</p>
+<ul>
+<li><b>Confidencialidad e integridad no se pueden combinar en un único esquema.</b> Combinar o procesar datos puede generar información <b>más</b> confidencial que los originales (cruzar dos bases “inofensivas” puede revelar quién eres), y modificar datos íntegros solo puede degradarlos.</li>
+<li>Todos los modelos requieren <b>entidades confiables</b>, con permiso para bajar la confidencialidad (publicar), subir la integridad (certificar que algo es correcto) o, en general, saltarse las reglas del modelo.</li>
+</ul>
+<p>La <b>protección de datos personales</b> es precisamente la parte de <b>privacidad</b> de la seguridad. La recopilación de datos creció a escala mundial; se busca proteger los datos personales y, al mismo tiempo, permitir que los datos circulen para la economía digital. Además, los Estados intercambian cada vez más datos para combatir la delincuencia transnacional y el terrorismo.</p>
+</section>
+
+<section id="ue" data-grp="Unión Europea" data-nav="GDPR (protección de datos)">
+<h2>La Unión Europea y el GDPR</h2>
+<div class="box def"><div class="bt">Por qué importa en Chile</div>
+<p>La reglamentación europea de protección de datos es <b>la más desarrollada y rigurosa del mundo</b>, y regula también las relaciones entre países. La UE es un <b>socio muy importante de Chile</b>, no solo comercial, así que esta reglamentación <b>nos afecta directamente</b>: para comerciar con Europa hay que cumplirla. (La respuesta completa de “por qué importa en Chile” está en <a class="inl" href="22-Ejercicios.html#e19">E19</a>.)</p></div>
+<div class="box ana"><div class="bt">Analogía: las reglas de la casa del vecino</div>
+<p>Si quieres jugar en la casa del vecino rico, juegas con sus reglas. Chile es un país pequeño que comercia mucho con Europa: si una empresa chilena quiere atender clientes europeos, tiene que tratar sus datos como exige Europa. Al final, a Chile le conviene adoptar esas mismas reglas en casa.</p></div>
+<p>El <b>artículo 8 de la Carta de Derechos Fundamentales de la UE</b> (2000) establece que toda persona tiene derecho a la protección de sus datos personales.</p>
+
+<h3>El Reglamento General de Protección de Datos (GDPR)</h3>
+<p>Se aprobó en <b>2016</b> y se aplica desde <b>2018</b>; en 2024 el Consejo adoptó una posición común sobre su aplicación.</p>
+<div class="cols">
+<div class="card"><h5>Derechos de las personas</h5>
+<p>· <b>Consentimiento claro</b> sobre el manejo de sus datos.</p>
+<p>· <b>Acceso</b> fácil a sus propios datos.</p>
+<p>· <b>Rectificación, supresión y “olvido”</b>.</p>
+<p>· <b>Oponerse</b> al uso de sus datos para elaborar <b>perfiles</b>.</p>
+<p>· <b>Portabilidad</b> de un proveedor a otro.</p>
+<p>· <b>Información transparente</b> y fácil de acceder sobre cómo se tratan.</p></div>
+<div class="card"><h5>Obligaciones de las organizaciones</h5>
+<p>· Aplicar <b>medidas de seguridad</b> adecuadas al riesgo.</p>
+<p>· En ciertos casos, <b>notificar las violaciones</b> de seguridad de datos personales.</p>
+<p>· Autoridades y empresas con operaciones riesgosas: nombrar un <b>delegado de protección de datos</b>.</p>
+<p>· Rige para los responsables de los datos y para quienes los tratan en su nombre.</p></div>
+<div class="card"><h5>Transferencia fuera de la UE</h5>
+<p>La <b>Comisión Europea</b> evalúa si un país o sector fuera de la UE protege adecuadamente los datos. Sin una “decisión de adecuación”, solo se pueden transferir datos en casos específicos o con garantías adecuadas.</p></div>
+</div>
+<div class="mnemo"><b>Mnemotecnia de los derechos: “CARO-P”.</b> <b>C</b>onsentimiento · <b>A</b>cceso · <b>R</b>ectificación, supresión y olvido · <b>O</b>posición a perfiles · <b>P</b>ortabilidad.</div>
+<div class="box ana"><div class="bt">Analogía: tus datos son tu ropa en una lavandería</div>
+<p>Dejas tu ropa (tus datos) en una lavandería (la empresa). Tienes derecho a saber qué hacen con ella (<b>transparencia</b>), a que no la presten sin tu permiso (<b>consentimiento</b>), a verla cuando quieras (<b>acceso</b>), a que arreglen lo que está mal anotado en la boleta (<b>rectificación</b>), a retirarla y que no quede registro (<b>supresión y olvido</b>), a que no anden armando tu “perfil de estilo” para venderlo (<b>oposición</b>) y a llevártela a otra lavandería (<b>portabilidad</b>).</p></div>
+</section>
+
+<section id="chile-datos" data-grp="Chile" data-nav="Ley 21.719 (datos personales)">
+<h2>Chile: Ley 21.719 de Protección de Datos Personales</h2>
+<p>La protección de los datos personales está <b>garantizada por la Constitución</b>. La <b>Ley 21.719</b> (2024) <b>homologa la legislación chilena con el GDPR</b> y cumple compromisos adquiridos al ingresar a la <b>OCDE en 2010</b>. Según la clase, se promulgó en agosto de 2024 y entra en vigencia 24 meses después. (Sobre la fecha, ver las erratas discutibles en la <a class="inl" href="0-Guia-de-estudio-C2.html#erratas">guía</a>.)</p>
+<div class="cols">
+<div class="card"><h5>Derechos de los titulares</h5><p><b>Acceso · Rectificación · Supresión · Oposición · Portabilidad · Bloqueo.</b> La ley fija el procedimiento para ejercerlos ante los responsables de los datos.</p></div>
+<div class="card"><h5>A quién se aplica</h5><p>· A quien trate datos en territorio chileno.</p><p>· A quien los trate en nombre de un mandante que esté en Chile.</p><p>· A quien ofrezca bienes o servicios a personas en Chile.</p><p>En los dos últimos casos, <b>aunque no esté en Chile</b>.</p></div>
+<div class="card"><h5>Agencia de Protección de Datos Personales</h5><p>La crea esta ley para <b>fiscalizar y sancionar</b>. Sus multas están <b>entre las más altas</b> de la legislación chilena.</p></div>
+</div>
+<div class="box ana"><div class="bt">Analogía: el alcance de la ley</div>
+<p>Es como el reglamento de un estadio que vale para cualquiera que entre, venga de donde venga: una empresa extranjera que vende por Internet a chilenos tiene que cumplir la ley chilena, aunque no tenga oficinas aquí.</p></div>
+</section>
+
+<section id="chile-ciber" data-nav="Ley 21.663 (ciberseguridad)">
+<h2>Chile: Ley 21.663, Ley Marco de Ciberseguridad</h2>
+<p>Promulgada en <b>abril de 2024</b> y vigente desde <b>enero de 2025</b>. Es una normativa general sobre cómo las instituciones públicas y privadas deben enfrentar la ciberseguridad. Su <b>finalidad</b> es mejorar la prevención y resolución de delitos informáticos e incidentes de ciberseguridad. Su eje es la <b>obligación de notificar incidentes</b> a instituciones creadas para eso.</p>
+<p><b>A quién se aplica:</b> a instituciones públicas y privadas que sean <b>prestadores de servicios esenciales</b> y a las designadas por la ANCI como <b>operadores de importancia vital</b>.</p>
+
+<h3>Las instituciones nuevas</h3>
+<div class="tw"><table>
+<thead><tr><th>Institución</th><th>Qué hace</th></tr></thead>
+<tbody>
+<tr><td><b>ANCI</b> (Agencia Nacional de Ciberseguridad)</td><td>Entidad técnica que protege los intereses chilenos en el ciberespacio. Puede <b>regular, fiscalizar y sancionar</b>.</td></tr>
+<tr><td><b>Consejo Multisectorial sobre Ciberseguridad</b></td><td>Asesora a la ANCI: analiza la situación periódicamente y propone medidas.</td></tr>
+<tr><td><b>CSIRT Nacional</b> (Equipo de Respuesta a Incidentes de Seguridad Informática)</td><td>Previene, identifica y responde a ciberataques. Las instituciones le <b>notifican</b> todo evento que comprometa infraestructura crítica o datos personales.</td></tr>
+<tr><td><b>CSIRT de la Defensa Nacional</b></td><td>Protege los sistemas de la defensa (Fuerzas Armadas) y colabora con el CSIRT Nacional.</td></tr>
+<tr><td><b>Red de Conectividad Segura del Estado</b></td><td>Conexión segura a Internet y entre los organismos del Estado, supervisada por la ANCI.</td></tr>
+</tbody></table></div>
+<div class="box ana"><div class="bt">Analogía: los bomberos</div>
+<p>La <b>ANCI</b> es como la superintendencia que fija las normas contra incendios y multa a quien no las cumple. El <b>CSIRT</b> son los bomberos: hay que llamarlos apenas hay fuego (notificar el incidente), y llegan a apagarlo y evitar que se propague. El <b>Consejo</b> son los expertos que asesoran. El <b>CSIRT de la Defensa</b> son los bomberos del cuartel militar.</p></div>
+
+<h3>Obligaciones</h3>
+<ul>
+<li>Mantener un <b>sistema de gestión de seguridad de la información (SGSI)</b> que evalúe la probabilidad y el impacto de los incidentes, con un <b>registro</b> detallado de sus acciones.</li>
+<li>Crear y actualizar <b>planes de continuidad operacional</b> al menos cada dos años.</li>
+<li><b>Informar a los potenciales afectados</b> sobre ciberataques y sus efectos.</li>
+<li>Hacer revisiones continuas, incluidas <b>pruebas de penetración</b> (<i>pentesting</i>).</li>
+<li>Tomar medidas oportunas para reducir el impacto y la propagación de los incidentes.</li>
+<li>Obtener <b>certificaciones</b> nacionales e internacionales.</li>
+<li>Designar un <b>delegado de ciberseguridad</b>, interno o externo, que informe a la autoridad.</li>
+</ul>
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">C2 2025-2 P5 · 15 pts</span></div>
+<div class="pts"><span>Finalidad de la ley</span><span>5</span><span>Nuevas instituciones, líneas generales</span><span>5</span><span>Obligaciones y derechos</span><span>5</span></div></div>
+</section>
+
+<section id="cra" data-grp="Seguridad de productos" data-nav="Cyber Resilience Act">
+<h2>El <i>Cyber Resilience Act</i> (CRA) de la UE</h2>
+<p>Reglamento europeo que busca mejorar la ciberseguridad y la resiliencia con <b>estándares comunes para productos con elementos digitales</b>. Según la clase, se adoptó en octubre de 2024 y se aplica desde <b>diciembre de 2027</b>. Todavía se está afinando, pero nos afectará.</p>
+<div class="cols">
+<div class="card"><h5>Por qué existe</h5>
+<p>· Los consumidores son cada vez más víctimas de fallas de seguridad en productos digitales (IoT, dispositivos inteligentes).</p>
+<p>· La ciberseguridad es un riesgo vital para las empresas y su cadena de producción.</p>
+<p>· El costo global del cibercrimen se estimó en <b>€5,5 billones en 2021</b>.</p>
+<p>· Terroristas o Estados enemigos pueden desestabilizar infraestructura crítica (servicios públicos, hospitales).</p></div>
+<div class="card"><h5>Cómo funciona</h5>
+<p>· <b>Seguro por omisión</b>: el fabricante debe preocuparse de la seguridad durante todo el ciclo de vida, en vez de dejársela al usuario.</p>
+<p>· Actualizaciones de seguridad <b>automáticas</b> (con opción de restarse) y, si se puede, <b>separadas</b> de las de funcionalidad.</p>
+<p>· Evaluar los riesgos antes de vender y <b>guardar documentación 10 años</b>.</p>
+<p>· Notificar incidentes a <b>ENISA</b> (la agencia europea) en <b>24 horas</b>.</p>
+<p>· Todo producto con <b>marca CE</b> debe cumplir un mínimo de ciberseguridad.</p></div>
+<div class="card"><h5>Categorías</h5>
+<p>Un <b>90 %</b> de los productos cae en la categoría por omisión: el fabricante se autoevalúa, firma una declaración de conformidad y entrega documentación técnica. El resto es “importante” o “crítico”; los <b>críticos</b> requieren <b>evaluación externa</b>.</p></div>
+</div>
+<div class="box warn"><div class="bt">El problema con el código abierto</div>
+<p>Se estima que más del <b>70 % del código</b> en la UE se verá afectado, y muchos desarrolladores de código abierto no tienen recursos ni ingresos para asegurar sus productos al nivel exigido. Como no está claro qué es “uso comercial”, el CRA podría socavar la innovación, la soberanía digital y la prosperidad futura. (Conecta con el xkcd 2347 del <a class="inl" href="18-Codigo-abierto.html#impacto">tema 18</a>.)</p></div>
+<div class="box ana"><div class="bt">Analogía: el cinturón de seguridad de fábrica</div>
+<p>Antes, la seguridad de un producto digital era como un auto sin cinturones: si querías seguridad, te la instalabas tú. El CRA obliga a que los autos <b>salgan de fábrica con cinturón</b> (seguro por omisión) y a que el fabricante haga los <b>llamados a revisión</b> (actualizaciones automáticas) mientras el auto esté en circulación.</p></div>
+</section>
+
+<section id="estandares" data-nav="Estándares de desarrollo">
+<h2>Estándares de desarrollo seguro</h2>
+<ul>
+<li>Las <b>áreas críticas</b> (aeronáutica, control de automóviles, equipos clínicos, finanzas) tienen exigencias estrictas: lenguajes específicos (<b>Ada</b> se diseñó como lenguaje único de defensa en EE.UU.) y guías como <b>MISRA C</b> (hoy también considera Rust) y MISRA C++ para sistemas empotrados, con herramientas que verifican su cumplimiento.</li>
+<li><b>OWASP</b> (<i>Open Worldwide Application Security Project</i>) desarrolla guías generales de desarrollo seguro con un modelo de código abierto.</li>
+<li>En EE.UU., el <b>NIST</b> publicó el <b>SSDF</b> (<i>Secure Software Development Framework</i>).</li>
+</ul>
+</section>
+
+<section id="t19-preguntas" data-grp="Práctica" data-nav="Preguntas del tema">
+<h2>Preguntas del tema</h2>
+<p class="lead">De certamen con pauta: <a class="inl" href="22-Ejercicios.html#e19">E19 (por qué importa en Chile)</a>, <a class="inl" href="22-Ejercicios.html#e20">E20 (GDPR y CRA)</a>, <a class="inl" href="22-Ejercicios.html#e21">E21 (Ley 21.663)</a> y el caso <a class="inl" href="22-Ejercicios.html#e9">E9 (el operador)</a>.</p>
+
+<details class="ex"><summary>1 · ¿Cuáles son las propiedades clásicas de la seguridad? <span class="tag">diapositiva 3</span></summary>
+<div class="body"><p>Confidencialidad, integridad y disponibilidad; hoy se agrega la privacidad. Todas suponen identificación y autenticación.</p></div></details>
+
+<details class="ex"><summary>2 · ¿Por qué combinar datos puede ser un problema de confidencialidad? <span class="tag">diapositiva 6</span></summary>
+<div class="body"><p>Porque combinar o procesar datos puede generar información más confidencial que los datos originales: cruzar dos bases “inofensivas” puede identificar a una persona.</p></div></details>
+
+<details class="ex"><summary>3 · Nombra los derechos que da el GDPR <span class="tag">diapositiva 11</span></summary>
+<div class="body"><p>Consentimiento claro, acceso fácil, rectificación, supresión y olvido, oposición a la elaboración de perfiles, y portabilidad. Además, información transparente sobre el tratamiento.</p></div></details>
+
+<details class="ex"><summary>4 · ¿Qué hace la Ley 21.719? <span class="tag">diapositivas 14-17</span></summary>
+<div class="body"><p>Homologa la legislación chilena de datos personales con el GDPR (y cumple compromisos con la OCDE). Da derechos de acceso, rectificación, supresión, oposición, portabilidad y bloqueo; se aplica incluso a quienes ofrecen servicios en Chile sin estar aquí; y crea la Agencia de Protección de Datos Personales, con multas muy altas.</p></div></details>
+
+<details class="ex"><summary>5 · ¿A quién hay que notificar un incidente según la Ley 21.663? <span class="tag">diapositiva 21</span></summary>
+<div class="body"><p>Al CSIRT Nacional, todo evento que comprometa la seguridad de infraestructura crítica o de datos personales.</p></div></details>
+
+<details class="ex"><summary>6 · ¿En cuánto tiempo hay que notificar un incidente a ENISA según el CRA? <span class="tag">diapositiva 29</span></summary>
+<div class="body"><p>En 24 horas desde que la empresa se entera.</p></div></details>
+
+<details class="ex"><summary>7 · ¿Por qué el CRA preocupa a la comunidad de código abierto? <span class="tag">diapositiva 31</span></summary>
+<div class="body"><p>Porque afectaría a más del 70 % del código en la UE, cuyos desarrolladores muchas veces no tienen recursos para cumplir sus exigencias, y porque no está claro qué cuenta como “uso comercial”.</p></div></details>
+</section>
+
+<div class="pnav"><a href="18-Codigo-abierto.html"><small>← Anterior</small>Código abierto</a><a class="nx" href="20-Desarrollo.html"><small>Siguiente →</small>Desarrollo de software</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c2-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>

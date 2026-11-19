@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta name="author" content="Caleb Baez">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desarrollo de software · Infosoc C2</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1f2330; --muted:#5b6172;
+    --line:#e6e6ea; --brand:#1d6fa5; --brand-soft:#e4f0f8;
+    --accent:#0e7a5f; --accent-soft:#e3f4ee;
+    --warn:#c2410c; --warn-soft:#fdecdf;
+    --ex:#7c3aed; --ex-soft:#f1eafe;
+    --ana:#b4306e; --ana-soft:#fce8f1;
+    --lib:#8a6420; --lib-soft:#f9f0dc;
+    --code:#f0f1f4;
+    --g1:#2f6fb5; --g2:#0e9c74; --g3:#c9822a; --g4:#a3468f; --g5:#5b6172;
+    --shadow:0 1px 3px rgba(20,20,40,.06),0 6px 24px rgba(20,20,40,.05);
+    --sidew:312px;
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+    --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+    --accent:#4fd1ab; --accent-soft:#16302a;
+    --warn:#f5a15f; --warn-soft:#3a2413;
+    --ex:#c4a6ff; --ex-soft:#271c3d;
+    --ana:#ff9ec4; --ana-soft:#3a1a2a;
+    --lib:#e0c073; --lib-soft:#33290f;
+    --code:#232733;
+    --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+    --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161c; --panel:#1b1e26; --ink:#e8eaf0; --muted:#a2a8ba;
+      --line:#2a2e39; --brand:#63b3e8; --brand-soft:#152a3a;
+      --accent:#4fd1ab; --accent-soft:#16302a;
+      --warn:#f5a15f; --warn-soft:#3a2413;
+      --ex:#c4a6ff; --ex-soft:#271c3d;
+      --ana:#ff9ec4; --ana-soft:#3a1a2a;
+      --lib:#e0c073; --lib-soft:#33290f;
+      --code:#232733;
+      --g1:#5fa3e0; --g2:#3fc9a0; --g3:#e0aa5e; --g4:#d68cc6; --g5:#8a90a3;
+      --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.62; font-size:16.5px; -webkit-font-smoothing:antialiased;}
+  .layout{display:flex; align-items:flex-start}
+  .sidebar{width:var(--sidew); flex:0 0 var(--sidew); position:sticky; top:0; height:100vh;
+    overflow-y:auto; background:var(--panel); border-right:1px solid var(--line); padding:22px 16px 60px;}
+  .content{flex:1 1 auto; min-width:0; padding:38px clamp(18px,4vw,64px) 140px; max-width:1060px; margin:0 auto}
+  .brand{display:flex; gap:10px; align-items:center; margin-bottom:6px}
+  .brand .dot{width:38px;height:38px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--accent));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:11px;line-height:1.1;flex:0 0 auto;text-align:center}
+  .brand h1{font-size:15px;margin:0;line-height:1.2}
+  .brand small{color:var(--muted);font-size:12px;display:block}
+  nav .grp{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);
+    margin:18px 8px 6px;font-weight:700}
+  nav a{display:block;color:var(--ink);text-decoration:none;padding:5px 10px;border-radius:7px;
+    font-size:13.3px;opacity:.85}
+  nav a:hover{background:var(--brand-soft);opacity:1}
+  nav a.active{background:var(--brand-soft);color:var(--brand);font-weight:600;opacity:1}
+  .toolbar{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;
+    padding:7px 10px;font-size:12.5px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+  .btn:hover{background:var(--brand-soft)}
+  h2{font-size:27px;margin:8px 0 4px;letter-spacing:-.01em;scroll-margin-top:20px}
+  h3{font-size:20.5px;margin:32px 0 6px;scroll-margin-top:20px}
+  h4{font-size:16px;margin:22px 0 4px;color:var(--brand)}
+  p{margin:10px 0}
+  .lead{color:var(--muted);font-size:17px;margin:2px 0 8px}
+  section{border-top:1px solid var(--line);padding-top:34px;margin-top:48px}
+  section:first-of-type{border-top:0;margin-top:0}
+  a.inl{color:var(--brand)}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  code{background:var(--code);border-radius:5px;padding:1px 6px;font-size:.9em;
+    font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    overflow-x:auto;font-size:13.5px;line-height:1.5;font-family:"SF Mono",Menlo,Consolas,monospace}
+  pre code{background:none;padding:0}
+  hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+  .pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;
+    background:var(--brand-soft);color:var(--brand);margin-right:6px;vertical-align:middle}
+  .pill.a{background:var(--accent-soft);color:var(--accent)}
+  .pill.w{background:var(--warn-soft);color:var(--warn)}
+  .pill.e{background:var(--ex-soft);color:var(--ex)}
+  .pill.l{background:var(--lib-soft);color:var(--lib)}
+  .box{border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px;
+    margin:16px 0;background:var(--panel);box-shadow:var(--shadow)}
+  .box .bt{font-weight:700;font-size:13px;letter-spacing:.02em;margin-bottom:2px;display:flex;gap:8px;align-items:center}
+  .box.def{border-left-color:var(--brand);background:var(--brand-soft)} .box.def .bt{color:var(--brand)}
+  .box.tip{border-left-color:var(--accent);background:var(--accent-soft)} .box.tip .bt{color:var(--accent)}
+  .box.warn{border-left-color:var(--warn);background:var(--warn-soft)} .box.warn .bt{color:var(--warn)}
+  .box.ana{border-left-color:var(--ana);background:var(--ana-soft)} .box.ana .bt{color:var(--ana)}
+  .box.libro{border-left-color:var(--lib);background:var(--lib-soft)} .box.libro .bt{color:var(--lib)}
+  .box p:last-child{margin-bottom:0}
+  table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.6px;
+    background:var(--panel);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+  th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+  th{background:var(--brand-soft);color:var(--brand);font-weight:700;font-size:13.5px}
+  tbody tr:nth-child(even){background:rgba(128,128,160,.045)}
+  .tw{overflow-x:auto;margin:16px 0}
+  .tw table{margin:0;min-width:560px}
+  figure{margin:22px 0;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:var(--shadow)}
+  figure svg{display:block;max-width:100%;height:auto;margin:0 auto}
+  figcaption{color:var(--muted);font-size:13px;margin-top:10px;text-align:center}
+  .fig-scroll{overflow-x:auto}
+  .gantt{margin:8px 0 4px;font-size:13px}
+  .grow{display:flex;align-items:stretch;margin-bottom:3px}
+  .glab{flex:0 0 92px;display:flex;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);
+    padding-right:8px;justify-content:flex-end;text-align:right}
+  .gbar{flex:1 1 auto;display:flex;height:30px;border-left:2px solid var(--muted);position:relative}
+  .gseg{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+    border-right:1px solid rgba(255,255,255,.4);white-space:nowrap;overflow:hidden}
+  .t1{background:var(--g1)} .t2{background:var(--g2)} .t3{background:var(--g3)}
+  .t4{background:var(--g4)} .t5{background:#7c3aed} .t0{background:var(--g1)}
+  .idle{background:repeating-linear-gradient(45deg,rgba(128,128,160,.18),rgba(128,128,160,.18) 5px,transparent 5px,transparent 10px);
+    color:var(--muted);border:1px dashed var(--line)}
+  .io{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn);border-right:1px solid var(--warn)}
+  .blank{background:transparent}
+  .gaxis{display:flex;margin-left:92px;border-top:2px solid var(--muted);position:relative;height:24px}
+  .gtick{position:absolute;top:2px;transform:translateX(-50%);font-size:11px;color:var(--muted);white-space:nowrap}
+  .gtick::before{content:"";position:absolute;left:50%;top:-8px;width:1px;height:6px;background:var(--muted)}
+  .glegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:14px}
+  .glegend span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:13px;height:13px;border-radius:3px;display:inline-block}
+  details.ex{border:1px solid var(--line);border-left:4px solid var(--ex);border-radius:10px;
+    margin:16px 0;background:var(--panel);overflow:hidden;box-shadow:var(--shadow)}
+  details.ex>summary{cursor:pointer;padding:13px 16px;font-weight:600;list-style:none;
+    background:var(--ex-soft);color:var(--ex);display:flex;gap:10px;align-items:center}
+  details.ex>summary::-webkit-details-marker{display:none}
+  details.ex>summary::before{content:"\25B8";font-size:12px;transition:transform .15s}
+  details.ex[open]>summary::before{transform:rotate(90deg)}
+  details.ex>summary .tag{font-size:11px;background:var(--panel);color:var(--muted);
+    padding:1px 8px;border-radius:999px;border:1px solid var(--line);margin-left:auto}
+  details.ex .body{padding:4px 18px 16px}
+  .form{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:12px 16px;margin:14px 0;font-size:15.8px;box-shadow:var(--shadow);text-align:center}
+  .form b{color:var(--accent)}
+  .form .n{display:block;font-size:12.5px;color:var(--muted);margin-top:6px;text-align:center}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:14px;margin:16px 0}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card h5{margin:0 0 6px;font-size:14.5px;color:var(--brand)}
+  .card p{margin:6px 0;font-size:14.3px}
+  .vid{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:10px;padding:12px 14px;margin:10px 0;box-shadow:var(--shadow)}
+  .vid .ic{flex:0 0 34px;height:34px;border-radius:8px;background:var(--warn-soft);color:var(--warn);
+    display:grid;place-items:center;font-size:15px;font-weight:700}
+  .vid .ic.b{background:var(--brand-soft);color:var(--brand)}
+  .vid .ic.g{background:var(--accent-soft);color:var(--accent)}
+  .vid a{color:var(--brand);font-weight:600;text-decoration:none;font-size:14.8px}
+  .vid a:hover{text-decoration:underline}
+  .vid small{color:var(--muted);display:block;font-size:13px;margin-top:2px}
+  @media (max-width:900px){
+    .layout{flex-direction:column}
+    .sidebar{position:static;width:100%;height:auto;flex:1 1 auto;border-right:0;border-bottom:1px solid var(--line)}
+    .content{padding:24px 18px 90px}
+    .glab{flex-basis:62px;font-size:11.5px}
+    .gaxis{margin-left:62px}
+  }
+
+  .sol{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;
+    padding:2px 16px 12px;margin:14px 0}
+  .sol .st{font-weight:700;color:var(--accent);font-size:13px;margin:12px 0 4px}
+  .enun{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--brand);
+    border-radius:10px;padding:14px 16px;margin:14px 0;box-shadow:var(--shadow)}
+  .enun .et{font-weight:700;color:var(--brand);font-size:13px;margin-bottom:4px}
+  .step{counter-increment:st;margin:12px 0 12px 0;padding-left:34px;position:relative}
+  .step::before{content:counter(st);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-size:12.5px;font-weight:700}
+  .steps{counter-reset:st}
+  .ans{background:var(--warn-soft);border:1px solid var(--warn);border-radius:8px;padding:10px 14px;
+    margin:12px 0;font-weight:600;color:var(--warn)}
+  .ans b{color:var(--warn)}
+  h2 .num{color:var(--muted);font-weight:400;font-size:.7em}
+
+  :root{--prof:#4338ca;--prof-soft:#ecebfd;--no:#b42318;--no-soft:#fdeceb}
+  :root[data-theme="dark"]{--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--prof:#a5b4fc;--prof-soft:#1f1d45;--no:#fda29b;--no-soft:#3b1717}}
+  .box.profe{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.profe .bt{color:var(--prof);flex-wrap:wrap}
+  .box.profe .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .mic{display:inline-block;width:9px;height:13px;border:2px solid currentColor;border-radius:6px;position:relative;margin-right:2px}
+  .mic::after{content:"";position:absolute;left:50%;bottom:-6px;width:2px;height:4px;background:currentColor;transform:translateX(-50%)}
+  .pill.no{background:var(--no-soft);color:var(--no)}
+  .pill.si{background:var(--accent-soft);color:var(--accent)}
+  .pill.p{background:var(--prof-soft);color:var(--prof)}
+  .pages{display:grid;gap:5px;margin:16px 0 6px}
+  .pages a{display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--ink);font-size:13px;
+    padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);line-height:1.25}
+  .pages a:hover{border-color:var(--brand)}
+  .pages a b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--brand-soft);
+    color:var(--brand);font-size:11.5px}
+  .pages a.cur{border-color:var(--brand);background:var(--brand-soft);font-weight:700}
+  .pages a.cur b{background:var(--brand);color:#fff}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px;margin:18px 0}
+  .vcard{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+    display:flex;flex-direction:column}
+  .vcard.top{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn) inset,var(--shadow)}
+  .vcard .th{position:relative;display:block;aspect-ratio:16/9;background:var(--code);overflow:hidden}
+  .vcard .th img{width:100%;height:100%;object-fit:cover;display:block}
+  .vcard .th .dur{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.8);color:#fff;font-size:11.5px;
+    font-weight:700;padding:1px 6px;border-radius:5px}
+  .vcard .th .rk{position:absolute;left:8px;top:8px;background:var(--warn);color:#fff;font-size:11px;font-weight:800;
+    padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .vcard .vb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .vcard .vt{font-weight:700;font-size:14.6px;color:var(--brand);text-decoration:none;line-height:1.35}
+  .vcard .vt:hover{text-decoration:underline}
+  .vcard .ch{font-size:12.5px;color:var(--muted)}
+  .vcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+  .lt{font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--bg)}
+  .lt.es{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .lt.dub{color:var(--brand);border-color:var(--brand);background:var(--brand-soft)}
+  .lt.sub{color:var(--lib);border-color:var(--lib);background:var(--lib-soft)}
+  .lt.no{color:var(--no);border-color:var(--no);background:var(--no-soft)}
+  .vcard p{margin:0;font-size:13.7px}
+  .vcard .ver{font-size:13px;background:var(--code);border-radius:8px;padding:8px 10px;line-height:1.5}
+  .vcard .ver b{color:var(--ink)}
+  .vcard .oj{font-size:12.8px;color:var(--warn)}
+  .vlist td a{color:var(--brand);font-weight:600;text-decoration:none}
+  ul.check{list-style:none;padding-left:0;margin:8px 0}
+  ul.check li{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;border-bottom:1px dashed var(--line);margin:0}
+  ul.check input{margin-top:5px;transform:scale(1.2);accent-color:var(--brand);flex:0 0 auto}
+  ul.check li.done>span{color:var(--muted);text-decoration:line-through}
+  .day{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px 10px;margin:16px 0;
+    box-shadow:var(--shadow)}
+  .day h4{margin:2px 0 2px;color:var(--ink);font-size:17px}
+  .day .when{color:var(--muted);font-size:13px;margin-bottom:4px}
+  .bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin:10px 0 2px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brand),var(--accent));transition:width .25s}
+  .pnav{display:flex;justify-content:space-between;gap:14px;margin-top:70px;border-top:1px solid var(--line);padding-top:22px;flex-wrap:wrap}
+  .pnav a{flex:1 1 240px;text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:12px 16px;color:var(--ink);
+    background:var(--panel);box-shadow:var(--shadow)}
+  .pnav a:hover{border-color:var(--brand)}
+  .pnav a small{display:block;color:var(--muted);font-size:12px}
+  .pnav a.nx{text-align:right}
+  .hero{background:linear-gradient(135deg,var(--brand-soft),var(--accent-soft));border:1px solid var(--line);border-radius:14px;
+    padding:18px 20px;margin:10px 0 18px}
+  .hero .big{font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .hero .sub{color:var(--muted);font-size:14px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .kpi b{display:block;font-size:20px;color:var(--brand)}
+  .kpi span{font-size:12.5px;color:var(--muted)}
+  .tw table.mini td,.tw table.mini th{font-size:13.4px;padding:6px 9px}
+  s.old{color:var(--muted)}
+
+  :root[data-theme="dark"]{color-scheme:dark}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark}}
+  .box.pauta{border-left-color:var(--prof);background:var(--prof-soft)}
+  .box.pauta .bt{color:var(--prof);flex-wrap:wrap}
+  .box.pauta .ref{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--muted);letter-spacing:0}
+  .chk{display:inline-block;width:12px;height:12px;border:2px solid currentColor;border-radius:3px;position:relative;margin-right:2px}
+  .chk::after{content:"";position:absolute;left:2px;top:-1px;width:4px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .pts{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:14px;margin:8px 0 2px;max-width:520px}
+  .pts span:nth-child(even){font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+  .tier{display:flex;gap:10px;align-items:center;margin:34px 0 4px}
+  .tier h3{margin:0}
+  .pill.t1{background:var(--warn-soft);color:var(--warn)}
+  .pill.t2{background:var(--ana-soft);color:var(--ana)}
+  .pill.t3{background:var(--brand-soft);color:var(--brand)}
+  .pill.t4{background:var(--accent-soft);color:var(--accent)}
+  .pill.t5{background:var(--code);color:var(--muted)}
+  .src{font-size:12.5px;color:var(--muted);margin-top:-4px}
+  .quote{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:14px 0;color:var(--muted);font-style:italic}
+  .quote b{font-style:normal;color:var(--ink)}
+  .q{display:grid;gap:8px;margin:14px 0}
+  .q details{border:1px solid var(--line);border-radius:9px;background:var(--panel);padding:9px 13px}
+  .q summary{cursor:pointer;font-size:14.8px}
+  .q details p{margin:8px 0 2px;font-size:14.5px}
+  .rank td:first-child{font-weight:800;color:var(--muted);width:34px;text-align:center}
+  .yrs{font-size:12px;color:var(--muted)}
+  details.ex .body h5{font-size:13px;margin:16px 0 4px;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+
+  .pages .pgrp{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:10px 4px 0}
+  .pages .pgrp:first-child{margin-top:0}
+  .pages span.off{display:flex;gap:9px;align-items:center;font-size:13px;padding:6px 9px;border-radius:8px;
+    border:1px dashed var(--line);line-height:1.25;opacity:.5;cursor:default}
+  .pages span.off b{flex:0 0 22px;display:grid;place-items:center;height:22px;border-radius:6px;background:var(--code);
+    color:var(--muted);font-size:11.5px}
+  .pages a b{font-size:11px}
+  .nc{display:inline-block;font-size:10px;font-weight:700;padding:0 6px;border-radius:999px;background:var(--no-soft);
+    color:var(--no);margin-left:2px;font-style:normal;vertical-align:1px;white-space:nowrap}
+  .soon{border-bottom:1px dashed var(--muted);color:var(--muted)}
+  .box.ana p+p{margin-top:6px}
+  .box.nc{border-left-color:var(--no);background:var(--no-soft)} .box.nc .bt{color:var(--no)}
+  .lic{font-family:"SF Mono",Menlo,Consolas,monospace;font-weight:700;white-space:nowrap}
+  .yes{color:var(--accent);font-weight:700} .nope{color:var(--no);font-weight:700}
+  .mnemo{font-size:15px;background:var(--panel);border:1px dashed var(--brand);border-radius:10px;padding:10px 14px;margin:14px 0}
+  .mnemo b{color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">
+    <div class="dot">T20</div>
+    <div><h1>Desarrollo de software</h1><small>Ingeniería, Informática y Sociedad · INF-276 · Certamen 2</small></div>
+  </div>
+  <div class="pages"><div class="pgrp">Inicio</div><a href="0-Guia-de-estudio-C2.html"><b>★</b><span>Guía de estudio<br><small style="color:var(--muted)">certamen del sábado 21</small></span></a><div class="pgrp">Materia del C1</div><span class="off" title="Todavía no está publicada"><b>1</b><span>Proyectos<br><small style="color:var(--muted)">por qué fallan, reuniones</small></span></span><span class="off" title="Todavía no está publicada"><b>2</b><span>Definiciones<br><small style="color:var(--muted)">persona, ciencia, ingeniería</small></span></span><span class="off" title="Todavía no está publicada"><b>3</b><span>Razonamiento y falacias<br><small style="color:var(--muted)">validez, solidez, catálogo</small></span></span><span class="off" title="Todavía no está publicada"><b>4</b><span>Sesgos cognitivos<br><small style="color:var(--muted)">sesgos y disonancia</small></span></span><span class="off" title="Todavía no está publicada"><b>5</b><span>Pensamiento crítico<br><small style="color:var(--muted)">habilidades y proceso</small></span></span><span class="off" title="Todavía no está publicada"><b>6</b><span>Resolver problemas<br><small style="color:var(--muted)">los 4 pasos de Pólya</small></span></span><span class="off" title="Todavía no está publicada"><b>7</b><span>Ética y moral<br><small style="color:var(--muted)">Grecia vs Roma</small></span></span><span class="off" title="Todavía no está publicada"><b>8</b><span>Ética de la antigüedad<br><small style="color:var(--muted)">las escuelas griegas</small></span></span><span class="off" title="Todavía no está publicada"><b>9</b><span>Ética moderna<br><small style="color:var(--muted)">Kant y utilitarismo</small></span></span><span class="off" title="Todavía no está publicada"><b>10</b><span>Sociedades<br><small style="color:var(--muted)">sociología y humanismo</small></span></span><span class="off" title="Todavía no está publicada"><b>11</b><span>Método científico<br><small style="color:var(--muted)">falsabilidad y evidencia</small></span></span><span class="off" title="Todavía no está publicada"><b>12</b><span>Ingeniería<br><small style="color:var(--muted)">definición e historia</small></span></span><span class="off" title="Todavía no está publicada"><b>13</b><span>Computación<br><small style="color:var(--muted)">las 5 generaciones</small></span></span><span class="off" title="Todavía no está publicada"><b>Σ</b><span>Resumen contenidos Certamen 1<br><small style="color:var(--muted)">lo esencial de 1 a 13</small></span></span><div class="pgrp">Materia nueva del C2</div><a href="14-Procesamiento-datos.html"><b>14</b><span>Procesamiento de datos<br><small style="color:var(--muted)">historia y minería de datos</small></span></a><a href="15-Impacto.html"><b>15</b><span>Impacto de la tecnología<br><small style="color:var(--muted)">lo bueno y lo malo</small></span></a><a href="16-Aspectos-eticos.html"><b>16</b><span>Aspectos éticos<br><small style="color:var(--muted)">códigos, dilemas, ética profesional</small></span></a><a href="16b-Inteligencia-artificial.html"><b>XX</b><span>Inteligencia artificial<br><small style="color:var(--muted)">expertos, genéticos, redes, LLM</small></span></a><a href="17-Propiedad-intelectual.html"><b>17</b><span>Propiedad intelectual<br><small style="color:var(--muted)">autor, patentes, marcas, secretos</small></span></a><a href="18-Codigo-abierto.html"><b>18</b><span>Código abierto<br><small style="color:var(--muted)">GPL, BSD, OSI, Creative Commons</small></span></a><a href="19-Proteccion-datos.html"><b>19</b><span>Protección de datos <i class="nc">no pasada</i><br><small style="color:var(--muted)">GDPR, leyes chilenas, CRA</small></span></a><a href="20-Desarrollo.html" class="cur"><b>20</b><span>Desarrollo de software <i class="nc">no pasada</i><br><small style="color:var(--muted)">máximas y deuda técnica</small></span></a><a href="21-Codigo-ACM.html"><b>21</b><span>Código de ética ACM<br><small style="color:var(--muted)">las 4 secciones</small></span></a><div class="pgrp">Práctica</div><a href="22-Ejercicios.html"><b>✎</b><span>Ejercicios<br><small style="color:var(--muted)">ordenados por probabilidad</small></span></a><span class="off" title="Todavía no está publicada"><b>⇄</b><span>Flashcards<br><small style="color:var(--muted)">toda la materia</small></span></span><div class="pgrp">Complemento</div><span class="off" title="Todavía no está publicada"><b>+</b><span>Extra<br><small style="color:var(--muted)">probablemente no entra</small></span></span></div>
+  <div class="toolbar">
+    <button class="btn" id="theme">Claro / oscuro</button>
+    <button class="btn" id="expand">Abrir todo</button>
+  </div>
+  <nav id="nav"><div class="grp">Tema 20</div><a href="#t20-inicio">Qué pesa y qué estudiar</a><a href="#humor">Las etapas (humor)</a><a href="#deuda">Deuda técnica</a><a href="#maximas">Las 22 máximas</a><a href="#experiencias">Experiencias</a><div class="grp">Para el certamen</div><a href="#fracaso">Causas de fracaso</a><div class="grp">Práctica</div><a href="#t20-preguntas">Preguntas del tema</a></nav>
+</aside>
+<main class="content">
+<section id="t20-inicio" data-grp="Tema 20" data-nav="Qué pesa y qué estudiar">
+<h2>Tema 20 · Desarrollo de software</h2>
+<p class="lead">Clase <code>20-desarrollo-hnd.pdf</code> (20 diapositivas). Consejos de décadas de experiencia del profe desarrollando software: las “etapas de todo proyecto” (en broma), <b>22 máximas</b> y algunas experiencias. Es la versión para software de las causas de fracaso del <span class="soon" title="Página aún no publicada">tema 1</span>.</p>
+
+<div class="box nc"><div class="bt">Probablemente no se pasó en clases</div>
+<p>En Aula no aparece marcada como pasada, pero <b>sí salió en certámenes</b>: <b>deuda técnica</b> fue la P1 del C2 2026-1 (25 pts), “tres máximas” fue la P4 del R 2025-1 (15 pts), y la pauta de “causas de falla en software” del C2 2025-1 (15 pts) usó estas máximas. Es una clase corta: vale la pena leerla.</p></div>
+
+<div class="cols">
+  <div class="card"><h5>Lo que tienes que poder escribir</h5>
+    <p>· La <b>deuda técnica</b>: qué es, efectos, por qué cuesta evitarla y cómo mitigarla.</p>
+    <p>· <b>Tres máximas</b> bien explicadas (mejor si llevas cinco).</p>
+    <p>· Las <b>causas de fracaso</b> de un proyecto de software.</p>
+  </div>
+  <div class="card"><h5>Dónde está</h5>
+    <p><b>Diapositivas</b> <code>20-desarrollo-hnd.pdf</code>.</p>
+    <p><b>Pautas</b>: C2 2026-1 P1, R 2025-1 P4, C2 2025-1 P3 (en <a class="inl" href="22-Ejercicios.html#e17">E17</a>, <a class="inl" href="22-Ejercicios.html#e18">E18</a> y <a class="inl" href="22-Ejercicios.html#e15">E15</a>).</p>
+  </div>
+  <div class="card"><h5>Plan para este tema</h5>
+    <p>1. Leer la página (15 min).</p>
+    <p>2. Escribir <a class="inl" href="22-Ejercicios.html#e17">E17</a> sin mirar (10 min).</p>
+  </div>
+</div>
+</section>
+
+<section id="humor" data-nav="Las etapas (humor)">
+<h2>Las etapas de todo proyecto (en broma)</h2>
+<p>La clase abre con este chiste clásico, que muestra cómo terminan los proyectos mal llevados:</p>
+<ol>
+<li>Optimismo general.</li><li>Desorientación.</li><li>Relajamiento incontrolado.</li><li>Desconcierto general.</li><li>Búsqueda implacable de culpables.</li><li>Sálvese quien pueda.</li><li>Castigo ejemplar a los inocentes.</li><li>Recuperación del optimismo perdido.</li><li>Terminación inexplicable del proyecto.</li><li>Condecoraciones y premios a los no participantes.</li>
+</ol>
+<p>Las sugerencias que siguen son resultado de <b>décadas de experiencia</b>: las tecnologías llegaron y se fueron, las experiencias (muchas veces amargas) quedaron. Según el profe, se aplican con ajustes a todas las áreas del quehacer humano.</p>
+</section>
+
+<section id="deuda" data-nav="Deuda técnica">
+<h2>Deuda técnica (la que más se ha preguntado)</h2>
+<div class="box def"><div class="bt">Definición (máxima 11: “Evite deuda técnica”)</div>
+<p>La <b>deuda técnica</b> es el <b>costo del retrabajo futuro</b> implícito por <b>optar por una salida fácil</b> en vez de una <b>solución robusta a la raíz del problema</b>.</p></div>
+<div class="box ana"><div class="bt">Analogía: la tarjeta de crédito</div>
+<p>Cada parche “para salir del paso” es una compra con tarjeta: hoy no pagas nada y avanzas más rápido. Pero la deuda cobra <b>intereses</b>: cada cambio futuro cuesta más, porque hay que esquivar los parches anteriores. Si sigues pagando solo el mínimo, llega un punto en que todo tu tiempo se va en intereses (arreglar lo que se rompe) y no te queda nada para avanzar.</p></div>
+<p>La pauta del C2 2026-1 agrega lo que no está en las diapositivas:</p>
+<div class="cols">
+<div class="card"><h5>Efectos nocivos</h5><p>Hace más difícil alcanzar metas futuras: cada cambio cuesta más y rompe cosas inesperadas. Lo resume la <b>ley de Lehman</b> (1980): “conforme un programa en evolución sufre continuos cambios, su complejidad, reflejo de una estructura en deterioro, aumenta a menos que se trabaje en mantenerla o reducirla”.</p></div>
+<div class="card"><h5>Por qué es difícil evitarla</h5><p>Elegir el <b>mínimo costo y tiempo</b> de desarrollo, una presión siempre presente, es la causa principal. A diferencia de una deuda en dinero, muchas veces se contrae <b>sin darse cuenta</b>, y suele verse <b>solo en retrospectiva</b>.</p></div>
+<div class="card"><h5>Cómo mitigarla</h5><p>Buscar la <b>causa raíz</b> de los problemas y resolverla; <b>rediseñar</b> las partes afectadas al modificar; <b>actualizar los casos de prueba</b> y correrlos continuamente.</p></div>
+</div>
+<div class="box pauta"><div class="bt"><span class="chk"></span>Lo que pide la pauta<span class="ref">C2 2026-1 P1 · 25 pts</span></div>
+<div class="pts"><span>Definición de deuda técnica</span><span>5</span><span>Efectos nocivos</span><span>10</span><span>Mitigación</span><span>10</span></div>
+<p>Ojo: la pregunta también pide “¿por qué es difícil evitarla?”. La pauta lo incluye dentro de los efectos.</p></div>
+</section>
+
+<section id="maximas" data-nav="Las 22 máximas">
+<h2>Las 22 máximas</h2>
+<p class="lead">La lista no es exhaustiva y va, más o menos, de lo más específico a lo más general, no en orden de importancia. En <b>negrita</b>, las que usaron las pautas.</p>
+<div class="tw"><table>
+<thead><tr><th>#</th><th>Máxima</th><th>Qué quiere decir</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Automatice todo lo que pueda, incluso lo que no pueda.</td><td>Su tiempo vale más que el del computador, y la automatización bien hecha no comete errores tontos.</td></tr>
+<tr><td>2</td><td>La rapidez del lenguaje, el equipo y la plataforma importan menos de lo que cree.</td><td>Hay casos en que son críticas, pero son muy pocos.</td></tr>
+<tr><td>3</td><td><b>La comodidad de desarrollo es más importante de lo que cree.</b></td><td>El costo del desarrollo es esencialmente de personal: facilite su trabajo.</td></tr>
+<tr><td>4</td><td>Todo lo que le resulta nuevo, un programador más viejo ya lo vio y sabe por qué es mala idea.</td><td>El ciclo “¿no es obvio hacer X?” → entusiasmo → problemas → “X era mala idea” → años después, otro entusiasta con X.</td></tr>
+<tr><td>5</td><td>Mejor que el compilador detecte el error que una prueba, una excepción, la revisión de código o (¡horror!) el usuario.</td><td>Mientras más avanza el desarrollo, más caro es corregir.</td></tr>
+<tr><td>6</td><td>Entienda las estimaciones big-O.</td><td>Máquinas más rápidas no sustituyen un buen algoritmo: con crecimiento exponencial, un mínimo aumento de tamaño hace imposible el problema.</td></tr>
+<tr><td>7</td><td><b>No hay balas de plata.</b></td><td>Ningún lenguaje, herramienta, técnica o proceso es perfecto (la mayoría ni siquiera es bueno); todos serán reemplazados.</td></tr>
+<tr><td>8</td><td><b>Toda decisión es un balance</b> (<i>trade-off</i>).</td><td>Siempre hay ventajas y desventajas.</td></tr>
+<tr><td>9</td><td>La complejidad es una maldición.</td><td>Una plaga que consume toda herramienta, proyecto o proceso “y solo escupe dolor y fracaso”.</td></tr>
+<tr><td>10</td><td>Busque simplicidad elegante en todo.</td><td>Corolario de la anterior: “el camino a la felicidad y el éxito”.</td></tr>
+<tr><td>11</td><td><b>Evite la deuda técnica.</b></td><td>Ver arriba.</td></tr>
+<tr><td>12</td><td><b>Los proyectos que fallan tienen causas no técnicas.</b></td><td>Políticas, interpersonales, sociológicas y, muchas veces, falta de competencias. Se sabe hace 50 años y se ignora.</td></tr>
+<tr><td>13</td><td><b>La causa principal de fracaso es el exceso de ambición.</b></td><td>El <b>síndrome del segundo sistema</b>: el primero se hace con pies de plomo; en el segundo nos creemos expertos.</td></tr>
+<tr><td>14</td><td>Una gran fracción de los profesionales son malos en su trabajo.</td><td>La demanda superó la oferta de talento y arrastró a gente sin las competencias.</td></tr>
+<tr><td>15</td><td><b>La gente es lo más importante.</b></td><td>El mejor predictor de éxito y costo es la calidad de los desarrolladores y la gestión, aunque muchos los traten como engranajes intercambiables.</td></tr>
+<tr><td>16</td><td>La práctica hace perfecto.</td><td>Nunca será bueno en algo que no practica.</td></tr>
+<tr><td>17</td><td>Desarrollar software siempre será incierto y difícil.</td><td>Es hacer cosas que nunca se han hecho: más investigación que manufactura. Por eso estimar es tan difícil.</td></tr>
+<tr><td>18</td><td><b>La única forma de manejar la agenda es eliminar o simplificar funcionalidades.</b></td><td>Una “marcha de la muerte” con trasnochadas no logra el objetivo; solo eliminar lo incierto permite avanzar.</td></tr>
+<tr><td>19</td><td>La dificultad fundamental es transformar deseos vagos en código extremadamente preciso.</td><td>Los requisitos nunca vienen claros.</td></tr>
+<tr><td>20</td><td>No se repita (DRY). Pero sepa cuándo romper las reglas.</td><td><i>Don't Repeat Yourself</i>. (La diapositiva repite la frase a propósito, como chiste.)</td></tr>
+<tr><td>21</td><td>Si no puede abrirlo y mirar dentro, no lo use.</td><td>“¿Recuerdan lo de código abierto?” (tema 18).</td></tr>
+<tr><td>22</td><td>Todo cambia.</td><td></td></tr>
+</tbody></table></div>
+<div class="box ana"><div class="bt">Analogía: el síndrome del segundo sistema</div>
+<p>La primera vez que cocinas para diez personas sigues la receta al pie de la letra, con miedo. La segunda vez te sientes chef, inventas un menú de cinco platos… y a las 11 de la noche nadie ha comido. El segundo proyecto fracasa por exceso de confianza.</p></div>
+<div class="box ana"><div class="bt">Analogía: la máxima 18 y la mochila</div>
+<p>Si vas atrasado en una caminata, no llegas a tiempo caminando toda la noche (marcha de la muerte): llegas <b>sacando cosas de la mochila</b>. En un proyecto, eso es recortar funcionalidades.</p></div>
+</section>
+
+<section id="experiencias" data-nav="Experiencias">
+<h2>Experiencias</h2>
+<ul>
+<li><b>Los sistemas legados son una tortura:</b> código enredado, documentación faltante, bibliotecas oscuras y obsoletas, parches que esconden el síntoma. Los desarrolladores prefieren partir de cero con una arquitectura limpia… y <b>en tres meses el sistema limpio es otro sistema legado</b>. (Así se ve la deuda técnica en la práctica.)</li>
+<li><b>El ingeniero experimentado</b> sabe que la novedad del día es otra vuelta de algo ya probado y desechado. Su principal aporte es <b>mantener la calma, poner orden</b> y no correr “como gallina sin cabeza”.</li>
+</ul>
+</section>
+
+<section id="fracaso" data-grp="Para el certamen" data-nav="Causas de fracaso">
+<h2>Causas de fracaso de un proyecto de software</h2>
+<p class="lead">La pauta del C2 2025-1 (“tres causas de la falla de proyectos, particularmente en desarrollo de software”, 15 pts, 5 por causa) usó esta clase:</p>
+<div class="cols">
+<div class="card"><h5>Causas no técnicas</h5><p>Las más comunes: política, relaciones interpersonales, factores sociológicos y falta de competencias.</p></div>
+<div class="card"><h5>Ambición excesiva</h5><p>Proponerse más de lo posible: técnicamente, subestimando costos y tiempos o sobreestimando el mercado.</p></div>
+<div class="card"><h5>Personal inadecuado</h5><p>La demanda creciente atrae a personas sin los talentos requeridos.</p></div>
+<div class="card"><h5>No recortar a tiempo</h5><p>Una marcha de la muerte no logra el objetivo; solo eliminar lo incierto permite avanzar.</p></div>
+<div class="card"><h5>Complejidad excesiva</h5><p>Soluciones demasiado complejas pueden hacer imposible terminar.</p></div>
+<div class="card"><h5>Deuda técnica</h5><p>Los parches “para salir del paso” tarde o temprano pasan la cuenta.</p></div>
+</div>
+<p>Si la pregunta no menciona software, usa las razones del <span class="soon" title="Página aún no publicada">tema 1</span> (objetivos poco claros, ampliación del alcance, comunicación pobre…), con su medida para evitarlas.</p>
+</section>
+
+<section id="t20-preguntas" data-grp="Práctica" data-nav="Preguntas del tema">
+<h2>Preguntas del tema</h2>
+<p class="lead">De certamen con pauta: <a class="inl" href="22-Ejercicios.html#e17">E17 (deuda técnica)</a>, <a class="inl" href="22-Ejercicios.html#e18">E18 (máximas)</a> y <a class="inl" href="22-Ejercicios.html#e15">E15 (fallas de proyectos)</a>.</p>
+
+<details class="ex"><summary>1 · ¿Qué es la deuda técnica? <span class="tag">C2 2026-1</span></summary>
+<div class="body"><p>El costo del retrabajo futuro implícito por optar por una salida fácil en vez de una solución robusta a la raíz del problema.</p></div></details>
+
+<details class="ex"><summary>2 · ¿Por qué es difícil evitar la deuda técnica? <span class="tag">C2 2026-1</span></summary>
+<div class="body"><p>Porque la presión por minimizar costo y tiempo está siempre presente, porque muchas veces se contrae sin darse cuenta y porque suele verse solo en retrospectiva.</p></div></details>
+
+<details class="ex"><summary>3 · ¿Qué es el síndrome del segundo sistema? <span class="tag">máxima 13</span></summary>
+<div class="body"><p>El primer sistema se hace con cuidado porque el área es nueva; en el segundo nos creemos expertos y pecamos de exceso de confianza y ambición, la causa principal de fracaso.</p></div></details>
+
+<details class="ex"><summary>4 · Según el profe, ¿cuál es la única forma de manejar la agenda? <span class="tag">máxima 18</span></summary>
+<div class="body"><p>Eliminar o simplificar funcionalidades. Las trasnochadas no logran el objetivo.</p></div></details>
+
+<details class="ex"><summary>5 · ¿Qué significa “no hay balas de plata”? <span class="tag">máxima 7</span></summary>
+<div class="body"><p>Que ningún lenguaje, plataforma, herramienta, técnica o proceso es perfecto: todos tienen limitaciones y serán reemplazados.</p></div></details>
+
+<details class="ex"><summary>6 · ¿Por qué conviene que el compilador detecte los errores? <span class="tag">máxima 5</span></summary>
+<div class="body"><p>Porque mientras más avanza el desarrollo, más caro es corregir un error: es más barato que lo detecte el compilador que una prueba, la revisión de código o un usuario.</p></div></details>
+</section>
+
+<div class="pnav"><a href="19-Proteccion-datos.html"><small>← Anterior</small>Protección de datos</a><a class="nx" href="21-Codigo-ACM.html"><small>Siguiente →</small>Código de ética ACM</a></div>
+</main>
+</div>
+<script>
+(function(){
+  var root=document.documentElement;
+  var saved=null; try{ saved=localStorage.getItem('iis-c2-theme'); }catch(e){}
+  if(saved){ root.setAttribute('data-theme',saved); }
+  var tb=document.getElementById('theme');
+  if(tb) tb.addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme');
+    var isDark = cur ? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=isDark?'light':'dark';
+    root.setAttribute('data-theme',next);
+    try{ localStorage.setItem('iis-c2-theme',next); }catch(e){}
+  });
+  var eb=document.getElementById('expand'); var open=false;
+  if(eb) eb.addEventListener('click',function(){
+    open=!open;
+    document.querySelectorAll('details.ex').forEach(function(d){ d.open=open; });
+    eb.textContent=open?'Cerrar todo':'Abrir todo';
+  });
+  var links=[].slice.call(document.querySelectorAll('#nav a'));
+  var secs=links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function onScroll(){
+    var y=window.scrollY+140, best=0;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=y) best=i; }
+    links.forEach(function(a,i){ a.classList.toggle('active', i===best); });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+  var boxes=[].slice.call(document.querySelectorAll('ul.check input[data-k]'));
+  function upd(){
+    var done=boxes.filter(function(b){return b.checked;}).length;
+    document.querySelectorAll('.bar i').forEach(function(i){ i.style.width=(boxes.length?100*done/boxes.length:0)+'%'; });
+    document.querySelectorAll('.barlbl').forEach(function(s){ s.textContent=done+' de '+boxes.length+' listos'; });
+  }
+  boxes.forEach(function(b){
+    var k='iis-c2-chk-'+b.getAttribute('data-k'), v=null;
+    try{ v=localStorage.getItem(k); }catch(e){}
+    if(v==='1'){ b.checked=true; b.parentNode.classList.add('done'); }
+    b.addEventListener('change',function(){
+      b.parentNode.classList.toggle('done',b.checked);
+      try{ localStorage.setItem(k,b.checked?'1':'0'); }catch(e){}
+      upd();
+    });
+  });
+  upd();
+})();
+(function(){
+  function openHash(){
+    var id=location.hash.slice(1); if(!id) return;
+    var el=document.getElementById(id);
+    if(el && el.tagName==='DETAILS'){ el.open=true; var p=el.parentElement; while(p){ if(p.tagName==='DETAILS') p.open=true; p=p.parentElement; } el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange',openHash); openHash();
+})();
+</script>
+</body>
+</html>
