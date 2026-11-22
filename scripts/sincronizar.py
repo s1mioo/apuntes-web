@@ -8,8 +8,11 @@ Solo entran los HTML que están directamente en:
     <Ramo>/Evaluaciones/<evaluación>/    -> apuntes/<ramo>/<evaluación>/
     <Ramo>/                              -> apuntes/<ramo>/resumen/
 más los de EXCEPCIONES. Nunca borra nada de apuntes/: si un archivo desaparece
-del origen, se queda en la página. Sale con código 1 si tuvo que omitir algo.
+del origen, se queda en la página. Respeta las correcciones de CORREGIDOS_AQUI
+mientras Gabriel no cambie esos archivos. Sale con código 1 si tuvo que omitir
+algo o si una corrección quedó reemplazada.
 """
+import hashlib
 import html
 import os
 import re
@@ -33,6 +36,16 @@ RAMOS = {
 # Archivos fuera de las carpetas de material que igual se publican: origen -> <ramo>/<evaluación>
 EXCEPCIONES = {
     "Analisis y diseno de software/Clases/Resumen-ADS-Parte1.html": "inf236/control1",
+}
+
+# Apuntes de Gabriel corregidos aquí: destino -> sha256 de la versión suya sobre la que se corrigió.
+# Mientras Gabriel no cambie ese archivo se conserva la corrección. Si lo cambia, entra su
+# versión, se avisa (la Action queda en ❌) y hay que rehacer la corrección o borrar la línea.
+CORREGIDOS_AQUI = {
+    # 2026-11-22: el núcleo sí se pasó en clases (las guías lo daban como "si se dicta")
+    "apuntes/fis140/c3/Clave-C3-FIS140.html": "45652caa51517546f4af86c636aaab0080a1dd4775c56382164ca4254497f016",
+    "apuntes/fis140/c3/Ejercicios-C3-FIS140.html": "8287806143a0f8ef1041a19fa2d5c54d197d971898ba6503ecd049917e07a186",
+    "apuntes/fis140/c3/Resumen-C3-FIS140.html": "944ebb13aed676a2f41c3bb323afb41b40c8ae5929d0fbefc5f63e357e893338",
 }
 
 IMAGENES = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
@@ -144,6 +157,13 @@ def main():
         pendientes = [(destinos[archivo] / archivo.name, contenido)]
         pendientes += [(destinos[archivo] / img.name, img.read_bytes()) for img in sorted(imagenes)]
         for destino, datos in pendientes:
+            rel = destino.relative_to(RAIZ).as_posix()
+            if rel in CORREGIDOS_AQUI:
+                if hashlib.sha256(datos).hexdigest() == CORREGIDOS_AQUI[rel]:
+                    continue  # Gabriel no lo ha cambiado: se queda la corrección hecha aquí
+                if destino.exists() and destino.read_bytes() != datos:
+                    avisos.append(f"{rel}: Gabriel lo actualizó y su versión reemplazó la corrección "
+                                  "hecha aquí; revísala y actualiza CORREGIDOS_AQUI")
             estado = escribir(destino, datos)
             if estado:
                 cuenta[estado] += 1
