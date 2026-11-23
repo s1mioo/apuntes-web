@@ -46,6 +46,9 @@ CORREGIDOS_AQUI = {
     "apuntes/fis140/c3/Clave-C3-FIS140.html": "45652caa51517546f4af86c636aaab0080a1dd4775c56382164ca4254497f016",
     "apuntes/fis140/c3/Ejercicios-C3-FIS140.html": "8287806143a0f8ef1041a19fa2d5c54d197d971898ba6503ecd049917e07a186",
     "apuntes/fis140/c3/Resumen-C3-FIS140.html": "944ebb13aed676a2f41c3bb323afb41b40c8ae5929d0fbefc5f63e357e893338",
+    # 2026-11-23: alternativas de la charla de seguridad con largos parejos (la correcta era
+    # siempre la más larga) y 5 preguntas nuevas (a101-a105) sacadas de la transcripción
+    "apuntes/inf236/c2/Guia-C2-ADS.html": "1f9d5ddb1e2cd33e9602cd81e811975ba8085ef927db87b93b6423bc6623a5b1",
 }
 
 IMAGENES = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp"}
