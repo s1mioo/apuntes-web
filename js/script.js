@@ -247,14 +247,16 @@ function mostrarApunte(ramo, evaluacion, apunte) {
         crear('option', { value: a.id, selected: a === apunte }, a.titulo)));
 
     autorApunte.textContent = `por ${apunte.autor}`;
-    btnPestana.href = apunte.ruta;
+    // La versión cambia con el contenido, así el navegador no reutiliza una copia vieja del apunte
+    const rutaVersionada = apunte.version ? `${apunte.ruta}?v=${apunte.version}` : apunte.ruta;
+    btnPestana.href = rutaVersionada;
     document.title = `${apunte.titulo} · ${TITULO_SITIO}`;
 
     // Solo recarga si el visor no muestra ya ese apunte (p. ej. tras navegar dentro de una serie)
-    const destino = new URL(apunte.ruta, location.href).href;
+    const destino = new URL(rutaVersionada, location.href).href;
     let actual = null;
     try { actual = visorHtml.contentWindow.location.href.split('#')[0]; } catch (e) {}
-    if (actual !== destino) visorHtml.src = apunte.ruta;
+    if (actual !== destino) visorHtml.src = rutaVersionada;
 
     mostrarVista('apuntes');
 }

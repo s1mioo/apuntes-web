@@ -4,6 +4,7 @@ Uso:
     python scripts/indice.py           genera apuntes.json
     python scripts/indice.py --check   solo valida; sale con código 1 si hay problemas
 """
+import hashlib
 import html
 import json
 import re
@@ -104,6 +105,8 @@ def construir():
                     "autor": autor,
                     "fecha": fecha,
                     "ruta": rel.as_posix(),
+                    # Cambia con el contenido: el visor la agrega a la URL para no mostrar una copia vieja
+                    "version": hashlib.sha256(archivo.read_bytes()).hexdigest()[:10],
                 })
             if apuntes:
                 evaluaciones.append({"id": dir_eval.name, "apuntes": apuntes})
